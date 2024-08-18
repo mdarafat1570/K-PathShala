@@ -31,9 +31,10 @@ class AppColor {
   static const Color inactive = Color(0xFFDC3545);
   static const Color closed = Color(0xFF388E3C);
   static const Color notBillable = Color(0xFF9E9E9E);
-  
+  static const Color softwhite = Color(0xFF9E9E9E);
+
   // New colors
-  static const Color deepPurple = Color(0xFF1A237E);  // #1A237E
-  static const Color skyBlue = Color(0xFF87CEEB);     // #87CEEB
-  static const Color lightGray = Color(0xFFF5F5F5);   // #F5F5F5
+  static const Color deepPurple = Color(0xFF1A237E); // #1A237E
+  static const Color skyBlue = Color(0xFF87CEEB); // #87CEEB
+  static const Color lightGray = Color(0xFFF5F5F5); // #F5F5F5
 }
