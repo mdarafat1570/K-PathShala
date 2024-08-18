@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kpathshala/Page/Gradientbackground.dart';
 
 class Courses extends StatefulWidget {
   const Courses({super.key});
@@ -11,7 +12,8 @@ class _CoursesState extends State<Courses> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(child: Text("Under Construction")),
+      body:
+          GradientBackground(child: Center(child: Text("Under Construction"))),
     );
   }
 }
