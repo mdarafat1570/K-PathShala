@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
-import 'package:kpathshala/dashbord/myhomepage.dart';
 import 'package:kpathshala/navigationbar/navigationBar.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -15,7 +14,6 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     Timer(
         Duration(seconds: 3),
@@ -31,7 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
           child: Container(
         height: 150,
         width: 150,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             image: DecorationImage(
                 image: AssetImage('assets/Group.png'), fit: BoxFit.cover)),
       )),
