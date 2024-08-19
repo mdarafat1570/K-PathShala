@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/view/Profile_edit/profile_setting.dart';
+import 'package:kpathshala/view/common_widget/Common_slideNavigation_Push.dart';
 import 'package:kpathshala/view/common_widget/custom_background.dart';
 import 'package:kpathshala/view/dashboard/Courses.dart';
 import 'package:kpathshala/view/dashboard/exam.dart';
-import 'package:kpathshala/view/dashboard/myhomepage.dart';
-import 'package:kpathshala/view/login/registration_page.dart';
+import 'package:kpathshala/view/dashboard/home_Page.dart';
 
 class Navigation extends StatefulWidget {
   const Navigation({super.key});
@@ -18,7 +18,7 @@ class Navigation extends StatefulWidget {
 class _NavigationState extends State<Navigation> {
   int countindex = 0;
   List<Widget> widgetList = [
-    RegistrationPage(title: 'App'),
+    HomePage(title: 'App'),
     Courses(),
     Exam(),
   ];
@@ -28,30 +28,36 @@ class _NavigationState extends State<Navigation> {
     return GradientBackground(
       child: Scaffold(
         appBar: AppBar(
-          title: Center(child: Text('App')),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: Padding(
+            padding: const EdgeInsets.all(12), // Add padding directly
+            child: GestureDetector(
+              onTap: () {
+                slideNavigationPush(Profile(), context);
+              },
+              child: const CircleAvatar(
+                backgroundImage: AssetImage('assets/Profile.jpg'),
+              ),
+            ),
+          ),
+          title: const Center(child: Text('')), // Empty title
           actions: [
             IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.graphic_eq_sharp,
-                  color: Colors.black,
-                )),
-            IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.notifications,
-                  color: Colors.black,
-                )),
-          ],
-          leading: IconButton(
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => Profile()));
-              },
-              icon: Icon(
-                Icons.person,
+              onPressed: () {},
+              icon: const Icon(
+                Icons.graphic_eq_sharp,
                 color: Colors.black,
-              )),
+              ),
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(
+                Icons.notifications,
+                color: Colors.black,
+              ),
+            ),
+          ],
         ),
         body: Center(
           child: widgetList[countindex],

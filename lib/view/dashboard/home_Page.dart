@@ -4,6 +4,7 @@ import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/view/common_widget/common_button_add.dart';
 import 'package:kpathshala/view/common_widget/custom_background.dart';
 import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
+import 'package:kpathshala/view/login/registration_And_Login_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
@@ -30,11 +31,13 @@ class _HomePageState extends State<HomePage> {
             borderRadius: 25,
             margin: const EdgeInsets.all(10),
             onPressed: () {
-              // Navigate to LoginPageAndSignUp
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => LoginPageAndSignUp()),
-              // );
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const RegistrationPage(
+                          title: 'App',
+                        )),
+              );
             },
             iconWidget: const Icon(
               Icons.arrow_forward,
