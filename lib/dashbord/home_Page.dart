@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl_phone_field/intl_phone_field.dart'; // Import the package
 import 'package:kpathshala/Page/Gradientbackground.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
@@ -35,7 +36,7 @@ class _HomePageState extends State<HomePage> {
                       customText(
                         "Login or Sign Up",
                         TextType.title,
-                        color: AppColor.deepPurple,
+                        color: AppColor.navyblue,
                       ),
                     ],
                   ),
@@ -48,9 +49,8 @@ class _HomePageState extends State<HomePage> {
                       labelText: "Mobile Number",
                       hintText: "Mobile",
                       errorText: errorMessage,
-                      fillColor:
-                          Colors.white, // Background color of the input field
-                      filled: true, // Enables the fillColor
+                      fillColor: Colors.white,
+                      filled: true,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
@@ -70,8 +70,7 @@ class _HomePageState extends State<HomePage> {
                       contentPadding: const EdgeInsets.symmetric(
                           vertical: 15.0, horizontal: 10.0),
                     ),
-                    initialCountryCode:
-                        'BD', // Sets Bangladesh as the default country
+                    initialCountryCode: 'BD',
                     onChanged: (phone) {
                       setState(() {
                         if (phone.number.isEmpty) {
@@ -85,7 +84,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 commonCustomButton(
                   width: 300,
-                  backgroundColor: AppColor.deepPurple,
+                  backgroundColor: AppColor.navyblue,
                   height: 50,
                   borderRadius: 25,
                   margin: const EdgeInsets.all(10),
@@ -131,13 +130,67 @@ class _HomePageState extends State<HomePage> {
                             customText(
                               "terms and conditions.",
                               TextType.normal,
-                              color: AppColor.deepPurple,
+                              color: AppColor.navyblue,
                               fontSize: 14,
                             ),
                           ],
                         ),
                       ],
                     ),
+                  ),
+                ),
+                const SizedBox(height: 130),
+                // Divider with "or"
+                const Row(
+                  children: [
+                    Expanded(child: Divider()),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      child:
+                          Text('or', style: TextStyle(color: Colors.black54)),
+                    ),
+                    Expanded(child: Divider()),
+                  ],
+                ),
+                const SizedBox(height: 30),
+
+                commonCustomButton(
+                  width: 300,
+                  backgroundColor: Colors.white,
+                  height: 50,
+                  borderRadius: 25,
+                  isThreeD: true,
+                  isPressed: true,
+                  animate: true,
+                  margin: const EdgeInsets.all(10),
+                  onPressed: () {},
+                  iconWidget: Image.asset('assets/google_logo.png', height: 45),
+                  reversePosition: true,
+                  child: customText(
+                    "Continue with Google",
+                    TextType.subtitle,
+                    color: AppColor.notBillable,
+                    fontSize: 18,
+                  ),
+                ),
+                commonCustomButton(
+                  width: 300,
+                  backgroundColor: Colors.white,
+                  height: 50,
+                  borderRadius: 25,
+                  isThreeD: true,
+                  isPressed: true,
+                  animate: true,
+                  margin: const EdgeInsets.all(10),
+                  onPressed: () {},
+                  iconWidget:
+                      Image.asset('assets/facebook_logo.png', height: 24),
+                  reversePosition: true,
+                  child: customText(
+                    "Continue with Facebook",
+                    TextType.subtitle,
+                    color: AppColor.notBillable,
+                    fontSize: 18,
                   ),
                 ),
               ],
