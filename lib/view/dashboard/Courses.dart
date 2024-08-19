@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kpathshala/Page/Gradientbackground.dart';
+import 'package:kpathshala/view/common_widget/custom_background.dart';
 
 class Courses extends StatefulWidget {
   const Courses({super.key});

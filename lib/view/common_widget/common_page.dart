@@ -1,7 +1,7 @@
-
 import 'package:flutter/material.dart';
-import 'package:kpathshala/widget/common_widget/common_button_add.dart';
-import 'package:kpathshala/widget/common_widget/customTextField.dart';
+import 'package:kpathshala/app_theme/app_color.dart';
+import 'package:kpathshala/view/common_widget/common_button_add.dart';
+import 'package:kpathshala/view/common_widget/customTextField.dart';
 
 class ButtonVariations extends StatefulWidget {
   const ButtonVariations({Key? key}) : super(key: key);
@@ -42,7 +42,7 @@ class _ButtonVariationsState extends State<ButtonVariations> {
               ),
               commonCustomButton(
                 width: 300,
-                backgroundColor: Colors.blue,
+                backgroundColor: AppColor.navyblue,
                 height: 50,
                 borderRadius: 25,
                 margin: const EdgeInsets.all(10),
@@ -61,7 +61,7 @@ class _ButtonVariationsState extends State<ButtonVariations> {
                   controller: myController,
                   label: "Mobile Number",
                   hintText: "Enter your mobile number",
-                  errorMessage: errorMessage, 
+                  errorMessage: errorMessage,
                   onChanged: (value) {
                     setState(() {
                       if (value.isEmpty) {

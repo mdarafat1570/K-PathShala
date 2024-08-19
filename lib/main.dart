@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:kpathshala/screen/splash_screen.dart';
+import 'package:kpathshala/app_theme/theme_data.dart';
+import 'package:kpathshala/view/splash_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,10 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: customTheme(),
       home: const SplashScreen(),
     );
   }
