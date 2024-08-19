@@ -15,7 +15,11 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   Uint8List? _image;
-  final TextEditingController _controller1 = TextEditingController();
+
+  // Create controllers for each input field
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
 
   void selectImage() async {
     Uint8List img = await pickImage(ImageSource.gallery);
@@ -25,7 +29,24 @@ class _ProfileState extends State<Profile> {
   }
 
   @override
+  void dispose() {
+    // Dispose of controllers when no longer needed
+    _nameController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // Determine the appropriate image provider
+    ImageProvider<Object> imageProvider;
+    if (_image != null) {
+      imageProvider = MemoryImage(_image!) as ImageProvider<Object>;
+    } else {
+      imageProvider = AssetImage('assets/logo.png') as ImageProvider<Object>;
+    }
+
     return Scaffold(
       body: GradientBackground(
         child: SingleChildScrollView(
@@ -41,29 +62,25 @@ class _ProfileState extends State<Profile> {
                   alignment: Alignment.center,
                   children: [
                     CircleAvatar(
-                      radius: 130,
-                      backgroundImage: _image != null
-                          ? MemoryImage(_image!)
-                          : NetworkImage(
-                              'https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=1024x1024&w=is&k=20&c=6XEZlH2FjqdpXUqjUK4y0LlWF6yViZVWn9HZJ-IR8gU=',
-                            ) as ImageProvider,
+                      radius: 90,
+                      backgroundImage: imageProvider,
                     ),
                     Positioned(
                       bottom: 0,
-                      left: 75,
+                      left: 46,
                       child: SizedBox(
                         height: 40,
-                        width: 100,
+                        width: 90,
                         child: ElevatedButton.icon(
                           onPressed: selectImage,
                           label: Text(
                             'Add',
-                            style: TextStyle(color: Colors.black),
+                            style: TextStyle(color: Colors.black, fontSize: 15),
                           ),
                           icon: Icon(
                             Icons.camera,
                             color: Colors.black,
-                            size: 20,
+                            size: 15,
                           ),
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.black,
@@ -75,22 +92,30 @@ class _ProfileState extends State<Profile> {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 30, left: 20, right: 20),
+              SizedBox(height: 30),
+              SizedBox(
+                height: 53,
+                width: 360,
                 child: customTextField(
-                    controller: _controller1, label: "Full Name", hintText: ''),
+                    controller: _nameController,
+                    label: "Full Name",
+                    hintText: ''),
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+              SizedBox(height: 15),
+              SizedBox(
+                height: 53,
+                width: 360,
                 child: customTextField(
-                    controller: _controller1,
+                    controller: _phoneController,
                     label: "Phone Number",
                     hintText: ''),
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+              SizedBox(height: 15),
+              SizedBox(
+                height: 53,
+                width: 360,
                 child: customTextField(
-                    controller: _controller1, label: "Email", hintText: ''),
+                    controller: _emailController, label: "Email", hintText: ''),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
@@ -99,8 +124,7 @@ class _ProfileState extends State<Profile> {
                   width: 380,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Navigator.push(context,
-                      //     MaterialPageRoute(builder: (context) => OtpPage()));
+                      // Add save functionality here
                     },
                     child: Text('Save'),
                   ),

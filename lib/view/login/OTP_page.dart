@@ -94,6 +94,7 @@ class _OtpPageState extends State<OtpPage> {
                   width: 53,
                   height: 58,
                   decoration: BoxDecoration(
+                    color: Colors.white,
                     border: Border(
                       bottom: BorderSide(
                         color: AppColor.skyBlue,
