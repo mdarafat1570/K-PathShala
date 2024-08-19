@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:async'; // For Timer
 import 'package:kpathshala/app_theme/app_color.dart';
+import 'package:kpathshala/view/Profile_edit/profile_setting.dart';
+import 'package:kpathshala/view/common_widget/Common_slideNavigation_Push.dart';
 import 'package:kpathshala/view/common_widget/custom_background.dart';
 import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
+import 'package:kpathshala/view/dashboard/home_Page.dart';
 import 'package:pinput/pinput.dart';
 
 class OtpPage extends StatefulWidget {
@@ -12,13 +15,13 @@ class OtpPage extends StatefulWidget {
   State<OtpPage> createState() => _OtpPageState();
 }
 
-final String _number = "01819256672";
+final String _number = "01819*********";
 
 class _OtpPageState extends State<OtpPage> {
-  bool _isResendButtonDisabled = false; // Track resend button state
-  String _resendButtonText = 'Resend'; // Button text
+  bool _isResendButtonDisabled = false;
+  String _resendButtonText = 'Resend';
   Timer? _timer;
-  int _remainingSeconds = 0; // Remaining seconds for countdown
+  int _remainingSeconds = 0;
 
   void _startResendCountdown() {
     // Start the countdown
@@ -61,33 +64,25 @@ class _OtpPageState extends State<OtpPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GradientBackground(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 67, right: 50),
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: customText("Verify phone number", TextType.title,
-                    fontSize: 27),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 80),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              customText("Verify phone number", TextType.title, fontSize: 27),
+              const SizedBox(
+                height: 30,
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 30, right: 50),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  customText("To confirm your account, enter the 6-digit",
-                      TextType.normal,
-                      fontSize: 14),
-                  customText("code we sent to $_number", TextType.normal,
-                      fontSize: 14),
-                ],
+              customText(
+                  "To confirm your account, enter the 6-digit", TextType.normal,
+                  fontSize: 14),
+              customText("code we sent to $_number", TextType.normal,
+                  fontSize: 14),
+              const SizedBox(
+                height: 20,
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 30),
-              child: Pinput(
+              const Pinput(
                 length: 6,
                 showCursor: true,
                 defaultPinTheme: PinTheme(
@@ -97,9 +92,9 @@ class _OtpPageState extends State<OtpPage> {
                     color: Colors.white,
                     border: Border(
                       bottom: BorderSide(
-                        color: AppColor.skyBlue,
-                        width: 4.0,
-                      ),
+                          color: AppColor.skyBlue,
+                          width: 4.0,
+                          style: BorderStyle.solid),
                     ),
                     borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(10),
@@ -108,43 +103,56 @@ class _OtpPageState extends State<OtpPage> {
                   ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 20),
-              child: SizedBox(
-                height: 54,
-                width: 350,
+              const SizedBox(
+                height: 60,
+              ),
+              SizedBox(
+                height: 55,
+                width: 320,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => OtpPage()));
+                    slideNavigationPush(Profile(), context);
                   },
-                  child: Text('Continue'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColor.navyblue,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      customText('Continue', TextType.subtitle,
+                          color: AppColor.white),
+                      const SizedBox(width: 10),
+                      const Icon(
+                        Icons.arrow_forward,
+                        color: AppColor.white,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 20),
-              child: SizedBox(
-                height: 54,
-                width: 350,
+              const SizedBox(
+                height: 10,
+              ),
+              SizedBox(
+                height: 55,
+                width: 320,
                 child: ElevatedButton(
                   onPressed: _isResendButtonDisabled
                       ? null
                       : () {
                           _startResendCountdown();
-                          // Handle resend logic here
                         },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _isResendButtonDisabled
                         ? Colors.grey
                         : AppColor.navyblue,
                   ),
-                  child: Text(_resendButtonText),
+                  child: customText(_resendButtonText, TextType.subtitle,
+                      color: AppColor.white),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
