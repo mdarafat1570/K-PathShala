@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
-import 'package:kpathshala/dashbord/myhomepage.dart';
-import 'package:kpathshala/navigationbar/navigationBar.dart';
+import 'package:kpathshala/view/dashboard/myhomepage.dart';
+import 'package:kpathshala/view/navigationbar/navigationBar.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

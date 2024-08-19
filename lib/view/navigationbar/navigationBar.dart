@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
-import 'package:kpathshala/dashbord/Courses.dart';
-import 'package:kpathshala/dashbord/exam.dart';
-import 'package:kpathshala/dashbord/myhomepage.dart';
+import 'package:kpathshala/view/dashboard/Courses.dart';
+import 'package:kpathshala/view/dashboard/exam.dart';
+import 'package:kpathshala/view/dashboard/myhomepage.dart';
 
 class Navigation extends StatefulWidget {
   const Navigation({super.key});
