@@ -10,7 +10,7 @@ Widget customText(String text, TextType type,
       return Text(
         text,
         style: TextStyle(
-          color: color ?? AppColor.deepPurple,
+          color: color ?? AppColor.navyblue,
           fontSize: fontSize ?? 35.0,
           fontWeight: fontWeight ?? FontWeight.bold,
         ),
