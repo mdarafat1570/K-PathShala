@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kpathshala/view/Profile_edit/utils.dart';
+import 'package:kpathshala/view/common_widget/customTextField.dart';
 import 'package:kpathshala/view/common_widget/custom_background.dart';
 import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
 
@@ -14,6 +15,7 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   Uint8List? _image;
+  final TextEditingController _controller1 = TextEditingController();
 
   void selectImage() async {
     Uint8List img = await pickImage(ImageSource.gallery);
@@ -75,23 +77,33 @@ class _ProfileState extends State<Profile> {
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 30, left: 20, right: 20),
-                child: TextFormField(
-                  decoration:
-                      InputDecoration(filled: true, fillColor: Colors.white),
-                ),
+                child: customTextField(
+                    controller: _controller1, label: "Full Name", hintText: ''),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-                child: TextFormField(
-                  decoration:
-                      InputDecoration(filled: true, fillColor: Colors.white),
-                ),
+                child: customTextField(
+                    controller: _controller1,
+                    label: "Phone Number",
+                    hintText: ''),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-                child: TextFormField(
-                  decoration:
-                      InputDecoration(filled: true, fillColor: Colors.white),
+                child: customTextField(
+                    controller: _controller1, label: "Email", hintText: ''),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+                child: SizedBox(
+                  height: 54,
+                  width: 380,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Navigator.push(context,
+                      //     MaterialPageRoute(builder: (context) => OtpPage()));
+                    },
+                    child: Text('Save'),
+                  ),
                 ),
               ),
             ],
