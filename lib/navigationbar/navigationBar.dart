@@ -4,6 +4,7 @@ import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/dashbord/courses_page.dart';
 import 'package:kpathshala/dashbord/exam_page.dart';
 import 'package:kpathshala/dashbord/home_Page.dart';
+import 'package:kpathshala/dashbord/myhomepage.dart';
 
 class Navigation extends StatefulWidget {
   const Navigation({super.key});
@@ -15,7 +16,7 @@ class Navigation extends StatefulWidget {
 class _NavigationState extends State<Navigation> {
   int countindex = 0;
   List<Widget> widgetList = [
-    MyHomePage(
+    HomePage(
       title: 'app',
     ),
     Courses(),
@@ -25,6 +26,10 @@ class _NavigationState extends State<Navigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        title: Center(child: Text('App')),
+      ),
       body: Center(
         child: widgetList[countindex],
       ),
@@ -37,7 +42,7 @@ class _NavigationState extends State<Navigation> {
           });
         },
         currentIndex: countindex,
-        selectedItemColor: AppColor.deepPurple,
+        selectedItemColor: AppColor.navyblue,
         unselectedItemColor: Colors.black,
         showSelectedLabels: true,
         showUnselectedLabels: true,
@@ -47,14 +52,14 @@ class _NavigationState extends State<Navigation> {
           BottomNavigationBarItem(
             icon: FaIcon(FontAwesomeIcons.home, color: Colors.grey, size: 18),
             activeIcon: FaIcon(FontAwesomeIcons.home,
-                color: AppColor.deepPurple, size: 18),
+                color: AppColor.navyblue, size: 18),
             label: "Home",
             tooltip: '',
           ),
           BottomNavigationBarItem(
             icon: FaIcon(FontAwesomeIcons.book, color: Colors.grey, size: 18),
             activeIcon: FaIcon(FontAwesomeIcons.book,
-                color: AppColor.deepPurple, size: 18),
+                color: AppColor.navyblue, size: 18),
             label: 'Course',
             tooltip: '',
           ),
@@ -62,7 +67,7 @@ class _NavigationState extends State<Navigation> {
             icon: FaIcon(FontAwesomeIcons.objectGroup,
                 color: Colors.grey, size: 18),
             activeIcon: FaIcon(FontAwesomeIcons.objectGroup,
-                color: AppColor.deepPurple, size: 18),
+                color: AppColor.navyblue, size: 18),
             label: 'Exam',
             tooltip: '',
           ),
