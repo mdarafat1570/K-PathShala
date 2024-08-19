@@ -4,7 +4,7 @@ import 'package:kpathshala/app_theme/app_color.dart';
 class GradientBackground extends StatelessWidget {
   final Widget child;
 
-  const GradientBackground({required this.child, Key? key}) : super(key: key);
+  const GradientBackground({required this.child, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,11 +12,11 @@ class GradientBackground extends StatelessWidget {
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColor.lightGray, // Start color
-            AppColor.smokeWhite, // End color
+            AppColor.gradientStart, // Start color
+            AppColor.gradientEnd, // End color
           ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
         ),
       ),
       child: child,
