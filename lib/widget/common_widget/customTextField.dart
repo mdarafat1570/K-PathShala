@@ -32,6 +32,8 @@ Widget customTextField({
           width: 2.0,
         ),
       ),
+      fillColor: Colors.white,
+      filled: true,
       contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
     ),
   );

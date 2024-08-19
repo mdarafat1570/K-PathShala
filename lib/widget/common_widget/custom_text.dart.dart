@@ -11,7 +11,7 @@ Widget customText(String text, TextType type,
         text,
         style: TextStyle(
           color: color ?? AppColor.deepPurple,
-          fontSize: fontSize ?? 24.0,
+          fontSize: fontSize ?? 35.0,
           fontWeight: fontWeight ?? FontWeight.bold,
         ),
       );
