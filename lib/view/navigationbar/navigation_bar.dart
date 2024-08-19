@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
+import 'package:kpathshala/view/Profile_edit/profile_setting.dart';
 import 'package:kpathshala/view/common_widget/custom_background.dart';
 import 'package:kpathshala/view/dashboard/Courses.dart';
 import 'package:kpathshala/view/dashboard/exam.dart';
@@ -28,6 +29,29 @@ class _NavigationState extends State<Navigation> {
       child: Scaffold(
         appBar: AppBar(
           title: Center(child: Text('App')),
+          actions: [
+            IconButton(
+                onPressed: () {},
+                icon: Icon(
+                  Icons.graphic_eq_sharp,
+                  color: Colors.black,
+                )),
+            IconButton(
+                onPressed: () {},
+                icon: Icon(
+                  Icons.notifications,
+                  color: Colors.black,
+                )),
+          ],
+          leading: IconButton(
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Profile()));
+              },
+              icon: Icon(
+                Icons.person,
+                color: Colors.black,
+              )),
         ),
         body: Center(
           child: widgetList[countindex],
