@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/view/Profile_edit/utils.dart';
 import 'package:kpathshala/view/common_widget/customTextField.dart';
 import 'package:kpathshala/view/common_widget/custom_background.dart';
@@ -50,78 +51,76 @@ class _ProfileState extends State<Profile> {
     return Scaffold(
       body: GradientBackground(
         child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(height: 80),
-              customText('Edit profile', TextType.title, fontSize: 18),
-              Padding(
-                padding: const EdgeInsets.only(top: 30),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    CircleAvatar(
-                      radius: 90,
-                      backgroundImage: imageProvider,
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      left: 46,
-                      child: SizedBox(
-                        height: 40,
-                        width: 90,
-                        child: ElevatedButton.icon(
-                          onPressed: selectImage,
-                          label: Text(
-                            'Add',
-                            style: TextStyle(color: Colors.black, fontSize: 15),
-                          ),
-                          icon: Icon(
-                            Icons.camera,
-                            color: Colors.black,
-                            size: 15,
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.black,
-                            backgroundColor: Colors.white,
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(height: 80),
+                customText('Edit profile', TextType.title,
+                    fontSize: 18, color: AppColor.cancelled),
+                Padding(
+                  padding: const EdgeInsets.only(top: 30),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      CircleAvatar(
+                        radius: 90,
+                        backgroundImage: imageProvider,
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        left: 46,
+                        child: SizedBox(
+                          height: 40,
+                          width: 90,
+                          child: ElevatedButton.icon(
+                            onPressed: selectImage,
+                            label: const Text(
+                              'Add',
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 15),
+                            ),
+                            icon: const Icon(
+                              Icons.add,
+                              color: Colors.black,
+                              size: 18,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.black,
+                              backgroundColor: Colors.white,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(height: 30),
-              SizedBox(
-                height: 53,
-                width: 360,
-                child: customTextField(
-                    controller: _nameController,
-                    label: "Full Name",
-                    hintText: ''),
-              ),
-              SizedBox(height: 15),
-              SizedBox(
-                height: 53,
-                width: 360,
-                child: customTextField(
-                    controller: _phoneController,
-                    label: "Phone Number",
-                    hintText: ''),
-              ),
-              SizedBox(height: 15),
-              SizedBox(
-                height: 53,
-                width: 360,
-                child: customTextField(
-                    controller: _emailController, label: "Email", hintText: ''),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-                child: SizedBox(
-                  height: 54,
-                  width: 380,
+                SizedBox(height: 30),
+                customTextField(
+                  controller: _nameController,
+                  label: "Full Name",
+                  hintText: '', width: 300.0, // Set the width
+                  height: 50.0,
+                ),
+                SizedBox(height: 15),
+                customTextField(
+                  controller: _phoneController,
+                  label: "Phone Number",
+                  hintText: '', width: 300.0, // Set the width
+                  height: 50.0,
+                ),
+                SizedBox(height: 15),
+                customTextField(
+                  controller: _emailController, label: "Email", hintText: '',
+                  width: 300.0, // Set the width
+                  height: 50.0,
+                ),
+                SizedBox(height: 30),
+                SizedBox(
+                  height: 55,
+                  width: 320,
                   child: ElevatedButton(
                     onPressed: () {
                       // Add save functionality here
@@ -129,8 +128,8 @@ class _ProfileState extends State<Profile> {
                     child: Text('Save'),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

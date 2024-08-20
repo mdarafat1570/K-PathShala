@@ -8,33 +8,39 @@ Widget customTextField({
   bool obscureText = false,
   TextInputType keyboardType = TextInputType.text,
   ValueChanged<String>? onChanged,
+  double? width, 
+  double? height, 
 }) {
-  return TextField(
-    controller: controller,
-    obscureText: obscureText,
-    keyboardType: keyboardType,
-    onChanged: onChanged,
-    decoration: InputDecoration(
-      labelText: label,
-      hintText: hintText,
-      errorText: errorMessage,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8.0),
-        borderSide: BorderSide(
-          color: errorMessage == null ? Colors.grey : Colors.red,
-          width: 2.0,
+  return Container(
+    width: width,
+    height: height,
+    child: TextField(
+      controller: controller,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      onChanged: onChanged,
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hintText,
+        errorText: errorMessage,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: BorderSide(
+            color: errorMessage == null ? Colors.grey : Colors.red,
+            width: 1.0,
+          ),
         ),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8.0),
-        borderSide: BorderSide(
-          color: errorMessage == null ? Colors.blue : Colors.red,
-          width: 2.0,
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: BorderSide(
+            color: errorMessage == null ? Colors.blue : Colors.red,
+            width: 1.0,
+          ),
         ),
+        fillColor: Colors.white,
+        filled: true,
+        contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
       ),
-      fillColor: Colors.white,
-      filled: true,
-      contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
     ),
   );
 }
