@@ -5,6 +5,7 @@ import 'package:kpathshala/view/Profile_edit/profile_setting.dart';
 import 'package:kpathshala/view/common_widget/Common_slideNavigation_Push.dart';
 import 'package:kpathshala/view/common_widget/custom_background.dart';
 import 'package:kpathshala/view/dashboard/Courses.dart';
+import 'package:kpathshala/view/dashboard/dashboard_page.dart';
 import 'package:kpathshala/view/dashboard/exam.dart';
 import 'package:kpathshala/view/dashboard/home_Page.dart';
 
@@ -18,9 +19,11 @@ class Navigation extends StatefulWidget {
 class _NavigationState extends State<Navigation> {
   int countindex = 0;
   List<Widget> widgetList = [
-    HomePage(title: 'App'),
+    DashboardPage(),
     Courses(),
-    Exam(),
+    HomePage(
+      title: "",
+    ),
   ];
 
   @override
@@ -31,7 +34,7 @@ class _NavigationState extends State<Navigation> {
           backgroundColor: Colors.transparent,
           elevation: 0,
           leading: Padding(
-            padding: const EdgeInsets.all(12), // Add padding directly
+            padding: const EdgeInsets.all(12),
             child: GestureDetector(
               onTap: () {
                 slideNavigationPush(Profile(), context);
@@ -41,7 +44,7 @@ class _NavigationState extends State<Navigation> {
               ),
             ),
           ),
-          title: const Center(child: Text('')), // Empty title
+          title: const Center(child: Text('')),
           actions: [
             IconButton(
               onPressed: () {},

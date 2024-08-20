@@ -40,4 +40,6 @@ class AppColor {
   static const Color navyblue = Color(0xFF1A237E);
   static const Color gradientStart = Color(0xFFF5F5F5);
   static const Color gradientEnd = Color(0xFFE9EBFF);
+  static const Color gradient = Color.fromARGB(255, 215, 218, 253);
+  static const Color black = Color.fromARGB(255, 0, 0, 0);
 }

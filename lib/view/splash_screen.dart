@@ -14,7 +14,6 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     Timer(
         Duration(seconds: 3),
@@ -28,11 +27,12 @@ class _SplashScreenState extends State<SplashScreen> {
       backgroundColor: AppColor.deepPurple,
       body: Center(
           child: Container(
-        height: 150,
-        width: 150,
-        decoration: BoxDecoration(
+        height: 160,
+        width: 160,
+        decoration: const BoxDecoration(
             image: DecorationImage(
-                image: AssetImage('assets/Group.png'), fit: BoxFit.cover)),
+                image: AssetImage('assets/new_App_icon.png'),
+                fit: BoxFit.cover)),
       )),
     );
   }

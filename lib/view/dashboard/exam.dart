@@ -12,8 +12,9 @@ class _ExamState extends State<Exam> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:
-          GradientBackground(child: Center(child: Text("under construction"))),
+      body: GradientBackground(
+          child: Center(
+              child: Text("Stay tuned premium courses are coming soon"))),
     );
   }
 }

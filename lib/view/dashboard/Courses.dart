@@ -12,8 +12,9 @@ class _CoursesState extends State<Courses> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:
-          GradientBackground(child: Center(child: Text("Under Construction"))),
+      body: GradientBackground(
+          child: Center(
+              child: Text("Stay tuned premium courses are coming soon"))),
     );
   }
 }

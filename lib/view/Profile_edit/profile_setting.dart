@@ -45,7 +45,8 @@ class _ProfileState extends State<Profile> {
     if (_image != null) {
       imageProvider = MemoryImage(_image!) as ImageProvider<Object>;
     } else {
-      imageProvider = AssetImage('assets/logo.png') as ImageProvider<Object>;
+      imageProvider =
+          AssetImage('assets/new_App_icon.png') as ImageProvider<Object>;
     }
 
     return Scaffold(

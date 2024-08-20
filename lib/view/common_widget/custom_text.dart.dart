@@ -44,3 +44,11 @@ Widget customText(String text, TextType type,
       );
   }
 }
+
+Widget customGap({double width = 0, double height = 0}) {
+  return SizedBox(
+    width: width,
+    height: height,
+  );
+}
+
