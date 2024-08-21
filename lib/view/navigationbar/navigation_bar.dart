@@ -48,17 +48,11 @@ class _NavigationState extends State<Navigation> {
           actions: [
             IconButton(
               onPressed: () {},
-              icon: const Icon(
-                Icons.graphic_eq_sharp,
-                color: Colors.black,
-              ),
+              icon: const Image(image: AssetImage('assets/Score.png')),
             ),
             IconButton(
               onPressed: () {},
-              icon: const Icon(
-                Icons.notifications,
-                color: Colors.black,
-              ),
+              icon: const Image(image: AssetImage('assets/bell.png')),
             ),
           ],
         ),
@@ -82,24 +76,20 @@ class _NavigationState extends State<Navigation> {
           unselectedLabelStyle: const TextStyle(color: Colors.black),
           items: const [
             BottomNavigationBarItem(
-              icon: FaIcon(FontAwesomeIcons.home, color: Colors.grey, size: 18),
-              activeIcon: FaIcon(FontAwesomeIcons.home,
-                  color: AppColor.navyblue, size: 18),
+              icon: Image(image: AssetImage('assets/icon.png')),
+              activeIcon: Image(image: AssetImage('assets/Home_Icon_Fill.png')),
               label: "Home",
               tooltip: '',
             ),
             BottomNavigationBarItem(
-              icon: FaIcon(FontAwesomeIcons.book, color: Colors.grey, size: 18),
-              activeIcon: FaIcon(FontAwesomeIcons.book,
-                  color: AppColor.navyblue, size: 18),
+              icon: Image(image: AssetImage('assets/Type=Outlined.png')),
+              activeIcon: Image(image: AssetImage('assets/Type=Filled.png')),
               label: 'Course',
               tooltip: '',
             ),
             BottomNavigationBarItem(
-              icon: FaIcon(FontAwesomeIcons.objectGroup,
-                  color: Colors.grey, size: 18),
-              activeIcon: FaIcon(FontAwesomeIcons.objectGroup,
-                  color: AppColor.navyblue, size: 18),
+              icon: Image(image: AssetImage('assets/exam_fill.png')),
+              activeIcon: Image(image: AssetImage('assets/Exam.png')),
               label: 'Exam',
               tooltip: '',
             ),
