@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:kpathshala/app_theme/app_color.dart';
-import 'package:kpathshala/view/common_widget/common_button_add.dart';
-import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
+import 'package:kpathshala/app_base/common_imports.dart';
+
 import 'package:kpathshala/view/login/registration_And_Login_page.dart'; // Ensure this import is correct
 
 class DashboardPage extends StatefulWidget {
+  const DashboardPage({super.key});
+
   @override
   State<DashboardPage> createState() => _DashboardPageState();
 }
@@ -20,7 +20,7 @@ class _DashboardPageState extends State<DashboardPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [
@@ -36,7 +36,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       color: Colors.grey.withOpacity(0.2),
                       spreadRadius: 2,
                       blurRadius: 4,
-                      offset: Offset(0, 3),
+                      offset: const Offset(0, 3),
                     ),
                   ],
                 ),
@@ -49,7 +49,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       color: AppColor.active,
                       fontSize: 20,
                     ),
-                    SizedBox(height: 8),
+                    const Gap(5),
                     Row(
                       children: [
                         customText(
@@ -72,7 +72,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                     commonCustomButton(
                       width: 150,
-                      backgroundColor: Color.fromARGB(233, 254, 152, 56),
+                      backgroundColor: const Color.fromARGB(233, 254, 152, 56),
                       height: 50,
                       borderRadius: 10,
                       onPressed: () {
@@ -141,113 +141,115 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                 ],
               ),
-              SizedBox(height: 10),
+              const Gap(10),
               _buildMockTestProgress(),
-              SizedBox(height: 10),
-              Container(
-                height: 180,
-                decoration: BoxDecoration(
-                  color: const Color(
-                      0xFFFF6F61), // Background color similar to the image
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Stack(
-                  children: [
-                    Positioned(
-                      top: 2,
-                      child: ClipRRect(
-                        child: Image.asset(
-                          'assets/profile.png',
-                          width: 180,
-                          height: 180,
-                          // fit: BoxFit.cover,
-                        ),
+              const Gap(10),
+              Stack(
+                alignment: Alignment.bottomLeft,
+                children: [
+                  Container(
+                    height: 220,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  Container(
+                    height: 180,
+                    decoration: BoxDecoration(
+                      color: const Color(
+                          0xFFFF6F61), // Background color similar to the image
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  Image.asset(
+                    'assets/profile.png',
+                    // width: 220,
+                    height: 220,
+                    fit: BoxFit.cover,
+                  ),
+                  // Subscribers and Videos Info
+                  Positioned(
+                    right: 14,
+                    top: 80,
+                    child: Container(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.8),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              const Gap(10),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.wifi_tethering,
+                                          color: Colors.white, size: 14),
+                                      customText('27,600', TextType.normal,
+                                          color: AppColor.white,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.bold),
+                                    ],
+                                  ),
+                                  customGap(height: 5),
+                                  customText('Subscribers', TextType.normal,
+                                      color: AppColor.skyBlue, fontSize: 12),
+                                ],
+                              ),
+                              customGap(width: 10),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  customText('411', TextType.normal,
+                                      color: AppColor.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13),
+                                  const Gap(5),
+                                  Row(
+                                    children: [
+                                      customText(
+                                          'Free videos', TextType.normal,
+                                          color: AppColor.skyBlue,
+                                          fontSize: 12),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const Gap(5),
+                        ],
                       ),
                     ),
-                    // Subscribers and Videos Info
-                    Positioned(
-                      right: 14,
-                      top: 30,
-                      child: Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.8),
+                  ),
+                  // Free Lessons Button
+                  Positioned(
+                    left: 16,
+                    bottom: 16,
+                    right: 16,
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black.withOpacity(0.5),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                customGap(height: 10),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.wifi_tethering,
-                                            color: Colors.white, size: 14),
-                                        customText('27,600', TextType.normal,
-                                            color: AppColor.white,
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.bold),
-                                      ],
-                                    ),
-                                    customGap(height: 5),
-                                    customText('Subscribers', TextType.normal,
-                                        color: AppColor.skyBlue, fontSize: 12),
-                                  ],
-                                ),
-                                customGap(width: 10),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    customText('411', TextType.normal,
-                                        color: AppColor.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 13),
-                                    customGap(height: 5),
-                                    Row(
-                                      children: [
-                                        customText(
-                                            'Free videos', TextType.normal,
-                                            color: AppColor.skyBlue,
-                                            fontSize: 12),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 5),
-                          ],
-                        ),
                       ),
+                      onPressed: () {},
+                      icon: const Icon(Icons.play_circle_fill, color: Colors.white),
+                      label: customText(
+                          'Free Korean lessons on YouTube', TextType.normal,
+                          color: AppColor.white, fontSize: 16),
                     ),
-                    // Free Lessons Button
-                    Positioned(
-                      left: 16,
-                      bottom: 16,
-                      right: 16,
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black.withOpacity(0.5),
-                          padding: EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        onPressed: () {},
-                        icon: Icon(Icons.play_circle_fill, color: Colors.white),
-                        label: customText(
-                            'Free Korean lessons on YouTube', TextType.normal,
-                            color: AppColor.white, fontSize: 16),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -271,11 +273,11 @@ Widget _buildGridItem(
         ),
       ],
     ),
-    padding: EdgeInsets.all(16),
+    padding: const EdgeInsets.all(16),
     child: Row(
       children: [
         Icon(icon, color: AppColor.accentColor),
-        SizedBox(width: 12),
+        const Gap(12),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -304,7 +306,7 @@ Widget _buildMockTestProgress() {
         ),
       ],
     ),
-    padding: EdgeInsets.all(16),
+    padding: const EdgeInsets.all(16),
     child: Row(
       children: [
         CircularProgressIndicator(
@@ -312,7 +314,7 @@ Widget _buildMockTestProgress() {
           backgroundColor: Colors.grey[200],
           color: AppColor.accentColor,
         ),
-        SizedBox(width: 12),
+        const Gap(12),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -321,8 +323,8 @@ Widget _buildMockTestProgress() {
                 fontSize: 14),
           ],
         ),
-        Spacer(),
-        Icon(Icons.arrow_forward_ios, size: 16, color: AppColor.active),
+        const Spacer(),
+        const Icon(Icons.arrow_forward_ios, size: 16, color: AppColor.active),
       ],
     ),
   );
