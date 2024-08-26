@@ -1,6 +1,6 @@
 import 'package:kpathshala/app_base/common_imports.dart';
 
-import 'package:kpathshala/view/login/registration_And_Login_page.dart'; // Ensure this import is correct
+import 'package:kpathshala/view/login/registration_And_Login_page.dart';
 import 'dart:async';
 import 'dart:convert';
 
@@ -10,6 +10,7 @@ import 'package:kpathshala/view/common_widget/common_button_add.dart';
 import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
 import 'package:kpathshala/view/login/registration_And_Login_page.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -18,8 +19,18 @@ class DashboardPage extends StatefulWidget {
   State<DashboardPage> createState() => _DashboardPageState();
 }
 
+Future<void> _launchYouTubeChannel() async {
+  const url =
+      'https://www.youtube.com/channel/UCQxMqy6Env3febzpAzDgIKA'; // Replace with your YouTube channel URL
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'Could not launch $url';
+  }
+}
+
 class _DashboardPageState extends State<DashboardPage> {
-  String _apikey = "AIzaSyAl9H0RfMzdOLjocyUmVvdW63Xr4dlR4MA";
+  String _apikey = "AIzaSyClsZlG68dO9BB9mF5XzxrdXvFcxehh9RA";
   String count = "0";
   String vidCount = "0";
   int _currentTimer = 1;
@@ -33,10 +44,10 @@ class _DashboardPageState extends State<DashboardPage> {
   void _checkCount() async {
     // Convert the URL string to a Uri object
     var url = Uri.parse(
-        "https://www.googleapis.com/youtube/v3/channels?part=statistics&id=UCkvfNJW3cL8HqJcqep5Umdw&key=$_apikey");
+        "https://www.googleapis.com/youtube/v3/channels?part=statistics&id=UCKeeBsW1hGy0NBCqKgd5oBw&key=$_apikey");
     var response = await http.get(url);
 
-    // Check if the request was successful
+    // Check  the request
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
       var subscriberCount = data['items'][0]['statistics']['subscriberCount'];
@@ -295,7 +306,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: _launchYouTubeChannel,
                         icon: Icon(Icons.play_circle_fill, color: Colors.white),
                         label: customText(
                             'Free Korean lessons on YouTube', TextType.normal,
