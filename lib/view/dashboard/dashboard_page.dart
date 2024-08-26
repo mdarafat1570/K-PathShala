@@ -20,11 +20,14 @@ class DashboardPage extends StatefulWidget {
 }
 
 Future<void> _launchYouTubeChannel() async {
-  const url =
-      'https://www.youtube.com/channel/UCQxMqy6Env3febzpAzDgIKA'; // Replace with your YouTube channel URL
-  if (await canLaunch(url)) {
-    await launch(url);
+  final Uri url =
+      Uri.parse('https://www.youtube.com/channel/UCKeeBsW1hGy0NBCqKgd5oBw');
+  print('Trying to launch URL: $url');
+  if (await canLaunchUrl(url)) {
+    print('Launching URL...');
+    await launchUrl(url);
   } else {
+    print('Failed to launch URL');
     throw 'Could not launch $url';
   }
 }
