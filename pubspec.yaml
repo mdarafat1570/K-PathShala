@@ -25,6 +25,7 @@ dependencies:
   android_intent_plus: ^5.1.0
   device_info_plus: ^10.1.2
   gap: ^3.0.1
+  url_launcher: ^6.3.0
 
 dev_dependencies:
   flutter_test:
