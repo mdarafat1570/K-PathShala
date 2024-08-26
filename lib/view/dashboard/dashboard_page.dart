@@ -1,4 +1,5 @@
 import 'package:kpathshala/app_base/common_imports.dart';
+import 'package:kpathshala/view/common_widget/common_card_book_slider.dart';
 
 import 'package:kpathshala/view/login/registration_And_Login_page.dart'; // Ensure this import is correct
 import 'dart:async';
@@ -10,6 +11,8 @@ import 'package:kpathshala/view/common_widget/common_button_add.dart';
 import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
 import 'package:kpathshala/view/login/registration_And_Login_page.dart';
 import 'package:http/http.dart' as http;
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -18,11 +21,25 @@ class DashboardPage extends StatefulWidget {
   State<DashboardPage> createState() => _DashboardPageState();
 }
 
+Future<void> _launchYouTubeChannel() async {
+  final Uri url =
+      Uri.parse('https://www.youtube.com/channel/UCKeeBsW1hGy0NBCqKgd5oBw');
+  print('Trying to launch URL: $url');
+  if (await canLaunchUrl(url)) {
+    print('Launching URL...');
+    await launchUrl(url);
+  } else {
+    print('Failed to launch URL');
+    throw 'Could not launch $url';
+  }
+}
+
 class _DashboardPageState extends State<DashboardPage> {
-  String _apikey = "AIzaSyAl9H0RfMzdOLjocyUmVvdW63Xr4dlR4MA";
+   String _apikey = "AIzaSyClsZlG68dO9BB9mF5XzxrdXvFcxehh9RA";
   String count = "0";
   String vidCount = "0";
   int _currentTimer = 1;
+   final PageController _pageController = PageController();
 
   @override
   void initState() {
@@ -33,10 +50,10 @@ class _DashboardPageState extends State<DashboardPage> {
   void _checkCount() async {
     // Convert the URL string to a Uri object
     var url = Uri.parse(
-        "https://www.googleapis.com/youtube/v3/channels?part=statistics&id=UCkvfNJW3cL8HqJcqep5Umdw&key=$_apikey");
+        "https://www.googleapis.com/youtube/v3/channels?part=statistics&id=UCKeeBsW1hGy0NBCqKgd5oBw&key=$_apikey");
     var response = await http.get(url);
 
-    // Check if the request was successful
+    // Check  the request
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
       var subscriberCount = data['items'][0]['statistics']['subscriberCount'];
@@ -75,81 +92,36 @@ class _DashboardPageState extends State<DashboardPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [
-                      AppColor.gradientStart,
-                      AppColor.gradient,
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.2),
-                      spreadRadius: 2,
-                      blurRadius: 4,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    customText(
-                      "Ace the 2024 UBT Exam with K-Pathshala’s 100-Set Mock Test",
-                      TextType.title,
-                      color: AppColor.active,
-                      fontSize: 20,
-                    ),
-                    const Gap(5),
-                    Row(
-                      children: [
-                        customText(
-                          'For only ৳999.00',
-                          TextType.normal,
-                          color: AppColor.cancelled,
+             Padding(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 8.0), // Adjust as needed
+                child: AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: PageView(
+                          controller: _pageController,
+                          children: [
+                            BookDeshbordbuildCard(),
+                            BookDeshbordbuildCard(),
+                            BookDeshbordbuildCard(),
+                          ],
                         ),
-                        const SizedBox(
-                          width: 8,
-                        ),
-                        customText(
-                          '৳1,500',
-                          TextType.normal,
-                          color: AppColor.inactive,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 25,
-                    ),
-                    commonCustomButton(
-                      width: 150,
-                      backgroundColor: const Color.fromARGB(233, 254, 152, 56),
-                      height: 50,
-                      borderRadius: 10,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const RegistrationPage(
-                              title: 'App',
-                            ),
-                          ),
-                        );
-                      },
-                      reversePosition: true,
-                      child: customText(
-                        "View details",
-                        TextType.normal,
-                        color: AppColor.white,
-                        fontSize: 16,
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 10),
+                      SmoothPageIndicator(
+                        controller: _pageController,
+                        count: 3,
+                        effect: const WormEffect(
+                          dotHeight: 8,
+                          dotWidth: 8,
+                          activeDotColor: Colors.blue,
+                          dotColor: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
