@@ -1,3 +1,6 @@
+import 'package:kpathshala/app_base/common_imports.dart';
+
+import 'package:kpathshala/view/login/registration_And_Login_page.dart'; // Ensure this import is correct
 import 'dart:async';
 import 'dart:convert';
 
@@ -9,6 +12,8 @@ import 'package:kpathshala/view/login/registration_And_Login_page.dart';
 import 'package:http/http.dart' as http;
 
 class DashboardPage extends StatefulWidget {
+  const DashboardPage({super.key});
+
   @override
   State<DashboardPage> createState() => _DashboardPageState();
 }
@@ -71,7 +76,7 @@ class _DashboardPageState extends State<DashboardPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [
@@ -87,7 +92,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       color: Colors.grey.withOpacity(0.2),
                       spreadRadius: 2,
                       blurRadius: 4,
-                      offset: Offset(0, 3),
+                      offset: const Offset(0, 3),
                     ),
                   ],
                 ),
@@ -100,7 +105,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       color: AppColor.active,
                       fontSize: 20,
                     ),
-                    SizedBox(height: 8),
+                    const Gap(5),
                     Row(
                       children: [
                         customText(
@@ -123,7 +128,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                     commonCustomButton(
                       width: 150,
-                      backgroundColor: Color.fromARGB(233, 254, 152, 56),
+                      backgroundColor: const Color.fromARGB(233, 254, 152, 56),
                       height: 50,
                       borderRadius: 10,
                       onPressed: () {
@@ -192,7 +197,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                 ],
               ),
-              SizedBox(height: 10),
+              const Gap(10),
               _buildMockTestProgress(),
               SizedBox(height: 10),
               Container(
@@ -322,11 +327,11 @@ Widget _buildGridItem(
         ),
       ],
     ),
-    padding: EdgeInsets.all(16),
+    padding: const EdgeInsets.all(16),
     child: Row(
       children: [
         Icon(icon, color: AppColor.accentColor),
-        SizedBox(width: 12),
+        const Gap(12),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -355,7 +360,7 @@ Widget _buildMockTestProgress() {
         ),
       ],
     ),
-    padding: EdgeInsets.all(16),
+    padding: const EdgeInsets.all(16),
     child: Row(
       children: [
         CircularProgressIndicator(
@@ -363,7 +368,7 @@ Widget _buildMockTestProgress() {
           backgroundColor: Colors.grey[200],
           color: AppColor.accentColor,
         ),
-        SizedBox(width: 12),
+        const Gap(12),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -372,8 +377,8 @@ Widget _buildMockTestProgress() {
                 fontSize: 14),
           ],
         ),
-        Spacer(),
-        Icon(Icons.arrow_forward_ios, size: 16, color: AppColor.active),
+        const Spacer(),
+        const Icon(Icons.arrow_forward_ios, size: 16, color: AppColor.active),
       ],
     ),
   );
