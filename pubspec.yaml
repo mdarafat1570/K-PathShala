@@ -26,6 +26,7 @@ dependencies:
   device_info_plus: ^10.1.2
   gap: ^3.0.1
   url_launcher: ^6.3.0
+  smooth_page_indicator: ^1.2.0+3
 
 dev_dependencies:
   flutter_test:
