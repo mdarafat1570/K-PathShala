@@ -1,8 +1,12 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/view/common_widget/common_button_add.dart';
 import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
-import 'package:kpathshala/view/login/registration_And_Login_page.dart'; // Ensure this import is correct
+import 'package:kpathshala/view/login/registration_And_Login_page.dart';
+import 'package:http/http.dart' as http;
 
 class DashboardPage extends StatefulWidget {
   @override
@@ -10,6 +14,53 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  String _apikey = "AIzaSyAl9H0RfMzdOLjocyUmVvdW63Xr4dlR4MA";
+  String count = "0";
+  String vidCount = "0";
+  int _currentTimer = 1;
+
+  @override
+  void initState() {
+    super.initState();
+    _startCountdown();
+  }
+
+  void _checkCount() async {
+    // Convert the URL string to a Uri object
+    var url = Uri.parse(
+        "https://www.googleapis.com/youtube/v3/channels?part=statistics&id=UCkvfNJW3cL8HqJcqep5Umdw&key=$_apikey");
+    var response = await http.get(url);
+
+    // Check if the request was successful
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+      var subscriberCount = data['items'][0]['statistics']['subscriberCount'];
+      var videoCount = data['items'][0]['statistics']['videoCount'];
+      setState(() {
+        count = subscriberCount;
+        vidCount = videoCount;
+      });
+    } else {
+      // Handle the error
+      print("Failed to fetch subscriber count: ${response.statusCode}");
+    }
+  }
+
+  void _startCountdown() {
+    const interval = Duration(seconds: 1);
+
+    Timer.periodic(interval, (Timer t) {
+      setState(() {
+        if (_currentTimer > 0) {
+          _currentTimer -= 1;
+        } else {
+          _currentTimer = 1;
+          _checkCount();
+        }
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -188,7 +239,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                       children: [
                                         const Icon(Icons.wifi_tethering,
                                             color: Colors.white, size: 14),
-                                        customText('27,600', TextType.normal,
+                                        customText('$count', TextType.normal,
                                             color: AppColor.white,
                                             fontSize: 13,
                                             fontWeight: FontWeight.bold),
@@ -204,7 +255,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    customText('411', TextType.normal,
+                                    customText('$vidCount', TextType.normal,
                                         color: AppColor.white,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 13),
