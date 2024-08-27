@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
+import 'package:kpathshala/view/Notifications/notifications_page.dart';
 import 'package:kpathshala/view/Profile_edit/profile_setting.dart';
 import 'package:kpathshala/view/common_widget/Common_slideNavigation_Push.dart';
 import 'package:kpathshala/view/common_widget/custom_background.dart';
 import 'package:kpathshala/view/dashboard/Courses.dart';
 import 'package:kpathshala/view/dashboard/dashboard_page.dart';
-import 'package:kpathshala/view/dashboard/exam.dart';
 import 'package:kpathshala/view/dashboard/home_Page.dart';
 
 class Navigation extends StatefulWidget {
@@ -21,7 +20,7 @@ class _NavigationState extends State<Navigation> {
   List<Widget> widgetList = [
     DashboardPage(),
     Courses(),
-    HomePage(
+    const HomePage(
       title: "",
     ),
   ];
@@ -51,7 +50,9 @@ class _NavigationState extends State<Navigation> {
               icon: const Image(image: AssetImage('assets/Score.png')),
             ),
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                slideNavigationPush(NotificationsPage(), context);
+              },
               icon: const Image(image: AssetImage('assets/bell.png')),
             ),
           ],

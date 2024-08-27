@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "12864215087",
+    "project_id": "k-pathshala",
+    "storage_bucket": "k-pathshala.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:12864215087:android:ceec7756dd1c6b42434eda",
+        "android_client_info": {
+          "package_name": "com.inferl"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwDfqKQYRM2r4eXwAwSmcxT_wm0HJxIIk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

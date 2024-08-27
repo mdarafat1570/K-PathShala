@@ -21,7 +21,13 @@ dependencies:
   pinput: ^5.0.0
   image_picker: ^1.1.2
   fui_kit: ^2.0.2
+  http: ^1.2.2
+  android_intent_plus: ^5.1.0
+  device_info_plus: ^10.1.2
   gap: ^3.0.1
+  url_launcher: ^6.3.0
+  smooth_page_indicator: ^1.2.0+3
+  firebase_core: ^2.24.2
 
 dev_dependencies:
   flutter_test:

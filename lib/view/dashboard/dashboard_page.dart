@@ -1,6 +1,18 @@
 import 'package:kpathshala/app_base/common_imports.dart';
+import 'package:kpathshala/view/common_widget/common_card_book_slider.dart';
 
 import 'package:kpathshala/view/login/registration_And_Login_page.dart'; // Ensure this import is correct
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:kpathshala/app_theme/app_color.dart';
+import 'package:kpathshala/view/common_widget/common_button_add.dart';
+import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
+import 'package:kpathshala/view/login/registration_And_Login_page.dart';
+import 'package:http/http.dart' as http;
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -9,7 +21,68 @@ class DashboardPage extends StatefulWidget {
   State<DashboardPage> createState() => _DashboardPageState();
 }
 
+Future<void> _launchYouTubeChannel() async {
+  final Uri url =
+      Uri.parse('https://www.youtube.com/channel/UCKeeBsW1hGy0NBCqKgd5oBw');
+  print('Trying to launch URL: $url');
+  if (await canLaunchUrl(url)) {
+    print('Launching URL...');
+    await launchUrl(url);
+  } else {
+    print('Failed to launch URL');
+    throw 'Could not launch $url';
+  }
+}
+
 class _DashboardPageState extends State<DashboardPage> {
+   String _apikey = "AIzaSyClsZlG68dO9BB9mF5XzxrdXvFcxehh9RA";
+  String count = "0";
+  String vidCount = "0";
+  int _currentTimer = 1;
+   final PageController _pageController = PageController();
+
+  @override
+  void initState() {
+    super.initState();
+    _startCountdown();
+  }
+
+  void _checkCount() async {
+    // Convert the URL string to a Uri object
+    var url = Uri.parse(
+        "https://www.googleapis.com/youtube/v3/channels?part=statistics&id=UCKeeBsW1hGy0NBCqKgd5oBw&key=$_apikey");
+    var response = await http.get(url);
+
+    // Check  the request
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+      var subscriberCount = data['items'][0]['statistics']['subscriberCount'];
+      var videoCount = data['items'][0]['statistics']['videoCount'];
+      setState(() {
+        count = subscriberCount;
+        vidCount = videoCount;
+      });
+    } else {
+      // Handle the error
+      print("Failed to fetch subscriber count: ${response.statusCode}");
+    }
+  }
+
+  void _startCountdown() {
+    const interval = Duration(seconds: 1);
+
+    Timer.periodic(interval, (Timer t) {
+      setState(() {
+        if (_currentTimer > 0) {
+          _currentTimer -= 1;
+        } else {
+          _currentTimer = 1;
+          _checkCount();
+        }
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,84 +92,41 @@ class _DashboardPageState extends State<DashboardPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [
-                      AppColor.gradientStart,
-                      AppColor.gradient,
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.2),
-                      spreadRadius: 2,
-                      blurRadius: 4,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    customText(
-                      "Ace the 2024 UBT Exam with K-Pathshala’s 100-Set Mock Test",
-                      TextType.paragraphTitle,
-                      color: AppColor.navyBlue,
-                    ),
-                    const Gap(5),
-                    Row(
-                      children: [
-                        customText(
-                          'For only ৳999.00',
-                          TextType.normal,
-                          color: AppColor.cancelled,
+             Padding(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 8.0), // Adjust as needed
+                child: AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: PageView(
+                          controller: _pageController,
+                          children: [
+                            BookDeshbordbuildCard(),
+                            BookDeshbordbuildCard(),
+                            BookDeshbordbuildCard(),
+                          ],
                         ),
-                        const SizedBox(
-                          width: 8,
-                        ),
-                        customText(
-                          '৳1,500',
-                          TextType.normal,
-                          color: AppColor.brightCoral,
-                        ),
-                      ],
-                    ),
-                    const Gap(25),
-                    commonCustomButton(
-                      width: 150,
-                      backgroundColor: AppColor.brightCoral,
-                      height: 50,
-                      borderRadius: 12,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const RegistrationPage(
-                              title: 'App',
-                            ),
-                          ),
-                        );
-                      },
-                      reversePosition: true,
-                      child: customText(
-                        "View details",
-                        TextType.normal,
-                        color: AppColor.white,
-                        fontSize: 12,
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 10),
+                      SmoothPageIndicator(
+                        controller: _pageController,
+                        count: 3,
+                        effect: const WormEffect(
+                          dotHeight: 8,
+                          dotWidth: 8,
+                          activeDotColor: Colors.blue,
+                          dotColor: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
               GridView(
                 padding: EdgeInsets.zero,
-                physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
@@ -141,113 +171,111 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
               const Gap(10),
               _buildMockTestProgress(),
-              const Gap(10),
-              Stack(
-                alignment: Alignment.bottomLeft,
-                children: [
-                  Container(
-                    height: 220,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  Container(
-                    height: 180,
-                    decoration: BoxDecoration(
-                      color: const Color(
-                          0xFFFF6F61), // Background color similar to the image
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  Image.asset(
-                    'assets/profile.png',
-                    // width: 220,
-                    height: 220,
-                    fit: BoxFit.cover,
-                  ),
-                  // Subscribers and Videos Info
-                  Positioned(
-                    right: 14,
-                    top: 80,
-                    child: Container(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.8),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              const Gap(10),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.wifi_tethering,
-                                          color: Colors.white, size: 14),
-                                      customText('27,600', TextType.normal,
-                                          color: AppColor.white,
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.bold),
-                                    ],
-                                  ),
-                                  customGap(height: 5),
-                                  customText('Subscribers', TextType.normal,
-                                      color: AppColor.skyBlue, fontSize: 12),
-                                ],
-                              ),
-                              customGap(width: 10),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  customText('411', TextType.normal,
-                                      color: AppColor.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 13),
-                                  const Gap(5),
-                                  Row(
-                                    children: [
-                                      customText(
-                                          'Free videos', TextType.normal,
-                                          color: AppColor.skyBlue,
-                                          fontSize: 12),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          const Gap(5),
-                        ],
-                      ),
-                    ),
-                  ),
-                  // Free Lessons Button
-                  Positioned(
-                    left: 16,
-                    bottom: 16,
-                    right: 16,
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black.withOpacity(0.5),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+              SizedBox(height: 10),
+              Container(
+                height: 180,
+                decoration: BoxDecoration(
+                  color: const Color(
+                      0xFFFF6F61), // Background color similar to the image
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Stack(
+                  children: [
+                    Positioned(
+                      top: 2,
+                      child: ClipRRect(
+                        child: Image.asset(
+                          'assets/profile.png',
+                          width: 180,
+                          height: 180,
+                          // fit: BoxFit.cover,
                         ),
                       ),
-                      onPressed: () {},
-                      icon: const Icon(Icons.play_circle_fill, color: Colors.white),
-                      label: customText(
-                          'Free Korean lessons on YouTube', TextType.normal,
-                          color: AppColor.white, fontSize: 16),
                     ),
-                  ),
-                ],
+                    // Subscribers and Videos Info
+                    Positioned(
+                      right: 14,
+                      top: 30,
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.8),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                customGap(height: 10),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.wifi_tethering,
+                                            color: Colors.white, size: 14),
+                                        customText('$count', TextType.normal,
+                                            color: AppColor.white,
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.bold),
+                                      ],
+                                    ),
+                                    customGap(height: 5),
+                                    customText('Subscribers', TextType.normal,
+                                        color: AppColor.skyBlue, fontSize: 12),
+                                  ],
+                                ),
+                                customGap(width: 10),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    customText('$vidCount', TextType.normal,
+                                        color: AppColor.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13),
+                                    customGap(height: 5),
+                                    Row(
+                                      children: [
+                                        customText(
+                                            'Free videos', TextType.normal,
+                                            color: AppColor.skyBlue,
+                                            fontSize: 12),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 5),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // Free Lessons Button
+                    Positioned(
+                      left: 16,
+                      bottom: 16,
+                      right: 16,
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black.withOpacity(0.5),
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () {},
+                        icon: Icon(Icons.play_circle_fill, color: Colors.white),
+                        label: customText(
+                            'Free Korean lessons on YouTube', TextType.normal,
+                            color: AppColor.white, fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -265,7 +293,7 @@ Widget _buildGridItem(
       borderRadius: BorderRadius.circular(12),
       boxShadow: [
         BoxShadow(
-          color: AppColor.skyBlue.withOpacity(0.3),
+          color: Colors.grey.withOpacity(0.1),
           spreadRadius: 2,
           blurRadius: 5,
         ),
@@ -274,7 +302,7 @@ Widget _buildGridItem(
     padding: const EdgeInsets.all(16),
     child: Row(
       children: [
-        Image.asset(typeOutlined),
+        Icon(icon, color: AppColor.accentColor),
         const Gap(12),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
