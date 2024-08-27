@@ -37,7 +37,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       customText(
                         "Login or Sign Up",
                         TextType.title,
-                        color: AppColor.navyblue,
+                        color: AppColor.navyBlue,
                       ),
                     ],
                   ),
@@ -47,7 +47,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   IntlPhoneField(
                     controller: myController,
                     style: const TextStyle(
-                      color: AppColor.navyblue,
+                      color: AppColor.navyBlue,
                     ),
                     decoration: InputDecoration(
                       labelText: "",
@@ -95,7 +95,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         slideNavigationPush(OtpPage(), context);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColor.navyblue,
+                        backgroundColor: AppColor.navyBlue,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -139,7 +139,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               child: customText(
                                 "terms and conditions.",
                                 TextType.normal,
-                                color: AppColor.navyblue,
+                                color: AppColor.navyBlue,
                                 fontSize: 13,
                               ),
                               onTap: () {},

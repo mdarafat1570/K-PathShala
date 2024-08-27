@@ -26,7 +26,7 @@ class _HomePageState extends State<HomePage> {
         child: Center(
           child: commonCustomButton(
             width: 300,
-            backgroundColor: AppColor.navyblue,
+            backgroundColor: AppColor.navyBlue,
             height: 50,
             borderRadius: 25,
             margin: const EdgeInsets.all(10),

@@ -45,9 +45,8 @@ class _DashboardPageState extends State<DashboardPage> {
                   children: [
                     customText(
                       "Ace the 2024 UBT Exam with K-Pathshala’s 100-Set Mock Test",
-                      TextType.title,
-                      color: AppColor.active,
-                      fontSize: 20,
+                      TextType.paragraphTitle,
+                      color: AppColor.navyBlue,
                     ),
                     const Gap(5),
                     Row(
@@ -63,18 +62,16 @@ class _DashboardPageState extends State<DashboardPage> {
                         customText(
                           '৳1,500',
                           TextType.normal,
-                          color: AppColor.inactive,
+                          color: AppColor.brightCoral,
                         ),
                       ],
                     ),
-                    const SizedBox(
-                      height: 25,
-                    ),
+                    const Gap(25),
                     commonCustomButton(
                       width: 150,
-                      backgroundColor: const Color.fromARGB(233, 254, 152, 56),
+                      backgroundColor: AppColor.brightCoral,
                       height: 50,
-                      borderRadius: 10,
+                      borderRadius: 12,
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -90,7 +87,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         "View details",
                         TextType.normal,
                         color: AppColor.white,
-                        fontSize: 16,
+                        fontSize: 12,
                       ),
                     ),
                   ],
@@ -99,6 +96,7 @@ class _DashboardPageState extends State<DashboardPage> {
               const SizedBox(height: 20),
               GridView(
                 padding: EdgeInsets.zero,
+                physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
@@ -267,7 +265,7 @@ Widget _buildGridItem(
       borderRadius: BorderRadius.circular(12),
       boxShadow: [
         BoxShadow(
-          color: Colors.grey.withOpacity(0.1),
+          color: AppColor.skyBlue.withOpacity(0.3),
           spreadRadius: 2,
           blurRadius: 5,
         ),
@@ -276,7 +274,7 @@ Widget _buildGridItem(
     padding: const EdgeInsets.all(16),
     child: Row(
       children: [
-        Icon(icon, color: AppColor.accentColor),
+        Image.asset(typeOutlined),
         const Gap(12),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,

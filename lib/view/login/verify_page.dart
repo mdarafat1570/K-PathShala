@@ -115,7 +115,7 @@ class _OtpPageState extends State<OtpPage> {
                       slideNavigationPush(Profile(), context);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColor.navyblue,
+                      backgroundColor: AppColor.navyBlue,
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -146,7 +146,7 @@ class _OtpPageState extends State<OtpPage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _isResendButtonDisabled
                           ? Colors.grey
-                          : AppColor.navyblue,
+                          : AppColor.navyBlue,
                     ),
                     child: customText(_resendButtonText, TextType.subtitle,
                         color: AppColor.white),
