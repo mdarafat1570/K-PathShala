@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:async'; // For Timer
 import 'package:kpathshala/app_theme/app_color.dart';
-import 'package:kpathshala/view/Profile_edit/profile_setting.dart';
+import 'package:kpathshala/view/Profile%20page/profile_edit.dart';
 import 'package:kpathshala/view/common_widget/Common_slideNavigation_Push.dart';
 import 'package:kpathshala/view/common_widget/custom_background.dart';
 import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
-import 'package:kpathshala/view/dashboard/home_Page.dart';
 import 'package:pinput/pinput.dart';
 
 class OtpPage extends StatefulWidget {

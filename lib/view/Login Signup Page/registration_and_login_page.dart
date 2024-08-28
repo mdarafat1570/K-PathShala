@@ -1,7 +1,10 @@
 import'package:kpathshala/app_base/common_imports.dart';
 
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:kpathshala/view/login/verify_page.dart';
+import 'package:kpathshala/view/Login%20Signup%20Page/otp_verify_page.dart';
+
+
+
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key, required this.title});
