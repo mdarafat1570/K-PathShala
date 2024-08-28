@@ -38,20 +38,20 @@ Widget BookDeshbordbuildCard() {
             Text(
               'For only ৳999.00',
               style: TextStyle(
-                fontSize: 16,
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
+                fontSize: 16, // Adjust font size
+                color: Colors.black, // Adjust color if needed
+                fontWeight: FontWeight.bold, // Adjust weight if needed
               ),
             ),
-            SizedBox(width: 8),
+            SizedBox(width: 8), // Space between texts
             Text(
               '৳1,500',
               style: TextStyle(
-                fontSize: 16,
-                color: Colors.red,
-                decoration: TextDecoration.lineThrough,
-                decorationColor: Colors.red,
-                decorationThickness: 2,
+                fontSize: 16, // Adjust size as needed
+                color: Colors.red, // Color for strikethrough text
+                decoration: TextDecoration.lineThrough, // Strikethrough effect
+                decorationColor: Colors.red, // Color of the strikethrough line
+                decorationThickness: 2, // Thickness of the strikethrough line
               ),
             ),
           ],
