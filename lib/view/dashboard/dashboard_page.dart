@@ -1,7 +1,7 @@
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/view/common_widget/common_card_book_slider.dart';
 
-import 'package:kpathshala/view/login/registration_And_Login_page.dart'; // Ensure this import is correct
+import 'package:kpathshala/view/login/registration_and_login_page.dart'; // Ensure this import is correct
 import 'dart:async';
 import 'dart:convert';
 
@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/view/common_widget/common_button_add.dart';
 import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
-import 'package:kpathshala/view/login/registration_And_Login_page.dart';
+// import 'package:kpathshala/view/login/registration_and_login_page.dart';
 import 'package:http/http.dart' as http;
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';

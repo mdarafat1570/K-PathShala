@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "12864215087",
+    "project_id": "k-pathshala",
+    "storage_bucket": "k-pathshala.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:12864215087:android:d513340d290ae0ff434eda",
+        "android_client_info": {
+          "package_name": "com.inferloom.kpathshala"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "12864215087-s87fjkan0rfcrqokff3s467nk0s7f42s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwDfqKQYRM2r4eXwAwSmcxT_wm0HJxIIk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "12864215087-s87fjkan0rfcrqokff3s467nk0s7f42s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

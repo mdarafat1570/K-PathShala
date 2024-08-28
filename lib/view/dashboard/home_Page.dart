@@ -4,7 +4,7 @@ import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/view/common_widget/common_button_add.dart';
 import 'package:kpathshala/view/common_widget/custom_background.dart';
 import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
-import 'package:kpathshala/view/login/registration_And_Login_page.dart';
+import 'package:kpathshala/view/login/registration_and_login_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
@@ -26,7 +26,7 @@ class _HomePageState extends State<HomePage> {
         child: Center(
           child: commonCustomButton(
             width: 300,
-            backgroundColor: AppColor.navyblue,
+            backgroundColor: AppColor.navyBlue,
             height: 50,
             borderRadius: 25,
             margin: const EdgeInsets.all(10),

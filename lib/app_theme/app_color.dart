@@ -30,16 +30,17 @@ class AppColor {
   static const Color inactive = Color(0xFFDC3545);
   static const Color closed = Color(0xFF388E3C);
   static const Color notBillable = Color(0xFF9E9E9E);
-  static const Color softwhite = Color(0xFF9E9E9E);
+  static const Color softWhite = Color(0xFF9E9E9E);
   static const Color smokeWhite = Color(0xFFE9EBFF);
 
   // New colors
-  static const Color deepPurple = Color(0xFF1A234C); // #1A237E
-  static const Color skyBlue = Color(0xFF87CEEB); // #87CEEB
+  static const Color deepPurple = Color(0xFF1A234C);
+  static const Color skyBlue = Color(0xFF87CEEB);
   static const Color lightGray = Color(0xFFF5F5F5); // #F5F5F5
-  static const Color navyblue = Color(0xFF1A237E);
+  static const Color navyBlue = Color(0xFF1A237E);
   static const Color gradientStart = Color(0xFFF5F5F5);
   static const Color gradientEnd = Color(0xFFE9EBFF);
   static const Color gradient = Color.fromARGB(255, 215, 218, 253);
   static const Color black = Color.fromARGB(255, 0, 0, 0);
+  static const Color brightCoral = Color(0xFFFF6F61);
 }

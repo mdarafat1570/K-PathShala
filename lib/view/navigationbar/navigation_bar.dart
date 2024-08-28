@@ -69,7 +69,7 @@ class _NavigationState extends State<Navigation> {
             });
           },
           currentIndex: countindex,
-          selectedItemColor: AppColor.navyblue,
+          selectedItemColor: AppColor.navyBlue,
           unselectedItemColor: Colors.black,
           showSelectedLabels: true,
           showUnselectedLabels: true,

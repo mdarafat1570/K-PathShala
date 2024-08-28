@@ -1,10 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:intl_phone_field/intl_phone_field.dart'; // Import the package
-import 'package:kpathshala/app_theme/app_color.dart';
-import 'package:kpathshala/view/common_widget/Common_slideNavigation_Push.dart';
-import 'package:kpathshala/view/common_widget/common_button_add.dart';
-import 'package:kpathshala/view/common_widget/custom_background.dart';
-import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
+import'package:kpathshala/app_base/common_imports.dart';
+
+import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:kpathshala/view/login/verify_page.dart';
 
 class RegistrationPage extends StatefulWidget {
@@ -37,7 +33,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       customText(
                         "Login or Sign Up",
                         TextType.title,
-                        color: AppColor.navyblue,
+                        color: AppColor.navyBlue,
                       ),
                     ],
                   ),
@@ -47,7 +43,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   IntlPhoneField(
                     controller: myController,
                     style: const TextStyle(
-                      color: AppColor.navyblue,
+                      color: AppColor.navyBlue,
                     ),
                     decoration: InputDecoration(
                       labelText: "",
@@ -95,7 +91,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         slideNavigationPush(OtpPage(), context);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColor.navyblue,
+                        backgroundColor: AppColor.navyBlue,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -139,7 +135,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               child: customText(
                                 "terms and conditions.",
                                 TextType.normal,
-                                color: AppColor.navyblue,
+                                color: AppColor.navyBlue,
                                 fontSize: 13,
                               ),
                               onTap: () {},
@@ -169,7 +165,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             )),
                           ],
                         ),
-                        SizedBox(height: 15),
+                        Gap(15),
                         Column(
                           children: [
                             commonCustomButton(

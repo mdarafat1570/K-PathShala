@@ -42,7 +42,7 @@ class _ButtonVariationsState extends State<ButtonVariations> {
               ),
               commonCustomButton(
                 width: 300,
-                backgroundColor: AppColor.navyblue,
+                backgroundColor: AppColor.navyBlue,
                 height: 50,
                 borderRadius: 25,
                 margin: const EdgeInsets.all(10),
