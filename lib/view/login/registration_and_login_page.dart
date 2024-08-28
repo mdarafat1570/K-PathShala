@@ -1,10 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:intl_phone_field/intl_phone_field.dart'; // Import the package
-import 'package:kpathshala/app_theme/app_color.dart';
-import 'package:kpathshala/view/common_widget/Common_slideNavigation_Push.dart';
-import 'package:kpathshala/view/common_widget/common_button_add.dart';
-import 'package:kpathshala/view/common_widget/custom_background.dart';
-import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
+import'package:kpathshala/app_base/common_imports.dart';
+
+import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:kpathshala/view/login/verify_page.dart';
 
 class RegistrationPage extends StatefulWidget {
@@ -169,7 +165,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             )),
                           ],
                         ),
-                        SizedBox(height: 15),
+                        Gap(15),
                         Column(
                           children: [
                             commonCustomButton(
