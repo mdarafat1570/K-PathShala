@@ -28,6 +28,7 @@ dependencies:
   url_launcher: ^6.3.0
   smooth_page_indicator: ^1.2.0+3
   firebase_core: ^2.24.2
+  google_sign_in: ^6.2.1
 
 dev_dependencies:
   flutter_test:
