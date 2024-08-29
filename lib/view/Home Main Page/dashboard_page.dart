@@ -45,12 +45,11 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   void _checkCount() async {
-    // Convert the URL string to a Uri object
     var url = Uri.parse(
         "https://www.googleapis.com/youtube/v3/channels?part=statistics&id=UCKeeBsW1hGy0NBCqKgd5oBw&key=$_apikey");
     var response = await http.get(url);
 
-    // Check  the request
+
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
       var subscriberCount = data['items'][0]['statistics']['subscriberCount'];
@@ -60,7 +59,6 @@ class _DashboardPageState extends State<DashboardPage> {
         vidCount = videoCount;
       });
     } else {
-      // Handle the error
       print("Failed to fetch subscriber count: ${response.statusCode}");
     }
   }
