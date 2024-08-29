@@ -30,11 +30,11 @@ Future<void> _launchYouTubeChannel() async {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-   String _apikey = "AIzaSyClsZlG68dO9BB9mF5XzxrdXvFcxehh9RA";
+  String _apikey = "AIzaSyClsZlG68dO9BB9mF5XzxrdXvFcxehh9RA";
   String count = "0";
   String vidCount = "0";
   int _currentTimer = 1;
-   final PageController _pageController = PageController();
+  final PageController _pageController = PageController();
 
   @override
   void initState() {
@@ -87,7 +87,7 @@ class _DashboardPageState extends State<DashboardPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-             Padding(
+              Padding(
                 padding: const EdgeInsets.symmetric(
                     vertical: 8.0), // Adjust as needed
                 child: AspectRatio(
@@ -262,7 +262,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: _launchYouTubeChannel,
                         icon: Icon(Icons.play_circle_fill, color: Colors.white),
                         label: customText(
                             'Free Korean lessons on YouTube', TextType.normal,
