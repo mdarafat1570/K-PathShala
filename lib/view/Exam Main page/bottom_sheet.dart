@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/view/common_widget/common_button_add.dart';
-import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
+import 'package:fui_kit/fui_kit.dart';
+
+import '../../app_base/common_imports.dart'; // Importing fui_kit for Gap
 
 class BottomSheetPage extends StatefulWidget {
   const BottomSheetPage({super.key});
@@ -28,9 +30,9 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
               endIndent: screenWidth * 0.3,
             ),
           ),
-          SizedBox(height: screenHeight * 0.03),
+          Gap(screenHeight * 0.03),
           customText("Confirm purchase", TextType.paragraphTitle),
-          SizedBox(height: screenHeight * 0.03),
+          Gap(screenHeight * 0.03),
           Container(
             width: double.infinity,
             padding: EdgeInsets.all(10),
@@ -51,7 +53,7 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: screenHeight * 0.01),
+                  Gap(screenHeight * 0.01),
                   Padding(
                     padding: const EdgeInsets.only(right: 20),
                     child: RichText(
@@ -78,7 +80,7 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
               ),
             ),
           ),
-          SizedBox(height: screenHeight * 0.03),
+          Gap(screenHeight * 0.03),
           commonCustomButton(
             width: double.infinity,
             backgroundColor: AppColor.navyBlue,
@@ -91,7 +93,7 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
               style: TextStyle(color: AppColor.white, fontSize: 20),
             ),
           ),
-          SizedBox(height: screenHeight * 0.03),
+          Gap(screenHeight * 0.03),
           SizedBox(
             width: double.infinity,
             child: RichText(
