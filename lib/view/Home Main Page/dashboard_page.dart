@@ -16,7 +16,9 @@ class DashboardPage extends StatefulWidget {
   State<DashboardPage> createState() => _DashboardPageState();
 }
 
+//For navigate to Youtube Chanel
 Future<void> _launchYouTubeChannel() async {
+  //Convert the URL string to a Uri object
   final Uri url =
       Uri.parse('https://www.youtube.com/channel/UCKeeBsW1hGy0NBCqKgd5oBw');
   print('Trying to launch URL: $url');
