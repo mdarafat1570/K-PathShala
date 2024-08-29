@@ -35,7 +35,8 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
             width: double.infinity,
             padding: EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Color.fromRGBO(241, 239, 239, 1),
+              border: Border.all(width: 0.2, color: Colors.black),
+              color: Color.fromRGBO(245, 245, 245, 1),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Padding(
