@@ -1,5 +1,6 @@
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
+import 'package:kpathshala/view/Exam%20Main%20page/bottom_sheet.dart';
 
 class Exam extends StatefulWidget {
   const Exam({super.key});
@@ -9,6 +10,16 @@ class Exam extends StatefulWidget {
 }
 
 class _ExamState extends State<Exam> {
+  void _showModelBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+            padding: const EdgeInsets.all(16.0), child: BottomSheetPage());
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Get screen width
@@ -120,7 +131,7 @@ class _ExamState extends State<Exam> {
                         ),
                         Gap(8),
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: _showModelBottomSheet,
                           child: Text(
                             'Buy now',
                             style: TextStyle(fontSize: 12),
