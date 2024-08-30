@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
 
-enum TextType { title, subtitle, paragraphTitle, normal }
+enum TextType { title, subtitle, paragraphTitle, normal, paragraphTitlenormal }
 
 Widget customText(String text, TextType type,
     {Color? color, double? fontSize, FontWeight? fontWeight}) {
@@ -42,6 +42,15 @@ Widget customText(String text, TextType type,
           fontWeight: fontWeight ?? FontWeight.normal,
         ),
       );
+    case TextType.paragraphTitlenormal:
+      return Text(
+        text,
+        style: TextStyle(
+          color: color ?? AppColor.navyBlue,
+          fontSize: fontSize ?? 20.0,
+          fontWeight: fontWeight ?? FontWeight.w600,
+        ),
+      );
   }
 }
 
@@ -51,4 +60,3 @@ Widget customGap({double width = 0, double height = 0}) {
     height: height,
   );
 }
-

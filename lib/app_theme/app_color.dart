@@ -43,4 +43,5 @@ class AppColor {
   static const Color gradient = Color.fromARGB(255, 215, 218, 253);
   static const Color black = Color.fromARGB(255, 0, 0, 0);
   static const Color brightCoral = Color(0xFFFF6F61);
+  static const Color lightred = Color(0x33FF4C4C);
 }

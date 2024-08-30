@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
+import 'package:kpathshala/view/Exam%20Main%20page/exam.dart';
 import 'package:kpathshala/view/Notifications/notifications_page.dart';
-import 'package:kpathshala/view/Profile_edit/profile_setting.dart';
+import 'package:kpathshala/view/Profile%20page/profile_edit.dart';
 import 'package:kpathshala/view/common_widget/Common_slideNavigation_Push.dart';
 import 'package:kpathshala/view/common_widget/custom_background.dart';
-import 'package:kpathshala/view/dashboard/Courses.dart';
-import 'package:kpathshala/view/dashboard/dashboard_page.dart';
-import 'package:kpathshala/view/dashboard/home_Page.dart';
+import 'package:kpathshala/view/Courses%20page/Courses.dart';
+import 'package:kpathshala/view/Home%20Main%20Page/dashboard_page.dart';
 
 class Navigation extends StatefulWidget {
   const Navigation({super.key});
@@ -20,8 +20,8 @@ class _NavigationState extends State<Navigation> {
   List<Widget> widgetList = [
     DashboardPage(),
     Courses(),
-    const HomePage(
-      title: "",
+     Exam(
+    
     ),
   ];
 

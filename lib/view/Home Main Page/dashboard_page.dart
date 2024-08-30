@@ -1,14 +1,9 @@
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/view/common_widget/common_card_book_slider.dart';
-
-import 'package:kpathshala/view/login/registration_and_login_page.dart'; // Ensure this import is correct
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
-import 'package:kpathshala/view/common_widget/common_button_add.dart';
-import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
 // import 'package:kpathshala/view/login/registration_and_login_page.dart';
 import 'package:http/http.dart' as http;
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -21,7 +16,9 @@ class DashboardPage extends StatefulWidget {
   State<DashboardPage> createState() => _DashboardPageState();
 }
 
+//For navigate to Youtube Chanel
 Future<void> _launchYouTubeChannel() async {
+  //Convert the URL string to a Uri object
   final Uri url =
       Uri.parse('https://www.youtube.com/channel/UCKeeBsW1hGy0NBCqKgd5oBw');
   print('Trying to launch URL: $url');
@@ -35,53 +32,51 @@ Future<void> _launchYouTubeChannel() async {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-   String _apikey = "AIzaSyClsZlG68dO9BB9mF5XzxrdXvFcxehh9RA";
+  String _apikey = "AIzaSyClsZlG68dO9BB9mF5XzxrdXvFcxehh9RA";
   String count = "0";
   String vidCount = "0";
   int _currentTimer = 1;
-   final PageController _pageController = PageController();
+  final PageController _pageController = PageController();
 
   @override
   void initState() {
     super.initState();
-    _startCountdown();
+    // _startCountdown();
   }
 
-  void _checkCount() async {
-    // Convert the URL string to a Uri object
-    var url = Uri.parse(
-        "https://www.googleapis.com/youtube/v3/channels?part=statistics&id=UCKeeBsW1hGy0NBCqKgd5oBw&key=$_apikey");
-    var response = await http.get(url);
+  // void _checkCount() async {
+  //   var url = Uri.parse(
+  //       "https://www.googleapis.com/youtube/v3/channels?part=statistics&id=UCKeeBsW1hGy0NBCqKgd5oBw&key=$_apikey");
+  //   var response = await http.get(url);
 
-    // Check  the request
-    if (response.statusCode == 200) {
-      var data = json.decode(response.body);
-      var subscriberCount = data['items'][0]['statistics']['subscriberCount'];
-      var videoCount = data['items'][0]['statistics']['videoCount'];
-      setState(() {
-        count = subscriberCount;
-        vidCount = videoCount;
-      });
-    } else {
-      // Handle the error
-      print("Failed to fetch subscriber count: ${response.statusCode}");
-    }
-  }
 
-  void _startCountdown() {
-    const interval = Duration(seconds: 1);
+  //   if (response.statusCode == 200) {
+  //     var data = json.decode(response.body);
+  //     var subscriberCount = data['items'][0]['statistics']['subscriberCount'];
+  //     var videoCount = data['items'][0]['statistics']['videoCount'];
+  //     setState(() {
+  //       count = subscriberCount;
+  //       vidCount = videoCount;
+  //     });
+  //   } else {
+  //     print("Failed to fetch subscriber count: ${response.statusCode}");
+  //   }
+  // }
 
-    Timer.periodic(interval, (Timer t) {
-      setState(() {
-        if (_currentTimer > 0) {
-          _currentTimer -= 1;
-        } else {
-          _currentTimer = 1;
-          _checkCount();
-        }
-      });
-    });
-  }
+  // void _startCountdown() {
+  //   const interval = Duration(seconds: 1);
+
+  //   Timer.periodic(interval, (Timer t) {
+  //     setState(() {
+  //       if (_currentTimer > 0) {
+  //         _currentTimer -= 1;
+  //       } else {
+  //         _currentTimer = 1;
+  //         _checkCount();
+  //       }
+  //     });
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +87,7 @@ class _DashboardPageState extends State<DashboardPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-             Padding(
+              Padding(
                 padding: const EdgeInsets.symmetric(
                     vertical: 8.0), // Adjust as needed
                 child: AspectRatio(
@@ -267,7 +262,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: _launchYouTubeChannel,
                         icon: Icon(Icons.play_circle_fill, color: Colors.white),
                         label: customText(
                             'Free Korean lessons on YouTube', TextType.normal,

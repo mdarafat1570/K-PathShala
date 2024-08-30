@@ -2,7 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
-import 'package:kpathshala/view/Profile_edit/utils.dart';
+import 'package:kpathshala/view/Profile%20page/utils.dart';
 import 'package:kpathshala/view/common_widget/customTextField.dart';
 import 'package:kpathshala/view/common_widget/custom_background.dart';
 import 'package:kpathshala/view/common_widget/custom_text.dart.dart';

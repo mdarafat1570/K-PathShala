@@ -1,8 +1,10 @@
 import'package:kpathshala/app_base/common_imports.dart';
 
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:kpathshala/sign_in_methods/sign_in_methods.dart';
-import 'package:kpathshala/view/login/verify_page.dart';
+import 'package:kpathshala/view/Login%20Signup%20Page/otp_verify_page.dart';
+
+
+
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key, required this.title});
@@ -89,7 +91,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     width: 320,
                     child: ElevatedButton(
                       onPressed: () {
-                        slideNavigationPush(const OtpPage(), context);
+                        slideNavigationPush(OtpPage(), context);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColor.navyBlue,
@@ -166,7 +168,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             )),
                           ],
                         ),
-                        const Gap(15),
+                        Gap(15),
                         Column(
                           children: [
                             commonCustomButton(
@@ -174,10 +176,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               height: 50,
                               borderRadius: 25,
                               backgroundColor: Colors.white,
-                              margin: const EdgeInsets.all(8),
-                              onPressed: () {
-                                SignInMethods.signInWithGoogle();
-                              },
+                              margin: EdgeInsets.all(8),
+                              onPressed: () {},
                               iconWidget: Image.asset('assets/google_logo.png',
                                   height: 35),
                               reversePosition: false,
@@ -191,13 +191,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               isThreeD: false,
                               shadowColor: Colors.transparent,
                             ),
-                            const SizedBox(height: 5),
+                            SizedBox(height: 5),
                             commonCustomButton(
                               width: double.infinity,
                               height: 50,
                               borderRadius: 25,
                               backgroundColor: Colors.white,
-                              margin: const EdgeInsets.all(8),
+                              margin: EdgeInsets.all(8),
                               onPressed: () {},
                               iconWidget: Image.asset(
                                   'assets/facebook_logo.png',
