@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/view/Login%20Signup%20Page/OtpPage.dart';
-import 'package:kpathshala/view/Login%20Signup%20Page/otp_verify_page.dart';
 import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
 
 class NotificationsPage extends StatefulWidget {
@@ -49,7 +48,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => OtpPageV1()),
+                  MaterialPageRoute(builder: (context) => AuthPage()),
                 );
               },
               child: const Text('Open OTP Page'),

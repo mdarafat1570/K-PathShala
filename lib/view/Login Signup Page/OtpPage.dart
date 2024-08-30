@@ -1,186 +1,150 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:device_info_plus/device_info_plus.dart';
-import 'package:kpathshala/base/base_repository.dart';
+import 'package:kpathshala/app_base/common_imports.dart';
+import 'package:kpathshala/repository/Otp_send_repository.dart';
 
-import '../../api/api_contaner.dart';
-import '../../api/json_response.dart';
-
-class OtpPageV1 extends StatefulWidget {
+class AuthPage extends StatefulWidget {
   @override
-  _OtpPageV1State createState() => _OtpPageV1State();
+  _AuthPageState createState() => _AuthPageState();
 }
 
-class _OtpPageV1State extends State<OtpPageV1> {
+class _AuthPageState extends State<AuthPage> {
+  final AuthService _authService = AuthService(); // Instantiate AuthService
   final TextEditingController _mobileController = TextEditingController();
   final TextEditingController _otpController = TextEditingController();
-  final BaseRepository _repository =
-      BaseRepository(); // Assuming BaseRepositoryImpl is implemented
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  bool _isOtpSent = false;
+  bool _isOtpVerified = false;
 
-  bool _isSendingOtp = false;
-  bool _isVerifyingOtp = false;
-
-  Future<String?> getDeviceId() async {
-    final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    String? deviceId;
-
-    try {
-      if (Platform.isAndroid) {
-        AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-        deviceId = androidInfo.id; // Unique ID on Android
-      } else if (Platform.isIOS) {
-        IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-        deviceId = iosInfo.identifierForVendor; // Unique ID on iOS
-      }
-    } catch (e) {
-      print('Error fetching device ID: $e');
+  void _sendOtp() async {
+    String mobile = _mobileController.text.trim();
+    if (mobile.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Please enter your mobile number.")),
+      );
+      return;
     }
 
-    return deviceId;
-  }
-
-  Future<void> sendOtp() async {
-    String mobileNumber = _mobileController.text.trim();
-    String email =
-        "user@example.com"; // Replace with the actual email if needed
-
-    if (mobileNumber.isNotEmpty) {
+    final response = await _authService.sendOtp(mobile);
+    if (response['error'] == null || !response['error']) {
       setState(() {
-        _isSendingOtp = true;
+        _isOtpSent = true;
       });
-
-      String? deviceId = await getDeviceId();
-      final data = {
-        'mobile': mobileNumber,
-        'email': email,
-        'device_id': deviceId ?? '',
-      };
-
-      try {
-        final response = await _repository.fetchData(
-          AuthorizationEndpoints.sendOTP(mobileNumber),
-          data,
-          (response) => JsonResponse.fromJson(response),
-          isPost: true,
-        );
-
-        // Handle response
-        if (response.isSucceeded) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('OTP sent successfully')),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to send OTP')),
-          );
-        }
-      } catch (e) {
-        print('Error sending OTP: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error sending OTP')),
-        );
-      } finally {
-        setState(() {
-          _isSendingOtp = false;
-        });
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("OTP sent to $mobile.")),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to send OTP: ${response['message']}")),
+      );
     }
   }
 
-  Future<void> verifyOtp() async {
-    String mobileNumber = _mobileController.text.trim();
-    String otp = _otpController.text.trim();
-    String deviceId = await getDeviceId() ?? '';
+  void _verifyOtp() async {
+    String mobile = _mobileController.text.trim();
+    int otp = int.tryParse(_otpController.text.trim()) ?? 0;
 
-    if (mobileNumber.isNotEmpty && otp.isNotEmpty) {
+    final response =
+        await _authService.verifyOtp(mobile, otp, "unique-device-id");
+    if (response['error'] == null || !response['error']) {
       setState(() {
-        _isVerifyingOtp = true;
+        _isOtpVerified = true;
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("OTP verified successfully.")),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to verify OTP: ${response['message']}")),
+      );
+    }
+  }
 
-      final data = {
-        'mobile': mobileNumber,
-        'otp': otp,
-        'device_id': deviceId,
-        'device_name': 'android', // Replace with 'ios' if on iOS
-      };
+  void _registerUser() async {
+    String name = _nameController.text.trim();
+    String email = _emailController.text.trim();
+    String mobile = _mobileController.text.trim();
 
-      try {
-        final response = await _repository.fetchData(
-          AuthorizationEndpoints.verifyOTP,
-          data,
-          (response) => JsonResponse.fromJson(response),
-          isPost: true,
-        );
-
-        // Handle response
-        if (response.isSucceeded) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('OTP verified successfully')),
-          );
-          // Optionally, navigate to another screen or perform further actions
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to verify OTP')),
-          );
-        }
-      } catch (e) {
-        print('Error verifying OTP: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error verifying OTP')),
-        );
-      } finally {
-        setState(() {
-          _isVerifyingOtp = false;
-        });
-      }
+    final response =
+        await _authService.registerUser(name, email, mobile: mobile);
+    if (response['error'] == null || !response['error']) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Registration successful.")),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Registration failed: ${response['message']}")),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColor.white,
       appBar: AppBar(
-        title: Text('OTP Authentication'),
+        title: Text('K_Pathsala Auth'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: _mobileController,
-              decoration: InputDecoration(
-                labelText: 'Mobile Number',
-                border: OutlineInputBorder(),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextField(
+                controller: _mobileController,
+                decoration: InputDecoration(
+                  labelText: 'Mobile Number',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.phone,
               ),
-              keyboardType: TextInputType.phone,
-            ),
-            SizedBox(height: 16),
-            TextField(
-              controller: _otpController,
-              decoration: InputDecoration(
-                labelText: 'OTP',
-                border: OutlineInputBorder(),
-              ),
-              keyboardType: TextInputType.number,
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _isSendingOtp ? null : sendOtp,
-              child: _isSendingOtp
-                  ? CircularProgressIndicator()
-                  : Text('Send OTP'),
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _isVerifyingOtp ? null : verifyOtp,
-              child: _isVerifyingOtp
-                  ? CircularProgressIndicator()
-                  : Text('Verify OTP'),
-            ),
-          ],
+              SizedBox(height: 16.0),
+              if (_isOtpSent) ...[
+                TextField(
+                  controller: _otpController,
+                  decoration: InputDecoration(
+                    labelText: 'Enter OTP',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+                SizedBox(height: 16.0),
+                ElevatedButton(
+                  onPressed: _verifyOtp,
+                  child: Text('Verify OTP'),
+                ),
+              ] else
+                ElevatedButton(
+                  onPressed: _sendOtp,
+                  child: Text('Send OTP'),
+                ),
+              SizedBox(height: 16.0),
+              if (_isOtpVerified) ...[
+                TextField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                    labelText: 'Full Name',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 16.0),
+                TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                SizedBox(height: 16.0),
+                ElevatedButton(
+                  onPressed: _registerUser,
+                  child: Text('Register'),
+                ),
+              ],
+            ],
+          ),
         ),
       ),
     );

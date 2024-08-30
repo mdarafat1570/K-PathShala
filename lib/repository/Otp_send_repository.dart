@@ -1,72 +1,78 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:kpathshala/api/api_contaner.dart';
-import 'package:kpathshala/base/base_repository.dart';
-import 'package:kpathshala/base/get_device_Id.dart';
-import '../api/json_response.dart';
 
-class OtpRepository extends BaseRepository {
- Future<void> sendOtp(String mobileNumber, String email) async {
-  String? deviceId = await getDeviceId();
+class AuthService {
+  
+  // Send OTP
+  Future<Map<String, dynamic>> sendOtp(String mobile, {String? email}) async {
+    final url = Uri.parse(AuthorizationEndpoints.sendOTP);
+    final headers = {'Content-Type': 'application/json'};
+    final body = {
+      'mobile': mobile,
+    };
+    if (email != null) {
+      body['email'] = email;
+    }
 
-  final data = {
-    'mobile': mobileNumber,
-    'email': email,
-    'device_id': deviceId ?? '', // Include device ID
-  };
+    final response = await http.post(url, headers: headers, body: json.encode(body));
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      return {
+        'error': true,
+        'message': 'Failed to send OTP',
+        'details': json.decode(response.body)
+      };
+    }
+  }
 
-  await fetchData(
-    AuthorizationEndpoints.sendOTP(mobileNumber),
-    data,
-    (response) {
-      print('OTP sent successfully: ${response['message']}');
-    },
-    isPost: true,
-  );
-}
+  // Verify OTP
+  Future<Map<String, dynamic>> verifyOtp(String mobile, int otp, String deviceId, {String? deviceName}) async {
+    final url = Uri.parse(AuthorizationEndpoints.verifyOTP);
+    final headers = {'Content-Type': 'application/json'};
+    final body = {
+      'mobile': mobile,
+      'otp': otp,
+      'device_id': deviceId,
+    };
+    if (deviceName != null) {
+      body['device_name'] = deviceName;
+    }
 
-Future<JsonResponse> verifyOtp(String mobileNumber, String otp) async {
-  String? deviceId = await getDeviceId();
+    final response = await http.post(url, headers: headers, body: json.encode(body));
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      return {
+        'error': true,
+        'message': 'OTP verification failed',
+        'details': json.decode(response.body)
+      };
+    }
+  }
 
-  final data = {
-    'mobile': mobileNumber,
-    'otp': otp,
-    'device_id': deviceId ?? '', 
-    'device_name': 'android',  
-  };
-
-  final response = await fetchData(
-    AuthorizationEndpoints.verifyOTP,
-    data,
-    (response) {
-      print('OTP verified successfully: ${response['message']}');
-      return response;
-    },
-    isPost: true,
-  );
-
-  return response;
-}
-
-
- 
-  Future<JsonResponse> registerUser(
-      String name, String email, String mobile, String image) async {
-    final data = {
+  // Register User
+  Future<Map<String, dynamic>> registerUser(String name, String email, {String? mobile, String? image, String? deviceId}) async {
+    final url = Uri.parse(AuthorizationEndpoints.registerUser);
+    final headers = {'Content-Type': 'application/json'};
+    final body = {
       'name': name,
       'email': email,
-      'mobile': mobile,
-      'image': image,
+      'mobile': mobile ?? '',
+      'image': image ?? '',
+      'device_id': deviceId ?? ''
     };
 
-    final response = await fetchData(
-      AuthorizationEndpoints.registerUser,
-      data,
-      (response) {
-        print('User registered successfully: ${response['message']}');
-        return response;
-      },
-      isPost: true,
-    );
-
-    return response;
+    final response = await http.post(url, headers: headers, body: json.encode(body));
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      return {
+        'error': true,
+        'message': 'Registration failed',
+        'details': json.decode(response.body)
+      };
+    }
   }
 }
