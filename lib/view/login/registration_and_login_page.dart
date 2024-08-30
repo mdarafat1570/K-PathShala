@@ -1,6 +1,7 @@
 import'package:kpathshala/app_base/common_imports.dart';
 
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:kpathshala/sign_in_methods/sign_in_methods.dart';
 import 'package:kpathshala/view/login/verify_page.dart';
 
 class RegistrationPage extends StatefulWidget {
@@ -88,7 +89,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     width: 320,
                     child: ElevatedButton(
                       onPressed: () {
-                        slideNavigationPush(OtpPage(), context);
+                        slideNavigationPush(const OtpPage(), context);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColor.navyBlue,
@@ -165,7 +166,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             )),
                           ],
                         ),
-                        Gap(15),
+                        const Gap(15),
                         Column(
                           children: [
                             commonCustomButton(
@@ -173,8 +174,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               height: 50,
                               borderRadius: 25,
                               backgroundColor: Colors.white,
-                              margin: EdgeInsets.all(8),
-                              onPressed: () {},
+                              margin: const EdgeInsets.all(8),
+                              onPressed: () {
+                                SignInMethods.signInWithGoogle();
+                              },
                               iconWidget: Image.asset('assets/google_logo.png',
                                   height: 35),
                               reversePosition: false,
@@ -188,13 +191,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               isThreeD: false,
                               shadowColor: Colors.transparent,
                             ),
-                            SizedBox(height: 5),
+                            const SizedBox(height: 5),
                             commonCustomButton(
                               width: double.infinity,
                               height: 50,
                               borderRadius: 25,
                               backgroundColor: Colors.white,
-                              margin: EdgeInsets.all(8),
+                              margin: const EdgeInsets.all(8),
                               onPressed: () {},
                               iconWidget: Image.asset(
                                   'assets/facebook_logo.png',
