@@ -68,7 +68,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           Navigator.of(context).pop(); // Hide progress indicator
 
           // Pass userCredential to the Profile screen
-          slideNavigationPush(Profile(userCredential: userCredential), context);
+          slideNavigationPushReplacement(Profile(userCredential: userCredential), context);
         } catch (e) {
           Navigator.of(context).pop(); // Hide progress indicator on error
           log('Error during sign-in: $e');
