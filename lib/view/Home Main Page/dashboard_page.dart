@@ -41,44 +41,42 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
-    _startCountdown();
+    // _startCountdown();
   }
 
-  void _checkCount() async {
-    // Convert the URL string to a Uri object
-    var url = Uri.parse(
-        "https://www.googleapis.com/youtube/v3/channels?part=statistics&id=UCKeeBsW1hGy0NBCqKgd5oBw&key=$_apikey");
-    var response = await http.get(url);
+  // void _checkCount() async {
+  //   var url = Uri.parse(
+  //       "https://www.googleapis.com/youtube/v3/channels?part=statistics&id=UCKeeBsW1hGy0NBCqKgd5oBw&key=$_apikey");
+  //   var response = await http.get(url);
 
-    // Check  the request
-    if (response.statusCode == 200) {
-      var data = json.decode(response.body);
-      var subscriberCount = data['items'][0]['statistics']['subscriberCount'];
-      var videoCount = data['items'][0]['statistics']['videoCount'];
-      setState(() {
-        count = subscriberCount;
-        vidCount = videoCount;
-      });
-    } else {
-      // Handle the error
-      print("Failed to fetch subscriber count: ${response.statusCode}");
-    }
-  }
 
-  void _startCountdown() {
-    const interval = Duration(seconds: 1);
+  //   if (response.statusCode == 200) {
+  //     var data = json.decode(response.body);
+  //     var subscriberCount = data['items'][0]['statistics']['subscriberCount'];
+  //     var videoCount = data['items'][0]['statistics']['videoCount'];
+  //     setState(() {
+  //       count = subscriberCount;
+  //       vidCount = videoCount;
+  //     });
+  //   } else {
+  //     print("Failed to fetch subscriber count: ${response.statusCode}");
+  //   }
+  // }
 
-    Timer.periodic(interval, (Timer t) {
-      setState(() {
-        if (_currentTimer > 0) {
-          _currentTimer -= 1;
-        } else {
-          _currentTimer = 1;
-          _checkCount();
-        }
-      });
-    });
-  }
+  // void _startCountdown() {
+  //   const interval = Duration(seconds: 1);
+
+  //   Timer.periodic(interval, (Timer t) {
+  //     setState(() {
+  //       if (_currentTimer > 0) {
+  //         _currentTimer -= 1;
+  //       } else {
+  //         _currentTimer = 1;
+  //         _checkCount();
+  //       }
+  //     });
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
