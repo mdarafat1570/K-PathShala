@@ -1,14 +1,19 @@
 import 'dart:typed_data';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
+import 'package:kpathshala/sign_in_methods/sign_in_methods.dart';
+import 'package:kpathshala/view/Login%20Signup%20Page/registration_and_login_page.dart';
 import 'package:kpathshala/view/Profile%20page/utils.dart';
+import 'package:kpathshala/view/common_widget/Common_slideNavigation_Push.dart';
 import 'package:kpathshala/view/common_widget/customTextField.dart';
 import 'package:kpathshala/view/common_widget/custom_background.dart';
 import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
 
 class Profile extends StatefulWidget {
-  const Profile({super.key});
+  final UserCredential? userCredential;
+  const Profile({super.key,this.userCredential});
 
   @override
   State<Profile> createState() => _ProfileState();
@@ -27,6 +32,12 @@ class _ProfileState extends State<Profile> {
     setState(() {
       _image = img;
     });
+  }
+  @override
+  void initState() {
+    super.initState();
+    _nameController.text = widget.userCredential?.user?.displayName ?? "";
+    _emailController.text = widget.userCredential?.user?.email ?? "";
   }
 
   @override
@@ -129,6 +140,8 @@ class _ProfileState extends State<Profile> {
                     child: Text('Save'),
                   ),
                 ),
+                TextButton(onPressed: (){slideNavigationPush(const RegistrationPage(title: 'Sign Up'), context);}, child: const Text("SignUp")),
+                TextButton(onPressed: (){SignInMethods.logout();}, child: const Text("SignOut"))
               ],
             ),
           ),
