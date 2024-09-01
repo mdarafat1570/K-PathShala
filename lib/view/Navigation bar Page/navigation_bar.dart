@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
-import 'package:kpathshala/view/Exam%20Main%20page/exam.dart';
+import 'package:kpathshala/view/Exam%20Main%20page/CoursePurchasePage.dart';
 import 'package:kpathshala/view/Notifications/notifications_page.dart';
 import 'package:kpathshala/view/Profile%20page/profile_edit.dart';
 import 'package:kpathshala/view/common_widget/Common_slideNavigation_Push.dart';
@@ -20,9 +20,7 @@ class _NavigationState extends State<Navigation> {
   List<Widget> widgetList = [
     DashboardPage(),
     Courses(),
-     Exam(
-    
-    ),
+    CoursePurchasePage(),
   ];
 
   @override

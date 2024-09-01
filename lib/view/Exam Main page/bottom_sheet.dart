@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
+import 'package:kpathshala/view/Exam%20Main%20page/exam.dart';
 import 'package:kpathshala/view/common_widget/common_button_add.dart';
-import 'package:fui_kit/fui_kit.dart';
-
 import '../../app_base/common_imports.dart'; // Importing fui_kit for Gap
 
 class BottomSheetPage extends StatefulWidget {
-  const BottomSheetPage({super.key});
+  final BuildContext context;
+  const BottomSheetPage({super.key, required this.context});
 
   @override
   State<BottomSheetPage> createState() => _BottomSheetPageState();
@@ -22,12 +22,13 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
       padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
       child: Column(
         children: [
-          Flexible(
-            child: Divider(
-              color: Color.fromARGB(255, 217, 217, 217),
-              thickness: 4,
-              indent: screenWidth * 0.3,
-              endIndent: screenWidth * 0.3,
+          // Divider with Circular Edges
+          Container(
+            width: screenWidth * 0.2, // Adjust the width as needed
+            height: 4, // Adjust the height (thickness) as needed
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 217, 217, 217), // Divider color
+              borderRadius: BorderRadius.circular(8), // Circular edges
             ),
           ),
           Gap(screenHeight * 0.03),
@@ -35,10 +36,10 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
           Gap(screenHeight * 0.03),
           Container(
             width: double.infinity,
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               border: Border.all(width: 0.2, color: Colors.black),
-              color: Color.fromRGBO(245, 245, 245, 1),
+              color: const Color.fromRGBO(245, 245, 245, 1),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Padding(
@@ -59,7 +60,7 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
                     child: RichText(
                       text: TextSpan(
                         text: "You’ll have access to UBT Mock Test till ",
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 15,
                         ),
@@ -86,7 +87,12 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
             backgroundColor: AppColor.navyBlue,
             height: 60,
             borderRadius: 30,
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ExamPage()),
+              );
+            },
             reversePosition: false,
             child: Text(
               "Proceed to payment",
