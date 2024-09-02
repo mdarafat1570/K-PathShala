@@ -210,10 +210,10 @@ class _ExamPageState extends State<ExamPage> {
                 )
               ],
             ),
-            Gap(5),
+            Gap(10),
             Text("2 Retakes taken"),
             Text("3h 21m spent in total"),
-            Gap(10),
+            Gap(20),
             SizedBox(
                 width: 350,
                 height: 49,
