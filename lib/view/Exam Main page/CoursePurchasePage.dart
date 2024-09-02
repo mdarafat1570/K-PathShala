@@ -36,7 +36,10 @@ class _CoursePurchasePageState extends State<CoursePurchasePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Gap(20),
-              customText("Mock tests and exams", TextType.paragraphTitle),
+              customText(
+                "Mock tests and exams",
+                TextType.paragraphTitle,
+              ),
               Gap(30),
               Container(
                 width:

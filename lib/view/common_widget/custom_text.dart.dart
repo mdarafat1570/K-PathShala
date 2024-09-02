@@ -3,8 +3,13 @@ import 'package:kpathshala/app_theme/app_color.dart';
 
 enum TextType { title, subtitle, paragraphTitle, normal, paragraphTitlenormal }
 
-Widget customText(String text, TextType type,
-    {Color? color, double? fontSize, FontWeight? fontWeight}) {
+Widget customText(
+  String text,
+  TextType type, {
+  Color? color,
+  double? fontSize,
+  FontWeight? fontWeight,
+}) {
   switch (type) {
     case TextType.title:
       return Text(

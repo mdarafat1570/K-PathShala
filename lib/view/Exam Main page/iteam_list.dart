@@ -1,40 +1,36 @@
-import 'package:flutter/material.dart';
-
-// Define the Item class for holding data
-class Item {
-  final String title;
-  final String description;
-  final int score; // Add score variable
-  int count; // Add count variable to manage individual item state
-
-  Item({
-    required this.title,
-    required this.description,
-    required this.score,
-    this.count = 0, // Initialize count
-  });
+List<Map<String, dynamic>> courseList() {
+  return [
+    {
+      'title': 'EPS TOPIK Set 01',
+      'description': 'Contains questions from chapter 1,2,4 and 11',
+      'score': 40, // Example overall score
+      'listingTestScore': 20, // Score for the reading test
+      'readingTestScore': 12, // Score for the listing test
+      'timeTaken': '45 min',
+    },
+    {
+      'title': 'EPS TOPIK Set 02',
+      'description': 'Contains questions from chapter 1,2,4 and 11',
+      'score': 40, // Example overall score
+      'listingTestScore': 20, // Score for the reading test
+      'readingTestScore': 18, // Score for the listing test
+      'timeTaken': '30 min',
+    },
+    {
+      'title': 'EPS TOPIK Set 03',
+      'description': 'Contains questions from chapter 1,2,4 and 11',
+      'score': 19, // Example overall score
+      'listingTestScore': 20, // Score for the reading test
+      'readingTestScore': 9, // Score for the listing test
+      'timeTaken': '50 min',
+    },
+    {
+      'title': 'EPS TOPIK Set 04',
+      'description': 'Contains questions from chapter 1,2,4 and 11',
+      'score': 17, // Example overall score
+      'readingTestScore': 8, // Score for the reading test
+      'listingTestScore': 9, // Score for the listing test
+      'timeTaken': '60 min',
+    },
+  ];
 }
-
-// Define the list of items
-final List<Item> items = [
-  Item(
-    title: 'EPS TOPIK Set 01',
-    description: 'Contains questions from chapter 1, 2, 4 and 11',
-    score: 40, // Example score
-  ),
-  Item(
-    title: 'Item 2',
-    description: 'Description 2',
-    score: 35, // Example score
-  ),
-  Item(
-    title: 'Item 3',
-    description: 'Description 3',
-    score: 40, // Example score
-  ),
-  Item(
-    title: 'Item 4',
-    description: 'Description 4',
-    score: 30, // Example score
-  ),
-];

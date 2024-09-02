@@ -4,6 +4,7 @@ void showCommonBottomSheet({
   required BuildContext context,
   required Widget content,
   required List<Widget> actions,
+  LinearGradient? gradient, // Optional gradient parameter
   Color? color, // Optional color parameter
   double? height, // Optional height parameter
 }) {
@@ -13,8 +14,7 @@ void showCommonBottomSheet({
       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
     ),
     isScrollControlled: true,
-    backgroundColor:
-        color ?? Colors.white, // Use provided color or default to white
+    backgroundColor: Colors.transparent, // Set background color to transparent
     builder: (BuildContext context) {
       return Container(
         width: double.infinity,
@@ -25,9 +25,12 @@ void showCommonBottomSheet({
         ),
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          border: Border.all(width: 0.2, color: Colors.black),
-          color: const Color.fromRGBO(245, 245, 245, 1),
+          gradient: gradient, // Apply gradient if provided
+          color: gradient == null
+              ? color
+              : null, // Apply solid color if no gradient
           borderRadius: BorderRadius.circular(16),
+          border: Border.all(width: 0.2, color: Colors.black),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
