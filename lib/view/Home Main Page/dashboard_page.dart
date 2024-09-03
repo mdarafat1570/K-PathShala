@@ -1,3 +1,4 @@
+import 'package:kpathshala/api/api_contaner.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/view/common_widget/common_card_book_slider.dart';
 import 'dart:async';
@@ -41,42 +42,44 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
-    // _startCountdown();
+    _startCountdown();
   }
 
-  // void _checkCount() async {
-  //   var url = Uri.parse(
-  //       "https://www.googleapis.com/youtube/v3/channels?part=statistics&id=UCKeeBsW1hGy0NBCqKgd5oBw&key=$_apikey");
-  //   var response = await http.get(url);
+  void _checkCount() async {
+    var url = Uri.parse(
+      AuthorizationEndpoints.getYouTubeStats(
+          'UCKeeBsW1hGy0NBCqKgd5oBw', _apikey),
+    );
 
+    var response = await http.get(url);
 
-  //   if (response.statusCode == 200) {
-  //     var data = json.decode(response.body);
-  //     var subscriberCount = data['items'][0]['statistics']['subscriberCount'];
-  //     var videoCount = data['items'][0]['statistics']['videoCount'];
-  //     setState(() {
-  //       count = subscriberCount;
-  //       vidCount = videoCount;
-  //     });
-  //   } else {
-  //     print("Failed to fetch subscriber count: ${response.statusCode}");
-  //   }
-  // }
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+      var subscriberCount = data['items'][0]['statistics']['subscriberCount'];
+      var videoCount = data['items'][0]['statistics']['videoCount'];
+      setState(() {
+        count = subscriberCount;
+        vidCount = videoCount;
+      });
+    } else {
+      print("Failed to fetch subscriber count: ${response.statusCode}");
+    }
+  }
 
-  // void _startCountdown() {
-  //   const interval = Duration(seconds: 1);
+  void _startCountdown() {
+    const interval = Duration(seconds: 1);
 
-  //   Timer.periodic(interval, (Timer t) {
-  //     setState(() {
-  //       if (_currentTimer > 0) {
-  //         _currentTimer -= 1;
-  //       } else {
-  //         _currentTimer = 1;
-  //         _checkCount();
-  //       }
-  //     });
-  //   });
-  // }
+    Timer.periodic(interval, (Timer t) {
+      setState(() {
+        if (_currentTimer > 0) {
+          _currentTimer -= 1;
+        } else {
+          _currentTimer = 1;
+          _checkCount();
+        }
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,8 +91,7 @@ class _DashboardPageState extends State<DashboardPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 8.0), // Adjust as needed
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: AspectRatio(
                   aspectRatio: 16 / 9,
                   child: Column(
@@ -170,8 +172,7 @@ class _DashboardPageState extends State<DashboardPage> {
               Container(
                 height: 180,
                 decoration: BoxDecoration(
-                  color: const Color(
-                      0xFFFF6F61), // Background color similar to the image
+                  color: const Color(0xFFFF6F61),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Stack(
@@ -249,7 +250,6 @@ class _DashboardPageState extends State<DashboardPage> {
                         ),
                       ),
                     ),
-                    // Free Lessons Button
                     Positioned(
                       left: 16,
                       bottom: 16,
@@ -329,23 +329,27 @@ Widget _buildMockTestProgress() {
     ),
     padding: const EdgeInsets.all(16),
     child: Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         CircularProgressIndicator(
           value: 0.1,
           backgroundColor: Colors.grey[200],
           color: AppColor.accentColor,
+          strokeWidth: 4, // Adjust stroke width for better visual
         ),
-        const Gap(12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            customText("UBT Mock Test", TextType.title, fontSize: 16),
-            customText("10 out of 100 sets completed", TextType.normal,
-                fontSize: 14),
-          ],
+        const SizedBox(width: 12), // Use SizedBox for consistent spacing
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              customText("UBT Mock Test", TextType.title, fontSize: 16),
+              customText("10 out of 100 sets completed", TextType.normal,
+                  fontSize: 14),
+            ],
+          ),
         ),
-        const Spacer(),
-        const Icon(Icons.arrow_forward_ios, size: 16, color: AppColor.active),
+        const SizedBox(width: 12),
+        Icon(Icons.arrow_forward_ios, size: 16, color: AppColor.active),
       ],
     ),
   );

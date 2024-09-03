@@ -10,4 +10,9 @@ class AuthorizationEndpoints {
   // Endpoint to receive OTP
   static String receiveOTP = '$baseUrl/otp/userPhoneNumber';
   static String registerUser = '$baseUrl/auth/register';
+
+    // Endpoint to fetch YouTube channel statistics
+  static String getYouTubeStats(String channelId, String apiKey) {
+    return "https://www.googleapis.com/youtube/v3/channels?part=statistics&id=$channelId&key=$apiKey";
+  }
 }
