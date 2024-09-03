@@ -6,7 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kpathshala/view/Exam%20Main%20page/Test_page.dart';
 import 'package:kpathshala/view/Exam%20Main%20page/Containers.dart';
 import 'package:kpathshala/view/Exam%20Main%20page/iteam_list.dart';
-import 'package:kpathshala/view/Notifications/notifications_page.dart'; // Import the RetakeTestPage
 
 class ExamPage extends StatefulWidget {
   const ExamPage({super.key});
@@ -17,12 +16,12 @@ class ExamPage extends StatefulWidget {
 
 class _ExamPageState extends State<ExamPage> {
   final List<Map<String, dynamic>> courses = courseList();
-  Map<String, int> testStartCounts = {}; // Track start counts
+  Map<String, int> testStartCounts = {};
 
   @override
   void initState() {
     super.initState();
-    _loadStartCounts(); // Load the counts when the state initializes
+    _loadStartCounts();
   }
 
   Future<void> _loadStartCounts() async {
@@ -53,7 +52,7 @@ class _ExamPageState extends State<ExamPage> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          Gap(16),
+          const Gap(16),
           commonCustomButton(
             width: 350,
             backgroundColor: Colors.lightBlue,
@@ -61,12 +60,12 @@ class _ExamPageState extends State<ExamPage> {
             borderRadius: 25,
             onPressed: () {},
             reversePosition: false,
-            child: Text(
+            child: const Text(
               "Solve video",
               style: TextStyle(color: AppColor.navyBlue),
             ),
           ),
-          Gap(16),
+          const Gap(16),
           commonCustomButton(
             width: 350,
             backgroundColor: Colors.lightBlue,
@@ -74,20 +73,20 @@ class _ExamPageState extends State<ExamPage> {
             borderRadius: 25,
             onPressed: () {},
             reversePosition: false,
-            child: Text(
+            child: const Text(
               "Solve video",
               style: TextStyle(color: AppColor.navyBlue),
             ),
           ),
-          Gap(20),
+          const Gap(20),
           SizedBox(
               width: 350,
               height: 50,
               child: ElevatedButton(
                   onPressed: () {},
-                  child: Text(
+                  child: const Text(
                     "Retake test",
-                  )))
+          )))
         ],
       ),
     );
@@ -113,13 +112,13 @@ class _ExamPageState extends State<ExamPage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Text(
+                const Text(
                   "/40",
                   style: TextStyle(fontSize: 12),
                 )
               ],
             ),
-            Text(
+            const Text(
               "Final score",
               style: TextStyle(color: AppColor.navyBlue),
             ),
@@ -128,7 +127,7 @@ class _ExamPageState extends State<ExamPage> {
                 Container(
                   width: 100,
                   height: 70,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(10),
                           bottomLeft: Radius.circular(10)),
@@ -139,12 +138,12 @@ class _ExamPageState extends State<ExamPage> {
                       children: [
                         Text(
                           '$listingTestScvore  of 20',
-                          style: TextStyle(
+                          style: const TextStyle(
                               color: AppColor.navyBlue,
                               fontSize: 16,
                               fontWeight: FontWeight.bold),
                         ),
-                        Text(
+                        const Text(
                           "Reading Test",
                           style: TextStyle(color: AppColor.black, fontSize: 10),
                         )
@@ -152,11 +151,11 @@ class _ExamPageState extends State<ExamPage> {
                     ),
                   ),
                 ),
-                Gap(2),
+                const Gap(2),
                 Container(
                   width: 100,
                   height: 70,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(10),
                           bottomLeft: Radius.circular(10)),
@@ -167,12 +166,12 @@ class _ExamPageState extends State<ExamPage> {
                       children: [
                         Text(
                           '$readingTestScore of 20',
-                          style: TextStyle(
+                          style: const TextStyle(
                               color: AppColor.navyBlue,
                               fontSize: 16,
                               fontWeight: FontWeight.bold),
                         ),
-                        Text(
+                        const Text(
                           "Listening Test",
                           style: TextStyle(color: AppColor.black, fontSize: 10),
                         )
@@ -180,11 +179,11 @@ class _ExamPageState extends State<ExamPage> {
                     ),
                   ),
                 ),
-                Gap(2),
+                const Gap(2),
                 Container(
                   width: 100,
                   height: 70,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(10),
                           bottomLeft: Radius.circular(10)),
@@ -195,12 +194,12 @@ class _ExamPageState extends State<ExamPage> {
                       children: [
                         Text(
                           '$timeTaken',
-                          style: TextStyle(
+                          style: const TextStyle(
                               color: AppColor.navyBlue,
                               fontSize: 16,
                               fontWeight: FontWeight.bold),
                         ),
-                        Text(
+                        const Text(
                           "Time taken",
                           style: TextStyle(color: AppColor.black, fontSize: 10),
                         )
@@ -210,14 +209,14 @@ class _ExamPageState extends State<ExamPage> {
                 )
               ],
             ),
-            Gap(10),
-            Text("2 Retakes taken"),
-            Text("3h 21m spent in total"),
-            Gap(20),
+            const Gap(5),
+            const Text("2 Retakes taken"),
+            const Text("3h 21m spent in total"),
+            const Gap(10),
             SizedBox(
                 width: 350,
                 height: 49,
-                child: ElevatedButton(onPressed: () {}, child: Text("Close")))
+                child: ElevatedButton(onPressed: () {}, child: const Text("Close")))
           ],
         ),
       ),
@@ -262,7 +261,7 @@ class _ExamPageState extends State<ExamPage> {
       String timeTaken) {
     // Determine the background for the bottom sheet based on the score
     LinearGradient? gradient = score >= 40
-        ? LinearGradient(
+        ? const LinearGradient(
             colors: [
               Color.fromRGBO(238, 240, 255, 1),
               Color.fromRGBO(145, 209, 236, 1),
@@ -331,12 +330,12 @@ class _ExamPageState extends State<ExamPage> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
-          title: Text('UBT Mock Test', style: TextStyle(fontSize: 24)),
+          title: const Text('UBT Mock Test', style: TextStyle(fontSize: 24)),
           centerTitle: true,
           leading: Padding(
             padding: const EdgeInsets.only(left: 20),
             child: IconButton(
-              icon: FaIcon(
+              icon: const FaIcon(
                 FontAwesomeIcons.arrowLeft,
                 color: AppColor.navyBlue,
               ),
@@ -358,7 +357,7 @@ class _ExamPageState extends State<ExamPage> {
                       margin: const EdgeInsets.all(10),
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
+                        gradient: const LinearGradient(
                           colors: [
                             Color.fromRGBO(238, 240, 255, 1),
                             Color.fromRGBO(145, 209, 236, 1),
@@ -368,8 +367,8 @@ class _ExamPageState extends State<ExamPage> {
                         ),
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 20),
+                      child: const Padding(
+                        padding: EdgeInsets.only(top: 20),
                         child: Column(
                           children: [
                             Gap(3),
@@ -383,7 +382,7 @@ class _ExamPageState extends State<ExamPage> {
                             Gap(3),
                             Padding(
                               padding:
-                                  const EdgeInsets.only(left: 16, right: 0),
+                                  EdgeInsets.only(left: 16, right: 0),
                               child: Text(
                                 "You’re among the top 10% of the students in this session.",
                                 style: TextStyle(
@@ -412,7 +411,7 @@ class _ExamPageState extends State<ExamPage> {
                       onPressed: () {
                         print('Button on Stack pressed');
                       },
-                      child: Text('Batch 1'),
+                      child: const Text('Batch 1'),
                     ),
                   ),
                 ],
@@ -434,7 +433,7 @@ class _ExamPageState extends State<ExamPage> {
 
                     // Determine container color based on score
                     final Color containerColor = score >= 40
-                        ? Color.fromRGBO(136, 208, 236, 0.2)
+                        ? const Color.fromRGBO(136, 208, 236, 0.2)
                         : Colors.white;
 
                     return GestureDetector(
@@ -486,10 +485,10 @@ class _ExamPageState extends State<ExamPage> {
                 child: Container(
                   height: 63,
                   width: double.infinity,
-                  decoration: BoxDecoration(color: Colors.white),
+                  decoration: const BoxDecoration(color: Colors.white),
                   child: ElevatedButton(
-                      onPressed: () {}, child: Text('Continue to Set 11')),
-                  padding: EdgeInsets.all(12),
+                      onPressed: () {}, child: const Text('Continue to Set 11')),
+                  padding: const EdgeInsets.all(12),
                 ),
               ),
             ],
