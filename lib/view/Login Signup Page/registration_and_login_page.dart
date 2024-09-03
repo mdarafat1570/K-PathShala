@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import'package:kpathshala/app_base/common_imports.dart';
 
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:kpathshala/repository/Otp_send_repository.dart';
 import 'package:kpathshala/sign_in_methods/sign_in_methods.dart';
 import 'package:kpathshala/view/Login%20Signup%20Page/otp_verify_page.dart';
 import 'package:kpathshala/view/Profile%20page/profile_edit.dart';
@@ -21,8 +22,9 @@ class RegistrationPage extends StatefulWidget {
 }
 
 class _RegistrationPageState extends State<RegistrationPage> {
-  final TextEditingController myController = TextEditingController();
+  final TextEditingController mobileNumberController = TextEditingController();
   String? errorMessage;
+  final AuthService _authService = AuthService();
 
   InputDecoration _inputDecoration() {
     return InputDecoration(
@@ -49,28 +51,24 @@ class _RegistrationPageState extends State<RegistrationPage> {
   Widget _customButton(String text, Future<UserCredential> Function() onPressed, String assetPath, {double iconHeight = 35}) {
     return commonCustomButton(
       width: double.infinity,
-      height: 50,
-      borderRadius: 25,
+      height: 55,
+      borderRadius: 30,
       backgroundColor: Colors.white,
       margin: const EdgeInsets.all(8),
       onPressed: () async {
-        // Show progress indicator
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return const Center(child: CircularProgressIndicator());
-          },
-        );
-
+        showApiCallingInProgress();
         try {
           UserCredential userCredential = await onPressed();
-          Navigator.of(context).pop(); // Hide progress indicator
-
-          // Pass userCredential to the Profile screen
-          slideNavigationPushReplacement(Profile(userCredential: userCredential), context);
+          if (mounted) {
+            Navigator.of(context).pop();
+          }
+          if (mounted) {
+            slideNavigationPushReplacement(Profile(userCredential: userCredential), context);
+          }
         } catch (e) {
-          Navigator.of(context).pop(); // Hide progress indicator on error
+          if (mounted) {
+            Navigator.of(context).pop();
+          }
           log('Error during sign-in: $e');
         }
       },
@@ -85,7 +83,15 @@ class _RegistrationPageState extends State<RegistrationPage> {
     );
   }
 
-
+  Future<dynamic> showApiCallingInProgress() {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return const Center(child: CircularProgressIndicator());
+        },
+      );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +112,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   ),
                   const SizedBox(height: 30),
                   IntlPhoneField(
-                    controller: myController,
+                    controller: mobileNumberController,
                     style: const TextStyle(color: AppColor.navyBlue),
                     decoration: _inputDecoration(),
                     initialCountryCode: 'BD',
@@ -119,9 +125,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   const SizedBox(height: 15),
                   SizedBox(
                     height: 55,
-                    width: 320,
+                    width: double.maxFinite,
                     child: ElevatedButton(
-                      onPressed: () => slideNavigationPush(const OtpPage(), context),
+                      onPressed: (){_sendOtp(mobileNumber: "0${mobileNumberController.text}");},
                       style: ElevatedButton.styleFrom(backgroundColor: AppColor.navyBlue),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -172,5 +178,32 @@ class _RegistrationPageState extends State<RegistrationPage> {
         ),
       ),
     );
+  }
+
+  void _sendOtp({required String mobileNumber}) async {
+    if (mobileNumber.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter your mobile number.")),
+      );
+      return;
+    }
+
+    final response = await _authService.sendOtp(mobileNumber);
+    if (response['error'] == null || !response['error']) {
+      showApiCallingInProgress();
+      if (mounted){
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("OTP sent to $mobileNumber.")),
+        );
+        slideNavigationPush(OtpPage(mobileNumber: mobileNumber,), context);
+      }
+    } else {
+      if (mounted){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to send OTP: ${response['message']}")),
+        );
+      }
+    }
   }
 }

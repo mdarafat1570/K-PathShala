@@ -9,8 +9,9 @@ import 'package:kpathshala/view/common_widget/customTextField.dart';
 
 class Profile extends StatefulWidget {
   final UserCredential? userCredential;
+  final String? mobileNumber;
 
-  const Profile({super.key, this.userCredential});
+  const Profile({super.key, this.userCredential, this.mobileNumber});
 
   @override
   State<Profile> createState() => _ProfileState();
@@ -27,6 +28,7 @@ class _ProfileState extends State<Profile> {
     super.initState();
     _nameController.text = widget.userCredential?.user?.displayName ?? "";
     _emailController.text = widget.userCredential?.user?.email ?? "";
+    _phoneController.text = widget.mobileNumber ?? "";
   }
 
   @override
