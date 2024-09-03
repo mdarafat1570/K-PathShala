@@ -132,13 +132,13 @@ class _CoursePurchasePageState extends State<CoursePurchasePage> {
                             showCommonBottomSheet(
                               context: context,
                               height: screenHeight *
-                                  heightPercentage, // Adjust the height as needed
+                                  heightPercentage,
                               content: BottomSheetPage(context: context),
-                              actions: [], // No extra actions needed
-                              color: Colors.white, // Background color
+                              actions: [],
+                              color: Colors.white,
                             );
                           },
-                          child: Text(
+                          child: const Text(
                             'Buy now',
                             style: TextStyle(fontSize: 12),
                           ),

@@ -316,10 +316,10 @@ class _ExamPageState extends State<ExamPage> {
                       ),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Column(
+                    child: const Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           "10 out of 100 sets completed",
                           style: TextStyle(
                             color: AppColor.black,
@@ -327,8 +327,8 @@ class _ExamPageState extends State<ExamPage> {
                             fontSize: 15,
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        const Text(
+                        SizedBox(height: 8),
+                        Text(
                           "You’re among the top 10% of the students in this session.",
                           style: TextStyle(
                             color: Colors.grey,
