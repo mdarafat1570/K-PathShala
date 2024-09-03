@@ -18,8 +18,8 @@ Widget courserow(
   final Color scoreTextColor = score >= 40 ? AppColor.navyBlue : Colors.red;
   final String completionText = score >= 40 ? 'Flawless' : 'Complete';
   final Color containerColor = score >= 40
-      ? Color.fromRGBO(26, 35, 126, 0.2)
-      : Color.fromRGBO(255, 111, 97, 0.2);
+      ? const Color.fromRGBO(26, 35, 126, 0.2)
+      : const Color.fromRGBO(255, 111, 97, 0.2);
 
   return Column(
     children: [
@@ -60,7 +60,7 @@ Widget courserow(
                 const SizedBox(height: 3),
                 Text(
                   description,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Color.fromRGBO(102, 102, 102, 1),
                     fontSize: 12,
                   ),
@@ -69,7 +69,7 @@ Widget courserow(
                 Row(
                   children: [
                     customText('Your Score:', TextType.normal),
-                    Gap(5),
+                    const Gap(5),
                     Text(
                       '$score',
                       style: TextStyle(
@@ -96,23 +96,23 @@ Widget courserow(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            textStyle: TextStyle(fontSize: 13),
+                            textStyle: const TextStyle(fontSize: 13),
                           ),
                           child: Text(buttonLabel),
                         ),
                       ),
                     ),
-                    Gap(5),
+                    const Gap(5),
                     ElevatedButton(
                       onPressed: onDetailsClick,
                       style: ElevatedButton.styleFrom(
                         foregroundColor: AppColor.navyBlue,
-                        backgroundColor: Color.fromRGBO(26, 35, 126, 0.2),
-                        shape: CircleBorder(),
-                        padding: EdgeInsets.all(12),
+                        backgroundColor: const Color.fromRGBO(26, 35, 126, 0.2),
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(12),
                         shadowColor: Colors.transparent,
                       ),
-                      child: FaIcon(
+                      child: const FaIcon(
                         FontAwesomeIcons.arrowDown,
                         size: 16,
                         color: AppColor.navyBlue,

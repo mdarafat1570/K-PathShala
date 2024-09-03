@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/view/Exam%20Main%20page/CoursePurchasePage.dart';
 import 'package:kpathshala/view/Notifications/notifications_page.dart';
@@ -43,16 +45,28 @@ class _NavigationState extends State<Navigation> {
           ),
           title: const Center(child: Text('')),
           actions: [
-            IconButton(
-              onPressed: () {},
-              icon: const Image(image: AssetImage('assets/Score.png')),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SvgPicture.asset(
+                'assets/ic_Result_icon.svg',
+                width: 23.0,
+                height: 23.0,
+              ),
             ),
-            IconButton(
-              onPressed: () {
+            InkWell(
+              onTap: () {
                 slideNavigationPush(NotificationsPage(), context);
               },
-              icon: const Image(image: AssetImage('assets/bell.png')),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SvgPicture.asset(
+                  'assets/ic_notifications.svg',
+                  width: 34.0,
+                  height: 34.0,
+                ),
+              ),
             ),
+            Gap(7)
           ],
         ),
         body: Center(
@@ -73,23 +87,47 @@ class _NavigationState extends State<Navigation> {
           showUnselectedLabels: true,
           selectedLabelStyle: const TextStyle(color: Colors.black),
           unselectedLabelStyle: const TextStyle(color: Colors.black),
-          items: const [
+          items: [
             BottomNavigationBarItem(
-              icon: Image(image: AssetImage('assets/icon.png')),
-              activeIcon: Image(image: AssetImage('assets/Home_Icon_Fill.png')),
+              icon: SvgPicture.asset(
+                'assets/Home_black.svg', // Ensure this path points to your SVG file
+                width: 18.0, // Adjust size as needed
+                height: 18.0,
+              ),
+              activeIcon: SvgPicture.asset(
+                'assets/ic_home.svg', // Path to the active state SVG file
+                width: 24.0,
+                height: 24.0,
+              ),
               label: "Home",
               tooltip: '',
             ),
             BottomNavigationBarItem(
-              icon: Image(image: AssetImage('assets/Type=Outlined.png')),
-              activeIcon: Image(image: AssetImage('assets/Type=Filled.png')),
-              label: 'Course',
+              icon: SvgPicture.asset(
+                'assets/Icon.svg',
+                width: 18.0,
+                height: 18.0,
+              ),
+              activeIcon: SvgPicture.asset(
+                'assets/Icon_courses_black.svg',
+                width: 22.0,
+                height: 22.0,
+              ),
+              label: "Course",
               tooltip: '',
             ),
             BottomNavigationBarItem(
-              icon: Image(image: AssetImage('assets/exam_fill.png')),
-              activeIcon: Image(image: AssetImage('assets/Exam.png')),
-              label: 'Exam',
+              icon: SvgPicture.asset(
+                'assets/ic_Eaxm1.svg',
+                width: 18.0,
+                height: 18.0,
+              ),
+              activeIcon: SvgPicture.asset(
+                'test_ic.svg',
+                width: 22.0,
+                height: 22.0,
+              ),
+              label: "Exam",
               tooltip: '',
             ),
           ],
