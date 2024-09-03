@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/view/Exam%20Main%20page/Bottom_sheets/main_buttom_sheet.dart';
+import 'package:kpathshala/view/Exam%20Main%20page/Quiz_Attempt_Page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:kpathshala/view/Exam%20Main%20page/Test_page.dart';
-import 'package:kpathshala/view/Exam%20Main%20page/Containers.dart';
-import 'package:kpathshala/view/Exam%20Main%20page/iteam_list.dart';
+import 'package:kpathshala/view/Exam%20Main%20page/UBT_Exam_row.dart';
+import 'package:kpathshala/model/iteam_list.dart';
 
 class ExamPage extends StatefulWidget {
   const ExamPage({super.key});
@@ -303,7 +303,7 @@ class _ExamPageState extends State<ExamPage> {
                 children: [
                   Container(
                     width: double.infinity,
-                    height: 200,
+                    height: 190,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
@@ -314,27 +314,26 @@ class _ExamPageState extends State<ExamPage> {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(15),
                     ),
                     child: const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           "10 out of 100 sets completed",
+                          textAlign: TextAlign.center,
                           style: TextStyle(
-                            color: AppColor.black,
+                            color: Colors.black,
                             fontWeight: FontWeight.bold,
-                            fontSize: 15,
+                            fontSize: 19,
                           ),
                         ),
-                        SizedBox(height: 8),
+                        SizedBox(height: 5),
                         Text(
                           "You’re among the top 10% of the students in this session.",
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                          ),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: AppColor.grey600),
                         ),
                       ],
                     ),
@@ -342,20 +341,30 @@ class _ExamPageState extends State<ExamPage> {
                   Positioned(
                     bottom: 0,
                     left: 80,
+                    right: 70,
                     child: Image.asset(
                       'assets/exploding-ribbon-and-confetti-9UErHOE0bL.png',
-                      height: 100,
-                      width: 200,
+                      height: 70,
+                      fit: BoxFit.cover,
                     ),
                   ),
                   Positioned(
                     top: -5,
-                    right: 150,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        print('Button on Stack pressed');
-                      },
-                      child: const Text('Batch 1'),
+                    left: 0,
+                    right: 0,
+                    child: Center(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          iconColor: Colors.red,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                        onPressed: () {
+                          print('Button on Stack pressed');
+                        },
+                        child: const Text('Batch 1'),
+                      ),
                     ),
                   ),
                 ],
@@ -441,11 +450,11 @@ class _ExamPageState extends State<ExamPage> {
                   height: 63,
                   width: double.infinity,
                   decoration: const BoxDecoration(color: Colors.white),
+                  padding: const EdgeInsets.all(12),
                   child: ElevatedButton(
                     onPressed: () {},
                     child: const Text('Continue to Set 11'),
                   ),
-                  padding: const EdgeInsets.all(12),
                 ),
               ),
             ],

@@ -1,6 +1,6 @@
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
-import 'package:kpathshala/view/Exam%20Main%20page/bottom_sheet.dart';
+import 'package:kpathshala/view/Exam%20Main%20page/BottomPanelPage_CourseParchas.dart';
 import 'package:kpathshala/view/common_widget/common_bottom_sheet.dart';
 
 class CoursePurchasePage extends StatefulWidget {
@@ -13,7 +13,6 @@ class CoursePurchasePage extends StatefulWidget {
 class _CoursePurchasePageState extends State<CoursePurchasePage> {
   @override
   Widget build(BuildContext context) {
-    // Get screen width
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     final heightPercentage = 490 / screenHeight;
@@ -21,7 +20,7 @@ class _CoursePurchasePageState extends State<CoursePurchasePage> {
     return Scaffold(
       body: GradientBackground(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16), // Add padding to prevent overflow
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [

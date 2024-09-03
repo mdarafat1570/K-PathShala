@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
-import 'package:kpathshala/view/Exam%20Main%20page/exam.dart';
+import 'package:kpathshala/view/Exam%20Main%20page/UBT_Exam_Page.dart';
 import 'package:kpathshala/view/common_widget/common_button_add.dart';
 import '../../app_base/common_imports.dart';
 

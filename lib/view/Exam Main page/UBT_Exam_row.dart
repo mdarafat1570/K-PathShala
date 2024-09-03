@@ -31,7 +31,6 @@ Widget courserow(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 5),
                 Row(
                   children: [
                     customText(title, TextType.paragraphTitle),
