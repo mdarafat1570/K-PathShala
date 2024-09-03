@@ -329,23 +329,27 @@ Widget _buildMockTestProgress() {
     ),
     padding: const EdgeInsets.all(16),
     child: Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         CircularProgressIndicator(
           value: 0.1,
           backgroundColor: Colors.grey[200],
           color: AppColor.accentColor,
+          strokeWidth: 4, // Adjust stroke width for better visual
         ),
-        const Gap(12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            customText("UBT Mock Test", TextType.title, fontSize: 16),
-            customText("10 out of 100 sets completed", TextType.normal,
-                fontSize: 14),
-          ],
+        const SizedBox(width: 12), // Use SizedBox for consistent spacing
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              customText("UBT Mock Test", TextType.title, fontSize: 16),
+              customText("10 out of 100 sets completed", TextType.normal,
+                  fontSize: 14),
+            ],
+          ),
         ),
-        const Spacer(),
-        const Icon(Icons.arrow_forward_ios, size: 16, color: AppColor.active),
+        const SizedBox(width: 12),
+        Icon(Icons.arrow_forward_ios, size: 16, color: AppColor.active),
       ],
     ),
   );

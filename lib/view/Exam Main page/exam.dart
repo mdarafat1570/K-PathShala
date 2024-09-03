@@ -38,191 +38,6 @@ class _ExamPageState extends State<ExamPage> {
     });
   }
 
-  Widget _bottomSheetType2(
-      BuildContext context, String title, String description) {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const Gap(16),
-          commonCustomButton(
-            width: 350,
-            backgroundColor: Colors.lightBlue,
-            height: 50,
-            borderRadius: 25,
-            onPressed: () {},
-            reversePosition: false,
-            child: const Text(
-              "Solve video",
-              style: TextStyle(color: AppColor.navyBlue),
-            ),
-          ),
-          const Gap(16),
-          commonCustomButton(
-            width: 350,
-            backgroundColor: Colors.lightBlue,
-            height: 50,
-            borderRadius: 25,
-            onPressed: () {},
-            reversePosition: false,
-            child: const Text(
-              "Solve video",
-              style: TextStyle(color: AppColor.navyBlue),
-            ),
-          ),
-          const Gap(20),
-          SizedBox(
-              width: 350,
-              height: 50,
-              child: ElevatedButton(
-                  onPressed: () {},
-                  child: const Text(
-                    "Retake test",
-          )))
-        ],
-      ),
-    );
-  }
-
-  Widget _bottomSheetType1(BuildContext context, int score,
-      int listingTestScvore, int readingTestScore, String timeTaken) {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  '$score',
-                  style: const TextStyle(
-                    fontSize: 50,
-                    color: AppColor.navyBlue,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const Text(
-                  "/40",
-                  style: TextStyle(fontSize: 12),
-                )
-              ],
-            ),
-            const Text(
-              "Final score",
-              style: TextStyle(color: AppColor.navyBlue),
-            ),
-            Row(
-              children: [
-                Container(
-                  width: 100,
-                  height: 70,
-                  decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          bottomLeft: Radius.circular(10)),
-                      color: Color.fromRGBO(135, 206, 235, 0.2)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Column(
-                      children: [
-                        Text(
-                          '$listingTestScvore  of 20',
-                          style: const TextStyle(
-                              color: AppColor.navyBlue,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        const Text(
-                          "Reading Test",
-                          style: TextStyle(color: AppColor.black, fontSize: 10),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-                const Gap(2),
-                Container(
-                  width: 100,
-                  height: 70,
-                  decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          bottomLeft: Radius.circular(10)),
-                      color: Color.fromRGBO(135, 206, 235, 0.2)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Column(
-                      children: [
-                        Text(
-                          '$readingTestScore of 20',
-                          style: const TextStyle(
-                              color: AppColor.navyBlue,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        const Text(
-                          "Listening Test",
-                          style: TextStyle(color: AppColor.black, fontSize: 10),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-                const Gap(2),
-                Container(
-                  width: 100,
-                  height: 70,
-                  decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          bottomLeft: Radius.circular(10)),
-                      color: Color.fromRGBO(135, 206, 235, 0.2)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Column(
-                      children: [
-                        Text(
-                          '$timeTaken',
-                          style: const TextStyle(
-                              color: AppColor.navyBlue,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        const Text(
-                          "Time taken",
-                          style: TextStyle(color: AppColor.black, fontSize: 10),
-                        )
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            ),
-            const Gap(5),
-            const Text("2 Retakes taken"),
-            const Text("3h 21m spent in total"),
-            const Gap(10),
-            SizedBox(
-                width: 350,
-                height: 49,
-                child: ElevatedButton(onPressed: () {}, child: const Text("Close")))
-          ],
-        ),
-      ),
-    );
-  }
-
   Future<void> _saveStartCounts() async {
     final prefs = await SharedPreferences.getInstance();
     for (var entry in testStartCounts.entries) {
@@ -232,15 +47,13 @@ class _ExamPageState extends State<ExamPage> {
 
   void _incrementTestStartCount(String courseTitle) {
     setState(() {
-      // Increment the current count or start from 1 if not existing
       testStartCounts[courseTitle] = (testStartCounts[courseTitle] ?? 0) + 1;
     });
-    _saveStartCounts(); // Save updated values to SharedPreferences
+    _saveStartCounts();
   }
 
   void _decrementTestStartCount(String courseTitle) {
     setState(() {
-      // Decrement the current count but ensure it doesn’t go below 0
       if (testStartCounts.containsKey(courseTitle)) {
         testStartCounts[courseTitle] = (testStartCounts[courseTitle] ?? 0) - 1;
         if (testStartCounts[courseTitle]! < 0) {
@@ -248,18 +61,18 @@ class _ExamPageState extends State<ExamPage> {
         }
       }
     });
-    _saveStartCounts(); // Save updated values to SharedPreferences
+    _saveStartCounts();
   }
 
   void _showBottomSheet(
-      BuildContext context,
-      String courseTitle,
-      String courseDescription,
-      int score,
-      int readingTestScore,
-      int listingTestScore,
-      String timeTaken) {
-    // Determine the background for the bottom sheet based on the score
+    BuildContext context,
+    String courseTitle,
+    String courseDescription,
+    int score,
+    int readingTestScore,
+    int listingTestScore,
+    String timeTaken,
+  ) {
     LinearGradient? gradient = score >= 40
         ? const LinearGradient(
             colors: [
@@ -273,29 +86,31 @@ class _ExamPageState extends State<ExamPage> {
 
     Color? backgroundColor = score < 40 ? Colors.white : null;
 
-    Widget additionalContent;
-    if (score >= 40) {
-      additionalContent = _bottomSheetType1(context, score, listingTestScore,
-          readingTestScore, timeTaken); // Custom widget for higher scores
-    } else {
-      additionalContent =
-          _bottomSheetType2(context, courseTitle, courseDescription);
-    }
+    Widget additionalContent = score >= 40
+        ? _bottomSheetType1(
+            context,
+            score,
+            listingTestScore,
+            readingTestScore,
+            timeTaken,
+          )
+        : _bottomSheetType2(
+            context,
+            courseTitle,
+            courseDescription,
+          );
 
-    // Show the bottom sheet using the common method
     showCommonBottomSheet(
       context: context,
       content: BottomSheetContent(
         courseTitle: courseTitle,
         score: score,
         additionalContent: additionalContent,
-        // Display additional content dynamically
       ),
-      actions: [], // Add actions if needed
-      gradient: gradient, // Pass gradient if applicable
-      color: backgroundColor, // Pass color if applicable
-      height: MediaQuery.of(context).size.height *
-          0.4, // Optional: specify height or use default
+      actions: [],
+      gradient: gradient,
+      color: backgroundColor,
+      height: MediaQuery.of(context).size.height * 0.4,
     );
   }
 
@@ -312,16 +127,151 @@ class _ExamPageState extends State<ExamPage> {
   }
 
   String _getButtonLabel(String title) {
-    // Return 'Retake Test' if test has been started, otherwise 'Start'
     return testStartCounts[title] != null && testStartCounts[title]! > 0
         ? 'Retake Test'
         : 'Start';
   }
 
   void _handleRetakeTestClick(String title, String description) {
-    print('Test Start Counts: $testStartCounts');
     _incrementTestStartCount(title);
     _navigateToRetakeTest(title, description);
+  }
+
+  Widget _bottomSheetType2(
+      BuildContext context, String title, String description) {
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 16),
+          _buildButton("Solve video", Colors.lightBlue, () {}),
+          const SizedBox(height: 16),
+          _buildButton("Solve video", Colors.lightBlue, () {}),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton(
+              onPressed: () {},
+              child: const Text("Retake test"),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _bottomSheetType1(BuildContext context, int score,
+      int listingTestScore, int readingTestScore, String timeTaken) {
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '$score',
+                style: const TextStyle(
+                  fontSize: 50,
+                  color: AppColor.navyBlue,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const Text(
+                "/40",
+                style: TextStyle(fontSize: 12),
+              )
+            ],
+          ),
+          const Text(
+            "Final score",
+            style: TextStyle(color: AppColor.navyBlue),
+          ),
+          Row(
+            children: [
+              _buildScoreContainer('$listingTestScore of 20', "Reading Test"),
+              const SizedBox(width: 4),
+              _buildScoreContainer('$readingTestScore of 20', "Listening Test"),
+              const SizedBox(width: 4),
+              _buildScoreContainer(timeTaken, "Time taken"),
+            ],
+          ),
+          const SizedBox(height: 10),
+          const Text("2 Retakes taken"),
+          const Text("3h 21m spent in total"),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            height: 49,
+            child: ElevatedButton(
+              onPressed: () {},
+              child: const Text("Close"),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildButton(String text, Color color, VoidCallback onPressed) {
+    return SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25),
+          ),
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(color: AppColor.navyBlue),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildScoreContainer(String score, String label) {
+    return Expanded(
+      child: Container(
+        height: 70,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Color.fromRGBO(135, 206, 235, 0.2),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Column(
+            children: [
+              Text(
+                score,
+                style: const TextStyle(
+                  color: AppColor.navyBlue,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                label,
+                style: const TextStyle(color: AppColor.black, fontSize: 10),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -352,49 +302,43 @@ class _ExamPageState extends State<ExamPage> {
               Stack(
                 children: [
                   Container(
-                      width: double.infinity,
-                      height: 200,
-                      margin: const EdgeInsets.all(10),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [
-                            Color.fromRGBO(238, 240, 255, 1),
-                            Color.fromRGBO(145, 209, 236, 1),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(20),
+                    width: double.infinity,
+                    height: 200,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color.fromRGBO(238, 240, 255, 1),
+                          Color.fromRGBO(145, 209, 236, 1),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                      child: const Padding(
-                        padding: EdgeInsets.only(top: 20),
-                        child: Column(
-                          children: [
-                            Gap(3),
-                            Text(
-                              "10 out of 100 sets completed",
-                              style: TextStyle(
-                                  color: AppColor.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15),
-                            ),
-                            Gap(3),
-                            Padding(
-                              padding:
-                                  EdgeInsets.only(left: 16, right: 0),
-                              child: Text(
-                                "You’re among the top 10% of the students in this session.",
-                                style: TextStyle(
-                                    color: Colors.grey,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 15),
-                              ),
-                            ),
-                          ],
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "10 out of 100 sets completed",
+                          style: TextStyle(
+                            color: AppColor.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
                         ),
-                      )),
-                  // Add additional widgets on top of the container here
+                        const SizedBox(height: 8),
+                        const Text(
+                          "You’re among the top 10% of the students in this session.",
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   Positioned(
                     bottom: 0,
                     left: 80,
@@ -416,7 +360,7 @@ class _ExamPageState extends State<ExamPage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 3),
+              const SizedBox(height: 10),
               Expanded(
                 child: ListView.builder(
                   itemCount: courses.length,
@@ -431,7 +375,6 @@ class _ExamPageState extends State<ExamPage> {
                         courses[index]['listingTestScore'] ?? 0;
                     final timeTaken = courses[index]['timeTaken'] ?? 'Unknown';
 
-                    // Determine container color based on score
                     final Color containerColor = score >= 40
                         ? const Color.fromRGBO(136, 208, 236, 0.2)
                         : Colors.white;
@@ -439,9 +382,15 @@ class _ExamPageState extends State<ExamPage> {
                     return GestureDetector(
                       behavior: HitTestBehavior.opaque,
                       onTap: () {
-                        print('Container tapped: $title');
-                        _showBottomSheet(context, title, description, score,
-                            listingTestScore, readingTestScore, timeTaken);
+                        _showBottomSheet(
+                          context,
+                          title,
+                          description,
+                          score,
+                          listingTestScore,
+                          readingTestScore,
+                          timeTaken,
+                        );
                       },
                       child: Container(
                         margin: const EdgeInsets.symmetric(
@@ -465,9 +414,15 @@ class _ExamPageState extends State<ExamPage> {
                           listingTestScore: listingTestScore,
                           timeTaken: timeTaken,
                           onDetailsClick: () {
-                            print('Button tapped: $title');
-                            _showBottomSheet(context, title, description, score,
-                                listingTestScore, readingTestScore, timeTaken);
+                            _showBottomSheet(
+                              context,
+                              title,
+                              description,
+                              score,
+                              listingTestScore,
+                              readingTestScore,
+                              timeTaken,
+                            );
                           },
                           onRetakeTestClick: () {
                             _handleRetakeTestClick(title, description);
@@ -487,7 +442,9 @@ class _ExamPageState extends State<ExamPage> {
                   width: double.infinity,
                   decoration: const BoxDecoration(color: Colors.white),
                   child: ElevatedButton(
-                      onPressed: () {}, child: const Text('Continue to Set 11')),
+                    onPressed: () {},
+                    child: const Text('Continue to Set 11'),
+                  ),
                   padding: const EdgeInsets.all(12),
                 ),
               ),

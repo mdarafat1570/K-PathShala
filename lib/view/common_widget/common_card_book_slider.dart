@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 
 Widget BookDeshbordbuildCard() {
@@ -28,33 +29,38 @@ Widget BookDeshbordbuildCard() {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Text widget with responsive font size
               Flexible(
                 child: customText(
                   "Ace the 2024 UBT Exam with \nK-Pathshala’s 100-Set Mock Test",
                   TextType.title,
                   color: AppColor.active,
-                  fontSize: 20,
+                  fontSize: constraints.maxWidth * 0.05, // Responsive font size
                 ),
               ),
               const Gap(5),
-              const Row(
+              // Row with flexible text widgets
+              Row(
                 children: [
                   Flexible(
                     child: Text(
                       'For only ৳999.00',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize:
+                            constraints.maxWidth * 0.04, // Responsive font size
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                  SizedBox(width: 8),
+                  SizedBox(
+                      width: constraints.maxWidth * 0.02), // Responsive spacing
                   Flexible(
                     child: Text(
                       '৳1,500',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize:
+                            constraints.maxWidth * 0.04, // Responsive font size
                         color: Colors.red,
                         decoration: TextDecoration.lineThrough,
                         decorationColor: Colors.red,
@@ -65,10 +71,11 @@ Widget BookDeshbordbuildCard() {
                 ],
               ),
               const SizedBox(height: 25),
+              // Button with responsive width
               Align(
                 alignment: Alignment.centerLeft,
                 child: commonCustomButton(
-                  width: constraints.maxWidth * 0.4,
+                  width: constraints.maxWidth * 0.4, // Responsive width
                   backgroundColor: const Color(0xFFFF6F61),
                   height: 40,
                   borderRadius: 10,
@@ -78,7 +85,8 @@ Widget BookDeshbordbuildCard() {
                     "View details",
                     TextType.normal,
                     color: AppColor.white,
-                    fontSize: 16,
+                    fontSize:
+                        constraints.maxWidth * 0.04, // Responsive font size
                   ),
                 ),
               ),
