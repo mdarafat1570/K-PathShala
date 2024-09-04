@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:kpathshala/api/api_contaner.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/view/common_widget/common_card_book_slider.dart';
@@ -123,6 +124,7 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
               const SizedBox(height: 20),
               GridView(
+                physics: NeverScrollableScrollPhysics(),
                 padding: EdgeInsets.zero,
                 shrinkWrap: true,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -302,10 +304,12 @@ Widget _buildGridItem(
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            customText(title, TextType.title, fontSize: 16),
+            FittedBox(child: customText(title, TextType.title, fontSize: 16)),
             Expanded(
-              child: customText(subtitle, TextType.normal,
-                  fontSize: 10, color: AppColor.black),
+              child: FittedBox(
+                child: customText(subtitle, TextType.normal,
+                    fontSize: 10, color: AppColor.black),
+              ),
             ),
           ],
         ),
