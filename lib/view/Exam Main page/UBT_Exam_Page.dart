@@ -172,7 +172,7 @@ class _ExamPageState extends State<ExamPage> {
   Widget _bottomSheetType1(BuildContext context, int score,
       int listingTestScore, int readingTestScore, String timeTaken) {
     return Container(
-      padding: const EdgeInsets.all(16.0),
+      height: 10,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -197,6 +197,7 @@ class _ExamPageState extends State<ExamPage> {
             "Final score",
             style: TextStyle(color: AppColor.navyBlue),
           ),
+          Gap(10),
           Row(
             children: [
               _buildScoreContainer('$listingTestScore of 20', "Reading Test"),
@@ -284,14 +285,19 @@ class _ExamPageState extends State<ExamPage> {
           centerTitle: true,
           leading: Padding(
             padding: const EdgeInsets.only(left: 20),
-            child: IconButton(
-              icon: const FaIcon(
-                FontAwesomeIcons.arrowLeft,
-                color: AppColor.navyBlue,
-              ),
-              onPressed: () {
+            child: InkWell(
+              onTap: () {
                 Navigator.of(context).pop();
               },
+              child: const IconButton(
+                icon: Icon(
+                  Icons.arrow_back_ios_new,
+                  size: 20,
+                  color: AppColor.navyBlue,
+                ),
+                onPressed:
+                    null, // You don't need `onPressed` in `IconButton` if wrapped in `InkWell`.
+              ),
             ),
           ),
         ),
@@ -338,9 +344,10 @@ class _ExamPageState extends State<ExamPage> {
                       ],
                     ),
                   ),
+                  SizedBox(height: 10),
                   Positioned(
-                    bottom: 0,
-                    left: 80,
+                    bottom: -8,
+                    left: 60,
                     right: 70,
                     child: Image.asset(
                       'assets/exploding-ribbon-and-confetti-9UErHOE0bL.png',
@@ -374,15 +381,14 @@ class _ExamPageState extends State<ExamPage> {
                 child: ListView.builder(
                   itemCount: courses.length,
                   itemBuilder: (context, index) {
-                    final title = courses[index]['title'] ?? 'No Title';
+                    final course = courses[index];
+                    final title = course['title'] ?? 'No Title';
                     final description =
-                        courses[index]['description'] ?? 'No Description';
-                    final score = courses[index]['score'] ?? 0;
-                    final readingTestScore =
-                        courses[index]['readingTestScore'] ?? 0;
-                    final listingTestScore =
-                        courses[index]['listingTestScore'] ?? 0;
-                    final timeTaken = courses[index]['timeTaken'] ?? 'Unknown';
+                        course['description'] ?? 'No Description';
+                    final score = course['score'] ?? 0;
+                    final readingTestScore = course['readingTestScore'] ?? 0;
+                    final listingTestScore = course['listingTestScore'] ?? 0;
+                    final timeTaken = course['timeTaken'] ?? 'Unknown';
 
                     final Color containerColor = score >= 40
                         ? const Color.fromRGBO(136, 208, 236, 0.2)
@@ -402,26 +408,26 @@ class _ExamPageState extends State<ExamPage> {
                         );
                       },
                       child: Container(
-                        margin: const EdgeInsets.symmetric(
-                            vertical: 7, horizontal: 15),
+                        margin: const EdgeInsets.symmetric(vertical: 5),
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: containerColor,
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey.withOpacity(0.3),
+                              color: Colors.grey.withOpacity(0.1),
                               spreadRadius: 2,
                               blurRadius: 5,
                             ),
                           ],
                         ),
-                        child: courserow(
-                          title,
-                          description,
+                        child: CourseRow(
+                          title: title,
+                          description: description,
                           readingTestScore: readingTestScore,
                           listingTestScore: listingTestScore,
                           timeTaken: timeTaken,
+                          score: score,
                           onDetailsClick: () {
                             _showBottomSheet(
                               context,
@@ -436,7 +442,6 @@ class _ExamPageState extends State<ExamPage> {
                           onRetakeTestClick: () {
                             _handleRetakeTestClick(title, description);
                           },
-                          score: score,
                           buttonLabel: _getButtonLabel(title),
                         ),
                       ),
@@ -444,20 +449,22 @@ class _ExamPageState extends State<ExamPage> {
                   },
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: Container(
-                  height: 63,
-                  width: double.infinity,
-                  decoration: const BoxDecoration(color: Colors.white),
-                  padding: const EdgeInsets.all(12),
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    child: const Text('Continue to Set 11'),
-                  ),
-                ),
-              ),
             ],
+          ),
+        ),
+        bottomNavigationBar: BottomAppBar(
+          height: 70,
+          color: Colors.white,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            onPressed: () {
+              // Button press logic here
+            },
+            child: const Text('Continue to Set 11'),
           ),
         ),
       ),
