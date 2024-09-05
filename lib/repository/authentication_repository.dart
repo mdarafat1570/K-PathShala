@@ -65,15 +65,16 @@ class AuthService {
     };
 
     final response = await http.post(url, headers: headers, body: json.encode(body));
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      return {
-        'error': true,
-        'message': 'Registration failed',
-        'details': json.decode(response.body)
-      };
-    }
+    return json.decode(response.body);
+    // if (response.statusCode == 200) {
+    //   return json.decode(response.body);
+    // } else {
+    //   return {
+    //     'error': true,
+    //     'message': 'Registration failed',
+    //     'details': json.decode(response.body)
+    //   };
+    // }
   }
   // Register User
   Future<Map<String, dynamic>> userUpdate({String? name, String? email, String? image}) async {

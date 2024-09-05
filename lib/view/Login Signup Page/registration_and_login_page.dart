@@ -6,9 +6,11 @@ import'package:kpathshala/app_base/common_imports.dart';
 
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:kpathshala/base/get_device_Id.dart';
+import 'package:kpathshala/model/registration_api_response_model.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/sign_in_methods/sign_in_methods.dart';
 import 'package:kpathshala/view/Login%20Signup%20Page/otp_verify_page.dart';
+import 'package:kpathshala/view/Notifications/notifications_page.dart';
 import 'package:kpathshala/view/Profile%20page/profile_edit.dart';
 import 'package:kpathshala/view/common_widget/common_loadingIndicator.dart';
 
@@ -213,12 +215,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
     final response = await _authService.registerUser(name: name, email: email, mobile: "",image: image, deviceId: deviceId);
     log(jsonEncode(response));
+
     if ((response['error'] == null || !response['error']) && mounted) {
+      final apiResponse = RegistrationApiResponse.fromJson(response);
       showLoadingIndicator(context: context, showLoader: false);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Registration successful.")),
       );
-      slideNavigationPushAndRemoveUntil(Profile(userCredential: userCredential, deviceId: deviceId, isFromGmailOrFacebookLogin: true), context);
+      if(apiResponse.data?.mobileVerified == false) {
+        slideNavigationPushAndRemoveUntil(Profile(userCredential: userCredential, deviceId: deviceId, isFromGmailOrFacebookLogin: true), context);
+      } else {
+        slideNavigationPushAndRemoveUntil(const NotificationsPage(), context);
+      }
     } else {
       if (mounted){
         showLoadingIndicator(context: context, showLoader: false);
