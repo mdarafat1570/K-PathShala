@@ -1,13 +1,16 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import'package:kpathshala/app_base/common_imports.dart';
 
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:kpathshala/repository/Otp_send_repository.dart';
+import 'package:kpathshala/base/get_device_Id.dart';
+import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/sign_in_methods/sign_in_methods.dart';
 import 'package:kpathshala/view/Login%20Signup%20Page/otp_verify_page.dart';
 import 'package:kpathshala/view/Profile%20page/profile_edit.dart';
+import 'package:kpathshala/view/common_widget/common_loadingIndicator.dart';
 
 
 
@@ -56,20 +59,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
       backgroundColor: Colors.white,
       margin: const EdgeInsets.all(8),
       onPressed: () async {
-        showApiCallingInProgress();
+        showLoadingIndicator(context: context, showLoader: true);
         try {
           UserCredential userCredential = await onPressed();
+
           if (mounted) {
-            Navigator.of(context).pop();
-          }
-          if (mounted) {
-            slideNavigationPushReplacement(Profile(userCredential: userCredential), context);
+            _registerUser(userCredential);
           }
         } catch (e) {
-          if (mounted) {
-            Navigator.of(context).pop();
+          if(mounted){
+            showLoadingIndicator(context: context, showLoader: false);
           }
-          log('Error during sign-in: $e');
+          log('Error during sign-in with gmail or facebook: $e');
         }
       },
       iconWidget: Image.asset(assetPath, height: iconHeight),
@@ -83,15 +84,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
     );
   }
 
-  Future<dynamic> showApiCallingInProgress() {
-    return showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return const Center(child: CircularProgressIndicator());
-        },
-      );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +119,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     height: 55,
                     width: double.maxFinite,
                     child: ElevatedButton(
-                      onPressed: (){_sendOtp(mobileNumber: "0${mobileNumberController.text}");},
+                      onPressed: (){sendOtp(mobileNumber: "0${mobileNumberController.text}");},
                       style: ElevatedButton.styleFrom(backgroundColor: AppColor.navyBlue),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -180,8 +172,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
     );
   }
 
-  void _sendOtp({required String mobileNumber}) async {
+  void sendOtp({required String mobileNumber}) async {
+    showLoadingIndicator(context: context, showLoader: true);
     if (mobileNumber.isEmpty) {
+      showLoadingIndicator(context: context, showLoader: false);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please enter your mobile number.")),
       );
@@ -189,19 +183,47 @@ class _RegistrationPageState extends State<RegistrationPage> {
     }
 
     final response = await _authService.sendOtp(mobileNumber);
+    log(jsonEncode(response));
     if (response['error'] == null || !response['error']) {
-      showApiCallingInProgress();
+
       if (mounted){
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("OTP sent to $mobileNumber.")),
-        );
+        showLoadingIndicator(context: context, showLoader: false);
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(content: Text("OTP sent to $mobileNumber.")),
+        // );
         slideNavigationPush(OtpPage(mobileNumber: mobileNumber,), context);
       }
     } else {
       if (mounted){
+        showLoadingIndicator(context: context, showLoader: false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Failed to send OTP: ${response['message']}")),
+        );
+      }
+    }
+  }
+
+  void _registerUser(UserCredential userCredential) async {
+    String name = userCredential.user?.displayName ?? "";
+    String email = userCredential.user?.email ?? "";
+    String image = userCredential.user?.photoURL ?? "";
+    String deviceId = await getDeviceId() ?? "";
+
+    log("User Data $name, $email, $deviceId");
+
+    final response = await _authService.registerUser(name: name, email: email, mobile: "",image: image, deviceId: deviceId);
+    log(jsonEncode(response));
+    if ((response['error'] == null || !response['error']) && mounted) {
+      showLoadingIndicator(context: context, showLoader: false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Registration successful.")),
+      );
+      slideNavigationPushAndRemoveUntil(Profile(userCredential: userCredential, deviceId: deviceId, isFromGmailOrFacebookLogin: true), context);
+    } else {
+      if (mounted){
+        showLoadingIndicator(context: context, showLoader: false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Registration failed: ${response['message']}")),
         );
       }
     }

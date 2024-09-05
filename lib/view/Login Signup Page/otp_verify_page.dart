@@ -6,16 +6,20 @@ import 'package:gap/gap.dart';
 import 'dart:async';
 import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/base/get_device_Id.dart';
-import 'package:kpathshala/repository/Otp_send_repository.dart';
+import 'package:kpathshala/model/otp_response_model.dart';
+import 'package:kpathshala/repository/authentication_repository.dart';
+import 'package:kpathshala/view/Notifications/notifications_page.dart';
 import 'package:kpathshala/view/Profile%20page/profile_edit.dart';
 import 'package:kpathshala/view/common_widget/Common_slideNavigation_Push.dart';
+import 'package:kpathshala/view/common_widget/common_loadingIndicator.dart';
 import 'package:kpathshala/view/common_widget/custom_background.dart';
 import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
 import 'package:pinput/pinput.dart';
 
 class OtpPage extends StatefulWidget {
   final String mobileNumber;
-  const OtpPage({super.key, required this.mobileNumber});
+  final String? email;
+  const OtpPage({super.key, required this.mobileNumber, this.email});
 
   @override
   State<OtpPage> createState() => _OtpPageState();
@@ -80,10 +84,8 @@ class _OtpPageState extends State<OtpPage> {
               children: [
                 customText("Verify phone number", TextType.title, fontSize: 27),
                 const Gap(20),
-                customText("To confirm your account, enter the 6-digit",
+                customText("To confirm your account, enter the 6-digit code we sent to ${widget.mobileNumber}",
                     TextType.normal,
-                    fontSize: 14),
-                customText("code we sent to ${widget.mobileNumber}", TextType.normal,
                     fontSize: 14),
                 const Gap(20),
                 Column(
@@ -164,18 +166,9 @@ class _OtpPageState extends State<OtpPage> {
       ),
     );
   }
-
-  Future<dynamic> showApiCallingInProgress() {
-    return showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(child: CircularProgressIndicator());
-      },
-    );
-  }
-
   void _verifyOtp() async {
+    showLoadingIndicator(context: context, showLoader: true);
+
     String mobile = widget.mobileNumber;
 
     String deviceId = await getDeviceId() ?? "";
@@ -184,22 +177,27 @@ class _OtpPageState extends State<OtpPage> {
     log(pinController.text);
     log(deviceId);
 
-    final response =
-    await _authService.verifyOtp(mobile, otp, deviceId);
+    final response = await _authService.verifyOtp(mobile, otp, deviceId);
+    final apiResponse = OTPApiResponse.fromJson(response);
 
     log(jsonEncode(response));
 
-    if (response['error'] == null || !response['error']) {
-      showApiCallingInProgress();
+    if (apiResponse.successResponse != null) {
       if(mounted){
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("OTP verified successfully.")),
         );
-        slideNavigationPush(Profile(mobileNumber: mobile,), context);
+        if (apiResponse.successResponse?.data.isProfileRequired == true){
+          showLoadingIndicator(context: context, showLoader: false);
+          slideNavigationPushAndRemoveUntil(Profile(mobileNumber: mobile, deviceId: deviceId,), context);
+        } else {
+          slideNavigationPushAndRemoveUntil(const NotificationsPage(), context);
+        }
       }
     } else {
       if(mounted){
+        showLoadingIndicator(context: context, showLoader: false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Failed to verify OTP: ${response['message']}")),
         );

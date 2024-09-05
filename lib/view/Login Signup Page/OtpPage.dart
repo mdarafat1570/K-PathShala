@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
-import 'package:kpathshala/repository/Otp_send_repository.dart';
+import 'package:kpathshala/repository/authentication_repository.dart';
 
 class AuthPage extends StatefulWidget {
   @override
@@ -66,7 +66,7 @@ class _AuthPageState extends State<AuthPage> {
     String mobile = _mobileController.text.trim();
 
     final response =
-        await _authService.registerUser(name, email, mobile: mobile);
+        await _authService.registerUser(name: name, email: email, mobile: mobile, deviceId: "");
     if (response['error'] == null || !response['error']) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Registration successful.")),
