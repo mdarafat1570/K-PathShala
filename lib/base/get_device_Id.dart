@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 
@@ -14,7 +15,7 @@ Future<String?> getDeviceId() async {
       deviceId = iosInfo.identifierForVendor; 
     }
   } catch (e) {
-    print('Error fetching device ID: $e');
+    log('Error fetching device ID: $e');
   }
 
   return deviceId;
