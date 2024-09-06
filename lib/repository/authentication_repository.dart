@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:kpathshala/api/api_container.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   
@@ -77,24 +78,65 @@ class AuthService {
     // }
   }
   // Register User
+
   Future<Map<String, dynamic>> userUpdate({String? name, String? email, String? image}) async {
     final url = Uri.parse(AuthorizationEndpoints.userUpdate);
-    final headers = {'Content-Type': 'application/json'};
-    final body = {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('authToken') ?? '';
+
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': token,
+    };
+
+    final body = jsonEncode({
       'name': name ?? '',
       'email': email ?? '',
       'image': image ?? '',
-    };
+    });
 
-    final response = await http.post(url, headers: headers, body: json.encode(body));
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
+    try {
+      final response = await http.post(url, headers: headers, body: body);
+
+      // Check if the response body is valid JSON
+      if (_isJson(response.body)) {
+        final decodedBody = jsonDecode(response.body);
+
+        if (response.statusCode == 200) {
+          return decodedBody;
+        } else {
+          return {
+            'error': true,
+            'message': 'Registration failed',
+            'details': decodedBody,
+          };
+        }
+      } else {
+        // Handle non-JSON responses (e.g., HTML error pages)
+        return {
+          'error': true,
+          'message': 'Non-JSON response from server',
+          'details': response.body, // You can log or display this as needed
+        };
+      }
+    } catch (e) {
       return {
         'error': true,
-        'message': 'Registration failed',
-        'details': json.decode(response.body)
+        'message': 'An error occurred',
+        'details': e.toString(),
       };
     }
   }
+
+// Helper function to check if a string is valid JSON
+  bool _isJson(String str) {
+    try {
+      jsonDecode(str);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+
 }
