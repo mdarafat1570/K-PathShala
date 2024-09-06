@@ -2,7 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
-import 'package:kpathshala/view/Navigation%20bar%20Page/navigation_bar.dart';
+
+import 'Login Signup Page/registration_and_login_page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -16,9 +17,9 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Timer(
-        Duration(seconds: 3),
+        const Duration(seconds: 3),
         () => Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (BuildContext context) => Navigation())));
+            builder: (BuildContext context) =>const RegistrationPage(title: "Registration Page",))));
   }
 
   @override

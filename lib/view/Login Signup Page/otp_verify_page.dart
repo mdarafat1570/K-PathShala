@@ -8,7 +8,7 @@ import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/base/get_device_Id.dart';
 import 'package:kpathshala/model/otp_response_model.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
-import 'package:kpathshala/view/Notifications/notifications_page.dart';
+import 'package:kpathshala/view/Navigation%20bar%20Page/navigation_bar.dart';
 import 'package:kpathshala/view/Profile%20page/profile_edit.dart';
 import 'package:kpathshala/view/common_widget/Common_slideNavigation_Push.dart';
 import 'package:kpathshala/view/common_widget/common_loadingIndicator.dart';
@@ -168,7 +168,6 @@ class _OtpPageState extends State<OtpPage> {
     );
   }
 
-
   void _verifyOtp() async {
     try {
       // Show loading indicator
@@ -211,7 +210,7 @@ class _OtpPageState extends State<OtpPage> {
               context,
             );
           } else {
-            slideNavigationPushAndRemoveUntil(const NotificationsPage(), context);
+            slideNavigationPushAndRemoveUntil(const Navigation(), context);
           }
         } else {
           // Handle OTP verification failure
