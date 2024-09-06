@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/view/Exam%20Main%20page/Bottom_sheets/main_buttom_sheet.dart';
 import 'package:kpathshala/view/Exam%20Main%20page/Quiz_Attempt_Page.dart';
@@ -110,7 +109,7 @@ class _ExamPageState extends State<ExamPage> {
       actions: [],
       gradient: gradient,
       color: backgroundColor,
-      height: MediaQuery.of(context).size.height * 0.4,
+      height: MediaQuery.of(context).size.height * 0.45,
     );
   }
 
@@ -171,56 +170,53 @@ class _ExamPageState extends State<ExamPage> {
 
   Widget _bottomSheetType1(BuildContext context, int score,
       int listingTestScore, int readingTestScore, String timeTaken) {
-    return Container(
-      height: 10,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '$score',
-                style: const TextStyle(
-                  fontSize: 50,
-                  color: AppColor.navyBlue,
-                  fontWeight: FontWeight.bold,
-                ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              '$score',
+              style: const TextStyle(
+                fontSize: 50,
+                color: AppColor.navyBlue,
+                fontWeight: FontWeight.bold,
               ),
-              const Text(
-                "/40",
-                style: TextStyle(fontSize: 12),
-              )
-            ],
-          ),
-          const Text(
-            "Final score",
-            style: TextStyle(color: AppColor.navyBlue),
-          ),
-          Gap(10),
-          Row(
-            children: [
-              _buildScoreContainer('$listingTestScore of 20', "Reading Test"),
-              const SizedBox(width: 4),
-              _buildScoreContainer('$readingTestScore of 20', "Listening Test"),
-              const SizedBox(width: 4),
-              _buildScoreContainer(timeTaken, "Time taken"),
-            ],
-          ),
-          const SizedBox(height: 10),
-          const Text("2 Retakes taken"),
-          const Text("3h 21m spent in total"),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            height: 49,
-            child: ElevatedButton(
-              onPressed: () {},
-              child: const Text("Close"),
             ),
+            const Text(
+              "/40",
+              style: TextStyle(fontSize: 12),
+            )
+          ],
+        ),
+        const Text(
+          "Final score",
+          style: TextStyle(color: AppColor.navyBlue),
+        ),
+        Gap(10),
+        Row(
+          children: [
+            _buildScoreContainer('$listingTestScore of 20', "Reading Test"),
+            const SizedBox(width: 4),
+            _buildScoreContainer('$readingTestScore of 20', "Listening Test"),
+            const SizedBox(width: 4),
+            _buildScoreContainer(timeTaken, "Time taken"),
+          ],
+        ),
+        const SizedBox(height: 10),
+        const Text("2 Retakes taken"),
+        const Text("3h 21m spent in total"),
+        const SizedBox(height: 20),
+        SizedBox(
+          width: double.infinity,
+          height: 49,
+          child: ElevatedButton(
+            onPressed: () {},
+            child: const Text("Close"),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -306,7 +302,12 @@ class _ExamPageState extends State<ExamPage> {
           child: Column(
             children: [
               Stack(
+                alignment: Alignment.bottomCenter,
                 children: [
+                  const SizedBox(
+                    height: 210,
+                    width: double.infinity,
+                  ),
                   Container(
                     width: double.infinity,
                     height: 190,
@@ -344,34 +345,25 @@ class _ExamPageState extends State<ExamPage> {
                       ],
                     ),
                   ),
-                  SizedBox(height: 10),
-                  Positioned(
-                    bottom: -8,
-                    left: 60,
-                    right: 70,
-                    child: Image.asset(
-                      'assets/exploding-ribbon-and-confetti-9UErHOE0bL.png',
-                      height: 70,
-                      fit: BoxFit.cover,
-                    ),
+                  const SizedBox(height: 10),
+                  Image.asset(
+                    'assets/exploding-ribbon-and-confetti-9UErHOE0bL.png',
+                    height: 70,
+                    fit: BoxFit.cover,
                   ),
                   Positioned(
-                    top: -5,
-                    left: 0,
-                    right: 0,
-                    child: Center(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          iconColor: Colors.red,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
+                    top: 0,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        iconColor: Colors.red,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                        onPressed: () {
-                          print('Button on Stack pressed');
-                        },
-                        child: const Text('Batch 1'),
                       ),
+                      onPressed: () {
+                        print('Button on Stack pressed');
+                      },
+                      child: const Text('Batch 1'),
                     ),
                   ),
                 ],
