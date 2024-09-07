@@ -98,7 +98,7 @@ class AuthService {
     try {
       final response = await http.post(url, headers: headers, body: body);
 
-      // Check if the response body is valid JSON
+ 
       if (_isJson(response.body)) {
         final decodedBody = jsonDecode(response.body);
 
@@ -112,11 +112,11 @@ class AuthService {
           };
         }
       } else {
-        // Handle non-JSON responses (e.g., HTML error pages)
+      
         return {
           'error': true,
           'message': 'Non-JSON response from server',
-          'details': response.body, // You can log or display this as needed
+          'details': response.body, 
         };
       }
     } catch (e) {
@@ -128,7 +128,7 @@ class AuthService {
     }
   }
 
-// Helper function to check if a string is valid JSON
+
   bool _isJson(String str) {
     try {
       jsonDecode(str);
