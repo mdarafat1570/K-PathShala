@@ -37,13 +37,20 @@ class AuthService {
       'otp': otp,
       'device_id': deviceId,
     };
+
     if (deviceName != null) {
       body['device_name'] = deviceName;
     }
 
     final response = await http.post(url, headers: headers, body: json.encode(body));
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+      var data = json.decode(response.body);
+      // Save the token if verification is successful
+      if (data['status'] == 'success' && data['data']['token'] != null) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('authToken', data['data']['token']);
+      }
+      return data;
     } else {
       return {
         'error': true,
@@ -86,7 +93,7 @@ class AuthService {
 
     final headers = {
       'Content-Type': 'application/json',
-      'Authorization': token,
+      'Authorization': 'Bearer $token',  // Ensure the Authorization header is correctly prefixed
     };
 
     final body = jsonEncode({
@@ -97,26 +104,22 @@ class AuthService {
 
     try {
       final response = await http.post(url, headers: headers, body: body);
-
- 
       if (_isJson(response.body)) {
         final decodedBody = jsonDecode(response.body);
-
         if (response.statusCode == 200) {
           return decodedBody;
         } else {
           return {
             'error': true,
-            'message': 'Registration failed',
+            'message': 'Update failed',
             'details': decodedBody,
           };
         }
       } else {
-      
         return {
           'error': true,
           'message': 'Non-JSON response from server',
-          'details': response.body, 
+          'details': response.body,
         };
       }
     } catch (e) {
@@ -129,6 +132,7 @@ class AuthService {
   }
 
 
+// Helper function to check if a string is valid JSON
   bool _isJson(String str) {
     try {
       jsonDecode(str);

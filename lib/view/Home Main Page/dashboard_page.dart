@@ -170,109 +170,112 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
               const Gap(10),
               _buildMockTestProgress(),
-              SizedBox(height: 10),
-              Container(
-                height: 180,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFF6F61),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Stack(
-                  children: [
-                    Positioned(
-                      top: 2,
-                      child: ClipRRect(
-                        child: Image.asset(
-                          'assets/profile.png',
-                          width: 180,
-                          height: 180,
-                          // fit: BoxFit.cover,
-                        ),
+              const SizedBox(height: 10),
+              Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  const SizedBox(height: 220),
+                  Container(
+                      height: 180,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFF6F61),
+                        borderRadius: BorderRadius.circular(16),
+                      )
+                  ),
+                  Positioned(
+                    left: 0,
+                    bottom: 0,
+                    child: ClipRRect(
+                      child: Image.asset(
+                        'assets/profile.png',
+                        width: 220,
+                        height: 220,
+                        fit: BoxFit.cover,
                       ),
                     ),
-                    // Subscribers and Videos Info
-                    Positioned(
-                      right: 14,
-                      top: 30,
-                      child: Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.8),
+                  ),
+                  // Subscribers and Videos Info
+                  Positioned(
+                    right: 14,
+                    top: 60,
+                    child: Container(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.8),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              customGap(height: 10),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.wifi_tethering,
+                                          color: Colors.white, size: 14),
+                                      customText('$count', TextType.normal,
+                                          color: AppColor.white,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.bold),
+                                    ],
+                                  ),
+                                  customGap(height: 5),
+                                  customText('Subscribers', TextType.normal,
+                                      color: AppColor.skyBlue, fontSize: 12),
+                                ],
+                              ),
+                              customGap(width: 10),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  customText('$vidCount', TextType.normal,
+                                      color: AppColor.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13),
+                                  customGap(height: 5),
+                                  Row(
+                                    children: [
+                                      customText(
+                                          'Free videos', TextType.normal,
+                                          color: AppColor.skyBlue,
+                                          fontSize: 12),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 5),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    left: 16,
+                    bottom: 16,
+                    right: 16,
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black.withOpacity(0.5),
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                customGap(height: 10),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.wifi_tethering,
-                                            color: Colors.white, size: 14),
-                                        customText('$count', TextType.normal,
-                                            color: AppColor.white,
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.bold),
-                                      ],
-                                    ),
-                                    customGap(height: 5),
-                                    customText('Subscribers', TextType.normal,
-                                        color: AppColor.skyBlue, fontSize: 12),
-                                  ],
-                                ),
-                                customGap(width: 10),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    customText('$vidCount', TextType.normal,
-                                        color: AppColor.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 13),
-                                    customGap(height: 5),
-                                    Row(
-                                      children: [
-                                        customText(
-                                            'Free videos', TextType.normal,
-                                            color: AppColor.skyBlue,
-                                            fontSize: 12),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 5),
-                          ],
-                        ),
                       ),
+                      onPressed: _launchYouTubeChannel,
+                      icon: Icon(Icons.play_circle_fill, color: Colors.white),
+                      label: customText(
+                          'Free Korean lessons on YouTube', TextType.normal,
+                          color: AppColor.white, fontSize: 16),
                     ),
-                    Positioned(
-                      left: 16,
-                      bottom: 16,
-                      right: 16,
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black.withOpacity(0.5),
-                          padding: EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        onPressed: _launchYouTubeChannel,
-                        icon: Icon(Icons.play_circle_fill, color: Colors.white),
-                        label: customText(
-                            'Free Korean lessons on YouTube', TextType.normal,
-                            color: AppColor.white, fontSize: 16),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),

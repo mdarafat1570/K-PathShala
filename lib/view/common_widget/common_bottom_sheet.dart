@@ -13,7 +13,7 @@ void showCommonBottomSheet({
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
     ),
-    isScrollControlled: true,
+    isScrollControlled: false,
     backgroundColor: Colors.transparent, // Set background color to transparent
     builder: (BuildContext context) {
       return Container(
@@ -35,11 +35,8 @@ void showCommonBottomSheet({
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: content,
-              ),
-            ),
+            content,
+            if (actions.isNotEmpty)
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(

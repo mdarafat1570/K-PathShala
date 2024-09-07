@@ -8,7 +8,7 @@ import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/sign_in_methods/sign_in_methods.dart';
 import 'package:kpathshala/view/Login%20Signup%20Page/otp_verify_page.dart';
 import 'package:kpathshala/view/Login%20Signup%20Page/registration_and_login_page.dart';
-import 'package:kpathshala/view/Notifications/notifications_page.dart';
+import 'package:kpathshala/view/Navigation%20bar%20Page/navigation_bar.dart';
 import 'package:kpathshala/view/Profile%20page/utils.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/view/common_widget/common_loadingIndicator.dart';
@@ -195,6 +195,7 @@ class _ProfileState extends State<Profile> {
       ),
     );
   }
+
   void sendOtp({required String mobileNumber, required String email}) async {
     showLoadingIndicator(context: context, showLoader: true);
     if (mobileNumber.isEmpty) {
@@ -241,7 +242,7 @@ class _ProfileState extends State<Profile> {
         showLoadingIndicator(context: context, showLoader: false);
 
         if (response['error'] == null || !response['error']) {
-          slideNavigationPushAndRemoveUntil(const NotificationsPage(), context);
+          slideNavigationPushAndRemoveUntil(const Navigation(), context);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Failed to Update Profile: ${response['message']}")),

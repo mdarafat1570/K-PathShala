@@ -10,7 +10,7 @@ import 'package:kpathshala/model/registration_api_response_model.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/sign_in_methods/sign_in_methods.dart';
 import 'package:kpathshala/view/Login%20Signup%20Page/otp_verify_page.dart';
-import 'package:kpathshala/view/Notifications/notifications_page.dart';
+import 'package:kpathshala/view/Navigation%20bar%20Page/navigation_bar.dart';
 import 'package:kpathshala/view/Profile%20page/profile_edit.dart';
 import 'package:kpathshala/view/common_widget/common_loadingIndicator.dart';
 
@@ -225,7 +225,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       if(apiResponse.data?.mobileVerified == false) {
         slideNavigationPushAndRemoveUntil(Profile(userCredential: userCredential, deviceId: deviceId, isFromGmailOrFacebookLogin: true), context);
       } else {
-        slideNavigationPushAndRemoveUntil(const NotificationsPage(), context);
+        slideNavigationPushAndRemoveUntil(const Navigation(), context);
       }
     } else {
       if (mounted){
