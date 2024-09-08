@@ -1,5 +1,5 @@
 class AuthorizationEndpoints {
-  static const String baseUrl = 'http://5.104.86.3:8010/api/v1';
+  static const String baseUrl = 'http://167.99.118.239:8009/api/v1';
 
   // Endpoint to send OTP
   static String sendOTP = '$baseUrl/send-otp';
