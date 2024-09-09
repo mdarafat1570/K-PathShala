@@ -22,7 +22,7 @@ Future<dynamic> slideNavigationPush(Widget page, BuildContext context, {
 
 Future<dynamic> slideNavigationPop(
     Widget page,
-    BuildContext context, {required Profile Function(dynamic context) builder},
+    BuildContext context, {required Profile Function(dynamic context) builder}
     ) {
   Navigator.pop(context);
   return _navigate(context, page);
