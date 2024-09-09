@@ -9,8 +9,8 @@ Widget customTextField({
   bool obscureText = false,
   TextInputType keyboardType = TextInputType.text,
   ValueChanged<String>? onChanged,
-  double? width, 
-  double? height, 
+  double? width,
+  double? height,
 }) {
   return Container(
     width: width,
@@ -28,14 +28,14 @@ Widget customTextField({
           borderRadius: BorderRadius.circular(8.0),
           borderSide: BorderSide(
             color: errorMessage == null ? Colors.grey : Colors.red,
-            width: 1.0,
+            width: 0.1,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
           borderSide: BorderSide(
             color: errorMessage == null ? Colors.blue : Colors.red,
-            width: 1.0,
+            width: 0.1,
           ),
         ),
         fillColor: Colors.white,
@@ -88,7 +88,8 @@ Widget customTextField2({
             ),
             fillColor: Colors.white,
             filled: true,
-            contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
+            contentPadding:
+                EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
           ),
         ),
       ],

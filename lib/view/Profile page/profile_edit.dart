@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:typed_data';
@@ -21,7 +20,12 @@ class Profile extends StatefulWidget {
   final String? deviceId;
   final bool isFromGmailOrFacebookLogin;
 
-  const Profile({super.key, this.userCredential, this.mobileNumber, this.deviceId, this.isFromGmailOrFacebookLogin = false});
+  const Profile(
+      {super.key,
+      this.userCredential,
+      this.mobileNumber,
+      this.deviceId,
+      this.isFromGmailOrFacebookLogin = false});
 
   @override
   State<Profile> createState() => _ProfileState();
@@ -34,6 +38,9 @@ class _ProfileState extends State<Profile> {
   final _emailController = TextEditingController();
   String? _networkImageUrl;
   final AuthService _authService = AuthService();
+  String? _nameError;
+  String? _phoneError;
+  String? _emailError;
 
   @override
   void initState() {
@@ -104,86 +111,145 @@ class _ProfileState extends State<Profile> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 80),
-              customText('Edit profile', TextType.title, fontSize: 18, color: AppColor.cancelled),
+              customText('Edit profile', TextType.title,
+                  fontSize: 18, color: AppColor.cancelled),
               const SizedBox(height: 30),
               Stack(
                 alignment: Alignment.center,
                 children: [
                   CircleAvatar(radius: 90, backgroundImage: imageProvider),
                   Positioned(
-                    bottom: 0, left: 46,
+                    bottom: 0,
+                    left: 46,
                     child: ElevatedButton.icon(
                       onPressed: showImageSourceOptions,
-                      label: const Text('Add', style: TextStyle(color: Colors.black, fontSize: 15)),
-                      icon: const Icon(Icons.add, color: Colors.black, size: 18),
-                      style: ElevatedButton.styleFrom(foregroundColor: Colors.black, backgroundColor: Colors.white),
+                      label: const Text('Add',
+                          style: TextStyle(color: Colors.black, fontSize: 15)),
+                      icon:
+                          const Icon(Icons.add, color: Colors.black, size: 18),
+                      style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.black,
+                          backgroundColor: Colors.white),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 30),
-              customTextField(controller: _nameController, label: "Full Name", width: 300.0, height: 50.0),
+              customTextField(
+                controller: _nameController,
+                label: "Full Name",
+                width: 300.0,
+                height: 50,
+                errorMessage: _nameError, // Show name validation error
+              ),
               const SizedBox(height: 15),
               Stack(
                 alignment: Alignment.centerRight,
                 children: [
-                  customTextField(controller: _mobileController, label: "Phone Number", width: 300.0, height: 50.0),
+                  customTextField(
+                    controller: _mobileController,
+                    label: "Phone Number",
+                    width: 300.0,
+                    height: 50.0,
+                    errorMessage: _phoneError, // Show phone validation error
+                  ),
                   Positioned(
                     right: 8.0,
                     child: InkWell(
-                      onTap: widget.isFromGmailOrFacebookLogin ? (){sendOtp(mobileNumber: _mobileController.text, email: _emailController.text);} : null,
+                      onTap: widget.isFromGmailOrFacebookLogin
+                          ? () {
+                              if (_validateFields()) {
+                                sendOtp(
+                                  mobileNumber: _mobileController.text,
+                                  email: _emailController.text,
+                                );
+                              }
+                            }
+                          : null,
                       borderRadius: BorderRadius.circular(32.0),
                       splashColor: Colors.blueAccent.withOpacity(0.2),
                       child: Container(
                         padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
-                          color: widget.isFromGmailOrFacebookLogin ? AppColor.navyBlue : AppColor.skyBlue,
+                          color: widget.isFromGmailOrFacebookLogin
+                              ? AppColor.navyBlue
+                              : AppColor.verified,
                           borderRadius: BorderRadius.circular(32.0),
-                          boxShadow:widget.isFromGmailOrFacebookLogin ? const [
-                            BoxShadow(
-                              color: AppColor.skyBlue,
-                              blurRadius: 0.0,
-                              offset: Offset(0, 3),
-                            ),
-                          ] : [],
+                          boxShadow: widget.isFromGmailOrFacebookLogin
+                              ? const [
+                                  BoxShadow(
+                                    color: AppColor.skyBlue,
+                                    blurRadius: 0.0,
+                                    offset: Offset(0, 3),
+                                  ),
+                                ]
+                              : [],
                         ),
-                        child:widget.isFromGmailOrFacebookLogin ? const Text(
-                          'Verify phone',
-                          style: TextStyle(fontSize: 12.0, color: Colors.white),
-                        ) :const Row(
-                          children: [
-                            Icon(Icons.check, size: 16,), Text(
-                              'Verified',
-                              style: TextStyle(fontSize: 12.0, color: AppColor.navyBlue),
-                            )
-                          ],
-                        ),
+                        child: widget.isFromGmailOrFacebookLogin
+                            ? const Text(
+                                'Verify phone',
+                                style: TextStyle(
+                                    fontSize: 12.0, color: Colors.white),
+                              )
+                            : const Row(
+                                children: [
+                                  Icon(
+                                    Icons.check,
+                                    size: 14,
+                                    color: AppColor.white,
+                                  ),
+                                  Gap(2),
+                                  Text(
+                                    'Verified',
+                                    style: TextStyle(
+                                        fontSize: 11.0, color: AppColor.white),
+                                  ),
+                                  Gap(4),
+                                ],
+                              ),
                       ),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 15),
-              customTextField(controller: _emailController, label: "Email", width: 300.0, height: 50.0),
+              customTextField(
+                controller: _emailController,
+                label: "Email",
+                width: 300.0,
+                height: 50.0,
+                errorMessage: _emailError,
+              ),
               const SizedBox(height: 30),
               SizedBox(
                 height: 55,
                 width: 320,
                 child: ElevatedButton(
-                  onPressed: (){ updateProfile(name: _nameController.text, email: _emailController.text, image: _networkImageUrl ?? '');},
+                  onPressed: () {
+                    if (_validateFields()) {
+                      updateProfile(
+                        name: _nameController.text,
+                        email: _emailController.text,
+                        image: _networkImageUrl ?? '',
+                      );
+                    }
+                  },
                   child: const Text('Save'),
                 ),
               ),
-
-              // Signup And SignOut button must be removed from here before app build
               TextButton(
-                onPressed: () => slideNavigationPush(const RegistrationPage(title: 'Sign Up'), context),
+                onPressed: () => slideNavigationPush(
+                    const RegistrationPage(title: 'Sign Up'), context),
                 child: const Text("SignUp"),
               ),
               TextButton(
                 onPressed: () {
                   SignInMethods.logout();
-                  for (var c in [_nameController, _mobileController, _emailController]) {
+                  for (var c in [
+                    _nameController,
+                    _mobileController,
+                    _emailController
+                  ]) {
                     c.clear();
                   }
                 },
@@ -194,6 +260,27 @@ class _ProfileState extends State<Profile> {
         ),
       ),
     );
+  }
+
+  bool _validateFields() {
+    setState(() {
+      _nameError =
+          _nameController.text.isEmpty ? "Full Name is required" : null;
+
+      _phoneError =
+          _mobileController.text.isEmpty ? "Phone Number is required" : null;
+
+      final email = _emailController.text;
+      if (email.isEmpty) {
+        _emailError = "Email is required";
+      } else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@gmail\.com$").hasMatch(email)) {
+        _emailError = "Please enter a valid Gmail address";
+      } else {
+        _emailError = null;
+      }
+    });
+
+    return _nameError == null && _phoneError == null && _emailError == null;
   }
 
   void sendOtp({required String mobileNumber, required String email}) async {
@@ -209,14 +296,17 @@ class _ProfileState extends State<Profile> {
     final response = await _authService.sendOtp(mobileNumber, email: email);
     log(jsonEncode(response));
     if (response['error'] == null || !response['error']) {
-
-      if (mounted){
+      if (mounted) {
         showLoadingIndicator(context: context, showLoader: false);
 
-        slideNavigationPush(OtpPage(mobileNumber: mobileNumber,), context);
+        slideNavigationPush(
+            OtpPage(
+              mobileNumber: mobileNumber,
+            ),
+            context);
       }
     } else {
-      if (mounted){
+      if (mounted) {
         showLoadingIndicator(context: context, showLoader: false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Failed to send OTP: ${response['message']}")),
@@ -234,7 +324,8 @@ class _ProfileState extends State<Profile> {
     showLoadingIndicator(context: context, showLoader: true);
 
     try {
-      final response = await _authService.userUpdate(name: name, email: email, image: image);
+      final response =
+          await _authService.userUpdate(name: name, email: email, image: image);
       log(jsonEncode(response));
 
       // Hide loading indicator and handle navigation or error display
@@ -245,7 +336,9 @@ class _ProfileState extends State<Profile> {
           slideNavigationPushAndRemoveUntil(const Navigation(), context);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Failed to Update Profile: ${response['message']}")),
+            SnackBar(
+                content:
+                    Text("Failed to Update Profile: ${response['message']}")),
           );
         }
       }
@@ -258,6 +351,4 @@ class _ProfileState extends State<Profile> {
       }
     }
   }
-
-
 }
