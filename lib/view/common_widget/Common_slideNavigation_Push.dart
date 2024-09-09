@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kpathshala/view/Profile%20page/profile_edit.dart';
 
 Future<dynamic> slideNavigationPush(Widget page, BuildContext context, { 
   String? widgetName,
@@ -21,7 +22,7 @@ Future<dynamic> slideNavigationPush(Widget page, BuildContext context, {
 
 Future<dynamic> slideNavigationPop(
     Widget page,
-    BuildContext context,
+    BuildContext context, {required Profile Function(dynamic context) builder},
     ) {
   Navigator.pop(context);
   return _navigate(context, page);

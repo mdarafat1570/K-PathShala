@@ -1,11 +1,12 @@
 import 'package:flutter_svg/svg.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
-import 'package:kpathshala/view/Exam%20Main%20page/CoursePurchasePage.dart';
+import 'package:kpathshala/view/Courses%20page/course_purchase_page.dart';
 import 'package:kpathshala/view/Notifications/notifications_page.dart';
 import 'package:kpathshala/view/Profile%20page/before_profile.dart';
 import 'package:kpathshala/view/Profile%20page/profile_edit.dart';
 import 'package:kpathshala/view/Courses%20page/Courses.dart';
 import 'package:kpathshala/view/Home%20Main%20Page/dashboard_page.dart';
+import 'package:kpathshala/view/Profile%20page/profile_screen_main.dart';
 
 class Navigation extends StatefulWidget {
   const Navigation({super.key});
@@ -33,7 +34,7 @@ class _NavigationState extends State<Navigation> {
             padding: const EdgeInsets.all(12),
             child: GestureDetector(
               onTap: () {
-                slideNavigationPush(const BeforeProfile(), context);
+                slideNavigationPush(ProfileScreenInMainPage(), context);
               },
               child: const CircleAvatar(
                 backgroundImage: AssetImage('assets/Profile.jpg'),
