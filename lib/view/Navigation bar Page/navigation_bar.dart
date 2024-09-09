@@ -1,12 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
-import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/view/Exam%20Main%20page/CoursePurchasePage.dart';
 import 'package:kpathshala/view/Notifications/notifications_page.dart';
 import 'package:kpathshala/view/Profile%20page/profile_edit.dart';
-import 'package:kpathshala/view/common_widget/Common_slideNavigation_Push.dart';
-import 'package:kpathshala/view/common_widget/custom_background.dart';
 import 'package:kpathshala/view/Courses%20page/Courses.dart';
 import 'package:kpathshala/view/Home%20Main%20Page/dashboard_page.dart';
 
@@ -20,9 +16,9 @@ class Navigation extends StatefulWidget {
 class _NavigationState extends State<Navigation> {
   int countindex = 0;
   List<Widget> widgetList = [
-    DashboardPage(),
-    Courses(),
-    CoursePurchasePage(),
+    const DashboardPage(),
+    const Courses(),
+    const CoursePurchasePage(),
   ];
 
   @override
@@ -36,7 +32,7 @@ class _NavigationState extends State<Navigation> {
             padding: const EdgeInsets.all(12),
             child: GestureDetector(
               onTap: () {
-                slideNavigationPush(Profile(), context);
+                slideNavigationPush(const Profile(), context);
               },
               child: const CircleAvatar(
                 backgroundImage: AssetImage('assets/Profile.jpg'),
@@ -55,7 +51,7 @@ class _NavigationState extends State<Navigation> {
             ),
             InkWell(
               onTap: () {
-                slideNavigationPush(NotificationsPage(), context);
+                slideNavigationPush(const NotificationsPage(), context);
               },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -66,7 +62,7 @@ class _NavigationState extends State<Navigation> {
                 ),
               ),
             ),
-            Gap(7)
+            const Gap(7)
           ],
         ),
         body: Center(
@@ -123,7 +119,7 @@ class _NavigationState extends State<Navigation> {
                 height: 18.0,
               ),
               activeIcon: SvgPicture.asset(
-                'test_ic.svg',
+                'assets/test.svg',
                 width: 22.0,
                 height: 22.0,
               ),
