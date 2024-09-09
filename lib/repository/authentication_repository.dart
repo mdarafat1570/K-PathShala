@@ -131,7 +131,6 @@ class AuthService {
     }
   }
 
-
 // Helper function to check if a string is valid JSON
   bool _isJson(String str) {
     try {

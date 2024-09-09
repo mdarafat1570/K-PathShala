@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import'package:kpathshala/app_base/common_imports.dart';
+import 'package:kpathshala/app_base/common_imports.dart';
 
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:kpathshala/base/get_device_Id.dart';
@@ -13,9 +13,6 @@ import 'package:kpathshala/view/Login%20Signup%20Page/otp_verify_page.dart';
 import 'package:kpathshala/view/Navigation%20bar%20Page/navigation_bar.dart';
 import 'package:kpathshala/view/Profile%20page/profile_edit.dart';
 import 'package:kpathshala/view/common_widget/common_loadingIndicator.dart';
-
-
-
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key, required this.title});
@@ -38,7 +35,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       fillColor: Colors.white,
       filled: true,
       border: _borderStyle(),
-      focusedBorder: _borderStyle(color: Colors.blue),
+      focusedBorder: _borderStyle(color: AppColor.navyBlue),
       contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
     );
   }
@@ -48,12 +45,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
       borderRadius: BorderRadius.circular(8.0),
       borderSide: BorderSide(
         color: color ?? (errorMessage == null ? Colors.grey : Colors.red),
-        width: 2.0,
+        width: 0.2,
       ),
     );
   }
 
-  Widget _customButton(String text, Future<UserCredential> Function() onPressed, String assetPath, {double iconHeight = 35}) {
+  Widget _customButton(String text, Future<UserCredential> Function() onPressed,
+      String assetPath,
+      {double iconHeight = 35}) {
     return commonCustomButton(
       width: double.infinity,
       height: 55,
@@ -69,7 +68,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
             _registerUser(userCredential);
           }
         } catch (e) {
-          if(mounted){
+          if (mounted) {
             showLoadingIndicator(context: context, showLoader: false);
           }
           log('Error during sign-in with gmail or facebook: $e');
@@ -86,7 +85,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,7 +99,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 children: [
                   Row(
                     children: [
-                      customText("Login or Sign Up", TextType.title, color: AppColor.navyBlue),
+                      customText("Login or Sign Up", TextType.title,
+                          color: AppColor.navyBlue),
                     ],
                   ),
                   const SizedBox(height: 30),
@@ -109,10 +108,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     controller: mobileNumberController,
                     style: const TextStyle(color: AppColor.navyBlue),
                     decoration: _inputDecoration(),
-                    initialCountryCode: 'BD',
+                    initialCountryCode: 'BD', // For Bangladesh
                     onChanged: (phone) {
                       setState(() {
-                        errorMessage = phone.number.isEmpty ? "Mobile number is required" : null;
+                        errorMessage = phone.number.isEmpty
+                            ? "Mobile number is required"
+                            : null;
                       });
                     },
                   ),
@@ -121,14 +122,32 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     height: 55,
                     width: double.maxFinite,
                     child: ElevatedButton(
-                      onPressed: (){sendOtp(mobileNumber: "0${mobileNumberController.text}");},
-                      style: ElevatedButton.styleFrom(backgroundColor: AppColor.navyBlue),
+                      onPressed: () {
+                        if (mobileNumberController.text.isNotEmpty) {
+                          String rawNumber = mobileNumberController.text;
+
+                          if (rawNumber.length == 10) {
+                            rawNumber = '0' + rawNumber;
+                          }
+
+                          sendOtp(mobileNumber: rawNumber);
+                        } else {
+                          setState(() {
+                            errorMessage = "Mobile number is required";
+                          });
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColor.navyBlue,
+                      ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          customText('Continue', TextType.subtitle, color: AppColor.white),
+                          customText('Continue', TextType.subtitle,
+                              color: AppColor.white),
                           const SizedBox(width: 10),
-                          const Icon(Icons.arrow_forward, color: AppColor.white),
+                          const Icon(Icons.arrow_forward,
+                              color: AppColor.white),
                         ],
                       ),
                     ),
@@ -137,14 +156,19 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   Center(
                     child: Column(
                       children: [
-                        customText("By continuing you agree with", TextType.normal, color: Colors.black, fontSize: 13),
+                        customText(
+                            "By continuing you agree with", TextType.normal,
+                            color: Colors.black, fontSize: 13),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            customText("K Pathshala’s all", TextType.normal, color: Colors.black, fontSize: 13),
+                            customText("K Pathshala’s all", TextType.normal,
+                                color: Colors.black, fontSize: 13),
                             const SizedBox(width: 5),
                             InkWell(
-                              child: customText("terms and conditions.", TextType.normal, color: AppColor.navyBlue, fontSize: 13),
+                              child: customText(
+                                  "terms and conditions.", TextType.normal,
+                                  color: AppColor.navyBlue, fontSize: 13),
                               onTap: () {},
                             ),
                           ],
@@ -153,15 +177,32 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Flexible(child: Divider(color: AppColor.draft, thickness: 0.8, indent: 60, endIndent: 5)),
+                            Flexible(
+                                child: Divider(
+                                    color: AppColor.draft,
+                                    thickness: 0.8,
+                                    indent: 60,
+                                    endIndent: 5)),
                             Text('or'),
-                            Flexible(child: Divider(color: AppColor.draft, thickness: 0.8, indent: 5, endIndent: 60)),
+                            Flexible(
+                                child: Divider(
+                                    color: AppColor.draft,
+                                    thickness: 0.8,
+                                    indent: 5,
+                                    endIndent: 60)),
                           ],
                         ),
                         const Gap(15),
-                        _customButton('Continue with Google', SignInMethods.signInWithGoogle, 'assets/google_logo.png'),
+                        _customButton(
+                            'Continue with Google',
+                            SignInMethods.signInWithGoogle,
+                            'assets/google_logo.png'),
                         const Gap(5),
-                        _customButton('Continue with Facebook', SignInMethods.signInWithFacebook, 'assets/facebook_logo.png', iconHeight: 20),
+                        _customButton(
+                            'Continue with Facebook',
+                            SignInMethods.signInWithFacebook,
+                            'assets/facebook_logo.png',
+                            iconHeight: 20),
                       ],
                     ),
                   ),
@@ -187,16 +228,19 @@ class _RegistrationPageState extends State<RegistrationPage> {
     final response = await _authService.sendOtp(mobileNumber);
     log(jsonEncode(response));
     if (response['error'] == null || !response['error']) {
-
-      if (mounted){
+      if (mounted) {
         showLoadingIndicator(context: context, showLoader: false);
         // ScaffoldMessenger.of(context).showSnackBar(
         //   SnackBar(content: Text("OTP sent to $mobileNumber.")),
         // );
-        slideNavigationPush(OtpPage(mobileNumber: mobileNumber,), context);
+        slideNavigationPush(
+            OtpPage(
+              mobileNumber: mobileNumber,
+            ),
+            context);
       }
     } else {
-      if (mounted){
+      if (mounted) {
         showLoadingIndicator(context: context, showLoader: false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Failed to send OTP: ${response['message']}")),
@@ -213,7 +257,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
     log("User Data $name, $email, $deviceId");
 
-    final response = await _authService.registerUser(name: name, email: email, mobile: "",image: image, deviceId: deviceId);
+    final response = await _authService.registerUser(
+        name: name, email: email, mobile: "", image: image, deviceId: deviceId);
     log(jsonEncode(response));
 
     if ((response['error'] == null || !response['error']) && mounted) {
@@ -222,16 +267,22 @@ class _RegistrationPageState extends State<RegistrationPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Registration successful.")),
       );
-      if(apiResponse.data?.mobileVerified == false) {
-        slideNavigationPushAndRemoveUntil(Profile(userCredential: userCredential, deviceId: deviceId, isFromGmailOrFacebookLogin: true), context);
+      if (apiResponse.data?.mobileVerified == false) {
+        slideNavigationPushAndRemoveUntil(
+            Profile(
+                userCredential: userCredential,
+                deviceId: deviceId,
+                isFromGmailOrFacebookLogin: true),
+            context);
       } else {
         slideNavigationPushAndRemoveUntil(const Navigation(), context);
       }
     } else {
-      if (mounted){
+      if (mounted) {
         showLoadingIndicator(context: context, showLoader: false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Registration failed: ${response['message']}")),
+          SnackBar(
+              content: Text("Registration failed: ${response['message']}")),
         );
       }
     }
