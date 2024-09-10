@@ -1,20 +1,20 @@
-import 'dart:developer';
 
-import 'package:flutter/material.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
-import 'package:kpathshala/view/Payment%20Page/payment_history.dart';
-import 'package:kpathshala/view/Profile%20page/profile_edit.dart';
-import 'package:velocity_x/velocity_x.dart';
+import 'package:kpathshala/view/payment_page/payment_history.dart';
+import 'package:kpathshala/view/profile_page/profile_edit.dart';
+
 
 class ProfileScreenInMainPage extends StatefulWidget {
+  const ProfileScreenInMainPage({super.key});
+
   @override
-  _ProfileScreenInMainPageState createState() =>
-      _ProfileScreenInMainPageState();
+  ProfileScreenInMainPageState createState() =>
+      ProfileScreenInMainPageState();
 }
 
-class _ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
+class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
   LogInCredentials? credentials;
   final AuthService _authService = AuthService();
 
@@ -93,7 +93,7 @@ class _ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => Profile()),
+                            MaterialPageRoute(builder: (context) => const Profile()),
                           );
                         },
                         style: ElevatedButton.styleFrom(
@@ -179,7 +179,7 @@ class _ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
                           color: AppColor.navyBlue,
                           fontWeight: FontWeight.bold),
                       onTap: () {
-                        slideNavigationPush(PaymentHistory(), context);
+                        slideNavigationPush(const PaymentHistory(), context);
                       },
                     ),
                     ListTile(

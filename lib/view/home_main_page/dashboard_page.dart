@@ -213,7 +213,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     children: [
                                       const Icon(Icons.wifi_tethering,
                                           color: Colors.white, size: 14),
-                                      customText('$count', TextType.normal,
+                                      customText(count, TextType.normal,
                                           color: AppColor.white,
                                           fontSize: 13,
                                           fontWeight: FontWeight.bold),
@@ -229,7 +229,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  customText('$vidCount', TextType.normal,
+                                  customText(vidCount, TextType.normal,
                                       color: AppColor.white,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 13),
@@ -257,13 +257,13 @@ class _DashboardPageState extends State<DashboardPage> {
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black.withOpacity(0.5),
-                        padding: EdgeInsets.symmetric(vertical: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
                       onPressed: _launchYouTubeChannel,
-                      icon: Icon(Icons.play_circle_fill, color: Colors.white),
+                      icon: const Icon(Icons.play_circle_fill, color: Colors.white),
                       label: customText(
                           'Free Korean lessons on YouTube', TextType.normal,
                           color: AppColor.white, fontSize: 16),
@@ -359,7 +359,7 @@ Widget _buildMockTestProgress() {
           ),
         ),
         const SizedBox(width: 12),
-        Icon(Icons.arrow_forward_ios, size: 16, color: AppColor.active),
+        const Icon(Icons.arrow_forward_ios, size: 16, color: AppColor.active),
       ],
     ),
   );

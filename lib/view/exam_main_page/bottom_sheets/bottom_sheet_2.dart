@@ -8,18 +8,18 @@ Widget _bottomSheetType2(
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          '$courseTitle',
+          courseTitle,
           style: const TextStyle(fontSize: 18),
         ),
         const SizedBox(height: 10),
         commonCustomButton(
             width: 320,
-            backgroundColor: Color.fromRGBO(136, 208, 236, 0.2),
+            backgroundColor: const Color.fromRGBO(136, 208, 236, 0.2),
             height: 67,
             borderRadius: 20,
             onPressed: () {},
             reversePosition: false,
-            child: Text(
+            child: const Text(
               "Solve video",
               style: TextStyle(color: AppColor.navyBlue),
             ))

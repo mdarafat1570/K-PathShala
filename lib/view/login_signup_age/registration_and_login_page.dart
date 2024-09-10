@@ -10,9 +10,9 @@ import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/model/registration_api_response_model.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/sign_in_methods/sign_in_methods.dart';
-import 'package:kpathshala/view/Login%20Signup%20Page/otp_verify_page.dart';
-import 'package:kpathshala/view/Navigation%20bar%20Page/navigation_bar.dart';
-import 'package:kpathshala/view/Profile%20page/profile_edit.dart';
+import 'package:kpathshala/view/login_signup_age/otp_verify_page.dart';
+import 'package:kpathshala/view/navigation_bar_page/navigation_bar.dart';
+import 'package:kpathshala/view/profile_page/profile_edit.dart';
 import 'package:kpathshala/view/common_widget/common_loadingIndicator.dart';
 
 class RegistrationPage extends StatefulWidget {

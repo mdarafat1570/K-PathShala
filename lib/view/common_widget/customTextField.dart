@@ -12,7 +12,7 @@ Widget customTextField({
   double? width,
   double? height,
 }) {
-  return Container(
+  return SizedBox(
     width: width,
     height: height,
     child: TextField(
@@ -40,7 +40,7 @@ Widget customTextField({
         ),
         fillColor: Colors.white,
         filled: true,
-        contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
+        contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
       ),
     ),
   );
@@ -89,7 +89,7 @@ Widget customTextField2({
             fillColor: Colors.white,
             filled: true,
             contentPadding:
-                EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
+                const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
           ),
         ),
       ],

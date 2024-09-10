@@ -6,10 +6,10 @@ import 'package:kpathshala/model/api_response_models/user_update_success_respons
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/sign_in_methods/sign_in_methods.dart';
-import 'package:kpathshala/view/Login%20Signup%20Page/otp_verify_page.dart';
-import 'package:kpathshala/view/Login%20Signup%20Page/registration_and_login_page.dart';
-import 'package:kpathshala/view/Navigation%20bar%20Page/navigation_bar.dart';
-import 'package:kpathshala/view/Profile%20page/utils.dart';
+import 'package:kpathshala/view/login_signup_age/otp_verify_page.dart';
+import 'package:kpathshala/view/login_signup_age/registration_and_login_page.dart';
+import 'package:kpathshala/view/navigation_bar_page/navigation_bar.dart';
+import 'package:kpathshala/view/profile_page/utils.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/view/common_widget/common_loadingIndicator.dart';
 import 'package:kpathshala/view/common_widget/customTextField.dart';
@@ -359,7 +359,7 @@ class _ProfileState extends State<Profile> {
             // Save the updated object back to SharedPreferences
             await _authService.saveLogInCredentials(credentials);
           } else {
-            print("No credentials found to update");
+            log("No credentials found to update");
           }
           slideNavigationPushAndRemoveUntil(const Navigation(), context);
         } else {

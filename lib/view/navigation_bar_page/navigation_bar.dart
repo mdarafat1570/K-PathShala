@@ -3,8 +3,8 @@ import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/view/courses_page/course_purchase_page.dart';
 import 'package:kpathshala/view/Notifications/notifications_page.dart';
 import 'package:kpathshala/view/courses_page/courses.dart';
-import 'package:kpathshala/view/Home%20Main%20Page/dashboard_page.dart';
-import 'package:kpathshala/view/Profile%20page/profile_screen_main.dart';
+import 'package:kpathshala/view/home_main_page/dashboard_page.dart';
+import 'package:kpathshala/view/profile_page/profile_screen_main.dart';
 
 class Navigation extends StatefulWidget {
   const Navigation({super.key});
@@ -32,7 +32,7 @@ class _NavigationState extends State<Navigation> {
             padding: const EdgeInsets.all(12),
             child: GestureDetector(
               onTap: () {
-                slideNavigationPush(ProfileScreenInMainPage(), context);
+                slideNavigationPush(const ProfileScreenInMainPage(), context);
               },
               child: const CircleAvatar(
                 backgroundImage: AssetImage('assets/Profile.jpg'),

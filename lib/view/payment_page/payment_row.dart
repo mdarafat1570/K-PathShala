@@ -29,11 +29,11 @@ class PaymentRow extends StatelessWidget {
           crossAxisAlignment:
               CrossAxisAlignment.start, // Align items to the start
           children: [
-            CircleAvatar(
+            const CircleAvatar(
               backgroundImage: AssetImage('assets/Profile.jpg'),
               radius: 24, // Use a consistent radius
             ),
-            SizedBox(width: 8), // Add space between avatar and text
+            const SizedBox(width: 8), // Add space between avatar and text
             Expanded(
               child: Column(
                 crossAxisAlignment:
@@ -48,7 +48,7 @@ class PaymentRow extends StatelessWidget {
                               fontSize: 14),
                         ),
                       ),
-                      Gap(12),
+                      const Gap(12),
                       Container(
                         constraints: BoxConstraints(
                             maxWidth: MediaQuery.of(context).size.width * 0.2,
@@ -76,7 +76,7 @@ class PaymentRow extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: 2), // Add space between title and amount
+                  const SizedBox(height: 2), // Add space between title and amount
                   FittedBox(
                     child: customText(
                       amount,
@@ -84,7 +84,7 @@ class PaymentRow extends StatelessWidget {
                       fontSize: 10,
                     ),
                   ),
-                  SizedBox(height: 2), // Add space between amount and date
+                  const SizedBox(height: 2), // Add space between amount and date
                   FittedBox(
                     child: customText(date, TextType.normal, fontSize: 10),
                   ),

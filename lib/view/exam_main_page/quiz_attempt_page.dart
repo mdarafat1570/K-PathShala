@@ -4,7 +4,7 @@ class RetakeTestPage extends StatelessWidget {
   final String title;
   final String description;
 
-  const RetakeTestPage({
+  const RetakeTestPage({super.key,
     required this.title,
     required this.description,
   });
@@ -13,7 +13,7 @@ class RetakeTestPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Retake Test'),
+        title: const Text('Retake Test'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -22,9 +22,9 @@ class RetakeTestPage extends StatelessWidget {
           children: [
             Text(
               title,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(description),
           ],
         ),

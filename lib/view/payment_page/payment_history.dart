@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/model/payment_history_item_list.dart';
-import 'package:kpathshala/view/Payment%20Page/payment_page.dart';
-import 'package:kpathshala/view/Payment%20Page/payment_row.dart';
+import 'package:kpathshala/view/payment_page/payment_row.dart';
 
 class PaymentHistory extends StatefulWidget {
   const PaymentHistory({super.key});
@@ -19,7 +17,7 @@ class _PaymentHistoryState extends State<PaymentHistory> {
     return GradientBackground(
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Payment History"),
+          title: const Text("Payment History"),
           backgroundColor: Colors.transparent,
         ),
         body: Padding(

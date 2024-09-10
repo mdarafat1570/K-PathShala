@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kpathshala/view/Profile%20page/profile_edit.dart';
+import 'package:kpathshala/view/profile_page/profile_edit.dart';
 
 Future<dynamic> slideNavigationPush(Widget page, BuildContext context, { 
   String? widgetName,

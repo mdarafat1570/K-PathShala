@@ -3,7 +3,6 @@ import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/model/PackageModel/package_model.dart';
 import 'package:kpathshala/repository/PackageServiceRepository.dart';
 import 'package:kpathshala/view/courses_page/course_shimmer.dart';
-import 'package:kpathshala/view/common_widget/common_bottom_sheet.dart';
 import 'package:kpathshala/view/exam_main_page/bottom_panel_page_course_purchase.dart';
 import 'package:lottie/lottie.dart';
 
@@ -18,7 +17,7 @@ class CoursePurchasePage extends StatefulWidget {
 class _CoursePurchasePageState extends State<CoursePurchasePage> {
   final PackageRepository _packageRepository = PackageRepository();
   Future<List<PackageModelList>>? _packagesFuture;
-  bool _isLoading = true;
+  // bool _isLoading = true;
 
   @override
   void initState() {

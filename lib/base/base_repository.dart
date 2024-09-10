@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../api/json_response.dart';
@@ -33,10 +34,10 @@ import '../api/json_response.dart';
 
       return response;
     } on SocketException catch (e) {
-      print('SocketException: $e');
+      log('SocketException: $e');
       throw Exception('Failed to connect to the server.');
     } catch (error) {
-      print('Error: $error');
+      log('Error: $error');
       throw Exception('Failed to send request. $error');
     }
   }
@@ -68,8 +69,8 @@ import '../api/json_response.dart';
       final jsonResponse = JsonResponse.fromJson(response);
 
       if (response.statusCode == 200) {
-        print('${jsonResponse.getMessage} from $apiEndpoint');
-        print(jsonResponse.data);
+        log('${jsonResponse.getMessage} from $apiEndpoint');
+        log(jsonResponse.data);
         final responseData = jsonResponse.getData;
 
         return parser(responseData);
@@ -80,10 +81,10 @@ import '../api/json_response.dart';
         _handleHttpError(response);
       }
     } on SocketException catch (e) {
-      print('SocketException: $e');
+      log('SocketException: $e');
       throw Exception('Failed to connect to the server.');
     } catch (error) {
-      print('Error: $error');
+      log('Error: $error');
       throw Exception('Failed to fetch data. $error');
     }
 
@@ -100,22 +101,22 @@ import '../api/json_response.dart';
     final statusCode = response.statusCode;
 
     if (statusCode == 401) {
-      print('Authentication error');
+      log('Authentication error');
       throw Exception('Failed to fetch data. HTTP Status Code $statusCode');
     } else if (statusCode == 400) {
-      print('Bad request');
+      log('Bad request');
       throw Exception('Failed to fetch data. HTTP Status Code $statusCode');
     } else if (statusCode == 404) {
-      print('Resource not found');
+      log('Resource not found');
       throw Exception('Failed to fetch data. HTTP Status Code $statusCode');
     } else if (statusCode == 408) {
-      print('Request timeout');
+      log('Request timeout');
       throw Exception('Failed to fetch data. HTTP Status Code $statusCode');
     } else if (statusCode == 502) {
-      print('Bad gateway');
+      log('Bad gateway');
       throw Exception('Failed to fetch data. HTTP Status Code $statusCode');
     } else {
-      print('Error: HTTP Status Code $statusCode');
+      log('Error: HTTP Status Code $statusCode');
       throw Exception('Failed to fetch data. HTTP Status Code $statusCode');
     }
   }

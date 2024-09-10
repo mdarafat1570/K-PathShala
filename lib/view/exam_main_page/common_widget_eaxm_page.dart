@@ -2,7 +2,7 @@
 
 Widget _bottomSheetType1(BuildContext context, int score,
       int listingTestScore, int readingTestScore, String timeTaken) {
-    return Container(
+    return SizedBox(
       height: 500,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -28,7 +28,7 @@ Widget _bottomSheetType1(BuildContext context, int score,
             "Final score",
             style: TextStyle(color: AppColor.navyBlue),
           ),
-          Gap(10),
+          const Gap(10),
           Row(
             children: [
               _buildScoreContainer('$listingTestScore of 20', "Reading Test"),
@@ -81,7 +81,7 @@ Widget _bottomSheetType1(BuildContext context, int score,
         height: 70,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: Color.fromRGBO(135, 206, 235, 0.2),
+          color: const Color.fromRGBO(135, 206, 235, 0.2),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10),

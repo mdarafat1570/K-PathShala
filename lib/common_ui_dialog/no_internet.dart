@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 class MyStatefulWidget extends StatefulWidget {
+  const MyStatefulWidget({super.key});
+
   @override
-  _MyStatefulWidgetState createState() => _MyStatefulWidgetState();
+  MyStatefulWidgetState createState() => MyStatefulWidgetState();
 }
 
-class _MyStatefulWidgetState extends State<MyStatefulWidget> {
+class MyStatefulWidgetState extends State<MyStatefulWidget> {
   bool _isToggled = false;
 
   void _toggleState() {
@@ -17,7 +19,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Stateful Widget Example'),
+        title: const Text('Stateful Widget Example'),
       ),
       body: Center(
         child: Column(
@@ -25,18 +27,18 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           children: <Widget>[
             Text(
               _isToggled ? 'State: ON' : 'State: OFF',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _toggleState,
-              child: Text('Toggle State'),
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.blue),
-                padding: MaterialStateProperty.all(
-                  EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                backgroundColor: WidgetStateProperty.all(Colors.blue),
+                padding: WidgetStateProperty.all(
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 ),
               ),
+              child: const Text('Toggle State'),
             ),
           ],
         ),

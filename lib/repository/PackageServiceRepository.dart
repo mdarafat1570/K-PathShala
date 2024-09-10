@@ -18,7 +18,7 @@ class PackageRepository {
       'Authorization': 'Bearer $token',  // Add Bearer token in the headers
     };
 
-    final url = Uri.parse('${KpatshalaPackage.packages}');  // Endpoint URL for packages
+    final url = Uri.parse(KpatshalaPackage.packages);  // Endpoint URL for packages
 
     final response = await http.get(url, headers: headers);
     if (response.statusCode == 200) {

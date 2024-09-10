@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
 
-import 'Login Signup Page/registration_and_login_page.dart';
+import 'login_signup_age/registration_and_login_page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

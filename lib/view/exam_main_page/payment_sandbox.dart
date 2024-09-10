@@ -17,11 +17,13 @@ import 'package:kpathshala/view/common_widget/common_button_add.dart';
 enum SdkType { TESTBOX, LIVE }
 
 class SSLCommerzPage extends StatefulWidget {
+  const SSLCommerzPage({super.key});
+
   @override
-  _SSLCommerzPageState createState() => _SSLCommerzPageState();
+  SSLCommerzPageState createState() => SSLCommerzPageState();
 }
 
-class _SSLCommerzPageState extends State<SSLCommerzPage> {
+class SSLCommerzPageState extends State<SSLCommerzPage> {
 
   dynamic formData = {};
   SdkType _radioSelected = SdkType.LIVE;
