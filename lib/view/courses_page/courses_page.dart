@@ -11,7 +11,7 @@ class Courses extends StatefulWidget {
 class _CoursesState extends State<Courses> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body:
           GradientBackground(child: Center(child: Text("Under Construction"))),
     );

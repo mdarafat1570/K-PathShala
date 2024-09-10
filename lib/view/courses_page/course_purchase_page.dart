@@ -2,7 +2,7 @@
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/model/PackageModel/package_model.dart';
 import 'package:kpathshala/repository/PackageServiceRepository.dart';
-import 'package:kpathshala/view/Courses%20page/course_shimmer.dart';
+import 'package:kpathshala/view/courses_page/course_shimmer.dart';
 import 'package:kpathshala/view/common_widget/common_bottom_sheet.dart';
 import 'package:kpathshala/view/exam_main_page/bottom_panel_page_course_purchase.dart';
 import 'package:lottie/lottie.dart';
@@ -80,7 +80,7 @@ class _CoursePurchasePageState extends State<CoursePurchasePage> {
                                     child: customText(
                                         package.title ?? "Course Title",
                                         TextType.title,
-                                        fontSize: 18),
+                                        fontSize: 14),
                                   ),
                                   const Gap(10),
                                   Container(
@@ -116,11 +116,11 @@ class _CoursePurchasePageState extends State<CoursePurchasePage> {
                               Row(
                                 children: [
                                   customText("For only", TextType.normal,
-                                      fontSize: 15,
+                                      fontSize: 12,
                                       fontWeight: FontWeight.bold),
                                   const Gap(5),
                                   customText(
-                                      "৳${package.price}", TextType.normal,
+                                      "৳${package.price}", TextType.normal, fontSize: 12,
                                       color: AppColor.black,
                                       fontWeight: FontWeight.bold),
                                   const Gap(8),
@@ -133,6 +133,7 @@ class _CoursePurchasePageState extends State<CoursePurchasePage> {
                                         TextSpan(
                                           text: ' ৳1,500.00',
                                           style: TextStyle(
+                                            fontSize: 12,
                                             color: Colors.grey,
                                             decoration:
                                                 TextDecoration.lineThrough,
@@ -149,6 +150,7 @@ class _CoursePurchasePageState extends State<CoursePurchasePage> {
                                 package.subtitle ??
                                     "Crack UBT with ease with our mock tests and study guide.",
                                 TextType.normal,
+                                fontSize: 10
                               ),
                               const Gap(16),
                               Padding(
@@ -160,7 +162,7 @@ class _CoursePurchasePageState extends State<CoursePurchasePage> {
                                           .join("\n")
                                       : "No features available",
                                   style: const TextStyle(
-                                    fontSize: 12,
+                                    fontSize: 10,
                                     height: 1.7,
                                   ),
                                 ),
@@ -168,42 +170,44 @@ class _CoursePurchasePageState extends State<CoursePurchasePage> {
                               const Gap(16),
                               Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
+                                    MainAxisAlignment.spaceAround,
                                 children: [
-                                  OutlinedButton(
-                                    onPressed: () {},
-                                    style: OutlinedButton.styleFrom(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 45, vertical: 6),
-                                      backgroundColor: const Color.fromRGBO(
-                                          26, 35, 126, 0.15),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(15),
+                                  SizedBox(
+                                    width: MediaQuery.sizeOf(context).width * 0.35,
+                                    child: OutlinedButton(
+                                      onPressed: () {},
+                                      style: OutlinedButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(vertical: 6),
+                                        backgroundColor: const Color.fromRGBO(
+                                            26, 35, 126, 0.15),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(15),
+                                        ),
                                       ),
+                                      child: const Text('Preview'),
                                     ),
-                                    child: const Text('Preview'),
                                   ),
-                                  const Gap(8),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      showCommonBottomSheet(
-                                        context: context,
-                                        height: screenHeight * heightPercentage,
-                                        content:
-                                            BottomSheetPage(context: context),
-                                        actions: [],
-                                        color: Colors.white,
-                                      );
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 45, vertical: 6),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(15),
+                                  SizedBox(
+                                    width: MediaQuery.sizeOf(context).width * 0.35,
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        showCommonBottomSheet(
+                                          context: context,
+                                          height: screenHeight * heightPercentage,
+                                          content:
+                                              BottomSheetPage(context: context),
+                                          actions: [],
+                                          color: Colors.white,
+                                        );
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(vertical: 6),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(15),
+                                        ),
                                       ),
+                                      child: const Text('Buy now'),
                                     ),
-                                    child: const Text('Buy now',
-                                        style: TextStyle(fontSize: 12)),
                                   ),
                                 ],
                               ),
