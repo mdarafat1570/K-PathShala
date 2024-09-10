@@ -6,6 +6,7 @@ import 'package:gap/gap.dart';
 import 'dart:async';
 import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/base/get_device_Id.dart';
+import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/model/otp_response_model.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/view/Navigation%20bar%20Page/navigation_bar.dart';
@@ -15,7 +16,6 @@ import 'package:kpathshala/view/common_widget/common_loadingIndicator.dart';
 import 'package:kpathshala/view/common_widget/custom_background.dart';
 import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
 import 'package:pinput/pinput.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class OtpPage extends StatefulWidget {
   final String mobileNumber;
@@ -85,15 +85,16 @@ class _OtpPageState extends State<OtpPage> {
               children: [
                 customText("Verify phone number", TextType.title, fontSize: 27),
                 const Gap(20),
-                customText("To confirm your account, enter the 6-digit code we sent to ${widget.mobileNumber}",
+                customText(
+                    "To confirm your account, enter the 6-digit code we sent to ${widget.mobileNumber}",
                     TextType.normal,
                     fontSize: 14),
                 const Gap(20),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                     Pinput(
-                       controller: pinController,
+                    Pinput(
+                      controller: pinController,
                       length: 6,
                       showCursor: true,
                       defaultPinTheme: PinTheme(
@@ -105,7 +106,8 @@ class _OtpPageState extends State<OtpPage> {
                             color: const Color.fromRGBO(253, 242, 250, 1),
                             width: 1.0,
                           ),
-                          borderRadius: const BorderRadius.all(Radius.circular(8)),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(8)),
                           boxShadow: [
                             BoxShadow(
                               color: AppColor.skyBlue.withOpacity(0.6),
@@ -194,10 +196,17 @@ class _OtpPageState extends State<OtpPage> {
         if (apiResponse.successResponse != null) {
           // Store token in shared preferences
           final token = apiResponse.successResponse!.data.token;
-
-          // Store the token in SharedPreferences
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('authToken', token);
+          final name = apiResponse.successResponse!.data.user.name;
+          final email = apiResponse.successResponse!.data.user.email;
+          final mobile = apiResponse.successResponse!.data.user.mobile;
+          final imageUrl = apiResponse.successResponse!.data.user.image;
+          await _authService.saveLogInCredentials(LogInCredentials(
+            email: email,
+            name: name,
+            imagesAddress: imageUrl,
+            mobile: mobile,
+            token: token,
+          ));
 
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("OTP verified successfully.")),
@@ -206,7 +215,7 @@ class _OtpPageState extends State<OtpPage> {
           // Navigate based on profile requirement
           if (apiResponse.successResponse?.data.isProfileRequired == true) {
             slideNavigationPushAndRemoveUntil(
-              Profile(mobileNumber: mobile, deviceId: deviceId),
+              Profile(deviceId: deviceId),
               context,
             );
           } else {
@@ -215,7 +224,8 @@ class _OtpPageState extends State<OtpPage> {
         } else {
           // Handle OTP verification failure
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Failed to verify OTP: ${response['message']}")),
+            SnackBar(
+                content: Text("Failed to verify OTP: ${response['message']}")),
           );
         }
       }
@@ -224,10 +234,10 @@ class _OtpPageState extends State<OtpPage> {
       if (mounted) {
         showLoadingIndicator(context: context, showLoader: false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("An error occurred during OTP verification.")),
+          const SnackBar(
+              content: Text("An error occurred during OTP verification.")),
         );
       }
     }
   }
-
 }

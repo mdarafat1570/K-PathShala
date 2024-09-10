@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
+import 'package:kpathshala/view/Payment%20Page/payment_history.dart';
 import 'package:kpathshala/view/Profile%20page/profile_edit.dart';
 import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
 
@@ -149,7 +150,9 @@ class _ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
                       title: customText('Purchase History', TextType.normal,
                           color: AppColor.navyBlue,
                           fontWeight: FontWeight.bold),
-                      onTap: () {},
+                      onTap: () {
+                        slideNavigationPush(PaymentHistory(), context);
+                      },
                     ),
                     ListTile(
                       leading: const Icon(

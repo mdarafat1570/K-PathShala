@@ -2,10 +2,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
+import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-   static const String _tokenKey = 'authToken';
+  static const String _tokenKey = 'authToken';
 
   // Save token to SharedPreferences
   Future<void> saveToken(String token) async {
@@ -30,7 +31,7 @@ class AuthService {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.containsKey(_tokenKey);
   }
-  
+
   // Send OTP
   Future<Map<String, dynamic>> sendOtp(String mobile, {String? email}) async {
     final url = Uri.parse(AuthorizationEndpoints.sendOTP);
@@ -42,7 +43,8 @@ class AuthService {
       body['email'] = email;
     }
 
-    final response = await http.post(url, headers: headers, body: json.encode(body));
+    final response =
+        await http.post(url, headers: headers, body: json.encode(body));
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
@@ -55,7 +57,9 @@ class AuthService {
   }
 
   // Verify OTP
-  Future<Map<String, dynamic>> verifyOtp(String mobile, int otp, String deviceId, {String? deviceName}) async {
+  Future<Map<String, dynamic>> verifyOtp(
+      String mobile, int otp, String deviceId,
+      {String? deviceName}) async {
     final url = Uri.parse(AuthorizationEndpoints.verifyOTP);
     final headers = {'Content-Type': 'application/json'};
     final body = {
@@ -68,7 +72,8 @@ class AuthService {
       body['device_name'] = deviceName;
     }
 
-    final response = await http.post(url, headers: headers, body: json.encode(body));
+    final response =
+        await http.post(url, headers: headers, body: json.encode(body));
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
       // Save the token if verification is successful
@@ -87,7 +92,12 @@ class AuthService {
   }
 
   // Register User
-  Future<Map<String, dynamic>> registerUser({String? name, String? email,required String mobile, String? image,required String deviceId}) async {
+  Future<Map<String, dynamic>> registerUser(
+      {String? name,
+      String? email,
+      required String mobile,
+      String? image,
+      required String deviceId}) async {
     final url = Uri.parse(AuthorizationEndpoints.registerUser);
     final headers = {'Content-Type': 'application/json'};
     final body = {
@@ -98,28 +108,22 @@ class AuthService {
       'device_id': deviceId,
     };
 
-    final response = await http.post(url, headers: headers, body: json.encode(body));
+    final response =
+        await http.post(url, headers: headers, body: json.encode(body));
     return json.decode(response.body);
-    // if (response.statusCode == 200) {
-    //   return json.decode(response.body);
-    // } else {
-    //   return {
-    //     'error': true,
-    //     'message': 'Registration failed',
-    //     'details': json.decode(response.body)
-    //   };
-    // }
   }
   // Register User
 
-  Future<Map<String, dynamic>> userUpdate({String? name, String? email, String? image}) async {
+  Future<Map<String, dynamic>> userUpdate(
+      {String? name, String? email, String? image}) async {
     final url = Uri.parse(AuthorizationEndpoints.userUpdate);
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('authToken') ?? '';
 
     final headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',  // Ensure the Authorization header is correctly prefixed
+      'Authorization':
+          'Bearer $token', // Ensure the Authorization header is correctly prefixed
     };
 
     final body = jsonEncode({
@@ -167,8 +171,25 @@ class AuthService {
     }
   }
 
+  Future<void> saveLogInCredentials(LogInCredentials credentials) async {
+    final prefs = await SharedPreferences.getInstance();
+    String jsonString = jsonEncode(credentials.toJson());
+    await prefs.setString('login_credentials', jsonString);
+  }
 
-    Future<Map<String, dynamic>> logout(BuildContext context) async {
+  Future<LogInCredentials?> getLogInCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? jsonString = prefs.getString('login_credentials');
+
+    if (jsonString != null) {
+      Map<String, dynamic> jsonMap = jsonDecode(jsonString);
+      return LogInCredentials.fromJson(jsonMap);
+    }
+
+    return null;
+  }
+
+  Future<Map<String, dynamic>> logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('authToken');
 
@@ -202,11 +223,9 @@ class AuthService {
   }
 
   void _showSnackbar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message))
-    );
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
-
 
   //  onPressed: () async {
   //   Map<String, dynamic> result = await AuthService().logout(context);
@@ -214,6 +233,4 @@ class AuthService {
   //     Navigator.pushReplacementNamed(context, '/login');  // Navigate to login or initial screen
   //   }
   // },
-
-
 }

@@ -6,10 +6,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:logger/logger.dart';
-
-// Initialize the logger
-var logger = Logger();
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -18,23 +14,23 @@ class DashboardPage extends StatefulWidget {
   State<DashboardPage> createState() => _DashboardPageState();
 }
 
-//For navigate to Youtube Channel
+//For navigate to Youtube Chanel
 Future<void> _launchYouTubeChannel() async {
   //Convert the URL string to a Uri object
   final Uri url =
       Uri.parse('https://www.youtube.com/channel/UCKeeBsW1hGy0NBCqKgd5oBw');
-  logger.d('Trying to launch URL: $url'); // Use logger instead of print
+  print('Trying to launch URL: $url');
   if (await canLaunchUrl(url)) {
-    logger.i('Launching URL...'); // Info log
+    print('Launching URL...');
     await launchUrl(url);
   } else {
-    logger.e('Failed to launch URL'); // Error log
+    print('Failed to launch URL');
     throw 'Could not launch $url';
   }
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  final String _apikey = "AIzaSyClsZlG68dO9BB9mF5XzxrdXvFcxehh9RA";
+  String _apikey = "AIzaSyClsZlG68dO9BB9mF5XzxrdXvFcxehh9RA";
   String count = "0";
   String vidCount = "0";
   int _currentTimer = 1;
@@ -63,8 +59,7 @@ class _DashboardPageState extends State<DashboardPage> {
         vidCount = videoCount;
       });
     } else {
-      logger.e(
-          "Failed to fetch subscriber count: ${response.statusCode}"); // Error log
+      print("Failed to fetch subscriber count: ${response.statusCode}");
     }
   }
 
@@ -194,6 +189,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
                     ),
                   ),
+                  // Subscribers and Videos Info
                   Positioned(
                     right: 14,
                     top: 60,
@@ -261,14 +257,13 @@ class _DashboardPageState extends State<DashboardPage> {
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black.withOpacity(0.5),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        padding: EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
                       onPressed: _launchYouTubeChannel,
-                      icon: const Icon(Icons.play_circle_fill,
-                          color: Colors.white),
+                      icon: Icon(Icons.play_circle_fill, color: Colors.white),
                       label: customText(
                           'Free Korean lessons on YouTube', TextType.normal,
                           color: AppColor.white, fontSize: 16),
@@ -303,17 +298,21 @@ Widget _buildGridItem(
       children: [
         Icon(icon, color: AppColor.accentColor),
         const Gap(12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            FittedBox(child: customText(title, TextType.title, fontSize: 16)),
-            Expanded(
-              child: FittedBox(
-                child: customText(subtitle, TextType.normal,
-                    fontSize: 10, color: AppColor.black),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Flexible(
+                  child: FittedBox(
+                      child: customText(title, TextType.title, fontSize: 16))),
+              Flexible(
+                child: FittedBox(
+                  child: customText(subtitle, TextType.normal,
+                      fontSize: 10, color: AppColor.black),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     ),
@@ -321,25 +320,47 @@ Widget _buildGridItem(
 }
 
 Widget _buildMockTestProgress() {
-  // Build the mock test progress section
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      customText('Mock Test Progress', TextType.title, fontSize: 16),
-      const SizedBox(height: 10),
-      const LinearProgressIndicator(
-        value: 0.7,
-        backgroundColor: AppColor.lightGray,
-        color: AppColor.accentColor,
-      ),
-      const SizedBox(height: 10),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          customText('700/1000', TextType.normal, fontSize: 12),
-          customText('70%', TextType.normal, fontSize: 12),
-        ],
-      ),
-    ],
+  return Container(
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.1),
+          spreadRadius: 2,
+          blurRadius: 5,
+        ),
+      ],
+    ),
+    padding: const EdgeInsets.all(16),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        CircularProgressIndicator(
+          value: 0.1,
+          backgroundColor: Colors.grey[200],
+          color: AppColor.accentColor,
+          strokeWidth: 4, // Adjust stroke width for better visual
+        ),
+        const SizedBox(width: 12), // Use SizedBox for consistent spacing
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              FittedBox(
+                  child: customText("UBT Mock Test", TextType.title,
+                      fontSize: 16)),
+              FittedBox(
+                child: customText(
+                    "10 out of 100 sets completed", TextType.normal,
+                    fontSize: 14),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 12),
+        Icon(Icons.arrow_forward_ios, size: 16, color: AppColor.active),
+      ],
+    ),
   );
 }

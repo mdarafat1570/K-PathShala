@@ -6,6 +6,7 @@ import 'package:kpathshala/app_base/common_imports.dart';
 
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:kpathshala/base/get_device_Id.dart';
+import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/model/registration_api_response_model.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/sign_in_methods/sign_in_methods.dart';
@@ -127,7 +128,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           String rawNumber = mobileNumberController.text;
 
                           if (rawNumber.length == 10) {
-                            rawNumber = '0' + rawNumber;
+                            rawNumber = '0$rawNumber';
                           }
 
                           sendOtp(mobileNumber: rawNumber);
@@ -267,10 +268,22 @@ class _RegistrationPageState extends State<RegistrationPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Registration successful.")),
       );
+      // Store token in shared preferences
+      final token = apiResponse.data?.token;
+      final name = apiResponse.data?.user?.name;
+      final email = apiResponse.data?.user?.email;
+      final mobile = apiResponse.data?.user?.mobile;
+      final imageUrl = apiResponse.data?.user?.image;
+      await _authService.saveLogInCredentials(LogInCredentials(
+        email: email,
+        name: name,
+        imagesAddress: imageUrl,
+        mobile: mobile,
+        token: token,
+      ));
       if (apiResponse.data?.mobileVerified == false) {
         slideNavigationPushAndRemoveUntil(
             Profile(
-                userCredential: userCredential,
                 deviceId: deviceId,
                 isFromGmailOrFacebookLogin: true),
             context);
