@@ -5,6 +5,7 @@ class AuthorizationEndpoints {
   static String sendOTP = '$baseUrl/send-otp';
   static const String verifyOTP = '$baseUrl/verify-otp';
   static String receiveOTP = '$baseUrl/otp/userPhoneNumber';
+  static String logOut = '$baseUrl/logout';
 
   // User Endpoints
   static String registerUser = '$baseUrl/auth/register';

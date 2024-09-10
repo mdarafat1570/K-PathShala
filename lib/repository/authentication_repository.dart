@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:kpathshala/api/api_container.dart';
+import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
@@ -165,6 +166,54 @@ class AuthService {
       return false;
     }
   }
+
+
+    Future<Map<String, dynamic>> logout(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('authToken');
+
+    if (token == null) {
+      // No token found, perhaps already logged out
+      _showSnackbar(context, 'No active session found.');
+      return {'status': 'error', 'message': 'No active session.'};
+    }
+
+    final url = Uri.parse(AuthorizationEndpoints.logOut);
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      // Remove token from local storage on successful logout
+      await prefs.remove('authToken');
+      _showSnackbar(context, 'Logout successful');
+      return jsonDecode(response.body);
+    } else if (response.statusCode == 401) {
+      _showSnackbar(context, 'Invalid or expired token.');
+      return jsonDecode(response.body);
+    } else {
+      _showSnackbar(context, 'Logout failed. Please try again.');
+      return jsonDecode(response.body);
+    }
+  }
+
+  void _showSnackbar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message))
+    );
+  }
+
+
+  //  onPressed: () async {
+  //   Map<String, dynamic> result = await AuthService().logout(context);
+  //   if (result['status'] == 'success') {
+  //     Navigator.pushReplacementNamed(context, '/login');  // Navigate to login or initial screen
+  //   }
+  // },
 
 
 }
