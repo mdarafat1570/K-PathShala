@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:kpathshala/app_theme/app_color.dart';
-import 'package:kpathshala/view/Exam%20Main%20page/UBT_Exam_Page.dart';
-import 'package:kpathshala/view/common_widget/common_button_add.dart';
-import '../../app_base/common_imports.dart';
+import 'package:kpathshala/app_base/common_imports.dart';
+import 'package:kpathshala/view/exam_main_page/payment_sandbox.dart';
+import 'package:kpathshala/view/exam_main_page/ubt_exam_page.dart';
+// import 'package:kpathshala/view/exam_main_page/ubt_exam_page.dart';
 
 class BottomSheetPage extends StatefulWidget {
   final BuildContext context;
@@ -49,7 +48,7 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
                     fontSize: 17,
                     color: AppColor.navyBlue,
                     fontWeight: FontWeight.bold),
-                Gap(5),
+                const Gap(5),
                 RichText(
                   text: const TextSpan(
                     text: "You’ll have access to UBT Mock Test till ",
@@ -73,24 +72,26 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
             ),
           ),
         ),
-        Gap(30),
-        commonCustomButton(
-          width: double.infinity,
-          backgroundColor: AppColor.navyBlue,
-          height: 55,
-          borderRadius: 30,
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ExamPage()),
-            );
-          },
-          reversePosition: false,
-          child: const Text(
-            "Proceed to payment",
-            style: TextStyle(color: AppColor.white, fontSize: 20),
-          ),
-        ),
+        const Gap(30),
+        // commonCustomButton(
+        //   width: double.infinity,
+        //   backgroundColor: AppColor.navyBlue,
+        //   height: 55,
+        //   borderRadius: 30,
+        //   onPressed: () {
+        //     Navigator.push(
+        //       context,
+        //       MaterialPageRoute(builder: (context) =>ExamPage()),
+        //     );
+        //     // showPaymentDialog();
+        //   },
+        //   reversePosition: false,
+        //   child: const Text(
+        //     "Proceed to payment",
+        //     style: TextStyle(color: AppColor.white, fontSize: 20),
+        //   ),
+        // ),
+        SSLCommerzPage(),
         Gap(screenHeight * 0.03),
         SizedBox(
           width: double.infinity,
@@ -115,9 +116,34 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
             ),
           ),
         ),
-        Gap(15),
+        const Gap(15),
         Image.asset('assets/pixelcut-export.png', fit: BoxFit.cover),
       ],
+    );
+  }
+
+  Future<void> showPaymentDialog(){
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) => Dialog(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Text('This is a typical dialog.'),
+              const SizedBox(height: 15),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Close'),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

@@ -39,6 +39,8 @@ dependencies:
   shared_preferences: ^2.3.2
   connectivity_plus: ^6.0.5
   logger: ^2.4.0
+  flutter_sslcommerz: ^2.3.6
+  fluttertoast: ^8.2.8
 
 dev_dependencies:
   flutter_test:

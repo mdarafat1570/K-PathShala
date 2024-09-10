@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:kpathshala/api/api_container.dart';
+import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
@@ -74,15 +75,6 @@ class AuthService {
 
     final response = await http.post(url, headers: headers, body: json.encode(body));
     return json.decode(response.body);
-    // if (response.statusCode == 200) {
-    //   return json.decode(response.body);
-    // } else {
-    //   return {
-    //     'error': true,
-    //     'message': 'Registration failed',
-    //     'details': json.decode(response.body)
-    //   };
-    // }
   }
   // Register User
 
@@ -141,5 +133,22 @@ class AuthService {
     }
   }
 
+  Future<void> saveLogInCredentials(LogInCredentials credentials) async {
+    final prefs = await SharedPreferences.getInstance();
+    String jsonString = jsonEncode(credentials.toJson());
+    await prefs.setString('login_credentials', jsonString);
+  }
+
+  Future<LogInCredentials?> getLogInCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? jsonString = prefs.getString('login_credentials');
+
+    if (jsonString != null) {
+      Map<String, dynamic> jsonMap = jsonDecode(jsonString);
+      return LogInCredentials.fromJson(jsonMap);
+    }
+
+    return null;
+  }
 
 }

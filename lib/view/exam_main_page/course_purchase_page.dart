@@ -1,7 +1,6 @@
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
-import 'package:kpathshala/view/Exam%20Main%20page/BottomPanelPage_CourseParchas.dart';
-import 'package:kpathshala/view/common_widget/common_bottom_sheet.dart';
+import 'package:kpathshala/view/exam_main_page/bottom_panel_page_course_purchase.dart';
 
 class CoursePurchasePage extends StatefulWidget {
   const CoursePurchasePage({super.key});
@@ -15,7 +14,6 @@ class _CoursePurchasePageState extends State<CoursePurchasePage> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final heightPercentage = 490 / screenHeight;
 
     return Scaffold(
       body: GradientBackground(
@@ -112,41 +110,40 @@ class _CoursePurchasePageState extends State<CoursePurchasePage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        OutlinedButton(
-                          onPressed: () {},
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 45, vertical: 6),
-                            backgroundColor:
-                                const Color.fromRGBO(26, 35, 126, 0.15),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
+                        SizedBox(
+                          width: MediaQuery.sizeOf(context).width * 0.35,
+                          child: OutlinedButton(
+                            onPressed: () {},
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 6),
+                              backgroundColor:
+                                  const Color.fromRGBO(26, 35, 126, 0.15),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
                             ),
+                            child: const Text('Preview', style: TextStyle(fontSize: 12)),
                           ),
-                          child: const Text('Preview'),
                         ),
-                        const Gap(8),
-                        ElevatedButton(
-                          onPressed: () {
-                            showCommonBottomSheet(
-                              context: context,
-                              height: screenHeight *
-                                  heightPercentage,
-                              content: BottomSheetPage(context: context),
-                              actions: [],
-                              color: Colors.white,
-                            );
-                          },
-                          child: const Text(
-                            'Buy now',
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 45, vertical: 6),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
+                        SizedBox(
+                          width: MediaQuery.sizeOf(context).width * 0.35,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              showCommonBottomSheet(
+                                context: context,
+                                height: MediaQuery.of(context).size.height * 0.6,
+                                content: BottomSheetPage(context: context),
+                                actions: [],
+                                color: Colors.white,
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 6),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
                             ),
+                            child: const Text('Buy now', style: TextStyle(fontSize: 12)),
                           ),
                         ),
                       ],
