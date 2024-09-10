@@ -1,10 +1,10 @@
 import 'package:flutter_svg/svg.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
-import 'package:kpathshala/view/Courses%20page/course_purchase_page.dart';
 import 'package:kpathshala/view/Notifications/notifications_page.dart';
 import 'package:kpathshala/view/Courses%20page/Courses.dart';
 import 'package:kpathshala/view/Home%20Main%20Page/dashboard_page.dart';
 import 'package:kpathshala/view/Profile%20page/profile_screen_main.dart';
+import 'package:kpathshala/view/exam_main_page/course_purchase_page.dart';
 
 class Navigation extends StatefulWidget {
   const Navigation({super.key});
@@ -14,7 +14,7 @@ class Navigation extends StatefulWidget {
 }
 
 class _NavigationState extends State<Navigation> {
-  int countindex = 0;
+  int countIndex = 0;
   List<Widget> widgetList = [
     const DashboardPage(),
     const Courses(),
@@ -66,17 +66,17 @@ class _NavigationState extends State<Navigation> {
           ],
         ),
         body: Center(
-          child: widgetList[countindex],
+          child: widgetList[countIndex],
         ),
         bottomNavigationBar: BottomNavigationBar(
           backgroundColor: AppColor.lightGray,
           elevation: 0,
           onTap: (index) {
             setState(() {
-              countindex = index;
+              countIndex = index;
             });
           },
-          currentIndex: countindex,
+          currentIndex: countIndex,
           selectedItemColor: AppColor.navyBlue,
           unselectedItemColor: Colors.black,
           showSelectedLabels: true,
@@ -114,7 +114,7 @@ class _NavigationState extends State<Navigation> {
             ),
             BottomNavigationBarItem(
               icon: SvgPicture.asset(
-                'assets/ic_Eaxm1.svg',
+                'assets/ic_exam1.svg',
                 width: 18.0,
                 height: 18.0,
               ),

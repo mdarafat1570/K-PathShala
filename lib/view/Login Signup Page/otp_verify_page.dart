@@ -6,6 +6,7 @@ import 'package:gap/gap.dart';
 import 'dart:async';
 import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/base/get_device_Id.dart';
+import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/model/otp_response_model.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/view/Navigation%20bar%20Page/navigation_bar.dart';
@@ -194,10 +195,17 @@ class _OtpPageState extends State<OtpPage> {
         if (apiResponse.successResponse != null) {
           // Store token in shared preferences
           final token = apiResponse.successResponse!.data.token;
-
-          // Store the token in SharedPreferences
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('authToken', token);
+          final name = apiResponse.successResponse!.data.user.name;
+          final email = apiResponse.successResponse!.data.user.email;
+          final mobile = apiResponse.successResponse!.data.user.mobile;
+          final imageUrl = apiResponse.successResponse!.data.user.image;
+          await _authService.saveLogInCredentials(LogInCredentials(
+            email: email,
+            name: name,
+            imagesAddress: imageUrl,
+            mobile: mobile,
+            token: token,
+          ));
 
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("OTP verified successfully.")),
@@ -206,7 +214,7 @@ class _OtpPageState extends State<OtpPage> {
           // Navigate based on profile requirement
           if (apiResponse.successResponse?.data.isProfileRequired == true) {
             slideNavigationPushAndRemoveUntil(
-              Profile(mobileNumber: mobile, deviceId: deviceId),
+              Profile(deviceId: deviceId),
               context,
             );
           } else {

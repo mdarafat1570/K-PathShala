@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:typed_data';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:kpathshala/model/api_response_models/user_update_success_response.dart';
+import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/sign_in_methods/sign_in_methods.dart';
 import 'package:kpathshala/view/Login%20Signup%20Page/otp_verify_page.dart';
@@ -15,15 +16,13 @@ import 'package:kpathshala/view/common_widget/customTextField.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class Profile extends StatefulWidget {
-  final UserCredential? userCredential;
-  final String? mobileNumber;
+
   final String? deviceId;
   final bool isFromGmailOrFacebookLogin;
 
   const Profile(
       {super.key,
-      this.userCredential,
-      this.mobileNumber,
+
       this.deviceId,
       this.isFromGmailOrFacebookLogin = false});
 
@@ -45,10 +44,21 @@ class _ProfileState extends State<Profile> {
   @override
   void initState() {
     super.initState();
-    _nameController.text = widget.userCredential?.user?.displayName ?? "";
-    _emailController.text = widget.userCredential?.user?.email ?? "";
-    _mobileController.text = widget.mobileNumber ?? "";
-    _networkImageUrl = widget.userCredential?.user?.photoURL ?? "";
+    readCredentials();
+  }
+  void readCredentials() async {
+    LogInCredentials? credentials = await _authService.getLogInCredentials();
+
+    if (credentials != null) {
+      _nameController.text = credentials.name ?? "";
+      _emailController.text = credentials.email ?? "";
+      _mobileController.text = credentials.mobile ?? "";
+      _networkImageUrl = credentials.imagesAddress ?? "";
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("No credentials found")),
+      );
+    }
   }
 
   @override
@@ -333,6 +343,24 @@ class _ProfileState extends State<Profile> {
         showLoadingIndicator(context: context, showLoader: false);
 
         if (response['error'] == null || !response['error']) {
+          final apiResponse = UserUpdateSuccessResponse.fromJson(response);
+          LogInCredentials? credentials = await _authService.getLogInCredentials();
+          final newName = apiResponse.data?.name ?? '';
+          final newEmail = apiResponse.data?.email ?? '';
+          final newMobile = apiResponse.data?.mobile ?? '';
+          final newImage = apiResponse.data?.image ?? '';
+
+          if (credentials != null) {
+            credentials.name = newName;
+            credentials.email = newEmail;
+            credentials.mobile = newMobile;
+            credentials.imagesAddress = newImage;
+
+            // Save the updated object back to SharedPreferences
+            await _authService.saveLogInCredentials(credentials);
+          } else {
+            print("No credentials found to update");
+          }
           slideNavigationPushAndRemoveUntil(const Navigation(), context);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(

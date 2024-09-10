@@ -1,10 +1,12 @@
-import 'package:flutter/material.dart';
+
+import 'dart:developer';
+
 import 'package:kpathshala/app_base/common_imports.dart';
-import 'package:kpathshala/view/Exam%20Main%20page/Bottom_sheets/main_buttom_sheet.dart';
-import 'package:kpathshala/view/Exam%20Main%20page/Quiz_Attempt_Page.dart';
+import 'package:kpathshala/view/exam_main_page/bottom_sheets/main_bottom_sheet.dart';
+import 'package:kpathshala/view/exam_main_page/quiz_attempt_page.dart';
+import 'package:kpathshala/view/exam_main_page/ubt_exam_row.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:kpathshala/view/Exam%20Main%20page/UBT_Exam_row.dart';
-import 'package:kpathshala/model/iteam_list.dart';
+import 'package:kpathshala/model/item_list.dart';
 
 class ExamPage extends StatefulWidget {
   const ExamPage({super.key});
@@ -51,17 +53,17 @@ class _ExamPageState extends State<ExamPage> {
     _saveStartCounts();
   }
 
-  void _decrementTestStartCount(String courseTitle) {
-    setState(() {
-      if (testStartCounts.containsKey(courseTitle)) {
-        testStartCounts[courseTitle] = (testStartCounts[courseTitle] ?? 0) - 1;
-        if (testStartCounts[courseTitle]! < 0) {
-          testStartCounts[courseTitle] = 0;
-        }
-      }
-    });
-    _saveStartCounts();
-  }
+  // void _decrementTestStartCount(String courseTitle) {
+  //   setState(() {
+  //     if (testStartCounts.containsKey(courseTitle)) {
+  //       testStartCounts[courseTitle] = (testStartCounts[courseTitle] ?? 0) - 1;
+  //       if (testStartCounts[courseTitle]! < 0) {
+  //         testStartCounts[courseTitle] = 0;
+  //       }
+  //     }
+  //   });
+  //   _saveStartCounts();
+  // }
 
   void _showBottomSheet(
     BuildContext context,
@@ -194,7 +196,7 @@ class _ExamPageState extends State<ExamPage> {
           "Final score",
           style: TextStyle(color: AppColor.navyBlue),
         ),
-        Gap(10),
+        const Gap(10),
         Row(
           children: [
             _buildScoreContainer('$listingTestScore of 20', "Reading Test"),
@@ -246,7 +248,7 @@ class _ExamPageState extends State<ExamPage> {
         height: 70,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: Color.fromRGBO(135, 206, 235, 0.2),
+          color: const Color.fromRGBO(135, 206, 235, 0.2),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10),
@@ -361,7 +363,7 @@ class _ExamPageState extends State<ExamPage> {
                         ),
                       ),
                       onPressed: () {
-                        print('Button on Stack pressed');
+                        log('Button on Stack pressed');
                       },
                       child: const Text('Batch 1'),
                     ),
