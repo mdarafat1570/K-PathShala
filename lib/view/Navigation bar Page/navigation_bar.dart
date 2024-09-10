@@ -2,8 +2,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/view/Courses%20page/course_purchase_page.dart';
 import 'package:kpathshala/view/Notifications/notifications_page.dart';
-import 'package:kpathshala/view/Profile%20page/before_profile.dart';
-import 'package:kpathshala/view/Profile%20page/profile_edit.dart';
 import 'package:kpathshala/view/Courses%20page/Courses.dart';
 import 'package:kpathshala/view/Home%20Main%20Page/dashboard_page.dart';
 import 'package:kpathshala/view/Profile%20page/profile_screen_main.dart';
