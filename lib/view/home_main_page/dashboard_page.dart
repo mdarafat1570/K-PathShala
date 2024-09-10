@@ -50,7 +50,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
     var response = await http.get(url);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 && mounted) {
       var data = json.decode(response.body);
       var subscriberCount = data['items'][0]['statistics']['subscriberCount'];
       var videoCount = data['items'][0]['statistics']['videoCount'];
@@ -66,16 +66,18 @@ class _DashboardPageState extends State<DashboardPage> {
   void _startCountdown() {
     const interval = Duration(seconds: 1);
 
-    Timer.periodic(interval, (Timer t) {
-      setState(() {
-        if (_currentTimer > 0) {
-          _currentTimer -= 1;
-        } else {
-          _currentTimer = 1;
-          _checkCount();
-        }
+    if (mounted){
+      Timer.periodic(interval, (Timer t) {
+        setState(() {
+          if (_currentTimer > 0) {
+            _currentTimer -= 1;
+          } else {
+            _currentTimer = 1;
+            _checkCount();
+          }
+        });
       });
-    });
+    }
   }
 
   @override

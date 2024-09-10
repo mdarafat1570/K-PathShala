@@ -1,7 +1,11 @@
 
+import 'dart:developer';
+
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
+import 'package:kpathshala/view/common_widget/common_loadingIndicator.dart';
+import 'package:kpathshala/view/login_signup_age/registration_and_login_page.dart';
 import 'package:kpathshala/view/payment_page/payment_history.dart';
 import 'package:kpathshala/view/profile_page/profile_edit.dart';
 
@@ -34,8 +38,16 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
     }
     setState(() {});
   }
+
   @override
   Widget build(BuildContext context) {
+    ImageProvider<Object> imageProvider;
+
+    if (credentials?.imagesAddress != null && credentials?.imagesAddress != "") {
+      imageProvider = NetworkImage(credentials!.imagesAddress ?? '');
+    }else {
+      imageProvider = const AssetImage('assets/new_App_icon.png');
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -58,23 +70,13 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
             children: [
               Row(
                 children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundImage: NetworkImage(
-                      (credentials?.imagesAddress != null && credentials!.imagesAddress!.isNotEmpty)
-                          ? credentials!.imagesAddress!
-                          : 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg',
-                    ),
-                    onBackgroundImageError: (error, stackTrace) {
-                      // Handle image loading error, fallback to a placeholder if needed
-                    },
-                  ),
+                  CircleAvatar(radius: 50, backgroundImage: imageProvider),
                   const SizedBox(width: 16),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        credentials?.name ??'Shihab Shaharia',
+                        credentials?.name ?? 'User',
                         style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -82,8 +84,8 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        credentials?.mobile ??'+880 1867-712017',
-                        style:const TextStyle(
+                        credentials?.mobile ?? '+880 1867-712017',
+                        style: const TextStyle(
                           fontSize: 16,
                           color: Colors.grey,
                         ),
@@ -93,7 +95,8 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const Profile()),
+                            MaterialPageRoute(
+                                builder: (context) => const Profile()),
                           );
                         },
                         style: ElevatedButton.styleFrom(
@@ -190,7 +193,7 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
                       title: customText('Connect Social Login', TextType.normal,
                           color: AppColor.navyBlue,
                           fontWeight: FontWeight.bold),
-                      onTap: () {},
+                      onTap: (){},
                     ),
                     ListTile(
                       leading: const Icon(
@@ -200,7 +203,10 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
                       title: customText('Log Out', TextType.normal,
                           color: AppColor.navyBlue,
                           fontWeight: FontWeight.bold),
-                      onTap: () {},
+                      onTap: () {
+                        log("SignOut button pressed");
+                        userSignOut();
+                      },
                     ),
                   ],
                 ),
@@ -210,5 +216,29 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
         ),
       ),
     );
+  }
+
+  void userSignOut() async {
+    log("calling");
+    showLoadingIndicator(context: context, showLoader: true);
+    try {
+      final response = await _authService.logout(context);
+      if (mounted) {
+        showLoadingIndicator(context: context, showLoader: false);
+        if (response['error'] == null || !response['error']) {
+          slideNavigationPushAndRemoveUntil(const RegistrationPage(title: "Registration Page"), context);
+        } else {
+          log("Log In failed");
+          throw Exception("${response["message"]}");
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        showLoadingIndicator(context: context, showLoader: false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("An error occurred: $e")),
+        );
+      }
+    }
   }
 }

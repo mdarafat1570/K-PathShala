@@ -1,7 +1,7 @@
 
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/model/PackageModel/package_model.dart';
-import 'package:kpathshala/repository/PackageServiceRepository.dart';
+import 'package:kpathshala/repository/package_service_repository.dart';
 import 'package:kpathshala/view/courses_page/course_shimmer.dart';
 import 'package:kpathshala/view/exam_main_page/bottom_panel_page_course_purchase.dart';
 import 'package:lottie/lottie.dart';

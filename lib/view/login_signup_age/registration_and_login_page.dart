@@ -9,7 +9,7 @@ import 'package:kpathshala/base/get_device_Id.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/model/registration_api_response_model.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
-import 'package:kpathshala/sign_in_methods/sign_in_methods.dart';
+import 'package:kpathshala/repository/sign_in_methods.dart';
 import 'package:kpathshala/view/login_signup_age/otp_verify_page.dart';
 import 'package:kpathshala/view/navigation_bar_page/navigation_bar.dart';
 import 'package:kpathshala/view/profile_page/profile_edit.dart';

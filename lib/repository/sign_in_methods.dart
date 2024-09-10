@@ -5,6 +5,12 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 class SignInMethods {
+
+  static bool isUserSignedIn() {
+    User? user = FirebaseAuth.instance.currentUser;
+    return user != null;
+  }
+
   static Future<UserCredential> signInWithGoogle() async {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
     final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
@@ -39,9 +45,9 @@ class SignInMethods {
   static Future<void> logout() async {
     try {
       await FirebaseAuth.instance.signOut();
-      log('User logged out successfully');
+      log('User logged out from firebase successfully');
     } catch (e) {
-      log('Error logging out: $e');
+      log('Error logging out from firebase: $e');
     }
   }
 }

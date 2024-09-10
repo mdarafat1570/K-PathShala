@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:kpathshala/model/api_response_models/user_update_success_response.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
-import 'package:kpathshala/sign_in_methods/sign_in_methods.dart';
+import 'package:kpathshala/repository/sign_in_methods.dart';
 import 'package:kpathshala/view/login_signup_age/otp_verify_page.dart';
 import 'package:kpathshala/view/login_signup_age/registration_and_login_page.dart';
 import 'package:kpathshala/view/navigation_bar_page/navigation_bar.dart';
@@ -54,6 +54,7 @@ class _ProfileState extends State<Profile> {
       _emailController.text = credentials.email ?? "";
       _mobileController.text = credentials.mobile ?? "";
       _networkImageUrl = credentials.imagesAddress ?? "";
+      setState(() {});
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("No credentials found")),
@@ -246,24 +247,6 @@ class _ProfileState extends State<Profile> {
                   },
                   child: const Text('Save'),
                 ),
-              ),
-              TextButton(
-                onPressed: () => slideNavigationPush(
-                    const RegistrationPage(title: 'Sign Up'), context),
-                child: const Text("SignUp"),
-              ),
-              TextButton(
-                onPressed: () {
-                  SignInMethods.logout();
-                  for (var c in [
-                    _nameController,
-                    _mobileController,
-                    _emailController
-                  ]) {
-                    c.clear();
-                  }
-                },
-                child: const Text("SignOut"),
               ),
             ],
           ),

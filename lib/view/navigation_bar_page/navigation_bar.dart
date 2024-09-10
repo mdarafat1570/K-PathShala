@@ -1,5 +1,7 @@
 import 'package:flutter_svg/svg.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
+import 'package:kpathshala/model/log_in_credentials.dart';
+import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/view/courses_page/course_purchase_page.dart';
 import 'package:kpathshala/view/Notifications/notifications_page.dart';
 import 'package:kpathshala/view/courses_page/courses.dart';
@@ -20,9 +22,35 @@ class _NavigationState extends State<Navigation> {
     const Courses(),
     const CoursePurchasePage(),
   ];
+  LogInCredentials? credentials;
+  final AuthService _authService = AuthService();
+
+  @override
+  void initState() {
+    super.initState();
+    readCredentials();
+  }
+
+  Future<void> readCredentials() async {
+    credentials = await _authService.getLogInCredentials();
+
+    if (credentials == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("No credentials found")),
+      );
+    }
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
+    ImageProvider<Object> imageProvider;
+
+    if (credentials?.imagesAddress != null && credentials?.imagesAddress != "") {
+      imageProvider = NetworkImage(credentials!.imagesAddress ?? '');
+    }else {
+      imageProvider = const AssetImage('assets/new_App_icon.png');
+    }
     return GradientBackground(
       child: Scaffold(
         appBar: AppBar(
@@ -34,8 +62,8 @@ class _NavigationState extends State<Navigation> {
               onTap: () {
                 slideNavigationPush(const ProfileScreenInMainPage(), context);
               },
-              child: const CircleAvatar(
-                backgroundImage: AssetImage('assets/Profile.jpg'),
+              child:  CircleAvatar(
+                backgroundImage: imageProvider,
               ),
             ),
           ),

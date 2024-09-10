@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
+import 'package:kpathshala/repository/sign_in_methods.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
@@ -115,7 +116,8 @@ class AuthService {
   // Register User
 
   Future<Map<String, dynamic>> userUpdate(
-      {String? name, String? email, String? image}) async {
+      {String? name, String? email, String? image})
+  async {
     final url = Uri.parse(AuthorizationEndpoints.userUpdate);
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('authToken') ?? '';
@@ -189,11 +191,16 @@ class AuthService {
     return null;
   }
 
+  Future<void> clearLogInCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('login_credentials');
+  }
+
   Future<Map<String, dynamic>> logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('authToken');
+    final LogInCredentials? loginCredentials = await getLogInCredentials();
 
-    if (token == null) {
+    if (loginCredentials != null && (loginCredentials.token == null || loginCredentials.token == "")) {
       // No token found, perhaps already logged out
       _showSnackbar(context, 'No active session found.');
       return {'status': 'error', 'message': 'No active session.'};
@@ -204,13 +211,17 @@ class AuthService {
       url,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
+        'Authorization': 'Bearer ${loginCredentials?.token}',
       },
     );
 
     if (response.statusCode == 200) {
       // Remove token from local storage on successful logout
       await prefs.remove('authToken');
+      await clearLogInCredentials();
+      if (SignInMethods.isUserSignedIn()){
+        await SignInMethods.logout();
+      }
       _showSnackbar(context, 'Logout successful');
       return jsonDecode(response.body);
     } else if (response.statusCode == 401) {
