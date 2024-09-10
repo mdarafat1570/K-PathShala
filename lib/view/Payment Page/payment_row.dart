@@ -6,12 +6,13 @@ class PaymentRow extends StatelessWidget {
   final String amount;
   final String date;
   final VoidCallback onTap;
-
+  final String imageUrl;
   const PaymentRow({
     required this.title,
     required this.amount,
     required this.date,
     required this.onTap,
+    required this.imageUrl,
     Key? key,
   }) : super(key: key);
 
@@ -20,63 +21,36 @@ class PaymentRow extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Padding(
-        padding: EdgeInsets.symmetric(
-          vertical: 8.0,
-          horizontal: MediaQuery.of(context).size.width *
-              0.05, // Responsive horizontal padding
-        ),
+        padding: const EdgeInsets.all(13.0),
         child: Row(
-          crossAxisAlignment:
-              CrossAxisAlignment.start, // Align items to the start
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             CircleAvatar(
-              backgroundImage: AssetImage('assets/Profile.jpg'),
-              radius: 24, // Use a consistent radius
+              radius: 24,
+              backgroundImage: FadeInImage.assetNetwork(
+                placeholder: 'assets/Profile.jpg',
+                image: imageUrl,
+                fit: BoxFit.cover,
+              ).image,
             ),
-            SizedBox(width: 8), // Add space between avatar and text
+            const SizedBox(width: 8),
             Expanded(
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start, // Align text to start
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
-                        child: FittedBox(
-                          child: customText(title, TextType.paragraphTitle,
-                              fontSize: 14),
-                        ),
+                        child: customText(title, TextType.subtitle,
+                            color: AppColor.navyBlue,
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold),
                       ),
-                      Gap(12),
-                      Container(
-                        constraints: BoxConstraints(
-                            maxWidth: MediaQuery.of(context).size.width * 0.2,
-                            maxHeight: MediaQuery.of(context).size.height *
-                                0.030 // Responsive maximum width
-                            ),
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(
-                              12), // Slightly smaller border radius
-                          color: AppColor.navyBlue,
-                        ),
-                        child: Center(
-                          child: FittedBox(
-                            child: Text(
-                              "Successful",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: MediaQuery.of(context).size.width *
-                                    0.05, // Responsive font size
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                      const Gap(12),
                     ],
                   ),
-                  SizedBox(height: 2), // Add space between title and amount
+                  const SizedBox(height: 2),
                   FittedBox(
                     child: customText(
                       amount,
@@ -84,11 +58,34 @@ class PaymentRow extends StatelessWidget {
                       fontSize: 10,
                     ),
                   ),
-                  SizedBox(height: 2), // Add space between amount and date
+                  const SizedBox(height: 2),
                   FittedBox(
                     child: customText(date, TextType.normal, fontSize: 10),
                   ),
                 ],
+              ),
+            ),
+            Center(
+              child: Container(
+                constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.2,
+                    maxHeight: MediaQuery.of(context).size.height * 0.030),
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: AppColor.navyBlue,
+                ),
+                child: const Center(
+                  child: FittedBox(
+                    child: Text(
+                      "Successful",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
           ],
