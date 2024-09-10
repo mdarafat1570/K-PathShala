@@ -1,8 +1,12 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
+import 'package:kpathshala/model/log_in_credentials.dart';
+import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/view/Payment%20Page/payment_history.dart';
 import 'package:kpathshala/view/Profile%20page/profile_edit.dart';
-import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
+import 'package:velocity_x/velocity_x.dart';
 
 class ProfileScreenInMainPage extends StatefulWidget {
   @override
@@ -11,6 +15,25 @@ class ProfileScreenInMainPage extends StatefulWidget {
 }
 
 class _ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
+  LogInCredentials? credentials;
+  final AuthService _authService = AuthService();
+
+  @override
+  void initState() {
+    super.initState();
+    readCredentials();
+  }
+
+  Future<void> readCredentials() async {
+    credentials = await _authService.getLogInCredentials();
+
+    if (credentials == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("No credentials found")),
+      );
+    }
+    setState(() {});
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,27 +58,32 @@ class _ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
             children: [
               Row(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 50,
                     backgroundImage: NetworkImage(
-                      'https://example.com/your-profile-image-url.jpg',
+                      (credentials?.imagesAddress != null && credentials!.imagesAddress!.isNotEmpty)
+                          ? credentials!.imagesAddress!
+                          : 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg',
                     ),
+                    onBackgroundImageError: (error, stackTrace) {
+                      // Handle image loading error, fallback to a placeholder if needed
+                    },
                   ),
                   const SizedBox(width: 16),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Shihab Shaharia',
-                        style: TextStyle(
+                      Text(
+                        credentials?.name ??'Shihab Shaharia',
+                        style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: AppColor.navyBlue),
                       ),
                       const SizedBox(height: 3),
-                      const Text(
-                        '+880 1867-712017',
-                        style: TextStyle(
+                      Text(
+                        credentials?.mobile ??'+880 1867-712017',
+                        style:const TextStyle(
                           fontSize: 16,
                           color: Colors.grey,
                         ),

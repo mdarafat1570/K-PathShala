@@ -32,7 +32,7 @@ class _SSLCommerzPageState extends State<SSLCommerzPage> {
     formData['store_id'] = "demotest";
     formData['store_password'] = "qwerty";
     formData['phone'] = "";
-    formData['amount'] = 2.0;
+    formData['amount'] = 10.0;
     formData['multicard'] = '';
     _radioSelected = SdkType.LIVE;
   }
