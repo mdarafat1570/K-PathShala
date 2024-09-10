@@ -5,6 +5,31 @@ import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
+   static const String _tokenKey = 'authToken';
+
+  // Save token to SharedPreferences
+  Future<void> saveToken(String token) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_tokenKey, token);
+  }
+
+  // Retrieve token from SharedPreferences
+  Future<String?> getToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_tokenKey);
+  }
+
+  // Remove token (for logout)
+  Future<void> clearToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_tokenKey);
+  }
+
+  // Check if token exists
+  Future<bool> hasToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.containsKey(_tokenKey);
+  }
   
   // Send OTP
   Future<Map<String, dynamic>> sendOtp(String mobile, {String? email}) async {

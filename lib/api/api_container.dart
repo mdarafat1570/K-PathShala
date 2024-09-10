@@ -1,19 +1,21 @@
 class AuthorizationEndpoints {
   static const String baseUrl = 'http://167.99.118.239:8009/api/v1';
 
-  // Endpoint to send OTP
+  // OTP Endpoints
   static String sendOTP = '$baseUrl/send-otp';
-
-  // Endpoint to verify OTP
   static const String verifyOTP = '$baseUrl/verify-otp';
-
-  // Endpoint to receive OTP
   static String receiveOTP = '$baseUrl/otp/userPhoneNumber';
+
+  // User Endpoints
   static String registerUser = '$baseUrl/auth/register';
   static String userUpdate = '$baseUrl/user-update';
 
-    // Endpoint to fetch YouTube channel statistics
+  // YouTube Channel Statistics
   static String getYouTubeStats(String channelId, String apiKey) {
-    return "https://www.googleapis.com/youtube/v3/channels?part=statistics&id=$channelId&key=$apiKey";
+    return 'https://www.googleapis.com/youtube/v3/channels?part=statistics&id=$channelId&key=$apiKey';
   }
+}
+
+class KpatshalaPackage {
+  static String packages = '${AuthorizationEndpoints.baseUrl}/package';
 }
