@@ -5,7 +5,13 @@ import 'package:kpathshala/view/exam_main_page/payment_sandbox.dart';
 
 class BottomSheetPage extends StatefulWidget {
   final BuildContext context;
-  const BottomSheetPage({super.key, required this.context});
+  final int? price;
+  final String? validityDate;
+  const BottomSheetPage(
+      {super.key,
+      required this.context,
+      required this.price,
+      required this.validityDate});
 
   @override
   State<BottomSheetPage> createState() => _BottomSheetPageState();
@@ -44,13 +50,13 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                customText("Payment of ৳999.00", TextType.subtitle,
+                customText("Payment of ৳${widget.price}.00", TextType.subtitle,
                     fontSize: 17,
                     color: AppColor.navyBlue,
                     fontWeight: FontWeight.bold),
                 const Gap(5),
                 RichText(
-                  text: const TextSpan(
+                  text: TextSpan(
                     text: "You’ll have access to UBT Mock Test till ",
                     style: TextStyle(
                       color: Colors.grey,
@@ -58,7 +64,7 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
                     ),
                     children: [
                       TextSpan(
-                        text: "12th January 2025",
+                        text: "${widget.validityDate}",
                         style: TextStyle(
                           color: AppColor.navyBlue,
                           fontWeight: FontWeight.bold,
@@ -122,7 +128,7 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
     );
   }
 
-  Future<void> showPaymentDialog(){
+  Future<void> showPaymentDialog() {
     return showDialog(
       context: context,
       builder: (BuildContext context) => Dialog(

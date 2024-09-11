@@ -1,11 +1,9 @@
-
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/model/PackageModel/package_model.dart';
 import 'package:kpathshala/repository/package_service_repository.dart';
 import 'package:kpathshala/view/courses_page/course_shimmer.dart';
 import 'package:kpathshala/view/exam_main_page/bottom_panel_page_course_purchase.dart';
 import 'package:lottie/lottie.dart';
-
 
 class CoursePurchasePage extends StatefulWidget {
   const CoursePurchasePage({super.key});
@@ -119,7 +117,8 @@ class _CoursePurchasePageState extends State<CoursePurchasePage> {
                                       fontWeight: FontWeight.bold),
                                   const Gap(5),
                                   customText(
-                                      "৳${package.price}", TextType.normal, fontSize: 12,
+                                      "৳${package.price}", TextType.normal,
+                                      fontSize: 12,
                                       color: AppColor.black,
                                       fontWeight: FontWeight.bold),
                                   const Gap(8),
@@ -146,11 +145,10 @@ class _CoursePurchasePageState extends State<CoursePurchasePage> {
                               ),
                               const Gap(8),
                               customText(
-                                package.subtitle ??
-                                    "Crack UBT with ease with our mock tests and study guide.",
-                                TextType.normal,
-                                fontSize: 10
-                              ),
+                                  package.subtitle ??
+                                      "Crack UBT with ease with our mock tests and study guide.",
+                                  TextType.normal,
+                                  fontSize: 10),
                               const Gap(16),
                               Padding(
                                 padding: const EdgeInsets.only(left: 20),
@@ -172,37 +170,51 @@ class _CoursePurchasePageState extends State<CoursePurchasePage> {
                                     MainAxisAlignment.spaceAround,
                                 children: [
                                   SizedBox(
-                                    width: MediaQuery.sizeOf(context).width * 0.35,
+                                    width:
+                                        MediaQuery.sizeOf(context).width * 0.35,
                                     child: OutlinedButton(
                                       onPressed: () {},
                                       style: OutlinedButton.styleFrom(
-                                        padding: const EdgeInsets.symmetric(vertical: 6),
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 6),
                                         backgroundColor: const Color.fromRGBO(
                                             26, 35, 126, 0.15),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(15),
+                                          borderRadius:
+                                              BorderRadius.circular(15),
                                         ),
                                       ),
                                       child: const Text('Preview'),
                                     ),
                                   ),
                                   SizedBox(
-                                    width: MediaQuery.sizeOf(context).width * 0.35,
+                                    width:
+                                        MediaQuery.sizeOf(context).width * 0.35,
                                     child: ElevatedButton(
                                       onPressed: () {
+                                        final validityDate =
+                                            package.validityDate;
+                                        final packagePrice = package
+                                            .price; // Get price from the API
                                         showCommonBottomSheet(
                                           context: context,
-                                          height: screenHeight * heightPercentage,
-                                          content:
-                                              BottomSheetPage(context: context),
+                                          height:
+                                              screenHeight * heightPercentage,
+                                          content: BottomSheetPage(
+                                            context: context,
+                                            price: packagePrice,
+                                            validityDate: validityDate,
+                                          ),
                                           actions: [],
                                           color: Colors.white,
                                         );
                                       },
                                       style: ElevatedButton.styleFrom(
-                                        padding: const EdgeInsets.symmetric(vertical: 6),
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 6),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(15),
+                                          borderRadius:
+                                              BorderRadius.circular(15),
                                         ),
                                       ),
                                       child: const Text('Buy now'),
