@@ -6,6 +6,9 @@ import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/repository/sign_in_methods.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
+// Credit by Md. Arafat Mia Date 20/8/2024
+
 class AuthService {
   static const String _tokenKey = 'authToken';
 

@@ -97,7 +97,7 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
         //     style: TextStyle(color: AppColor.white, fontSize: 20),
         //   ),
         // ),
-        const SSLCommerzPage(),
+         SSLCommerzPage(),
         Gap(screenHeight * 0.03),
         SizedBox(
           width: double.infinity,
