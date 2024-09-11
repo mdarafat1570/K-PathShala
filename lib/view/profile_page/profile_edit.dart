@@ -9,8 +9,8 @@ import 'package:kpathshala/view/login_signup_age/otp_verify_page.dart';
 import 'package:kpathshala/view/navigation_bar_page/navigation_bar.dart';
 import 'package:kpathshala/view/profile_page/utils.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
-import 'package:kpathshala/view/common_widget/common_loadingIndicator.dart';
-import 'package:kpathshala/view/common_widget/customTextField.dart';
+import 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
+import 'package:kpathshala/view/common_widget/custom_textfield.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class Profile extends StatefulWidget {

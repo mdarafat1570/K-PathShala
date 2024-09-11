@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/view/common_widget/common_card_book_slider.dart';
@@ -19,18 +21,18 @@ Future<void> _launchYouTubeChannel() async {
   //Convert the URL string to a Uri object
   final Uri url =
       Uri.parse('https://www.youtube.com/channel/UCKeeBsW1hGy0NBCqKgd5oBw');
-  print('Trying to launch URL: $url');
+  log('Trying to launch URL: $url');
   if (await canLaunchUrl(url)) {
-    print('Launching URL...');
+    log('Launching URL...');
     await launchUrl(url);
   } else {
-    print('Failed to launch URL');
+    log('Failed to launch URL');
     throw 'Could not launch $url';
   }
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  String _apikey = "AIzaSyClsZlG68dO9BB9mF5XzxrdXvFcxehh9RA";
+  String apikey = "AIzaSyClsZlG68dO9BB9mF5XzxrdXvFcxehh9RA";
   String count = "0";
   String vidCount = "0";
   int _currentTimer = 1;
@@ -45,7 +47,7 @@ class _DashboardPageState extends State<DashboardPage> {
   void _checkCount() async {
     var url = Uri.parse(
       AuthorizationEndpoints.getYouTubeStats(
-          'UCKeeBsW1hGy0NBCqKgd5oBw', _apikey),
+          'UCKeeBsW1hGy0NBCqKgd5oBw', apikey),
     );
 
     var response = await http.get(url);
@@ -59,7 +61,7 @@ class _DashboardPageState extends State<DashboardPage> {
         vidCount = videoCount;
       });
     } else {
-      print("Failed to fetch subscriber count: ${response.statusCode}");
+      log("Failed to fetch subscriber count: ${response.statusCode}");
     }
   }
 
@@ -99,9 +101,9 @@ class _DashboardPageState extends State<DashboardPage> {
                         child: PageView(
                           controller: _pageController,
                           children: [
-                            BookDeshbordbuildCard(),
-                            BookDeshbordbuildCard(),
-                            BookDeshbordbuildCard(),
+                            bookDashboardBuildCard(),
+                            bookDashboardBuildCard(),
+                            bookDashboardBuildCard(),
                           ],
                         ),
                       ),

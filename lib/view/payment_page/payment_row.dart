@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 
 class PaymentRow extends StatelessWidget {
@@ -13,8 +12,8 @@ class PaymentRow extends StatelessWidget {
     required this.date,
     required this.onTap,
     required this.imageUrl,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

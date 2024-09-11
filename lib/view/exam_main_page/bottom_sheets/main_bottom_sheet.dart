@@ -6,11 +6,11 @@ class BottomSheetContent extends StatelessWidget {
   final Widget additionalContent; // New parameter for additional content
 
   const BottomSheetContent({
-    Key? key,
+    super.key,
     required this.courseTitle,
     required this.score,
     required this.additionalContent, // Initialize new parameter
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/view/common_widget/common_button_add.dart';
-import 'package:kpathshala/view/common_widget/customTextField.dart';
+import 'package:kpathshala/view/common_widget/custom_textfield.dart';
 
 class ButtonVariations extends StatefulWidget {
-  const ButtonVariations({Key? key}) : super(key: key);
+  const ButtonVariations({super.key});
 
   @override
-  _ButtonVariationsState createState() => _ButtonVariationsState();
+  ButtonVariationsState createState() => ButtonVariationsState();
 }
 
-class _ButtonVariationsState extends State<ButtonVariations> {
+class ButtonVariationsState extends State<ButtonVariations> {
   final TextEditingController myController = TextEditingController();
   String? errorMessage;
 

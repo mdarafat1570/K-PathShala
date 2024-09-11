@@ -10,19 +10,17 @@ class PackageModel {
     if (json['data'] != null) {
       data = <PackageModelList>[];
       json['data'].forEach((v) {
-        data!.add(new PackageModelList.fromJson(v));
+        data!.add( PackageModelList.fromJson(v));
       });
     }
     message = json['message'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['status'] = this.status;
-    if (this.data != null) {
-      data['data'] = this.data!.map((v) => v.toJson()).toList();
-    }
-    data['message'] = this.message;
+    final Map<String, dynamic> data =  <String, dynamic>{};
+    data['status'] = status;
+    data['data'] = this.data!.map((v) => v.toJson()).toList();
+      data['message'] = message;
     return data;
   }
 }
@@ -59,15 +57,15 @@ class PackageModelList {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['title'] = this.title;
-    data['subtitle'] = this.subtitle;
-    data['effect_date'] = this.effectDate;
-    data['validity_date'] = this.validityDate;
-    data['price'] = this.price;
-    data['features'] = this.features;
-    data['status'] = this.status;
+    final Map<String, dynamic> data =  <String, dynamic>{};
+    data['id'] = id;
+    data['title'] = title;
+    data['subtitle'] = subtitle;
+    data['effect_date'] = effectDate;
+    data['validity_date'] = validityDate;
+    data['price'] = price;
+    data['features'] = features;
+    data['status'] = status;
     return data;
   }
 }

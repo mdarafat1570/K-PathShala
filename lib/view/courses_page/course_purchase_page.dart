@@ -43,7 +43,7 @@ class _CoursePurchasePageState extends State<CoursePurchasePage> {
           future: _packagesFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CourseShimmer());
+              return const Center(child: CourseShimmer());
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (snapshot.hasData) {

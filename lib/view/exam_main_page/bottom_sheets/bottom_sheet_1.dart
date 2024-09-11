@@ -1,6 +1,6 @@
 import 'package:kpathshala/app_base/common_imports.dart';
 
-Widget _bottomSheetType1(
+Widget bottomSheetType1(
     BuildContext context, String courseTitle, String courseDescription) {
   return Container(
     padding: const EdgeInsets.all(16.0),

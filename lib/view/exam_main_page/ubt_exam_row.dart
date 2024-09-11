@@ -25,8 +25,8 @@ class CourseRow extends StatelessWidget {
     required this.readingTestScore,
     required this.listingTestScore,
     required this.timeTaken,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -1,6 +1,6 @@
   import 'package:kpathshala/app_base/common_imports.dart';
 
-Widget _bottomSheetType1(BuildContext context, int score,
+Widget bottomSheetType1(BuildContext context, int score,
       int listingTestScore, int readingTestScore, String timeTaken) {
     return SizedBox(
       height: 500,
@@ -105,7 +105,7 @@ Widget _bottomSheetType1(BuildContext context, int score,
       ),
     );
   }
- Widget _bottomSheetType2(
+ Widget bottomSheetType2(
       BuildContext context, String title, String description) {
     return Container(
       padding: const EdgeInsets.all(16.0),
