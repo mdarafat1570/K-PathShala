@@ -1,4 +1,3 @@
-
 import 'dart:developer';
 
 import 'package:kpathshala/app_base/common_imports.dart';
@@ -6,16 +5,15 @@ import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
 import 'package:kpathshala/view/login_signup_age/registration_and_login_page.dart';
+import 'package:kpathshala/view/login_signup_age/social_login.dart';
 import 'package:kpathshala/view/payment_page/payment_history.dart';
 import 'package:kpathshala/view/profile_page/profile_edit.dart';
-
 
 class ProfileScreenInMainPage extends StatefulWidget {
   const ProfileScreenInMainPage({super.key});
 
   @override
-  ProfileScreenInMainPageState createState() =>
-      ProfileScreenInMainPageState();
+  ProfileScreenInMainPageState createState() => ProfileScreenInMainPageState();
 }
 
 class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
@@ -43,9 +41,10 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
   Widget build(BuildContext context) {
     ImageProvider<Object> imageProvider;
 
-    if (credentials?.imagesAddress != null && credentials?.imagesAddress != "") {
+    if (credentials?.imagesAddress != null &&
+        credentials?.imagesAddress != "") {
       imageProvider = NetworkImage(credentials!.imagesAddress ?? '');
-    }else {
+    } else {
       imageProvider = const AssetImage('assets/new_App_icon.png');
     }
     return Scaffold(
@@ -193,7 +192,9 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
                       title: customText('Connect Social Login', TextType.normal,
                           color: AppColor.navyBlue,
                           fontWeight: FontWeight.bold),
-                      onTap: (){},
+                      onTap: () {
+                        slideNavigationPush(const SocialLogin(), context);
+                      },
                     ),
                     ListTile(
                       leading: const Icon(
@@ -226,7 +227,8 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
       if (mounted) {
         showLoadingIndicator(context: context, showLoader: false);
         if (response['error'] == null || !response['error']) {
-          slideNavigationPushAndRemoveUntil(const RegistrationPage(title: "Registration Page"), context);
+          slideNavigationPushAndRemoveUntil(
+              const RegistrationPage(title: "Registration Page"), context);
         } else {
           log("Log In failed");
           throw Exception("${response["message"]}");
