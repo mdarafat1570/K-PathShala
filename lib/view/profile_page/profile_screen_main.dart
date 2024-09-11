@@ -110,7 +110,7 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
               ),
               const SizedBox(height: 20),
               Container(
-                height: 80,
+                // height: 80,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_sslcommerz/model/SSLCAdditionalInitializer.dart';
 import 'package:flutter_sslcommerz/model/SSLCCustomerInfoInitializer.dart';
@@ -26,7 +28,7 @@ class SSLCommerzPage extends StatefulWidget {
 class SSLCommerzPageState extends State<SSLCommerzPage> {
 
   dynamic formData = {};
-  SdkType _radioSelected = SdkType.LIVE;
+  SdkType _radioSelected = SdkType.TESTBOX;
 
   @override
   void initState() {
@@ -48,8 +50,8 @@ class SSLCommerzPageState extends State<SSLCommerzPage> {
       height: 55,
       borderRadius: 30,
       onPressed: () {
-        //  sslCommerzGeneralCall();
-        sslCommerzCustomizedCall();
+         sslCommerzGeneralCall();
+        // sslCommerzCustomizedCall();
 
       },
       reversePosition: false,
@@ -64,7 +66,7 @@ class SSLCommerzPageState extends State<SSLCommerzPage> {
     Sslcommerz sslcommerz = Sslcommerz(
       initializer: SSLCommerzInitialization(
         //Use the ipn if you have valid one, or it will fail the transaction.
-        ipn_url: "www.ipnurl.com",
+        ipn_url: "k-pathshala",
         multi_card_name: formData['multicard'],
         currency: SSLCurrencyType.BDT,
         product_category: "Food",
@@ -209,7 +211,7 @@ class SSLCommerzPageState extends State<SSLCommerzPage> {
 
   void paymentStatusCheck(SSLCTransactionInfoModel result) async {
     try {
-      print("result status ::${result.status ?? ""}");
+      log("result status ::${result.status ?? ""}");
 
       if (result.status!.toLowerCase() == "failed") {
         Fluttertoast.showToast(
