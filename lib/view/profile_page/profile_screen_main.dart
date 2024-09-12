@@ -5,7 +5,7 @@ import 'package:kpathshala/model/profile_model/profile_get_data_model.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/repository/payment/profile_get_data_repository.dart';
 import 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
-import 'package:kpathshala/view/login_signup_age/registration_and_login_page.dart';
+import 'package:kpathshala/view/login_signup_page/registration_and_login_page.dart';
 import 'package:kpathshala/view/payment_page/payment_history.dart';
 import 'package:kpathshala/view/profile_page/profile_edit.dart';
 

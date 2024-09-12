@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
+import 'package:kpathshala/view/login_signup_page/registration_and_login_page.dart';
 import 'package:kpathshala/view/navigation_bar_page/navigation_bar.dart';
 
-import 'login_signup_age/registration_and_login_page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

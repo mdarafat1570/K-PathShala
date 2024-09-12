@@ -5,12 +5,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:kpathshala/model/api_response_models/user_update_success_response.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
-import 'package:kpathshala/view/login_signup_age/otp_verify_page.dart';
+import 'package:kpathshala/view/login_signup_page/otp_verify_page.dart';
 import 'package:kpathshala/view/navigation_bar_page/navigation_bar.dart';
 import 'package:kpathshala/view/profile_page/utils.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
-import 'package:kpathshala/view/common_widget/custom_textfield.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class Profile extends StatefulWidget {
@@ -53,7 +52,7 @@ class _ProfileState extends State<Profile> {
       _mobileController.text = credentials.mobile ?? "";
       _networkImageUrl = credentials.imagesAddress ?? "";
       setState(() {});
-    } else {
+    } else if (mounted){
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("No credentials found")),
       );
@@ -144,23 +143,19 @@ class _ProfileState extends State<Profile> {
                 ],
               ),
               const SizedBox(height: 30),
-              customTextField(
+              CustomTextField(
                 controller: _nameController,
                 label: "Full Name",
-                width: 300.0,
-                height: 50,
                 errorMessage: _nameError, // Show name validation error
               ),
               const SizedBox(height: 15),
               Stack(
                 alignment: Alignment.centerRight,
                 children: [
-                  customTextField(
+                  CustomTextField(
                     controller: _mobileController,
                     label: "Phone Number",
-                    width: 300.0,
-                    height: 50.0,
-                    errorMessage: _phoneError, // Show phone validation error
+                    errorMessage: _phoneError,
                   ),
                   Positioned(
                     right: 8.0,
@@ -222,11 +217,9 @@ class _ProfileState extends State<Profile> {
                 ],
               ),
               const SizedBox(height: 15),
-              customTextField(
+              CustomTextField(
                 controller: _emailController,
                 label: "Email",
-                width: 300.0,
-                height: 50.0,
                 errorMessage: _emailError,
               ),
               const SizedBox(height: 30),
@@ -342,7 +335,9 @@ class _ProfileState extends State<Profile> {
           } else {
             log("No credentials found to update");
           }
-          slideNavigationPushAndRemoveUntil(const Navigation(), context);
+          if (mounted){
+            slideNavigationPushAndRemoveUntil(const Navigation(), context);
+          }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
