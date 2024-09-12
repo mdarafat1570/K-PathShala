@@ -86,7 +86,7 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
     }
 
     return Scaffold(
-      appBar: CommonAppBar(
+      appBar: const CommonAppBar(
         title: 'My Profile',
         backgroundColor: AppColor.gradientStart,
         titleColor: AppColor.navyBlue,
@@ -141,7 +141,7 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
 
               // Profile Data Section
               isLoadingProfile
-                  ? Center(
+                  ? const Center(
                       child:
                           CircularProgressIndicator()) // Show loader while data is being fetched
                   : profileData != null

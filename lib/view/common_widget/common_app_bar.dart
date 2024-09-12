@@ -11,14 +11,14 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
   final double titleFontSize;
 
   const CommonAppBar({
-    Key? key,
+    super.key,
     required this.title,
     this.showBackButton = true,
     this.onBackPressed,
     this.backgroundColor = AppColor.gradientStart,
     this.titleColor =AppColor.navyBlue,
     this.titleFontSize = 20.0,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

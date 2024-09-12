@@ -84,7 +84,7 @@ class _PaymentHistoryState extends State<PaymentHistory> {
                   final amount =
                       payment.paymentAmount?.toStringAsFixed(2) ?? 'No Amount';
                   final date = payment.paymentDate ?? 'Unknown Date';
-                  final imageUrl =
+                  const imageUrl =
                       'https://cdn-icons-png.flaticon.com/512/1028/1028137.png';
 
                   return GestureDetector(

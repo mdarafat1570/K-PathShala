@@ -281,14 +281,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
         mobile: mobile,
         token: token,
       ));
-      if (apiResponse.data?.mobileVerified == false) {
-        slideNavigationPushAndRemoveUntil(
-            Profile(
-                deviceId: deviceId,
-                isFromGmailOrFacebookLogin: true),
-            context);
-      } else {
-        slideNavigationPushAndRemoveUntil(const Navigation(), context);
+      if (mounted){
+        if (apiResponse.data?.mobileVerified == false) {
+          slideNavigationPushAndRemoveUntil(
+              Profile(deviceId: deviceId, isFromGmailOrFacebookLogin: true),
+              context);
+        } else {
+          slideNavigationPushAndRemoveUntil(const Navigation(), context);
+        }
       }
     } else {
       if (mounted) {

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:kpathshala/model/PackageModel/package_model.dart';
+import 'package:kpathshala/model/package_model/package_model.dart';
 import 'package:kpathshala/api/api_container.dart'; // Import the API container for URLs
 import 'package:kpathshala/repository/authentication_repository.dart';
 

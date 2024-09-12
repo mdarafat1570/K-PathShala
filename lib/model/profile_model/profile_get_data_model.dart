@@ -12,10 +12,10 @@ class ProfileGetDataModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['course_taken'] = this.courseTaken;
-    data['exam_taken'] = this.examTaken;
-    data['member_since'] = this.memberSince;
+    final Map<String, dynamic> data =  <String, dynamic>{};
+    data['course_taken'] = courseTaken;
+    data['exam_taken'] = examTaken;
+    data['member_since'] = memberSince;
     return data;
   }
 }
