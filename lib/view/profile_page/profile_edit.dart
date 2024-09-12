@@ -14,15 +14,11 @@ import 'package:kpathshala/view/common_widget/custom_textfield.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class Profile extends StatefulWidget {
-
   final String? deviceId;
   final bool isFromGmailOrFacebookLogin;
 
   const Profile(
-      {super.key,
-
-      this.deviceId,
-      this.isFromGmailOrFacebookLogin = false});
+      {super.key, this.deviceId, this.isFromGmailOrFacebookLogin = false});
 
   @override
   State<Profile> createState() => _ProfileState();
@@ -44,6 +40,7 @@ class _ProfileState extends State<Profile> {
     super.initState();
     readCredentials();
   }
+
   void readCredentials() async {
     LogInCredentials? credentials = await _authService.getLogInCredentials();
 
@@ -325,7 +322,8 @@ class _ProfileState extends State<Profile> {
 
         if (response['error'] == null || !response['error']) {
           final apiResponse = UserUpdateSuccessResponse.fromJson(response);
-          LogInCredentials? credentials = await _authService.getLogInCredentials();
+          LogInCredentials? credentials =
+              await _authService.getLogInCredentials();
           final newName = apiResponse.data?.name ?? '';
           final newEmail = apiResponse.data?.email ?? '';
           final newMobile = apiResponse.data?.mobile ?? '';

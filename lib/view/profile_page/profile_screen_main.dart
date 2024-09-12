@@ -1,13 +1,15 @@
 import 'dart:developer';
-
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
+import 'package:kpathshala/model/profile_model/profile_get_data_model.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
+import 'package:kpathshala/repository/payment/profile_get_data_repository.dart';
 import 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
 import 'package:kpathshala/view/login_signup_age/registration_and_login_page.dart';
-import 'package:kpathshala/view/login_signup_age/social_login.dart';
 import 'package:kpathshala/view/payment_page/payment_history.dart';
 import 'package:kpathshala/view/profile_page/profile_edit.dart';
+
+import '../common_widget/common_app_bar.dart';
 
 class ProfileScreenInMainPage extends StatefulWidget {
   const ProfileScreenInMainPage({super.key});
@@ -18,12 +20,16 @@ class ProfileScreenInMainPage extends StatefulWidget {
 
 class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
   LogInCredentials? credentials;
+  ProfileGetDataModel? profileData; // Holds fetched profile data
+  bool isLoadingProfile = true; // Added loading state for the profile
   final AuthService _authService = AuthService();
+  final ProfileRepository _profileRepository = ProfileRepository();
 
   @override
   void initState() {
     super.initState();
     readCredentials();
+    fetchProfileData(); // Fetch profile data on init
   }
 
   Future<void> readCredentials() async {
@@ -37,6 +43,37 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
     setState(() {});
   }
 
+  // Fetch profile data from API
+  Future<void> fetchProfileData() async {
+    try {
+      setState(() {
+        isLoadingProfile = true; // Start loading
+      });
+      ProfileGetDataModel? data = await _profileRepository.fetchProfile();
+
+      if (data != null) {
+        setState(() {
+          profileData = data;
+          isLoadingProfile = false;
+        });
+      } else {
+        setState(() {
+          isLoadingProfile = false; // Stop loading if failed
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Failed to fetch profile data")),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        isLoadingProfile = false; // Stop loading on error
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("An error occurred: $e")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     ImageProvider<Object> imageProvider;
@@ -47,20 +84,13 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
     } else {
       imageProvider = const AssetImage('assets/new_App_icon.png');
     }
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "My Profile",
-          style: TextStyle(color: AppColor.navyBlue),
-        ),
+      appBar: CommonAppBar(
+        title: 'My Profile',
         backgroundColor: AppColor.gradientStart,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        titleColor: AppColor.navyBlue,
+        titleFontSize: 20,
       ),
       body: GradientBackground(
         child: Padding(
@@ -108,56 +138,76 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
                 ],
               ),
               const SizedBox(height: 20),
-              Container(
-                // height: 80,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                    ),
-                  ],
-                ),
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Column(
-                      children: [
-                        customText("__", TextType.subtitle,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: AppColor.navyBlue),
-                        customText('Courses taken', TextType.normal),
-                      ],
-                    ),
-                    const Gap(10),
-                    Column(
-                      children: [
-                        customText("2", TextType.subtitle,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: AppColor.navyBlue),
-                        const Text('Exams taken'),
-                      ],
-                    ),
-                    const Gap(10),
-                    Column(
-                      children: [
-                        customText("32 days", TextType.subtitle,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: AppColor.navyBlue),
-                        const Text('Member since'),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+
+              // Profile Data Section
+              isLoadingProfile
+                  ? Center(
+                      child:
+                          CircularProgressIndicator()) // Show loader while data is being fetched
+                  : profileData != null
+                      ? Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.1),
+                                spreadRadius: 2,
+                                blurRadius: 5,
+                              ),
+                            ],
+                          ),
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Column(
+                                children: [
+                                  customText(
+                                    profileData?.courseTaken?.toString() ??
+                                        "__",
+                                    TextType.subtitle,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColor.navyBlue,
+                                  ),
+                                  customText('Courses taken', TextType.normal),
+                                ],
+                              ),
+                              const Gap(10),
+                              Column(
+                                children: [
+                                  customText(
+                                    profileData?.examTaken?.toString() ?? "__",
+                                    TextType.subtitle,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColor.navyBlue,
+                                  ),
+                                  const Text('Exams taken'),
+                                ],
+                              ),
+                              const Gap(10),
+                              Column(
+                                children: [
+                                  customText(
+                                    "${profileData?.memberSince?.toString() ?? "__"} days",
+                                    TextType.subtitle,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColor.navyBlue,
+                                  ),
+                                  const Text('Member since'),
+                                ],
+                              ),
+                            ],
+                          ),
+                        )
+                      : const Center(
+                          child: Text("Failed to load profile data"),
+                        ),
+
               const SizedBox(height: 20),
               Expanded(
                 child: ListView(
@@ -192,9 +242,7 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
                       title: customText('Connect Social Login', TextType.normal,
                           color: AppColor.navyBlue,
                           fontWeight: FontWeight.bold),
-                      onTap: () {
-                        slideNavigationPush(const SocialLogin(), context);
-                      },
+                      onTap: () {},
                     ),
                     ListTile(
                       leading: const Icon(

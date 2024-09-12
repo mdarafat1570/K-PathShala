@@ -5,6 +5,7 @@ import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/view/courses_page/course_purchase_page.dart';
 import 'package:kpathshala/view/Notifications/notifications_page.dart';
 import 'package:kpathshala/view/courses_page/courses.dart';
+import 'package:kpathshala/view/exam_main_page/ubt_exam_page.dart';
 import 'package:kpathshala/view/home_main_page/dashboard_page.dart';
 import 'package:kpathshala/view/profile_page/profile_screen_main.dart';
 
@@ -46,9 +47,10 @@ class _NavigationState extends State<Navigation> {
   Widget build(BuildContext context) {
     ImageProvider<Object> imageProvider;
 
-    if (credentials?.imagesAddress != null && credentials?.imagesAddress != "") {
+    if (credentials?.imagesAddress != null &&
+        credentials?.imagesAddress != "") {
       imageProvider = NetworkImage(credentials!.imagesAddress ?? '');
-    }else {
+    } else {
       imageProvider = const AssetImage('assets/new_App_icon.png');
     }
     return GradientBackground(
@@ -62,7 +64,7 @@ class _NavigationState extends State<Navigation> {
               onTap: () {
                 slideNavigationPush(const ProfileScreenInMainPage(), context);
               },
-              child:  CircleAvatar(
+              child: CircleAvatar(
                 backgroundImage: imageProvider,
               ),
             ),
