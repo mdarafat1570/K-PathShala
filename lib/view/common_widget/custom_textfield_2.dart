@@ -1,62 +1,117 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:gap/gap.dart';
 
-class CustomTextField extends StatelessWidget {
+class CustomTextField2 extends StatelessWidget {
+  final bool isEnabled;
+  final bool isObscure;
   final String label;
+  final String? errorMessage;
   final String? initialValue;
+  final int? maxLength;
+  final int? maxLines;
   final TextEditingController? controller;
   final TextInputType keyboardType;
-  final bool isPassword;
+  final List<TextInputFormatter>? inputFormatter;
   final Widget? suffixIcon;
+  final Widget? prefix;
+  final Widget? prefixIcon;
   final Function(String)? onChanged;
 
-  const CustomTextField({
+  const CustomTextField2({
     super.key,
+    this.isEnabled = true,
     required this.label,
+    this.errorMessage,
     this.initialValue,
+    this.maxLength,
+    this.maxLines,
     this.controller,
     this.keyboardType = TextInputType.text,
-    this.isPassword = false,
+    this.inputFormatter,
+    this.isObscure = false,
     this.suffixIcon,
+    this.prefix,
+    this.prefixIcon,
     this.onChanged,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white, // Background color for the full column
-        borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(
-          color: Colors.grey.shade300, // Border color around the column
-          width: 1.0,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(6.0),
+            border: Border.all(
+              color: (errorMessage != null && errorMessage!.isNotEmpty)
+                  ? Colors.red
+                  : Colors.transparent,
+              width: 1.0,
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                      fontSize: 10.0,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w300),
+                ),
+                const Gap(2),
+                TextFormField(
+                  enabled: isEnabled,
+                  initialValue: initialValue,
+                  controller: controller,
+                  keyboardType: keyboardType,
+                  obscureText: isObscure,
+                  onChanged: onChanged,
+                  maxLength: maxLength,
+                  maxLines: maxLines,
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.zero,
+                    isDense: true,
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    errorBorder: InputBorder.none,
+                    disabledBorder: InputBorder.none,
+                    suffixIcon: suffixIcon,
+                    prefix: prefix,
+                    prefixIcon: prefixIcon,
+                    counterText: '',
+                  ),
+                  style: TextStyle(
+                    color: isEnabled ? Colors.black : Colors.grey,
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w400,
+                  ),
+                    inputFormatters:inputFormatter,
+                ),
+              ],
+            ),
+          ),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 16.0,
-              color: Colors.grey,
+        if (errorMessage != null && errorMessage!.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
+            child: Text(
+              errorMessage ?? '',
+              style: const TextStyle(
+                fontSize: 10,
+                color: Colors.red,
+              ),
             ),
           ),
-          TextFormField(
-            initialValue: initialValue,
-            controller: controller,
-            keyboardType: keyboardType,
-            obscureText: isPassword,
-            onChanged: onChanged,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.white,
-              border:InputBorder.none,
-              suffixIcon: suffixIcon,
-            ),
-            style: const TextStyle(fontSize: 16.0),
-          ),
-        ],
-      ),
+      ],
     );
   }
 }
