@@ -93,8 +93,9 @@ class _DashboardPageState extends State<DashboardPage> {
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: AspectRatio(
-                  aspectRatio: 16 / 9,
+                child: SizedBox(
+                  height: MediaQuery.sizeOf(context).height * 0.27,
+                  width: double.maxFinite,
                   child: Column(
                     children: [
                       Expanded(

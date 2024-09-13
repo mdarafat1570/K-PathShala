@@ -205,7 +205,9 @@ class AuthService {
 
     if (loginCredentials != null && (loginCredentials.token == null || loginCredentials.token == "")) {
       // No token found, perhaps already logged out
-      _showSnackbar(context, 'No active session found.');
+      if (context.mounted){
+        _showSnackbar(context, 'No active session found.');
+      }
       return {'status': 'error', 'message': 'No active session.'};
     }
 
@@ -225,13 +227,19 @@ class AuthService {
       if (SignInMethods.isUserSignedIn()){
         await SignInMethods.logout();
       }
-      _showSnackbar(context, 'Logout successful');
+      if (context.mounted){
+        _showSnackbar(context, 'Logout successful');
+      }
       return jsonDecode(response.body);
     } else if (response.statusCode == 401) {
-      _showSnackbar(context, 'Invalid or expired token.');
+      if(context.mounted){
+        _showSnackbar(context, 'Invalid or expired token.');
+      }
       return jsonDecode(response.body);
     } else {
-      _showSnackbar(context, 'Logout failed. Please try again.');
+      if(context.mounted){
+        _showSnackbar(context, 'Logout failed. Please try again.');
+      }
       return jsonDecode(response.body);
     }
   }

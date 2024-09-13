@@ -29,27 +29,23 @@ Widget bookDashboardBuildCard() {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Text widget with responsive font size
-              Flexible(
-                child: customText(
-                  "Ace the 2024 UBT Exam with \nK-Pathshala’s 100-Set Mock Test",
-                  TextType.title,
-                  color: AppColor.active,
-                  fontSize: constraints.maxWidth * 0.05, // Responsive font size
-                ),
+              customText(
+                "Ace the 2024 UBT Exam with \nK-Pathshala’s 100-Set Mock Test",
+                TextType.title,
+                color: AppColor.active,
+                fontSize: constraints.maxWidth * 0.05, // Responsive font size
               ),
               const Gap(5),
               // Row with flexible text widgets
               Row(
                 children: [
-                  Flexible(
-                    child: Text(
-                      'For only ৳999.00',
-                      style: TextStyle(
-                        fontSize:
-                            constraints.maxWidth * 0.04, // Responsive font size
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  Text(
+                    'For only ৳999.00',
+                    style: TextStyle(
+                      fontSize:
+                          constraints.maxWidth * 0.04, // Responsive font size
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   SizedBox(

@@ -20,8 +20,8 @@ class ProfileScreenInMainPage extends StatefulWidget {
 
 class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
   LogInCredentials? credentials;
-  ProfileGetDataModel? profileData; // Holds fetched profile data
-  bool isLoadingProfile = true; // Added loading state for the profile
+  ProfileGetDataModel? profileData;
+  bool isLoadingProfile = true;
   final AuthService _authService = AuthService();
   final ProfileRepository _profileRepository = ProfileRepository();
 
@@ -35,7 +35,7 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
   Future<void> readCredentials() async {
     credentials = await _authService.getLogInCredentials();
 
-    if (credentials == null) {
+    if (credentials == null && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("No credentials found")),
       );
@@ -60,17 +60,21 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
         setState(() {
           isLoadingProfile = false; // Stop loading if failed
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Failed to fetch profile data")),
-        );
+        if (mounted){
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Failed to fetch profile data")),
+          );
+        }
       }
     } catch (e) {
       setState(() {
         isLoadingProfile = false; // Stop loading on error
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("An error occurred: $e")),
-      );
+      if (mounted){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("An error occurred: $e")),
+        );
+      }
     }
   }
 
@@ -99,27 +103,33 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
             children: [
               Row(
                 children: [
-                  CircleAvatar(radius: 50, backgroundImage: imageProvider),
-                  const SizedBox(width: 16),
+                  CircleAvatar(radius: 40, backgroundImage: imageProvider),
+                  const Gap(16),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        credentials?.name ?? 'User',
-                        style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: AppColor.navyBlue),
-                      ),
-                      const SizedBox(height: 3),
-                      Text(
-                        credentials?.mobile ?? '+880 1867-712017',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey,
+                      if (credentials?.name != null &&
+                          credentials!.name!.isNotEmpty)
+                        Text(
+                          credentials?.name ?? 'User',
+                          style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: AppColor.navyBlue),
                         ),
-                      ),
-                      const SizedBox(height: 8),
+                      if (credentials?.mobile != null &&
+                          credentials!.mobile!.isNotEmpty)
+                        const Gap(3),
+                      if (credentials?.mobile != null &&
+                          credentials!.mobile!.isNotEmpty)
+                        Text(
+                          credentials?.mobile ?? '+88018xxxxxxxx',
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      const Gap(3),
                       ElevatedButton(
                         onPressed: () {
                           Navigator.push(
@@ -130,8 +140,14 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
                         },
                         style: ElevatedButton.styleFrom(
                           shadowColor: Colors.blue,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 6, horizontal: 12),
                         ),
-                        child: const Text('Edit Profile'),
+                        child: const Text(
+                          'Edit Profile',
+                          style: TextStyle(
+                              fontSize: 10, fontWeight: FontWeight.normal),
+                        ),
                       )
                     ],
                   ),
@@ -140,74 +156,81 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
               const SizedBox(height: 20),
 
               // Profile Data Section
-              isLoadingProfile
-                  ? const Center(
-                      child:
-                          CircularProgressIndicator()) // Show loader while data is being fetched
-                  : profileData != null
-                      ? Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.1),
-                                spreadRadius: 2,
-                                blurRadius: 5,
-                              ),
-                            ],
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    FittedBox(
+                      child: Column(
+                        children: [
+                          customText(
+                            profileData?.courseTaken?.toString() ?? "__",
+                            TextType.subtitle,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: AppColor.navyBlue,
                           ),
-                          padding: const EdgeInsets.all(16),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Column(
-                                children: [
-                                  customText(
-                                    profileData?.courseTaken?.toString() ??
-                                        "__",
-                                    TextType.subtitle,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColor.navyBlue,
-                                  ),
-                                  customText('Courses taken', TextType.normal),
-                                ],
-                              ),
-                              const Gap(10),
-                              Column(
-                                children: [
-                                  customText(
-                                    profileData?.examTaken?.toString() ?? "__",
-                                    TextType.subtitle,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColor.navyBlue,
-                                  ),
-                                  const Text('Exams taken'),
-                                ],
-                              ),
-                              const Gap(10),
-                              Column(
-                                children: [
-                                  customText(
-                                    "${profileData?.memberSince?.toString() ?? "__"} days",
-                                    TextType.subtitle,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColor.navyBlue,
-                                  ),
-                                  const Text('Member since'),
-                                ],
-                              ),
-                            ],
+                          customText(
+                              'Courses taken', fontSize: 10, TextType.normal),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      height: 50,
+                      width: 1,
+                      color: Colors.grey.withOpacity(0.2),
+                    ),
+                    FittedBox(
+                      child: Column(
+                        children: [
+                          customText(
+                            profileData?.examTaken?.toString() ?? "__",
+                            TextType.subtitle,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: AppColor.navyBlue,
                           ),
-                        )
-                      : const Center(
-                          child: Text("Failed to load profile data"),
-                        ),
-
+                          customText(
+                              'Exams taken', fontSize: 10, TextType.normal),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      height: 50,
+                      width: 1,
+                      color: Colors.grey.withOpacity(0.2),
+                    ),
+                    FittedBox(
+                      child: Column(
+                        children: [
+                          customText(
+                            "${profileData?.memberSince?.toString() ?? "__"} days",
+                            TextType.subtitle,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: AppColor.navyBlue,
+                          ),
+                          customText(
+                              'Member since', fontSize: 10, TextType.normal),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 20),
               Expanded(
                 child: ListView(
