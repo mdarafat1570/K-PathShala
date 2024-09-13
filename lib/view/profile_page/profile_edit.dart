@@ -33,7 +33,6 @@ class _ProfileState extends State<Profile> {
   String? _nameError;
   String? _phoneError;
   String? _emailError;
-  // File? image;
 
   @override
   void initState() {
@@ -65,125 +64,36 @@ class _ProfileState extends State<Profile> {
     super.dispose();
   }
 
-  // void selectImage(ImageSource source) async {
-  //   _image = await pickImage(source);
-  //   setState(() {});
-  // }
+  void selectImage(ImageSource source) async {
+    _image = await pickImage(source);
+    setState(() {});
+  }
 
-  //   void selectImage(ImageSource source) async {
-  //   XFile? pickedFile = await ImagePicker().pickImage(source: source);
-  //   if (pickedFile != null) {
-  //     cropImage(pickedFile);
-  //   }
-  // }
-
-  // void cropImage(XFile file) async {
-  //   CroppedFile? croppedImage = await ImageCropper()
-  //       .cropImage(sourcePath: file.path, compressQuality: 20);
-
-  //   if (croppedImage != null) {
-  //     setState(() {
-  //       image = File(croppedImage.path);
-  //     });
-  //   }
-  // }
-
-  //   void postData() async {
-  //   try {
-  //     // Prepare data for request
-  //     String? imageExtension = image?.path.split('.').last;
-  //     String jsonData = jsonEncode(widget.isEditMode ? dataEdit : data);
-  //     log(jsonData.toString());
-  //     FormData formData = FormData.fromMap({
-  //       'Data': jsonData,
-  //       'Image': image != null
-  //           ? await MultipartFile.fromFile(
-  //         image!.path,
-  //         filename:
-  //         '${DateTime.now().millisecondsSinceEpoch}.$imageExtension',
-  //       )
-  //           : null,
-  //     });
-
-  //     if (mounted) {
-  //       if (response.statusCode == 200 && response.isSucceeded) {
-  //         showSnackBar(response.getMessage, true, context);
-  //       } else {
-  //         showSnackBar(
-  //           response.getMessage,
-  //           false,
-  //           context,
-  //           isFromPermission: response.isContainPermission,
-  //         );
-  //       }
-  //       Navigator.pop(context); // Safely pop the Navigator after async operations
-  //     }
-  //   } catch (e) {
-  //     log('Error while saving data: $e');
-  //     if (mounted) {
-  //       showSnackBar('Error while saving data', false, context);
-  //     }
-  //   }
-  // }
-
-  //   void showPhotoOption() {
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return AlertDialog(
-  //         title: const Text("Upload Image"),
-  //         content: Column(
-  //           mainAxisSize: MainAxisSize.min,
-  //           children: [
-  //             ListTile(
-  //               onTap: () {
-  //                 Navigator.pop(context);
-  //                 selectImage(ImageSource.gallery);
-  //               },
-  //               leading: const Icon(Icons.photo_album_rounded),
-  //               title: const Text("Select from Gallery"),
-  //             ),
-  //             ListTile(
-  //               onTap: () {
-  //                 Navigator.pop(context);
-  //                 selectImage(ImageSource.camera);
-  //               },
-  //               leading: const Icon(Icons.camera_alt),
-  //               title: const Text("Take a Photo"),
-  //             ),
-  //           ],
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
-
-
-  // void showImageSourceOptions() {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     builder: (context) => Wrap(
-  //       children: [
-  //         ListTile(
-  //           leading: const Icon(Icons.photo_library),
-  //           title: const Text('Gallery'),
-  //           onTap: () {
-  //             Navigator.pop(context);
-  //             selectImage(ImageSource.gallery);
-  //           },
-  //         ),
-  //         ListTile(
-  //           leading: const Icon(Icons.camera_alt),
-  //           title: const Text('Camera'),
-  //           onTap: () {
-  //             Navigator.pop(context);
-  //             selectImage(ImageSource.camera);
-  //           },
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
+  void showImageSourceOptions() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Wrap(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.photo_library),
+            title: const Text('Gallery'),
+            onTap: () {
+              Navigator.pop(context);
+              selectImage(ImageSource.gallery);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.camera_alt),
+            title: const Text('Camera'),
+            onTap: () {
+              Navigator.pop(context);
+              selectImage(ImageSource.camera);
+            },
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -221,7 +131,7 @@ class _ProfileState extends State<Profile> {
                       bottom: 0,
                       left: 46,
                       child: ElevatedButton.icon(
-                        onPressed: (){},
+                        onPressed: showImageSourceOptions,
                         label: const Text('Add',
                             style:
                                 TextStyle(color: Colors.black, fontSize: 15)),
