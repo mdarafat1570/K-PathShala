@@ -28,9 +28,14 @@ class _SplashScreenState extends State<SplashScreen> {
     bool signedIn = false;
 
     final LogInCredentials? credentials = await _authService.getLogInCredentials();
-    if (credentials?.token != null && credentials?.token != ""){
+    if (credentials?.token != null && credentials?.token != "" &&
+        credentials?.name != null && credentials?.name != "" &&
+        credentials?.mobile != null && credentials?.mobile != "") {
       signedIn = true;
+    } else {
+      signedIn = false;
     }
+
     Timer(
       const Duration(seconds: 3),
           () => Navigator.of(context).pushReplacement(
@@ -45,11 +50,11 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColor.deepPurple,
+      backgroundColor: AppColor.softWhite,
       body: Center(
           child: Container(
-        height: 160,
-        width: 160,
+        height: 150,
+        width: 150,
         decoration: const BoxDecoration(
             image: DecorationImage(
                 image: AssetImage('assets/new_App_icon.png'),

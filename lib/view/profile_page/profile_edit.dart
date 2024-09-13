@@ -33,6 +33,9 @@ class _ProfileState extends State<Profile> {
   String? _nameError;
   String? _phoneError;
   String? _emailError;
+
+  bool isNumberFieldActive = true;
+
   // File? image;
 
   @override
@@ -49,6 +52,9 @@ class _ProfileState extends State<Profile> {
       _emailController.text = credentials.email ?? "";
       _mobileController.text = credentials.mobile ?? "";
       _networkImageUrl = credentials.imagesAddress ?? "";
+      if (credentials.mobile.isNotEmptyAndNotNull){
+        isNumberFieldActive = false;
+      }
       setState(() {});
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -158,7 +164,6 @@ class _ProfileState extends State<Profile> {
   //   );
   // }
 
-
   // void showImageSourceOptions() {
   //   showModalBottomSheet(
   //     context: context,
@@ -214,19 +219,21 @@ class _ProfileState extends State<Profile> {
                     fontSize: 18, color: AppColor.cancelled),
                 const SizedBox(height: 30),
                 Stack(
-                  alignment: Alignment.center,
+                  alignment: Alignment.topCenter,
                   children: [
+                    Container(
+                      height: 200,
+                    ),
                     CircleAvatar(radius: 90, backgroundImage: imageProvider),
                     Positioned(
                       bottom: 0,
-                      left: 46,
                       child: ElevatedButton.icon(
-                        onPressed: (){},
+                        onPressed: () {},
                         label: const Text('Add',
                             style:
-                                TextStyle(color: Colors.black, fontSize: 15)),
-                        icon: const Icon(Icons.add,
-                            color: Colors.black, size: 18),
+                                TextStyle(color: Colors.black, fontSize: 12)),
+                        icon: const Icon(Icons.camera_alt_rounded,
+                            color: Colors.black, size: 14),
                         style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.black,
                             backgroundColor: Colors.white),
@@ -236,10 +243,15 @@ class _ProfileState extends State<Profile> {
                 ),
                 const SizedBox(height: 30),
                 CustomTextField(
-                  controller: _nameController,
-                  label: "Full Name",
-                  errorMessage: _nameError, // Show name validation error
-                ),
+                    controller: _nameController,
+                    label: "Full Name",
+                    errorMessage: _nameError,
+                    onChanged: (_) {
+                      if (_nameController.text.isNotEmpty) {
+                        _nameError = null;
+                        setState(() {});
+                      }
+                    }),
                 const SizedBox(height: 15),
                 Stack(
                   alignment: Alignment.centerRight,
@@ -248,6 +260,7 @@ class _ProfileState extends State<Profile> {
                       controller: _mobileController,
                       label: "Phone Number",
                       errorMessage: _phoneError,
+                      isEnabled: isNumberFieldActive,
                     ),
                     Positioned(
                       right: 8.0,
@@ -314,6 +327,13 @@ class _ProfileState extends State<Profile> {
                   controller: _emailController,
                   label: "Email",
                   errorMessage: _emailError,
+                  onChanged: (_) {
+                    if (_emailController.text.isNotEmpty) {
+                      _emailError = null;
+                      setState(() {});
+                    }
+                  },
+                  isEnabled: !widget.isFromGmailOrFacebookLogin,
                 ),
                 const SizedBox(height: 30),
                 SizedBox(
@@ -351,8 +371,9 @@ class _ProfileState extends State<Profile> {
       final email = _emailController.text;
       if (email.isEmpty) {
         _emailError = "Email is required";
-      } else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@gmail\.com$").hasMatch(email)) {
-        _emailError = "Please enter a valid Gmail address";
+      } else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+          .hasMatch(email)) {
+        _emailError = "Please enter a valid email address";
       } else {
         _emailError = null;
       }
@@ -397,7 +418,8 @@ class _ProfileState extends State<Profile> {
     required String name,
     required String email,
     required String image,
-  }) async {
+  }) async
+  {
     // Show loading indicator
     showLoadingIndicator(context: context, showLoader: true);
 

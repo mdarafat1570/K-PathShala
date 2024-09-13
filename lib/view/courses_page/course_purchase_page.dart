@@ -3,6 +3,7 @@ import 'package:kpathshala/model/package_model/package_model.dart';
 import 'package:kpathshala/repository/package_service_repository.dart';
 import 'package:kpathshala/view/courses_page/course_shimmer.dart';
 import 'package:kpathshala/view/exam_main_page/bottom_panel_page_course_purchase.dart';
+import 'package:kpathshala/view/exam_main_page/ubt_exam_page.dart';
 import 'package:lottie/lottie.dart';
 
 class CoursePurchasePage extends StatefulWidget {
@@ -173,7 +174,12 @@ class _CoursePurchasePageState extends State<CoursePurchasePage> {
                                     width:
                                         MediaQuery.sizeOf(context).width * 0.35,
                                     child: OutlinedButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(builder: (context) =>const  ExamPage()),
+                                                );
+                                      },
                                       style: OutlinedButton.styleFrom(
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 6),

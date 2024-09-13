@@ -4,7 +4,7 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 
-import 'package:intl_phone_field/intl_phone_field.dart';
+// import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:kpathshala/base/get_device_id.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/model/registration_api_response_model.dart';
@@ -29,31 +29,32 @@ class _RegistrationPageState extends State<RegistrationPage> {
   String? errorMessage;
   final AuthService _authService = AuthService();
 
-  InputDecoration _inputDecoration() {
-    return InputDecoration(
-      labelText: "",
-      errorText: errorMessage,
-      fillColor: Colors.white,
-      filled: true,
-      border: _borderStyle(),
-      focusedBorder: _borderStyle(color: AppColor.navyBlue),
-      contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-    );
-  }
+  // InputDecoration _inputDecoration() {
+  //   return InputDecoration(
+  //     labelText: "",
+  //     errorText: errorMessage,
+  //     fillColor: Colors.white,
+  //     filled: true,
+  //     border: _borderStyle(),
+  //     focusedBorder: _borderStyle(color: AppColor.navyBlue),
+  //     contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+  //   );
+  // }
 
-  OutlineInputBorder _borderStyle({Color? color}) {
-    return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(8.0),
-      borderSide: BorderSide(
-        color: color ?? (errorMessage == null ? Colors.grey : Colors.red),
-        width: 0.2,
-      ),
-    );
-  }
+  // OutlineInputBorder _borderStyle({Color? color}) {
+  //   return OutlineInputBorder(
+  //     borderRadius: BorderRadius.circular(8.0),
+  //     borderSide: BorderSide(
+  //       color: color ?? (errorMessage == null ? Colors.grey : Colors.red),
+  //       width: 0.2,
+  //     ),
+  //   );
+  // }
 
   Widget _customButton(String text, Future<UserCredential> Function() onPressed,
       String assetPath,
-      {double iconHeight = 35}) {
+      {double iconHeight = 35})
+  {
     return commonCustomButton(
       width: double.infinity,
       height: 55,
@@ -122,6 +123,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     controller: mobileNumberController,
                     fontSize: 18,
                     maxLength: 11,
+                    keyboardType: TextInputType.number,
                     prefixIcon:const Text(
                       "+88 ",
                       style: TextStyle(fontSize: 18),
@@ -147,7 +149,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         String rawNumber = mobileNumberController.text;
                         if (rawNumber.isNotEmpty && rawNumber.length == 11) {
 
-                          sendOtp(mobileNumber: "+88$rawNumber");
+                          sendOtp(mobileNumber: rawNumber);
                         } else if (rawNumber.length <11){
                           setState(() {
                             errorMessage = "Please provide a valid phone number";

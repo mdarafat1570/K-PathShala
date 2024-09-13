@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:gap/gap.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
 
 import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
@@ -30,7 +31,8 @@ class CourseRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color scoreTextColor = score >= 40 ? AppColor.navyBlue : Colors.red;
+    final Color scoreTextColor =
+        score >= 40 ? AppColor.navyBlue : AppColor.brightCoral;
     final String completionText = score >= 40 ? 'Flawless Score' : 'Complete';
     final Color containerColor = score >= 40
         ? const Color.fromRGBO(26, 35, 126, 0.2)
@@ -50,11 +52,12 @@ class CourseRow extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        customText(title, TextType.paragraphTitle),
-                        const SizedBox(width: 10),
+                        customText(title, TextType.normal,
+                            fontWeight: FontWeight.w600),
+                        const Gap(5),
                         Container(
-                          width: 120,
-                          height: 25,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 4, horizontal: 6),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(25),
                             color: containerColor,
@@ -63,9 +66,10 @@ class CourseRow extends StatelessWidget {
                             child: Text(
                               completionText,
                               style: TextStyle(
+                                fontSize: 10,
                                 color: score >= 40
                                     ? AppColor.navyBlue
-                                    : Colors.red,
+                                    : AppColor.brightCoral,
                               ),
                             ),
                           ),
@@ -77,18 +81,21 @@ class CourseRow extends StatelessWidget {
                       description,
                       style: const TextStyle(
                         color: Color.fromRGBO(102, 102, 102, 1),
-                        fontSize: 12,
+                        fontSize: 10,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 3),
                     Row(
                       children: [
-                        customText('Your Score:', TextType.normal),
+                        customText('Your Score:', TextType.normal,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: AppColor.navyBlue),
                         const SizedBox(width: 5),
                         Text(
                           '$score',
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 10,
                             fontWeight: FontWeight.bold,
                             color: scoreTextColor,
                           ),
@@ -98,47 +105,47 @@ class CourseRow extends StatelessWidget {
                     const SizedBox(height: 8.0),
                     Row(
                       children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: SizedBox(
-                            width: 140,
-                            height: 35,
-                            child: ElevatedButton(
-                              onPressed: onRetakeTestClick,
-                              style: ElevatedButton.styleFrom(
-                                foregroundColor: Colors.white,
-                                backgroundColor: AppColor.navyBlue,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(36),
-                                ),
-                                textStyle: const TextStyle(fontSize: 13),
-                                padding: EdgeInsets.zero,
+                        SizedBox(
+                          width: 100,
+                          height: 30,
+                          child: ElevatedButton(
+                            onPressed: onRetakeTestClick,
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor: AppColor.navyBlue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(36),
                               ),
-                              child: Center(
-                                child: Text(
-                                  buttonLabel,
-                                  style: const TextStyle(
-                                      color: AppColor.white, fontSize: 14),
-                                ),
+                              textStyle: const TextStyle(fontSize: 13),
+                              padding: EdgeInsets.zero,
+                            ),
+                            child: Center(
+                              child: Text(
+                                buttonLabel,
+                                style: const TextStyle(
+                                    color: AppColor.white, fontSize: 12),
                               ),
                             ),
                           ),
                         ),
                         const SizedBox(width: 5),
-                        ElevatedButton(
-                          onPressed: onDetailsClick,
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: AppColor.navyBlue,
-                            backgroundColor:
-                                const Color.fromRGBO(26, 35, 126, 0.2),
-                            shape: const CircleBorder(),
-                            padding: const EdgeInsets.all(12),
-                            shadowColor: Colors.transparent,
-                          ),
-                          child: const FaIcon(
-                            FontAwesomeIcons.arrowDown,
-                            size: 16,
-                            color: AppColor.navyBlue,
+                        InkWell(
+                          borderRadius: BorderRadius.circular(36),
+                          onTap: onDetailsClick,
+                          child: Container(
+                            width: 40,
+                            height: 30,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(36),
+                              color: const Color.fromRGBO(26, 35, 126, 0.2),
+                            ),
+                            child: const Center(
+                              child: FaIcon(
+                                FontAwesomeIcons.angleDown,
+                                size: 14,
+                                color: AppColor.navyBlue,
+                              ),
+                            ),
                           ),
                         ),
                       ],
