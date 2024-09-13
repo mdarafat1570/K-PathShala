@@ -13,15 +13,11 @@ import 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class Profile extends StatefulWidget {
-
   final String? deviceId;
   final bool isFromGmailOrFacebookLogin;
 
   const Profile(
-      {super.key,
-
-      this.deviceId,
-      this.isFromGmailOrFacebookLogin = false});
+      {super.key, this.deviceId, this.isFromGmailOrFacebookLogin = false});
 
   @override
   State<Profile> createState() => _ProfileState();
@@ -37,12 +33,14 @@ class _ProfileState extends State<Profile> {
   String? _nameError;
   String? _phoneError;
   String? _emailError;
+  // File? image;
 
   @override
   void initState() {
     super.initState();
     readCredentials();
   }
+
   void readCredentials() async {
     LogInCredentials? credentials = await _authService.getLogInCredentials();
 
@@ -52,7 +50,7 @@ class _ProfileState extends State<Profile> {
       _mobileController.text = credentials.mobile ?? "";
       _networkImageUrl = credentials.imagesAddress ?? "";
       setState(() {});
-    } else if (mounted){
+    } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("No credentials found")),
       );
@@ -67,36 +65,125 @@ class _ProfileState extends State<Profile> {
     super.dispose();
   }
 
-  void selectImage(ImageSource source) async {
-    _image = await pickImage(source);
-    setState(() {});
-  }
+  // void selectImage(ImageSource source) async {
+  //   _image = await pickImage(source);
+  //   setState(() {});
+  // }
 
-  void showImageSourceOptions() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Wrap(
-        children: [
-          ListTile(
-            leading: const Icon(Icons.photo_library),
-            title: const Text('Gallery'),
-            onTap: () {
-              Navigator.pop(context);
-              selectImage(ImageSource.gallery);
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.camera_alt),
-            title: const Text('Camera'),
-            onTap: () {
-              Navigator.pop(context);
-              selectImage(ImageSource.camera);
-            },
-          ),
-        ],
-      ),
-    );
-  }
+  //   void selectImage(ImageSource source) async {
+  //   XFile? pickedFile = await ImagePicker().pickImage(source: source);
+  //   if (pickedFile != null) {
+  //     cropImage(pickedFile);
+  //   }
+  // }
+
+  // void cropImage(XFile file) async {
+  //   CroppedFile? croppedImage = await ImageCropper()
+  //       .cropImage(sourcePath: file.path, compressQuality: 20);
+
+  //   if (croppedImage != null) {
+  //     setState(() {
+  //       image = File(croppedImage.path);
+  //     });
+  //   }
+  // }
+
+  //   void postData() async {
+  //   try {
+  //     // Prepare data for request
+  //     String? imageExtension = image?.path.split('.').last;
+  //     String jsonData = jsonEncode(widget.isEditMode ? dataEdit : data);
+  //     log(jsonData.toString());
+  //     FormData formData = FormData.fromMap({
+  //       'Data': jsonData,
+  //       'Image': image != null
+  //           ? await MultipartFile.fromFile(
+  //         image!.path,
+  //         filename:
+  //         '${DateTime.now().millisecondsSinceEpoch}.$imageExtension',
+  //       )
+  //           : null,
+  //     });
+
+  //     if (mounted) {
+  //       if (response.statusCode == 200 && response.isSucceeded) {
+  //         showSnackBar(response.getMessage, true, context);
+  //       } else {
+  //         showSnackBar(
+  //           response.getMessage,
+  //           false,
+  //           context,
+  //           isFromPermission: response.isContainPermission,
+  //         );
+  //       }
+  //       Navigator.pop(context); // Safely pop the Navigator after async operations
+  //     }
+  //   } catch (e) {
+  //     log('Error while saving data: $e');
+  //     if (mounted) {
+  //       showSnackBar('Error while saving data', false, context);
+  //     }
+  //   }
+  // }
+
+  //   void showPhotoOption() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) {
+  //       return AlertDialog(
+  //         title: const Text("Upload Image"),
+  //         content: Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             ListTile(
+  //               onTap: () {
+  //                 Navigator.pop(context);
+  //                 selectImage(ImageSource.gallery);
+  //               },
+  //               leading: const Icon(Icons.photo_album_rounded),
+  //               title: const Text("Select from Gallery"),
+  //             ),
+  //             ListTile(
+  //               onTap: () {
+  //                 Navigator.pop(context);
+  //                 selectImage(ImageSource.camera);
+  //               },
+  //               leading: const Icon(Icons.camera_alt),
+  //               title: const Text("Take a Photo"),
+  //             ),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
+
+
+  // void showImageSourceOptions() {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     builder: (context) => Wrap(
+  //       children: [
+  //         ListTile(
+  //           leading: const Icon(Icons.photo_library),
+  //           title: const Text('Gallery'),
+  //           onTap: () {
+  //             Navigator.pop(context);
+  //             selectImage(ImageSource.gallery);
+  //           },
+  //         ),
+  //         ListTile(
+  //           leading: const Icon(Icons.camera_alt),
+  //           title: const Text('Camera'),
+  //           onTap: () {
+  //             Navigator.pop(context);
+  //             selectImage(ImageSource.camera);
+  //           },
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -114,132 +201,139 @@ class _ProfileState extends State<Profile> {
       body: GradientBackground(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 80),
-              customText('Edit profile', TextType.title,
-                  fontSize: 18, color: AppColor.cancelled),
-              const SizedBox(height: 30),
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  CircleAvatar(radius: 90, backgroundImage: imageProvider),
-                  Positioned(
-                    bottom: 0,
-                    left: 46,
-                    child: ElevatedButton.icon(
-                      onPressed: showImageSourceOptions,
-                      label: const Text('Add',
-                          style: TextStyle(color: Colors.black, fontSize: 15)),
-                      icon:
-                          const Icon(Icons.add, color: Colors.black, size: 18),
-                      style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.black,
-                          backgroundColor: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 30),
-              CustomTextField(
-                controller: _nameController,
-                label: "Full Name",
-                errorMessage: _nameError, // Show name validation error
-              ),
-              const SizedBox(height: 15),
-              Stack(
-                alignment: Alignment.centerRight,
-                children: [
-                  CustomTextField(
-                    controller: _mobileController,
-                    label: "Phone Number",
-                    errorMessage: _phoneError,
-                  ),
-                  Positioned(
-                    right: 8.0,
-                    child: InkWell(
-                      onTap: widget.isFromGmailOrFacebookLogin
-                          ? () {
-                              if (_validateFields()) {
-                                sendOtp(
-                                  mobileNumber: _mobileController.text,
-                                  email: _emailController.text,
-                                );
-                              }
-                            }
-                          : null,
-                      borderRadius: BorderRadius.circular(32.0),
-                      splashColor: Colors.blueAccent.withOpacity(0.2),
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: widget.isFromGmailOrFacebookLogin
-                              ? AppColor.navyBlue
-                              : AppColor.verified,
-                          borderRadius: BorderRadius.circular(32.0),
-                          boxShadow: widget.isFromGmailOrFacebookLogin
-                              ? const [
-                                  BoxShadow(
-                                    color: AppColor.skyBlue,
-                                    blurRadius: 0.0,
-                                    offset: Offset(0, 3),
-                                  ),
-                                ]
-                              : [],
-                        ),
-                        child: widget.isFromGmailOrFacebookLogin
-                            ? const Text(
-                                'Verify phone',
-                                style: TextStyle(
-                                    fontSize: 12.0, color: Colors.white),
-                              )
-                            : const Row(
-                                children: [
-                                  Icon(
-                                    Icons.check,
-                                    size: 14,
-                                    color: AppColor.white,
-                                  ),
-                                  Gap(2),
-                                  Text(
-                                    'Verified',
-                                    style: TextStyle(
-                                        fontSize: 11.0, color: AppColor.white),
-                                  ),
-                                  Gap(4),
-                                ],
-                              ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 80),
+                customText('Edit profile', TextType.title,
+                    fontSize: 18, color: AppColor.cancelled),
+                const SizedBox(height: 30),
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    CircleAvatar(radius: 90, backgroundImage: imageProvider),
+                    Positioned(
+                      bottom: 0,
+                      left: 46,
+                      child: ElevatedButton.icon(
+                        onPressed: (){},
+                        label: const Text('Add',
+                            style:
+                                TextStyle(color: Colors.black, fontSize: 15)),
+                        icon: const Icon(Icons.add,
+                            color: Colors.black, size: 18),
+                        style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.black,
+                            backgroundColor: Colors.white),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 15),
-              CustomTextField(
-                controller: _emailController,
-                label: "Email",
-                errorMessage: _emailError,
-              ),
-              const SizedBox(height: 30),
-              SizedBox(
-                height: 55,
-                width: 320,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_validateFields()) {
-                      updateProfile(
-                        name: _nameController.text,
-                        email: _emailController.text,
-                        image: _networkImageUrl ?? '',
-                      );
-                    }
-                  },
-                  child: const Text('Save'),
+                  ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 30),
+                CustomTextField(
+                  controller: _nameController,
+                  label: "Full Name",
+                  errorMessage: _nameError, // Show name validation error
+                ),
+                const SizedBox(height: 15),
+                Stack(
+                  alignment: Alignment.centerRight,
+                  children: [
+                    CustomTextField(
+                      controller: _mobileController,
+                      label: "Phone Number",
+                      errorMessage: _phoneError,
+                    ),
+                    Positioned(
+                      right: 8.0,
+                      child: InkWell(
+                        onTap: widget.isFromGmailOrFacebookLogin
+                            ? () {
+                                if (_validateFields()) {
+                                  sendOtp(
+                                    mobileNumber: _mobileController.text,
+                                    email: _emailController.text,
+                                  );
+                                }
+                              }
+                            : null,
+                        borderRadius: BorderRadius.circular(32.0),
+                        splashColor: Colors.blueAccent.withOpacity(0.2),
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: widget.isFromGmailOrFacebookLogin
+                                ? AppColor.navyBlue
+                                : AppColor.verified,
+                            borderRadius: BorderRadius.circular(32.0),
+                            boxShadow: widget.isFromGmailOrFacebookLogin
+                                ? const [
+                                    BoxShadow(
+                                      color: AppColor.skyBlue,
+                                      blurRadius: 0.0,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ]
+                                : [],
+                          ),
+                          child: widget.isFromGmailOrFacebookLogin
+                              ? const Text(
+                                  'Verify phone',
+                                  style: TextStyle(
+                                      fontSize: 12.0, color: Colors.white),
+                                )
+                              : const Row(
+                                  children: [
+                                    Icon(
+                                      Icons.check,
+                                      size: 14,
+                                      color: AppColor.white,
+                                    ),
+                                    Gap(2),
+                                    Text(
+                                      'Verified',
+                                      style: TextStyle(
+                                          fontSize: 11.0,
+                                          color: AppColor.white),
+                                    ),
+                                    Gap(4),
+                                  ],
+                                ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 15),
+                CustomTextField(
+                  controller: _emailController,
+                  label: "Email",
+                  errorMessage: _emailError,
+                ),
+                const SizedBox(height: 30),
+                SizedBox(
+                  height: 55,
+                  width: 320,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_validateFields()) {
+                        updateProfile(
+                          name: _nameController.text,
+                          email: _emailController.text,
+                          image: _networkImageUrl ?? '',
+                        );
+                      }
+                    },
+                    child: const Text('Save'),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -318,7 +412,8 @@ class _ProfileState extends State<Profile> {
 
         if (response['error'] == null || !response['error']) {
           final apiResponse = UserUpdateSuccessResponse.fromJson(response);
-          LogInCredentials? credentials = await _authService.getLogInCredentials();
+          LogInCredentials? credentials =
+              await _authService.getLogInCredentials();
           final newName = apiResponse.data?.name ?? '';
           final newEmail = apiResponse.data?.email ?? '';
           final newMobile = apiResponse.data?.mobile ?? '';
@@ -335,7 +430,7 @@ class _ProfileState extends State<Profile> {
           } else {
             log("No credentials found to update");
           }
-          if (mounted){
+          if (mounted) {
             slideNavigationPushAndRemoveUntil(const Navigation(), context);
           }
         } else {
