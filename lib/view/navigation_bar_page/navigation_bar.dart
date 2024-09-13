@@ -34,7 +34,7 @@ class _NavigationState extends State<Navigation> {
   Future<void> readCredentials() async {
     credentials = await _authService.getLogInCredentials();
 
-    if (credentials == null) {
+    if (credentials == null && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("No credentials found")),
       );
@@ -54,7 +54,7 @@ class _NavigationState extends State<Navigation> {
     return GradientBackground(
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
+          backgroundColor: AppColor.gradientStart,
           elevation: 0,
           leading: Padding(
             padding: const EdgeInsets.all(12),

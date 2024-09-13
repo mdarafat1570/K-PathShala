@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
 
-enum TextType { title, subtitle, paragraphTitle, normal, paragraphTitlenormal }
+enum TextType { title, subtitle, paragraphTitle, normal, paragraphTitleNormal }
 
 Widget customText(
   String text,
@@ -47,7 +47,7 @@ Widget customText(
           fontWeight: fontWeight ?? FontWeight.normal,
         ),
       );
-    case TextType.paragraphTitlenormal:
+    case TextType.paragraphTitleNormal:
       return Text(
         text,
         style: TextStyle(

@@ -208,17 +208,16 @@ class _OtpPageState extends State<OtpPage> {
             token: token,
           ));
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("OTP verified successfully.")),
-          );
+          if (mounted){
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("OTP verified successfully.")),
+            );
+          }
 
           // Navigate based on profile requirement
-          if (apiResponse.successResponse?.data.isProfileRequired == true) {
-            slideNavigationPushAndRemoveUntil(
-              Profile(deviceId: deviceId),
-              context,
-            );
-          } else {
+          if (apiResponse.successResponse?.data.isProfileRequired == true && mounted) {
+            slideNavigationPushAndRemoveUntil(Profile(deviceId: deviceId), context);
+          } else if (mounted){
             slideNavigationPushAndRemoveUntil(const Navigation(), context);
           }
         } else {

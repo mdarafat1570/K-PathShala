@@ -146,7 +146,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       onPressed: () {
                         String rawNumber = mobileNumberController.text;
                         if (rawNumber.isNotEmpty && rawNumber.length == 11) {
-                          sendOtp(mobileNumber: rawNumber);
+
+                          sendOtp(mobileNumber: "+88$rawNumber");
                         } else if (rawNumber.length <11){
                           setState(() {
                             errorMessage = "Please provide a valid phone number";
@@ -293,6 +294,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       final email = apiResponse.data?.user?.email;
       final mobile = apiResponse.data?.user?.mobile;
       final imageUrl = apiResponse.data?.user?.image;
+      await _authService.saveToken(token.toString());
       await _authService.saveLogInCredentials(LogInCredentials(
         email: email,
         name: name,

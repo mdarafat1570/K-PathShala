@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.inferloom.kpathshala">
 
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -9,6 +10,8 @@
     <application
         android:label="K-Pathshala"
         android:name="${applicationName}"
+        android:usesCleartextTraffic="true"
+        tools:replace="android:label"
         android:icon="@mipmap/ic_launcher">
 
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>

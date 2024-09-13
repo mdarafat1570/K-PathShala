@@ -53,7 +53,7 @@ class PaymentRow extends StatelessWidget {
                   FittedBox(
                     child: customText(
                       amount,
-                      TextType.paragraphTitlenormal,
+                      TextType.paragraphTitleNormal,
                       fontSize: 10,
                     ),
                   ),
