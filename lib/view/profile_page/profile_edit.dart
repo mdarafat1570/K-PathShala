@@ -1,13 +1,15 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:typed_data';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
+import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/model/api_response_models/user_update_success_response.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/view/login_signup_page/otp_verify_page.dart';
 import 'package:kpathshala/view/navigation_bar_page/navigation_bar.dart';
-import 'package:kpathshala/view/profile_page/utils.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -24,7 +26,8 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  Uint8List? _image;
+  final ImagePicker _picker = ImagePicker();
+  File? _imageFile;
   final _nameController = TextEditingController();
   final _mobileController = TextEditingController();
   final _emailController = TextEditingController();
@@ -33,10 +36,7 @@ class _ProfileState extends State<Profile> {
   String? _nameError;
   String? _phoneError;
   String? _emailError;
-
   bool isNumberFieldActive = true;
-
-  // File? image;
 
   @override
   void initState() {
@@ -52,7 +52,7 @@ class _ProfileState extends State<Profile> {
       _emailController.text = credentials.email ?? "";
       _mobileController.text = credentials.mobile ?? "";
       _networkImageUrl = credentials.imagesAddress ?? "";
-      if (credentials.mobile.isNotEmptyAndNotNull){
+      if (credentials.mobile.isNotEmptyAndNotNull) {
         isNumberFieldActive = false;
       }
       setState(() {});
@@ -71,135 +71,63 @@ class _ProfileState extends State<Profile> {
     super.dispose();
   }
 
-  void selectImage(ImageSource source) async {
-    _image = await pickImage(source);
-    setState(() {});
+  void _showImagePicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (builder) => bottomSheet(),
+    );
   }
 
-  //   void selectImage(ImageSource source) async {
-  //   XFile? pickedFile = await ImagePicker().pickImage(source: source);
-  //   if (pickedFile != null) {
-  //     cropImage(pickedFile);
-  //   }
-  // }
+  Widget bottomSheet() {
+    return Container(
+      height: 100.0,
+      width: MediaQuery.of(context).size.width,
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      child: Column(
+        children: <Widget>[
+          const Text("Choose Profile photo", style: TextStyle(fontSize: 20.0)),
+          const SizedBox(height: 20),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+            TextButton.icon(
+              icon: const Icon(Icons.camera),
+              onPressed: () {
+                _takePhoto(ImageSource.camera);
+                Navigator.of(context).pop();
+              },
+              label: const Text("Camera"),
+            ),
+            TextButton.icon(
+              icon: const Icon(Icons.image),
+              onPressed: () {
+                _takePhoto(ImageSource.gallery);
+                Navigator.of(context).pop();
+              },
+              label: const Text("Gallery"),
+            ),
+          ])
+        ],
+      ),
+    );
+  }
 
-  // void cropImage(XFile file) async {
-  //   CroppedFile? croppedImage = await ImageCropper()
-  //       .cropImage(sourcePath: file.path, compressQuality: 20);
-
-  //   if (croppedImage != null) {
-  //     setState(() {
-  //       image = File(croppedImage.path);
-  //     });
-  //   }
-  // }
-
-  //   void postData() async {
-  //   try {
-  //     // Prepare data for request
-  //     String? imageExtension = image?.path.split('.').last;
-  //     String jsonData = jsonEncode(widget.isEditMode ? dataEdit : data);
-  //     log(jsonData.toString());
-  //     FormData formData = FormData.fromMap({
-  //       'Data': jsonData,
-  //       'Image': image != null
-  //           ? await MultipartFile.fromFile(
-  //         image!.path,
-  //         filename:
-  //         '${DateTime.now().millisecondsSinceEpoch}.$imageExtension',
-  //       )
-  //           : null,
-  //     });
-
-  //     if (mounted) {
-  //       if (response.statusCode == 200 && response.isSucceeded) {
-  //         showSnackBar(response.getMessage, true, context);
-  //       } else {
-  //         showSnackBar(
-  //           response.getMessage,
-  //           false,
-  //           context,
-  //           isFromPermission: response.isContainPermission,
-  //         );
-  //       }
-  //       Navigator.pop(context); // Safely pop the Navigator after async operations
-  //     }
-  //   } catch (e) {
-  //     log('Error while saving data: $e');
-  //     if (mounted) {
-  //       showSnackBar('Error while saving data', false, context);
-  //     }
-  //   }
-  // }
-
-  //   void showPhotoOption() {
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return AlertDialog(
-  //         title: const Text("Upload Image"),
-  //         content: Column(
-  //           mainAxisSize: MainAxisSize.min,
-  //           children: [
-  //             ListTile(
-  //               onTap: () {
-  //                 Navigator.pop(context);
-  //                 selectImage(ImageSource.gallery);
-  //               },
-  //               leading: const Icon(Icons.photo_album_rounded),
-  //               title: const Text("Select from Gallery"),
-  //             ),
-  //             ListTile(
-  //               onTap: () {
-  //                 Navigator.pop(context);
-  //                 selectImage(ImageSource.camera);
-  //               },
-  //               leading: const Icon(Icons.camera_alt),
-  //               title: const Text("Take a Photo"),
-  //             ),
-  //           ],
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
-
-  // void showImageSourceOptions() {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     builder: (context) => Wrap(
-  //       children: [
-  //         ListTile(
-  //           leading: const Icon(Icons.photo_library),
-  //           title: const Text('Gallery'),
-  //           onTap: () {
-  //             Navigator.pop(context);
-  //             selectImage(ImageSource.gallery);
-  //           },
-  //         ),
-  //         ListTile(
-  //           leading: const Icon(Icons.camera_alt),
-  //           title: const Text('Camera'),
-  //           onTap: () {
-  //             Navigator.pop(context);
-  //             selectImage(ImageSource.camera);
-  //           },
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
+  void _takePhoto(ImageSource source) async {
+    final pickedFile = await _picker.pickImage(source: source);
+    setState(() {
+      if (pickedFile != null) {
+        _imageFile = File(pickedFile.path);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    ImageProvider<Object> imageProvider;
-
-    if (_networkImageUrl.isNotEmptyAndNotNull) {
-      imageProvider = NetworkImage(_networkImageUrl ?? '');
-    } else if (_image != null) {
-      imageProvider = MemoryImage(_image!);
-    } else {
-      imageProvider = const AssetImage('assets/new_App_icon.png');
+    void _takePhoto(ImageSource source) async {
+      final pickedFile = await _picker.pickImage(source: source);
+      setState(() {
+        if (pickedFile != null) {
+          _imageFile = File(pickedFile.path);
+        }
+      });
     }
 
     return Scaffold(
@@ -214,21 +142,34 @@ class _ProfileState extends State<Profile> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 80),
-                customText('Edit profile', TextType.title,
-                    fontSize: 18, color: AppColor.cancelled),
-                const SizedBox(height: 30),
+                GestureDetector(
+                  onTap: () => _showImagePicker(context),
+                  child: _imageFile == null
+                      ? CircleAvatar(
+                          radius: 90,
+                          backgroundImage: NetworkImage(_networkImageUrl ?? ''))
+                      : CircleAvatar(
+                          radius: 90, backgroundImage: FileImage(_imageFile!)),
+                ),
                 Stack(
                   alignment: Alignment.topCenter,
                   children: [
                     Container(
                       height: 200,
                     ),
-                    CircleAvatar(radius: 90, backgroundImage: imageProvider),
+                    CircleAvatar(radius: 90),
                     Positioned(
                       bottom: 0,
                       child: ElevatedButton.icon(
-                        onPressed: () {},
+                        onPressed: () {
+                          if (_validateFields()) {
+                            updateProfile(
+                              name: _nameController.text,
+                              email: _emailController.text,
+                              imageFile: _imageFile,
+                            );
+                          }
+                        },
                         label: const Text('Add',
                             style:
                                 TextStyle(color: Colors.black, fontSize: 12)),
@@ -342,10 +283,16 @@ class _ProfileState extends State<Profile> {
                   child: ElevatedButton(
                     onPressed: () {
                       if (_validateFields()) {
+                        File? imageFile;
+                        if (_networkImageUrl != null &&
+                            _networkImageUrl!.isNotEmpty) {
+                          imageFile = File(_networkImageUrl!);
+                        }
+
                         updateProfile(
                           name: _nameController.text,
                           email: _emailController.text,
-                          image: _networkImageUrl ?? '',
+                          imageFile: imageFile,
                         );
                       }
                     },
@@ -417,59 +364,67 @@ class _ProfileState extends State<Profile> {
   void updateProfile({
     required String name,
     required String email,
-    required String image,
-  }) async
-  {
-    // Show loading indicator
+    File? imageFile,
+  }) async {
     showLoadingIndicator(context: context, showLoader: true);
 
     try {
-      final response =
-          await _authService.userUpdate(name: name, email: email, image: image);
-      log(jsonEncode(response));
+      // Create a multipart request for the updated profile
+      var uri = Uri.parse(AuthorizationEndpoints.userUpdate);
+      var request = http.MultipartRequest("POST", uri)
+        ..fields['name'] = name
+        ..fields['email'] = email;
 
-      // Hide loading indicator and handle navigation or error display
-      if (mounted) {
-        showLoadingIndicator(context: context, showLoader: false);
+      if (imageFile != null) {
+        // Attach the image file to the request if it is not null
+        request.files.add(await http.MultipartFile.fromPath(
+          'profile_image',
+          imageFile.path,
+        ));
+      }
 
-        if (response['error'] == null || !response['error']) {
-          final apiResponse = UserUpdateSuccessResponse.fromJson(response);
+      // Send the request
+      var response = await request.send();
+
+      // Handle the response from the server
+      if (response.statusCode == 200) {
+        String responseData = await response.stream.bytesToString();
+        var decodedResponse = jsonDecode(responseData);
+
+        if (decodedResponse['error'] == null || !decodedResponse['error']) {
+          final apiResponse =
+              UserUpdateSuccessResponse.fromJson(decodedResponse);
           LogInCredentials? credentials =
               await _authService.getLogInCredentials();
-          final newName = apiResponse.data?.name ?? '';
-          final newEmail = apiResponse.data?.email ?? '';
-          final newMobile = apiResponse.data?.mobile ?? '';
-          final newImage = apiResponse.data?.image ?? '';
-
           if (credentials != null) {
-            credentials.name = newName;
-            credentials.email = newEmail;
-            credentials.mobile = newMobile;
-            credentials.imagesAddress = newImage;
+            credentials.name = apiResponse.data?.name ?? name;
+            credentials.email = apiResponse.data?.email ?? email;
+            credentials.imagesAddress = apiResponse.data?.image ?? '';
 
             // Save the updated object back to SharedPreferences
             await _authService.saveLogInCredentials(credentials);
-          } else {
-            log("No credentials found to update");
           }
-          if (mounted) {
-            slideNavigationPushAndRemoveUntil(const Navigation(), context);
-          }
+          slideNavigationPushAndRemoveUntil(const Navigation(), context);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content:
-                    Text("Failed to Update Profile: ${response['message']}")),
+                content: Text(
+                    "Failed to Update Profile: ${decodedResponse['message']}")),
           );
         }
-      }
-    } catch (e) {
-      if (mounted) {
-        showLoadingIndicator(context: context, showLoader: false);
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("An error occurred: $e")),
+          SnackBar(
+              content: Text(
+                  "Failed to Update Profile: HTTP ${response.statusCode}")),
         );
       }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("An error occurred: $e")),
+      );
+    } finally {
+      showLoadingIndicator(context: context, showLoader: false);
     }
   }
 }
