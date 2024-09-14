@@ -151,37 +151,37 @@ class _ProfileState extends State<Profile> {
                       : CircleAvatar(
                           radius: 90, backgroundImage: FileImage(_imageFile!)),
                 ),
-                Stack(
-                  alignment: Alignment.topCenter,
-                  children: [
-                    Container(
-                      height: 200,
-                    ),
-                    CircleAvatar(radius: 90),
-                    Positioned(
-                      bottom: 0,
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          if (_validateFields()) {
-                            updateProfile(
-                              name: _nameController.text,
-                              email: _emailController.text,
-                              imageFile: _imageFile,
-                            );
-                          }
-                        },
-                        label: const Text('Add',
-                            style:
-                                TextStyle(color: Colors.black, fontSize: 12)),
-                        icon: const Icon(Icons.camera_alt_rounded,
-                            color: Colors.black, size: 14),
-                        style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.black,
-                            backgroundColor: Colors.white),
-                      ),
-                    ),
-                  ],
-                ),
+                // Stack(
+                //   alignment: Alignment.topCenter,
+                //   children: [
+                //     Container(
+                //       height: 200,
+                //     ),
+                //     CircleAvatar(radius: 90),
+                //     Positioned(
+                //       bottom: 0,
+                //       child: ElevatedButton.icon(
+                //         onPressed: () {
+                //           if (_validateFields()) {
+                //             updateProfile(
+                //               name: _nameController.text,
+                //               email: _emailController.text,
+                //               imageFile: _imageFile,
+                //             );
+                //           }
+                //         },
+                //         label: const Text('Add',
+                //             style:
+                //                 TextStyle(color: Colors.black, fontSize: 12)),
+                //         icon: const Icon(Icons.camera_alt_rounded,
+                //             color: Colors.black, size: 14),
+                //         style: ElevatedButton.styleFrom(
+                //             foregroundColor: Colors.black,
+                //             backgroundColor: Colors.white),
+                //       ),
+                //     ),
+                //   ],
+                // ),
                 const SizedBox(height: 30),
                 CustomTextField(
                     controller: _nameController,
