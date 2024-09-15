@@ -1,4 +1,6 @@
 // common_app_bar.dart
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
 
@@ -9,16 +11,18 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Color backgroundColor;
   final Color titleColor;
   final double titleFontSize;
+  final FontWeight titleFontWeight;
 
   const CommonAppBar({
-    Key? key,
+    super.key,
     required this.title,
     this.showBackButton = true,
     this.onBackPressed,
     this.backgroundColor = AppColor.gradientStart,
     this.titleColor =AppColor.navyBlue,
-    this.titleFontSize = 20.0,
-  }) : super(key: key);
+    this.titleFontSize = 18.0,
+    this.titleFontWeight = FontWeight.w600,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +31,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Text(
         title,
         style: TextStyle(
+          fontWeight: titleFontWeight,
           fontSize: titleFontSize,
           color: titleColor,
         ),

@@ -1,97 +1,125 @@
-import 'package:kpathshala/app_base/common_imports.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:gap/gap.dart';
 
-Widget customTextField({
-  required TextEditingController controller,
-  required String label,
-  String? hintText,
-  String? errorMessage,
-  bool obscureText = false,
-  TextInputType keyboardType = TextInputType.text,
-  ValueChanged<String>? onChanged,
-  double? width,
-  double? height,
-}) {
-  return SizedBox(
-    width: width,
-    height: height,
-    child: TextField(
-      controller: controller,
-      obscureText: obscureText,
-      keyboardType: keyboardType,
-      onChanged: onChanged,
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hintText,
-        errorText: errorMessage,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(
-            color: errorMessage == null ? Colors.grey : Colors.red,
-            width: 0.1,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(
-            color: errorMessage == null ? Colors.blue : Colors.red,
-            width: 0.1,
-          ),
-        ),
-        fillColor: Colors.white,
-        filled: true,
-        contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
-      ),
-    ),
-  );
-}
+class CustomTextField extends StatelessWidget {
+  final bool isEnabled;
+  final bool isObscure;
+  final String? label;
+  final String? errorMessage;
+  final String? initialValue;
+  final int? maxLength;
+  final int? maxLines;
+  final double? fontSize;
+  final TextEditingController? controller;
+  final TextInputType keyboardType;
+  final List<TextInputFormatter>? inputFormatter;
+  final Widget? suffixIcon;
+  final String? prefix;
+  final Widget? prefixIcon;
+  final Function(String)? onChanged;
 
-Widget customTextField2({
-  required TextEditingController controller,
-  required String label,
-  required String hintText,
-  String? errorMessage,
-  bool obscureText = false,
-  TextInputType keyboardType = TextInputType.text,
-  ValueChanged<String>? onChanged,
-  double? width,
-  double? height,
-}) {
-  return SizedBox(
-    width: width,
-    height: height,
-    child: Column(
+  const CustomTextField({
+    super.key,
+    this.isEnabled = true,
+    this.label,
+    this.errorMessage,
+    this.initialValue,
+    this.maxLength,
+    this.maxLines,
+    this.fontSize = 16,
+    this.controller,
+    this.keyboardType = TextInputType.text,
+    this.inputFormatter,
+    this.isObscure = false,
+    this.suffixIcon,
+    this.prefix,
+    this.prefixIcon,
+    this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        customText(label, TextType.normal),
-        TextField(
-          controller: controller,
-          obscureText: obscureText,
-          keyboardType: keyboardType,
-          onChanged: onChanged,
-          decoration: InputDecoration(
-            labelText: label,
-            hintText: hintText,
-            errorText: errorMessage,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(
-                color: errorMessage == null ? Colors.grey : Colors.red,
-                width: 1.0,
-              ),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(6.0),
+            border: Border.all(
+              color: (errorMessage != null && errorMessage!.isNotEmpty)
+                  ? Colors.red
+                  : Colors.transparent,
+              width: 1.0,
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(
-                color: errorMessage == null ? Colors.blue : Colors.red,
-                width: 1.0,
-              ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (label != null)
+                Text(
+                  label ?? '',
+                  style: const TextStyle(
+                      fontSize: 10.0,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w300),
+                ),
+                if (label != null)
+                const Gap(2),
+                TextFormField(
+                  enabled: isEnabled,
+                  initialValue: initialValue,
+                  controller: controller,
+                  keyboardType: keyboardType,
+                  obscureText: isObscure,
+                  onChanged: onChanged,
+                  maxLength: maxLength,
+                  maxLines: maxLines,
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.zero,
+                    isDense: true,
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    errorBorder: InputBorder.none,
+                    disabledBorder: InputBorder.none,
+                    suffix: suffixIcon,
+                    prefixText: prefix,
+                    prefixIcon: prefixIcon,
+                    prefixIconConstraints:const BoxConstraints(
+                      minHeight: 0,
+                      minWidth: 0,
+                    ),
+                    counterText: '',
+                  ),
+                  style: TextStyle(
+                    color: isEnabled ? Colors.black : Colors.grey,
+                    fontSize: fontSize,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  inputFormatters:inputFormatter,
+                ),
+              ],
             ),
-            fillColor: Colors.white,
-            filled: true,
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
           ),
         ),
+        if (errorMessage != null && errorMessage!.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
+            child: Text(
+              errorMessage ?? '',
+              style: const TextStyle(
+                fontSize: 10,
+                color: Colors.red,
+              ),
+            ),
+          ),
       ],
-    ),
-  );
+    );
+  }
 }

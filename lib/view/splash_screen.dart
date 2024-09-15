@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
+import 'package:kpathshala/view/login_signup_page/registration_and_login_page.dart';
 import 'package:kpathshala/view/navigation_bar_page/navigation_bar.dart';
 
-import 'login_signup_age/registration_and_login_page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -28,9 +28,14 @@ class _SplashScreenState extends State<SplashScreen> {
     bool signedIn = false;
 
     final LogInCredentials? credentials = await _authService.getLogInCredentials();
-    if (credentials?.token != null && credentials?.token != ""){
+    if (credentials?.token != null && credentials?.token != "" &&
+        credentials?.name != null && credentials?.name != "" &&
+        credentials?.mobile != null && credentials?.mobile != "") {
       signedIn = true;
+    } else {
+      signedIn = false;
     }
+
     Timer(
       const Duration(seconds: 3),
           () => Navigator.of(context).pushReplacement(
@@ -45,11 +50,11 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColor.deepPurple,
+      backgroundColor: AppColor.softWhite,
       body: Center(
           child: Container(
-        height: 160,
-        width: 160,
+        height: 150,
+        width: 150,
         decoration: const BoxDecoration(
             image: DecorationImage(
                 image: AssetImage('assets/new_App_icon.png'),

@@ -1,7 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:kpathshala/app_theme/app_color.dart';
-import 'package:kpathshala/view/common_widget/common_button_add.dart';
-import 'package:kpathshala/view/common_widget/custom_textfield.dart';
+import 'package:kpathshala/app_base/common_imports.dart';
 
 class ButtonVariations extends StatefulWidget {
   const ButtonVariations({super.key});
@@ -57,10 +54,10 @@ class ButtonVariationsState extends State<ButtonVariations> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: customTextField(
+                child: CustomTextField(
                   controller: myController,
                   label: "Mobile Number",
-                  hintText: "Enter your mobile number",
+                  // hintText: "Enter your mobile number",
                   errorMessage: errorMessage,
                   onChanged: (value) {
                     setState(() {

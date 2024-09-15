@@ -4,13 +4,13 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 
-import 'package:intl_phone_field/intl_phone_field.dart';
+// import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:kpathshala/base/get_device_id.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/model/registration_api_response_model.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/repository/sign_in_methods.dart';
-import 'package:kpathshala/view/login_signup_age/otp_verify_page.dart';
+import 'package:kpathshala/view/login_signup_page/otp_verify_page.dart';
 import 'package:kpathshala/view/navigation_bar_page/navigation_bar.dart';
 import 'package:kpathshala/view/profile_page/profile_edit.dart';
 import 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
@@ -29,31 +29,32 @@ class _RegistrationPageState extends State<RegistrationPage> {
   String? errorMessage;
   final AuthService _authService = AuthService();
 
-  InputDecoration _inputDecoration() {
-    return InputDecoration(
-      labelText: "",
-      errorText: errorMessage,
-      fillColor: Colors.white,
-      filled: true,
-      border: _borderStyle(),
-      focusedBorder: _borderStyle(color: AppColor.navyBlue),
-      contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-    );
-  }
+  // InputDecoration _inputDecoration() {
+  //   return InputDecoration(
+  //     labelText: "",
+  //     errorText: errorMessage,
+  //     fillColor: Colors.white,
+  //     filled: true,
+  //     border: _borderStyle(),
+  //     focusedBorder: _borderStyle(color: AppColor.navyBlue),
+  //     contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+  //   );
+  // }
 
-  OutlineInputBorder _borderStyle({Color? color}) {
-    return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(8.0),
-      borderSide: BorderSide(
-        color: color ?? (errorMessage == null ? Colors.grey : Colors.red),
-        width: 0.2,
-      ),
-    );
-  }
+  // OutlineInputBorder _borderStyle({Color? color}) {
+  //   return OutlineInputBorder(
+  //     borderRadius: BorderRadius.circular(8.0),
+  //     borderSide: BorderSide(
+  //       color: color ?? (errorMessage == null ? Colors.grey : Colors.red),
+  //       width: 0.2,
+  //     ),
+  //   );
+  // }
 
   Widget _customButton(String text, Future<UserCredential> Function() onPressed,
       String assetPath,
-      {double iconHeight = 35}) {
+      {double iconHeight = 35})
+  {
     return commonCustomButton(
       width: double.infinity,
       height: 55,
@@ -105,17 +106,38 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     ],
                   ),
                   const SizedBox(height: 30),
-                  IntlPhoneField(
+                  // IntlPhoneField(
+                  //   controller: mobileNumberController,
+                  //   style: const TextStyle(color: AppColor.navyBlue),
+                  //   decoration: _inputDecoration(),
+                  //   initialCountryCode: 'BD', // For Bangladesh
+                  //   onChanged: (phone) {
+                  //     setState(() {
+                  //       errorMessage = phone.number.isEmpty
+                  //           ? "Mobile number is required"
+                  //           : null;
+                  //     });
+                  //   },
+                  // ),
+                  CustomTextField(
                     controller: mobileNumberController,
-                    style: const TextStyle(color: AppColor.navyBlue),
-                    decoration: _inputDecoration(),
-                    initialCountryCode: 'BD', // For Bangladesh
-                    onChanged: (phone) {
-                      setState(() {
-                        errorMessage = phone.number.isEmpty
-                            ? "Mobile number is required"
-                            : null;
-                      });
+                    fontSize: 18,
+                    maxLength: 11,
+                    keyboardType: TextInputType.number,
+                    prefixIcon:const Text(
+                      "+88 ",
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    errorMessage: errorMessage,
+                    onChanged: (_){
+                      if (mobileNumberController.text.isNotEmpty){
+                        errorMessage = null;
+                        setState(() {});
+                      } else if(mobileNumberController.text.isEmpty){
+                        setState(() {
+                          errorMessage = "Please provide a valid phone number";
+                        });
+                      }
                     },
                   ),
                   const SizedBox(height: 15),
@@ -124,14 +146,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     width: double.maxFinite,
                     child: ElevatedButton(
                       onPressed: () {
-                        if (mobileNumberController.text.isNotEmpty) {
-                          String rawNumber = mobileNumberController.text;
-
-                          if (rawNumber.length == 10) {
-                            rawNumber = '0$rawNumber';
-                          }
+                        String rawNumber = mobileNumberController.text;
+                        if (rawNumber.isNotEmpty && rawNumber.length == 11) {
 
                           sendOtp(mobileNumber: rawNumber);
+                        } else if (rawNumber.length <11){
+                          setState(() {
+                            errorMessage = "Please provide a valid phone number";
+                          });
                         } else {
                           setState(() {
                             errorMessage = "Mobile number is required";
@@ -274,6 +296,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       final email = apiResponse.data?.user?.email;
       final mobile = apiResponse.data?.user?.mobile;
       final imageUrl = apiResponse.data?.user?.image;
+      await _authService.saveToken(token.toString());
       await _authService.saveLogInCredentials(LogInCredentials(
         email: email,
         name: name,
@@ -281,14 +304,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
         mobile: mobile,
         token: token,
       ));
-      if (apiResponse.data?.mobileVerified == false) {
-        slideNavigationPushAndRemoveUntil(
-            Profile(
-                deviceId: deviceId,
-                isFromGmailOrFacebookLogin: true),
-            context);
-      } else {
-        slideNavigationPushAndRemoveUntil(const Navigation(), context);
+      if (mounted) {
+        if (apiResponse.data?.mobileVerified == false) {
+          slideNavigationPushAndRemoveUntil(
+              Profile(deviceId: deviceId, isFromGmailOrFacebookLogin: true),
+              context);
+        } else {
+          slideNavigationPushAndRemoveUntil(const Navigation(), context);
+        }
       }
     } else {
       if (mounted) {

@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:kpathshala/app_base/common_imports.dart';
+import 'package:kpathshala/view/common_widget/common_app_bar.dart';
 import 'package:kpathshala/view/exam_main_page/bottom_sheets/main_bottom_sheet.dart';
 import 'package:kpathshala/view/exam_main_page/quiz_attempt_page.dart';
 import 'package:kpathshala/view/exam_main_page/ubt_exam_row.dart';
@@ -72,7 +73,8 @@ class _ExamPageState extends State<ExamPage> {
     int readingTestScore,
     int listingTestScore,
     String timeTaken,
-  ) {
+  )
+  {
     LinearGradient? gradient = score >= 40
         ? const LinearGradient(
             colors: [
@@ -138,7 +140,8 @@ class _ExamPageState extends State<ExamPage> {
   }
 
   Widget _bottomSheetType2(
-      BuildContext context, String title, String description) {
+      BuildContext context, String title, String description)
+  {
     return Container(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -170,51 +173,90 @@ class _ExamPageState extends State<ExamPage> {
   }
 
   Widget _bottomSheetType1(BuildContext context, int score,
-      int listingTestScore, int readingTestScore, String timeTaken) {
+      int listingTestScore, int readingTestScore, String timeTaken)
+  {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Row(
+          // crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               '$score',
               style: const TextStyle(
-                fontSize: 50,
+                fontSize: 48,
                 color: AppColor.navyBlue,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Text(
-              "/40",
-              style: TextStyle(fontSize: 12),
+            const Column(
+              children: [
+                Gap(20),
+                Text(
+                  "/40",
+                  style: TextStyle(fontSize: 10),
+                ),
+              ],
             )
           ],
         ),
         const Text(
           "Final score",
-          style: TextStyle(color: AppColor.navyBlue),
+          style: TextStyle(color: AppColor.navyBlue, fontSize: 12),
         ),
         const Gap(10),
-        Row(
-          children: [
-            _buildScoreContainer('$listingTestScore of 20', "Reading Test"),
-            const SizedBox(width: 4),
-            _buildScoreContainer('$readingTestScore of 20', "Listening Test"),
-            const SizedBox(width: 4),
-            _buildScoreContainer(timeTaken, "Time taken"),
-          ],
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: Colors.white,
+          ),
+          padding: const EdgeInsets.all(1),
+          child: Row(
+            children: [
+              // First card: only left border radius
+              Expanded(
+                child: _buildScoreContainer('$listingTestScore of 20', "Reading Test",
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      bottomLeft: Radius.circular(10),
+                    )),
+              ),
+              const SizedBox(width: 1),
+
+              // Middle card: no border radius
+              Expanded(
+                child: _buildScoreContainer('$readingTestScore of 20', "Listening Test",
+                    borderRadius: BorderRadius.zero),
+              ),
+              const SizedBox(width: 1),
+
+              // Last card: only right border radius
+              Expanded(
+                child: _buildScoreContainer(timeTaken, "Time taken",
+                    borderRadius: const BorderRadius.only(
+                      topRight: Radius.circular(10),
+                      bottomRight: Radius.circular(10),
+                    )),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 10),
-        const Text("2 Retakes taken"),
-        const Text("3h 21m spent in total"),
-        const SizedBox(height: 20),
+        customText("2 Retakes taken", TextType.normal, color: AppColor.navyBlue, fontSize: 10),
+        customText("3h 21m spent in total", TextType.normal, color: AppColor.navyBlue, fontSize: 10),
+        const SizedBox(height: 15),
         SizedBox(
           width: double.infinity,
-          height: 49,
+          height: 40,
           child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
             onPressed: () {},
-            child: const Text("Close"),
+            child: const Text("Close", style: TextStyle(fontSize: 12),),
           ),
         ),
       ],
@@ -241,32 +283,29 @@ class _ExamPageState extends State<ExamPage> {
     );
   }
 
-  Widget _buildScoreContainer(String score, String label) {
-    return Expanded(
-      child: Container(
-        height: 70,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: const Color.fromRGBO(135, 206, 235, 0.2),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Column(
-            children: [
-              Text(
-                score,
-                style: const TextStyle(
-                  color: AppColor.navyBlue,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+  Widget _buildScoreContainer(String score, String label, {required BorderRadius borderRadius}) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: borderRadius,
+        color: const Color.fromRGBO(135, 206, 235, 0.2),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Column(
+          children: [
+            Text(
+              score,
+              style: const TextStyle(
+                color: AppColor.navyBlue,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
               ),
-              Text(
-                label,
-                style: const TextStyle(color: AppColor.black, fontSize: 10),
-              ),
-            ],
-          ),
+            ),
+            Text(
+              label,
+              style: const TextStyle(color: AppColor.black, fontSize: 10),
+            ),
+          ],
         ),
       ),
     );
@@ -276,27 +315,8 @@ class _ExamPageState extends State<ExamPage> {
   Widget build(BuildContext context) {
     return GradientBackground(
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          title: const Text('UBT Mock Test', style: TextStyle(fontSize: 24)),
-          centerTitle: true,
-          leading: Padding(
-            padding: const EdgeInsets.only(left: 20),
-            child: InkWell(
-              onTap: () {
-                Navigator.of(context).pop();
-              },
-              child: const IconButton(
-                icon: Icon(
-                  Icons.arrow_back_ios_new,
-                  size: 20,
-                  color: AppColor.navyBlue,
-                ),
-                onPressed:
-                    null, // You don't need `onPressed` in `IconButton` if wrapped in `InkWell`.
-              ),
-            ),
-          ),
+        appBar: const CommonAppBar(
+          title: "UBT Mock Test",
         ),
         body: Padding(
           padding: const EdgeInsets.all(12),
@@ -324,7 +344,16 @@ class _ExamPageState extends State<ExamPage> {
                       ),
                       borderRadius: BorderRadius.circular(15),
                     ),
-                    child: const Column(
+                  ),
+                  Image.asset(
+                    'assets/exploding-ribbon-and-confetti-9UErHOE0bL.png',
+                    height: 80,
+                    fit: BoxFit.cover,
+                  ),
+                  const SizedBox(
+                    width: double.infinity,
+                    height: 190,
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -334,29 +363,24 @@ class _ExamPageState extends State<ExamPage> {
                           style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
-                            fontSize: 19,
+                            fontSize: 14,
                           ),
                         ),
                         SizedBox(height: 5),
                         Text(
                           "You’re among the top 10% of the students in this session.",
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: AppColor.grey600),
+                          style: TextStyle(color: AppColor.grey600, fontSize: 12),
                         ),
+                        Gap(30)
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  Image.asset(
-                    'assets/exploding-ribbon-and-confetti-9UErHOE0bL.png',
-                    height: 70,
-                    fit: BoxFit.cover,
                   ),
                   Positioned(
                     top: 0,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        iconColor: Colors.red,
+                        backgroundColor: AppColor.brightCoral,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
@@ -364,7 +388,7 @@ class _ExamPageState extends State<ExamPage> {
                       onPressed: () {
                         log('Button on Stack pressed');
                       },
-                      child: const Text('Batch 1'),
+                      child: const Text('Batch 1', style: TextStyle(fontSize: 12),),
                     ),
                   ),
                 ],
@@ -446,7 +470,7 @@ class _ExamPageState extends State<ExamPage> {
           ),
         ),
         bottomNavigationBar: BottomAppBar(
-          height: 70,
+          height: 65,
           color: Colors.white,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -457,7 +481,7 @@ class _ExamPageState extends State<ExamPage> {
             onPressed: () {
               // Button press logic here
             },
-            child: const Text('Continue to Set 11'),
+            child: const Text('Continue to Set 11', style: TextStyle(fontSize: 12),),
           ),
         ),
       ),

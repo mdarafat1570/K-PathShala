@@ -58,14 +58,14 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
                 RichText(
                   text: TextSpan(
                     text: "You’ll have access to UBT Mock Test till ",
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.grey,
                       fontSize: 15,
                     ),
                     children: [
                       TextSpan(
                         text: "${widget.validityDate}",
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: AppColor.navyBlue,
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
@@ -97,7 +97,7 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
         //     style: TextStyle(color: AppColor.white, fontSize: 20),
         //   ),
         // ),
-         SSLCommerzPage(),
+        const SSLCommerzPage(),
         Gap(screenHeight * 0.03),
         SizedBox(
           width: double.infinity,

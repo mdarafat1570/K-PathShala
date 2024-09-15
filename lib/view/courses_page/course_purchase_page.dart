@@ -1,5 +1,5 @@
 import 'package:kpathshala/app_base/common_imports.dart';
-import 'package:kpathshala/model/PackageModel/package_model.dart';
+import 'package:kpathshala/model/package_model/package_model.dart';
 import 'package:kpathshala/repository/package_service_repository.dart';
 import 'package:kpathshala/view/courses_page/course_shimmer.dart';
 import 'package:kpathshala/view/exam_main_page/bottom_panel_page_course_purchase.dart';
@@ -42,7 +42,7 @@ class _CoursePurchasePageState extends State<CoursePurchasePage> {
           future: _packagesFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CourseShimmer());
+              return const Center(child: CourseShimmer());
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (snapshot.hasData) {
@@ -175,8 +175,12 @@ class _CoursePurchasePageState extends State<CoursePurchasePage> {
                                         MediaQuery.sizeOf(context).width * 0.35,
                                     child: OutlinedButton(
                                       onPressed: () {
-                                        slideNavigationPush(
-                                            const ExamPage(), context);
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const ExamPage()),
+                                        );
                                       },
                                       style: OutlinedButton.styleFrom(
                                         padding: const EdgeInsets.symmetric(

@@ -43,6 +43,9 @@ dependencies:
   shimmer: ^3.0.0
   flutter_sslcommerz: ^2.3.6
   fluttertoast: ^8.2.8
+  http_parser: ^4.0.2
+  image_cropper: ^8.0.2
+  image: ^4.2.0
 
 dev_dependencies:
   flutter_test:

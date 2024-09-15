@@ -2,6 +2,8 @@ import 'package:android_intent_plus/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
+import 'package:kpathshala/view/common_widget/common_app_bar.dart';
+import 'package:kpathshala/view/common_widget/custom_background.dart';
 import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
 
 class NotificationsPage extends StatefulWidget {
@@ -16,34 +18,27 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor.white,
-      appBar: AppBar(
-        title: const Text('Notifications'),
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            color: AppColor.black,
-          ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
+      appBar:const CommonAppBar(
+        title: "Notifications",
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            SvgPicture.asset(
-              'assets/Notifications_Empty.svg',
-              height: 300,
-              width: 300,
-            ),
-            customText("There are no notifications for now", TextType.subtitle),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _openNotificationSettings,
-              child: const Text('Open Notification Settings'),
-            ),
-          ],
+      body: GradientBackground(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SvgPicture.asset(
+                'assets/Notifications_Empty.svg',
+                height: 300,
+                width: 300,
+              ),
+              customText("There are no notifications for now", TextType.subtitle),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _openNotificationSettings,
+                child: const Text('Open Notification Settings'),
+              ),
+            ],
+          ),
         ),
       ),
       // Snackbar

@@ -20,6 +20,7 @@ import 'package:pinput/pinput.dart';
 class OtpPage extends StatefulWidget {
   final String mobileNumber;
   final String? email;
+
   const OtpPage({super.key, required this.mobileNumber, this.email});
 
   @override
@@ -34,35 +35,10 @@ class _OtpPageState extends State<OtpPage> {
   final AuthService _authService = AuthService();
   TextEditingController pinController = TextEditingController();
 
-  void _startResendCountdown() {
-    // Start the countdown
-    setState(() {
-      _isResendButtonDisabled = true;
-      _remainingSeconds = 60;
-      _updateResendButtonText();
-    });
-
-    _timer = Timer.periodic(const Duration(minutes: 5), (timer) {
-      if (_remainingSeconds > 0) {
-        setState(() {
-          _remainingSeconds--;
-          _updateResendButtonText();
-        });
-      } else {
-        // Countdown finished
-        timer.cancel();
-        setState(() {
-          _isResendButtonDisabled = false;
-          _resendButtonText = 'Resend';
-        });
-      }
-    });
-  }
-
-  void _updateResendButtonText() {
-    setState(() {
-      _resendButtonText = 'Resend In $_remainingSeconds s';
-    });
+  @override
+  void initState() {
+    super.initState();
+    _startResendCountdown();
   }
 
   @override
@@ -149,7 +125,8 @@ class _OtpPageState extends State<OtpPage> {
                         onPressed: _isResendButtonDisabled
                             ? null
                             : () {
-                                _startResendCountdown();
+                                sendOtp(mobileNumber: widget.mobileNumber);
+
                               },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _isResendButtonDisabled
@@ -168,6 +145,37 @@ class _OtpPageState extends State<OtpPage> {
         ),
       ),
     );
+  }
+
+  void _startResendCountdown() {
+    // Start the countdown
+    setState(() {
+      _isResendButtonDisabled = true;
+      _remainingSeconds = 60;
+      _updateResendButtonText();
+    });
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_remainingSeconds > 0) {
+        setState(() {
+          _remainingSeconds--;
+          _updateResendButtonText();
+        });
+      } else {
+        // Countdown finished
+        timer.cancel();
+        setState(() {
+          _isResendButtonDisabled = false;
+          _resendButtonText = 'Resend';
+        });
+      }
+    });
+  }
+
+  void _updateResendButtonText() {
+    setState(() {
+      _resendButtonText = 'Resend In $_remainingSeconds s';
+    });
   }
 
   void _verifyOtp() async {
@@ -208,17 +216,18 @@ class _OtpPageState extends State<OtpPage> {
             token: token,
           ));
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("OTP verified successfully.")),
-          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("OTP verified successfully.")),
+            );
+          }
 
           // Navigate based on profile requirement
-          if (apiResponse.successResponse?.data.isProfileRequired == true) {
+          if (apiResponse.successResponse?.data.isProfileRequired == true &&
+              mounted) {
             slideNavigationPushAndRemoveUntil(
-              Profile(deviceId: deviceId),
-              context,
-            );
-          } else {
+                Profile(deviceId: deviceId), context);
+          } else if (mounted) {
             slideNavigationPushAndRemoveUntil(const Navigation(), context);
           }
         } else {
@@ -236,6 +245,41 @@ class _OtpPageState extends State<OtpPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               content: Text("An error occurred during OTP verification.")),
+        );
+      }
+    }
+  }
+
+  void sendOtp({required String mobileNumber}) async {
+    showLoadingIndicator(context: context, showLoader: true);
+    if (mobileNumber.isEmpty) {
+      showLoadingIndicator(context: context, showLoader: false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter your mobile number.")),
+      );
+      return;
+    }
+
+    final response = await _authService.sendOtp(mobileNumber);
+    log(jsonEncode(response));
+    if (response['error'] == null || !response['error']) {
+      if (mounted) {
+        showLoadingIndicator(context: context, showLoader: false);
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(content: Text("OTP sent to $mobileNumber.")),
+        // );
+        // slideNavigationPush(
+        //     OtpPage(
+        //       mobileNumber: mobileNumber,
+        //     ),
+        //     context);
+        _startResendCountdown();
+      }
+    } else {
+      if (mounted) {
+        showLoadingIndicator(context: context, showLoader: false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to send OTP: ${response['message']}")),
         );
       }
     }

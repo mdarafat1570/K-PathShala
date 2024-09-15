@@ -8,3 +8,4 @@ export 'package:kpathshala/view/common_widget/custom_text.dart.dart';
 export 'package:kpathshala/view/common_widget/common_slide_navigation_push.dart';
 export 'package:kpathshala/view/common_widget/custom_background.dart';
 export 'package:kpathshala/view/common_widget/common_bottom_sheet.dart';
+export 'package:kpathshala/view/common_widget/custom_textfield.dart';

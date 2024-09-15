@@ -45,6 +45,7 @@ class SignInMethods {
   static Future<void> logout() async {
     try {
       await FirebaseAuth.instance.signOut();
+      await GoogleSignIn().signOut();
       log('User logged out from firebase successfully');
     } catch (e) {
       log('Error logging out from firebase: $e');

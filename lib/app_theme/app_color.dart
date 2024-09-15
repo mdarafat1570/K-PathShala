@@ -31,7 +31,7 @@ class AppColor {
   static const Color inactive = Color(0xFFDC3545);
   static const Color closed = Color(0xFF388E3C);
   static const Color notBillable = Color(0xFF9E9E9E);
-  static const Color softWhite = Color(0xFF9E9E9E);
+  static const Color softWhite = Color(0xFFF5F5F5);
   static const Color smokeWhite = Color(0xFFE9EBFF);
 
   // New colors
