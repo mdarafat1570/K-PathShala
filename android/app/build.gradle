@@ -34,7 +34,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace = "com.inferloom.kpathshala"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 34
     ndkVersion = flutter.ndkVersion
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
