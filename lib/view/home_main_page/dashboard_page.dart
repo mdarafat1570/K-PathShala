@@ -65,10 +65,32 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
+  Future<bool> _onWillPop() async {
+    return await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Exit App"),
+            content: const Text("Are you sure you want to exit the app?"),
+            actions: [
+              TextButton(
+                onPressed: () =>
+                    Navigator.of(context).pop(false), // Stay in app
+                child: const Text("No"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true), // Exit app
+                child: const Text("Yes"),
+              ),
+            ],
+          ),
+        ) ??
+        false; // Return false if the dialog is dismissed without a response
+  }
+
   void _startCountdown() {
     const interval = Duration(seconds: 1);
 
-    if (mounted){
+    if (mounted) {
       Timer.periodic(interval, (Timer t) {
         setState(() {
           if (_currentTimer > 0) {
@@ -84,199 +106,203 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: SizedBox(
-                  height: MediaQuery.sizeOf(context).height * 0.27,
-                  width: double.maxFinite,
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: PageView(
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: PageView(
+                            controller: _pageController,
+                            children: [
+                              bookDashboardBuildCard(),
+                              bookDashboardBuildCard(),
+                              bookDashboardBuildCard(),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        SmoothPageIndicator(
                           controller: _pageController,
+                          count: 3,
+                          effect: const WormEffect(
+                            dotHeight: 8,
+                            dotWidth: 8,
+                            activeDotColor: Colors.blue,
+                            dotColor: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                GridView(
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
+                    childAspectRatio: 2.5,
+                  ),
+                  children: [
+                    InkWell(
+                      onTap: () {},
+                      child: _buildGridItem(
+                        icon: Icons.library_books,
+                        title: "Classes",
+                        subtitle: "200+ videos",
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {},
+                      child: _buildGridItem(
+                        icon: Icons.assessment,
+                        title: "Skill test",
+                        subtitle: "Test your skills",
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {},
+                      child: _buildGridItem(
+                        icon: Icons.book,
+                        title: "Syllabus",
+                        subtitle: "UBT exam syllabus",
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {},
+                      child: _buildGridItem(
+                        icon: Icons.library_books,
+                        title: "Books",
+                        subtitle: "Order or read",
+                      ),
+                    ),
+                  ],
+                ),
+                const Gap(10),
+                _buildMockTestProgress(),
+                const SizedBox(height: 10),
+                Stack(
+                  alignment: Alignment.bottomCenter,
+                  children: [
+                    const SizedBox(height: 220),
+                    Container(
+                        height: 180,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFF6F61),
+                          borderRadius: BorderRadius.circular(16),
+                        )),
+                    Positioned(
+                      left: 0,
+                      bottom: 0,
+                      child: ClipRRect(
+                        child: Image.asset(
+                          'assets/profile.png',
+                          width: 220,
+                          height: 220,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    // Subscribers and Videos Info
+                    Positioned(
+                      right: 14,
+                      top: 60,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.8),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Column(
                           children: [
-                            bookDashboardBuildCard(),
-                            bookDashboardBuildCard(),
-                            bookDashboardBuildCard(),
+                            Row(
+                              children: [
+                                customGap(height: 10),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.wifi_tethering,
+                                            color: Colors.white, size: 14),
+                                        customText(count, TextType.normal,
+                                            color: AppColor.white,
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.bold),
+                                      ],
+                                    ),
+                                    customGap(height: 5),
+                                    customText('Subscribers', TextType.normal,
+                                        color: AppColor.skyBlue, fontSize: 12),
+                                  ],
+                                ),
+                                customGap(width: 10),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    customText(vidCount, TextType.normal,
+                                        color: AppColor.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13),
+                                    customGap(height: 5),
+                                    Row(
+                                      children: [
+                                        customText(
+                                            'Free videos', TextType.normal,
+                                            color: AppColor.skyBlue,
+                                            fontSize: 12),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 5),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 10),
-                      SmoothPageIndicator(
-                        controller: _pageController,
-                        count: 3,
-                        effect: const WormEffect(
-                          dotHeight: 8,
-                          dotWidth: 8,
-                          activeDotColor: Colors.blue,
-                          dotColor: Colors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              GridView(
-                physics: const NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 2.5,
-                ),
-                children: [
-                  InkWell(
-                    onTap: () {},
-                    child: _buildGridItem(
-                      icon: Icons.library_books,
-                      title: "Classes",
-                      subtitle: "200+ videos",
                     ),
-                  ),
-                  InkWell(
-                    onTap: () {},
-                    child: _buildGridItem(
-                      icon: Icons.assessment,
-                      title: "Skill test",
-                      subtitle: "Test your skills",
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {},
-                    child: _buildGridItem(
-                      icon: Icons.book,
-                      title: "Syllabus",
-                      subtitle: "UBT exam syllabus",
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {},
-                    child: _buildGridItem(
-                      icon: Icons.library_books,
-                      title: "Books",
-                      subtitle: "Order or read",
-                    ),
-                  ),
-                ],
-              ),
-              const Gap(10),
-              _buildMockTestProgress(),
-              const SizedBox(height: 10),
-              Stack(
-                alignment: Alignment.bottomCenter,
-                children: [
-                  const SizedBox(height: 220),
-                  Container(
-                      height: 180,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFF6F61),
-                        borderRadius: BorderRadius.circular(16),
-                      )),
-                  Positioned(
-                    left: 0,
-                    bottom: 0,
-                    child: ClipRRect(
-                      child: Image.asset(
-                        'assets/profile.png',
-                        width: 220,
-                        height: 220,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  // Subscribers and Videos Info
-                  Positioned(
-                    right: 14,
-                    top: 60,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.8),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              customGap(height: 10),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.wifi_tethering,
-                                          color: Colors.white, size: 14),
-                                      customText(count, TextType.normal,
-                                          color: AppColor.white,
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.bold),
-                                    ],
-                                  ),
-                                  customGap(height: 5),
-                                  customText('Subscribers', TextType.normal,
-                                      color: AppColor.skyBlue, fontSize: 12),
-                                ],
-                              ),
-                              customGap(width: 10),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  customText(vidCount, TextType.normal,
-                                      color: AppColor.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 13),
-                                  customGap(height: 5),
-                                  Row(
-                                    children: [
-                                      customText('Free videos', TextType.normal,
-                                          color: AppColor.skyBlue,
-                                          fontSize: 12),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
+                    Positioned(
+                      left: 16,
+                      bottom: 16,
+                      right: 16,
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black.withOpacity(0.5),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          const SizedBox(height: 5),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    left: 16,
-                    bottom: 16,
-                    right: 16,
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black.withOpacity(0.5),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
                         ),
+                        onPressed: _launchYouTubeChannel,
+                        icon: const Icon(Icons.play_circle_fill,
+                            color: Colors.white),
+                        label: customText(
+                            'Free Korean lessons on YouTube', TextType.normal,
+                            color: AppColor.white, fontSize: 16),
                       ),
-                      onPressed: _launchYouTubeChannel,
-                      icon: const Icon(Icons.play_circle_fill, color: Colors.white),
-                      label: customText(
-                          'Free Korean lessons on YouTube', TextType.normal,
-                          color: AppColor.white, fontSize: 16),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

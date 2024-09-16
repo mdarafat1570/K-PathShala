@@ -26,7 +26,6 @@ class KpatshalaProfaile {
 }
 
 class KpatshalaPaymentHistory {
-  static String paymentHistory = '${AuthorizationEndpoints.baseUrl}/payment_history';
+  static String paymentHistory =
+      '${AuthorizationEndpoints.baseUrl}/payment_history';
 }
-
-
