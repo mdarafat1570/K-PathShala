@@ -250,7 +250,7 @@ class _OtpPageState extends State<OtpPage> {
     }
   }
 
-  void sendOtp({required String mobileNumber}) async {
+  void sendOtp({required String mobileNumber}) async   {
     showLoadingIndicator(context: context, showLoader: true);
     if (mobileNumber.isEmpty) {
       showLoadingIndicator(context: context, showLoader: false);

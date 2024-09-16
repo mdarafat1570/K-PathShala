@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:kpathshala/api/api_container.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
@@ -30,8 +31,6 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  final ImagePicker _picker = ImagePicker();
-  File? _imageFile;
   final _nameController = TextEditingController();
   final _mobileController = TextEditingController();
   final _emailController = TextEditingController();
@@ -74,6 +73,9 @@ class _ProfileState extends State<Profile> {
     _emailController.dispose();
     super.dispose();
   }
+
+  final ImagePicker _picker = ImagePicker();
+  File? _imageFile;
 
   void _showImagePicker(BuildContext context) {
     showModalBottomSheet(
@@ -330,7 +332,8 @@ class _ProfileState extends State<Profile> {
     required String email,
     File? imageFile,
     String? networkImageUrl,
-  }) async {
+  }) async
+  {
     showLoadingIndicator(context: context, showLoader: true);
 
     final prefs = await SharedPreferences.getInstance();
@@ -347,15 +350,12 @@ class _ProfileState extends State<Profile> {
     final request = http.MultipartRequest(
         'POST', Uri.parse(AuthorizationEndpoints.userUpdate));
 
-    request.headers['Authorization'] =
-        'Bearer $token';
-
+    request.headers['Authorization'] = 'Bearer $token';
     request.fields['name'] = name;
     request.fields['email'] = email;
 
     if (imageFile != null) {
-      request.files
-          .add(await http.MultipartFile.fromPath('image', imageFile.path));
+      request.files.add(await http.MultipartFile.fromPath('image', imageFile.path));
     } else if (networkImageUrl != null && networkImageUrl.isNotEmpty) {
       request.fields['image_url'] = networkImageUrl;
     }
@@ -366,32 +366,44 @@ class _ProfileState extends State<Profile> {
       log('Raw Response: $responseBody');
       final responseJson = jsonDecode(responseBody);
       log('Parsed Response: $responseJson');
+
       showLoadingIndicator(context: context, showLoader: false);
+
       if (response.statusCode == 200) {
         if (responseJson['status'] == 'success') {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content: Text(responseJson['message'] ??
-                    "Profile updated successfully.")),
+                content: Text(responseJson['message'] ?? "Profile updated successfully.")),
           );
+
+          // Extract the data from response
+          final updatedName = responseJson['data']['name'];
+          final updatedEmail = responseJson['data']['email'];
+          final updatedMobile = responseJson['data']['mobile'];
+          final updatedImageUrl = responseJson['data']['image'];
+
+          // Save updated credentials to SharedPreferences
+          await _authService.saveLogInCredentials(LogInCredentials(
+            email: updatedEmail,
+            name: updatedName,
+            imagesAddress: updatedImageUrl,
+            mobile: updatedMobile,
+            token: token,
+          ));
+
           Navigator.of(context)
               .pushReplacement(MaterialPageRoute(builder: (_) => Navigation()));
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content:
-                    Text(responseJson['message'] ?? "Something went wrong")),
+            SnackBar(content: Text(responseJson['message'] ?? "Something went wrong")),
           );
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content:
-                  Text("Failed to update profile: ${response.statusCode}")),
+          SnackBar(content: Text("Failed to update profile: ${response.statusCode}")),
         );
       }
     } catch (e) {
-      // Handle JSON parsing error
       log('Error parsing response: $e');
       showLoadingIndicator(context: context, showLoader: false);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -400,9 +412,11 @@ class _ProfileState extends State<Profile> {
     }
   }
 
+
 // Helper method to show loading indicator
   void showLoadingIndicator(
-      {required BuildContext context, required bool showLoader}) {
+      {required BuildContext context, required bool showLoader})
+  {
     if (showLoader) {
       showDialog(
         context: context,
