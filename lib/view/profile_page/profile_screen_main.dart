@@ -249,11 +249,7 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
                           color: AppColor.navyBlue,
                           fontWeight: FontWeight.bold),
                       onTap: () {
-                        slideNavigationPush(
-                            ColorsScreen(
-                              title: 'Arafat',
-                            ),
-                            context);
+                        slideNavigationPush(QuizHomePage(), context);
                       },
                     ),
                     ListTile(
