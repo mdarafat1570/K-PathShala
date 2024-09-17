@@ -119,9 +119,12 @@ class _ProfileState extends State<Profile> {
   void _takePhoto(ImageSource source) async {
     final pickedFile = await _picker.pickImage(source: source);
     if (pickedFile != null) {
+      log('Image path: ${pickedFile.path}');
       setState(() {
         _imageFile = File(pickedFile.path);
       });
+    } else {
+      log('No image selected.');
     }
   }
 
@@ -332,8 +335,7 @@ class _ProfileState extends State<Profile> {
     required String email,
     File? imageFile,
     String? networkImageUrl,
-  }) async
-  {
+  }) async {
     showLoadingIndicator(context: context, showLoader: true);
 
     final prefs = await SharedPreferences.getInstance();
@@ -355,7 +357,8 @@ class _ProfileState extends State<Profile> {
     request.fields['email'] = email;
 
     if (imageFile != null) {
-      request.files.add(await http.MultipartFile.fromPath('image', imageFile.path));
+      request.files
+          .add(await http.MultipartFile.fromPath('image', imageFile.path));
     } else if (networkImageUrl != null && networkImageUrl.isNotEmpty) {
       request.fields['image_url'] = networkImageUrl;
     }
@@ -363,7 +366,7 @@ class _ProfileState extends State<Profile> {
     try {
       final response = await request.send();
       final responseBody = await response.stream.bytesToString();
-      log('Raw Response: $responseBody');
+      log('Server response: $responseBody');
       final responseJson = jsonDecode(responseBody);
       log('Parsed Response: $responseJson');
 
@@ -373,7 +376,8 @@ class _ProfileState extends State<Profile> {
         if (responseJson['status'] == 'success') {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content: Text(responseJson['message'] ?? "Profile updated successfully.")),
+                content: Text(responseJson['message'] ??
+                    "Profile updated successfully.")),
           );
 
           // Extract the data from response
@@ -395,12 +399,16 @@ class _ProfileState extends State<Profile> {
               .pushReplacement(MaterialPageRoute(builder: (_) => Navigation()));
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(responseJson['message'] ?? "Something went wrong")),
+            SnackBar(
+                content:
+                    Text(responseJson['message'] ?? "Something went wrong")),
           );
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Failed to update profile: ${response.statusCode}")),
+          SnackBar(
+              content:
+                  Text("Failed to update profile: ${response.statusCode}")),
         );
       }
     } catch (e) {
@@ -412,11 +420,9 @@ class _ProfileState extends State<Profile> {
     }
   }
 
-
 // Helper method to show loading indicator
   void showLoadingIndicator(
-      {required BuildContext context, required bool showLoader})
-  {
+      {required BuildContext context, required bool showLoader}) {
     if (showLoader) {
       showDialog(
         context: context,
