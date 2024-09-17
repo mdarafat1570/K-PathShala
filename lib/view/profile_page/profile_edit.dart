@@ -1,20 +1,18 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:kpathshala/api/api_container.dart';
-import 'package:path_provider/path_provider.dart';
-
+import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/view/login_signup_page/otp_verify_page.dart';
-
-import 'package:kpathshala/app_base/common_imports.dart';
-import 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
 import 'package:kpathshala/view/navigation_bar_page/navigation_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:velocity_x/velocity_x.dart';
+import 'package:image/image.dart' as img;
 
 class Profile extends StatefulWidget {
   final String? deviceId;
@@ -74,17 +72,18 @@ class _ProfileState extends State<Profile> {
     super.dispose();
   }
 
+// Image Picker and image file
   final ImagePicker _picker = ImagePicker();
   File? _imageFile;
 
   void _showImagePicker(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      builder: (builder) => bottomSheet(),
+      builder: (builder) => bottomSheet(context), // Pass the context
     );
   }
 
-  Widget bottomSheet() {
+  Widget bottomSheet(BuildContext context) {
     return Container(
       height: 100.0,
       width: MediaQuery.of(context).size.width,
@@ -97,7 +96,7 @@ class _ProfileState extends State<Profile> {
             TextButton.icon(
               icon: const Icon(Icons.camera),
               onPressed: () {
-                _takePhoto(ImageSource.camera);
+                _takePhoto(ImageSource.camera, context); // Pass context here
                 Navigator.of(context).pop();
               },
               label: const Text("Camera"),
@@ -105,7 +104,7 @@ class _ProfileState extends State<Profile> {
             TextButton.icon(
               icon: const Icon(Icons.image),
               onPressed: () {
-                _takePhoto(ImageSource.gallery);
+                _takePhoto(ImageSource.gallery, context); // Pass context here
                 Navigator.of(context).pop();
               },
               label: const Text("Gallery"),
@@ -116,15 +115,46 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  void _takePhoto(ImageSource source) async {
+// Function to take a photo and reduce resolution
+  void _takePhoto(ImageSource source, BuildContext context) async {
     final pickedFile = await _picker.pickImage(source: source);
     if (pickedFile != null) {
-      log('Image path: ${pickedFile.path}');
+      log('Original image path: ${pickedFile.path}');
+      File originalImage = File(pickedFile.path);
+
+      // Reduce image resolution
+      File resizedImage = await reduceImageResolution(
+          originalImage, 450, 600); // Adjust the resolution as needed
       setState(() {
-        _imageFile = File(pickedFile.path);
+        _imageFile = resizedImage;
       });
     } else {
       log('No image selected.');
+    }
+  }
+
+// Function to reduce image resolution
+  Future<File> reduceImageResolution(
+      File imageFile, int targetWidth, int targetHeight) async {
+    // Read the image file as bytes
+    final bytes = await imageFile.readAsBytes();
+
+    // Decode the image using the image package
+    img.Image? image = img.decodeImage(bytes);
+
+    if (image != null) {
+      // Resize the image to the desired resolution
+      img.Image resizedImage =
+          img.copyResize(image, width: targetWidth, height: targetHeight);
+
+      // Encode the resized image back to a file
+      final resizedBytes = img.encodeJpg(resizedImage);
+      final resizedImageFile = File(imageFile.path)
+        ..writeAsBytesSync(resizedBytes);
+
+      return resizedImageFile;
+    } else {
+      throw Exception("Error decoding image");
     }
   }
 
@@ -329,6 +359,7 @@ class _ProfileState extends State<Profile> {
     }
   }
 
+  // Update Profile function
   Future<void> updateProfile({
     required BuildContext context,
     required String name,

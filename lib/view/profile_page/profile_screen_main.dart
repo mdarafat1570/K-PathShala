@@ -4,6 +4,7 @@ import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/model/profile_model/profile_get_data_model.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/repository/payment/profile_get_data_repository.dart';
+import 'package:kpathshala/view/MOK_test.dart';
 import 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
 import 'package:kpathshala/view/login_signup_page/registration_and_login_page.dart';
 import 'package:kpathshala/view/payment_page/payment_history.dart';
@@ -60,7 +61,7 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
         setState(() {
           isLoadingProfile = false; // Stop loading if failed
         });
-        if (mounted){
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Failed to fetch profile data")),
           );
@@ -70,7 +71,7 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
       setState(() {
         isLoadingProfile = false; // Stop loading on error
       });
-      if (mounted){
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("An error occurred: $e")),
         );
@@ -125,28 +126,32 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
                         Text(
                           credentials?.mobile ?? '+88018xxxxxxxx',
                           style: const TextStyle(
-                            fontSize: 10,
+                            fontSize: 13,
                             color: Colors.grey,
                           ),
                         ),
-                      const Gap(3),
+                      // const Gap(3),
                       ElevatedButton(
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const Profile()),
+                              builder: (context) => const Profile(),
+                            ),
                           );
                         },
                         style: ElevatedButton.styleFrom(
                           shadowColor: Colors.blue,
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 6, horizontal: 12),
+                          minimumSize:
+                              const Size(80, 28), // Standard button size
+                          padding: const EdgeInsets.all(10),
                         ),
                         child: const Text(
                           'Edit Profile',
                           style: TextStyle(
-                              fontSize: 10, fontWeight: FontWeight.normal),
+                            fontSize: 13, // Adjusted for standard button size
+                            fontWeight: FontWeight.normal,
+                          ),
                         ),
                       )
                     ],
@@ -243,7 +248,13 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
                       title: customText('Notifications', TextType.normal,
                           color: AppColor.navyBlue,
                           fontWeight: FontWeight.bold),
-                      onTap: () {},
+                      onTap: () {
+                        slideNavigationPush(
+                            ColorsScreen(
+                              title: 'Arafat',
+                            ),
+                            context);
+                      },
                     ),
                     ListTile(
                       leading: const Icon(
