@@ -171,19 +171,40 @@ class _ProfileState extends State<Profile> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 50),
-                GestureDetector(
-                  onTap: () => _showImagePicker(context),
-                  child: _imageFile == null
-                      ? CircleAvatar(
-                          radius: 90,
-                          backgroundImage: _networkImageUrl != null
-                              ? NetworkImage(_networkImageUrl!)
-                              : null,
-                        )
-                      : CircleAvatar(
-                          radius: 90,
-                          backgroundImage: FileImage(_imageFile!),
-                        ),
+                Stack(
+                  alignment: Alignment.topCenter,
+                  children: [
+                    Container(
+                      height: 200,
+                    ),
+                    _imageFile == null
+                        ? CircleAvatar(
+                            radius: 90,
+                            backgroundImage: _networkImageUrl != null
+                                ? NetworkImage(_networkImageUrl!)
+                                : null,
+                          )
+                        : CircleAvatar(
+                            radius: 90,
+                            backgroundImage: FileImage(_imageFile!),
+                          ),
+                    Positioned(
+                      bottom: 0,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          _showImagePicker(context);
+                        },
+                        label: const Text('Add',
+                            style:
+                                TextStyle(color: Colors.black, fontSize: 12)),
+                        icon: const Icon(Icons.camera_alt_rounded,
+                            color: Colors.black, size: 14),
+                        style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.black,
+                            backgroundColor: Colors.white),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 30),
                 CustomTextField(
