@@ -50,85 +50,93 @@ class CourseRow extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        customText(title, TextType.normal,
-                            fontWeight: FontWeight.w600),
-                        const Gap(5),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 4, horizontal: 6),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(25),
-                            color: containerColor,
-                          ),
-                          child: Center(
-                            child: Text(
-                              completionText,
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: score >= 40
-                                    ? AppColor.navyBlue
-                                    : AppColor.brightCoral,
+                    // Title row
+                    if (title.isNotEmpty)
+                      Row(
+                        children: [
+                          Expanded(child: customText(title, TextType.normal, fontWeight: FontWeight.w600)),
+                          const Gap(5),
+                          if (completionText.isNotEmpty)
+                            Container(
+                              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(25),
+                                color: containerColor,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  completionText,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: score >= 40 ? AppColor.navyBlue : AppColor.brightCoral,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      description,
-                      style: const TextStyle(
-                        color: Color.fromRGBO(102, 102, 102, 1),
-                        fontSize: 10,
+                        ],
                       ),
-                    ),
                     const SizedBox(height: 3),
-                    Row(
-                      children: [
-                        customText('Your Score:', TextType.normal,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                            color: AppColor.navyBlue),
-                        const SizedBox(width: 5),
-                        Text(
-                          '$score',
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: scoreTextColor,
-                          ),
+
+                    // Description
+                    if (description.isNotEmpty)
+                      Text(
+                        description,
+                        style: const TextStyle(
+                          color: Color.fromRGBO(102, 102, 102, 1),
+                          fontSize: 10,
                         ),
-                      ],
-                    ),
+                      ),
+                    const SizedBox(height: 3),
+
+                    // Score Row
+
+                      Row(
+                        children: [
+                          customText('Your Score:', TextType.normal,
+                              fontSize: 10, fontWeight: FontWeight.w600, color: AppColor.navyBlue),
+                          const SizedBox(width: 5),
+                          Text(
+                            '$score',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: scoreTextColor,
+                            ),
+                          ),
+                        ],
+                      ),
                     const SizedBox(height: 8.0),
+
+                    // Button Row
                     Row(
                       children: [
-                        SizedBox(
-                          width: 100,
-                          height: 30,
-                          child: ElevatedButton(
-                            onPressed: onRetakeTestClick,
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.white,
-                              backgroundColor: AppColor.navyBlue,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(36),
+                        // Retake Test Button
+                        if (buttonLabel.isNotEmpty)
+                          SizedBox(
+                            width: 100,
+                            height: 30,
+                            child: ElevatedButton(
+                              onPressed: onRetakeTestClick,
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor: AppColor.navyBlue,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(36),
+                                ),
+                                textStyle: const TextStyle(fontSize: 13),
+                                padding: EdgeInsets.zero,
                               ),
-                              textStyle: const TextStyle(fontSize: 13),
-                              padding: EdgeInsets.zero,
-                            ),
-                            child: Center(
-                              child: Text(
-                                buttonLabel,
-                                style: const TextStyle(
-                                    color: AppColor.white, fontSize: 12),
+                              child: Center(
+                                child: Text(
+                                  buttonLabel,
+                                  style: const TextStyle(color: AppColor.white, fontSize: 12),
+                                ),
                               ),
                             ),
                           ),
-                        ),
                         const SizedBox(width: 5),
+
+                        // Details Button
                         InkWell(
                           borderRadius: BorderRadius.circular(36),
                           onTap: onDetailsClick,

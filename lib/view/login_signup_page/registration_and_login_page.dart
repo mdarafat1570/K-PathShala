@@ -279,54 +279,85 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   void _registerUser(UserCredential userCredential) async {
-    String name = userCredential.user?.displayName ?? "";
-    String email = userCredential.user?.email ?? "";
-    String image = userCredential.user?.photoURL ?? "";
-    String deviceId = await getDeviceId() ?? "";
+    // Extract user data
+    final user = userCredential.user;
+    final name = user?.displayName ?? "";
+    final email = user?.email ?? "";
+    final image = user?.photoURL ?? "";
+    final deviceId = await getDeviceId() ?? "";
 
     log("User Data $name, $email, $deviceId");
 
-    final response = await _authService.registerUser(
-        name: name, email: email, mobile: "", image: image, deviceId: deviceId);
-    log(jsonEncode(response));
-
-    if ((response['error'] == null || !response['error']) && mounted) {
-      final apiResponse = RegistrationApiResponse.fromJson(response);
-      showLoadingIndicator(context: context, showLoader: false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Registration successful.")),
-      );
-      // Store token in shared preferences
-      final token = apiResponse.data?.token;
-      final name = apiResponse.data?.user?.name;
-      final email = apiResponse.data?.user?.email;
-      final mobile = apiResponse.data?.user?.mobile;
-      final imageUrl = apiResponse.data?.user?.image;
-      await _authService.saveToken(token.toString());
-      await _authService.saveLogInCredentials(LogInCredentials(
-        email: email,
+    try {
+      // Register user
+      final response = await _authService.registerUser(
         name: name,
-        imagesAddress: imageUrl,
-        mobile: mobile,
-        token: token,
-      ));
-      if (mounted) {
-        if (apiResponse.data?.mobileVerified == false) {
-          slideNavigationPushAndRemoveUntil(
-              Profile(deviceId: deviceId, isFromGmailOrFacebookLogin: true, isMobileVerified: false,),
-              context);
-        } else {
-          slideNavigationPushAndRemoveUntil(const Navigation(), context);
+        email: email,
+        mobile: "",
+        image: image,
+        deviceId: deviceId,
+      );
+
+      log(jsonEncode(response));
+
+      // Check for error in response
+      final isSuccess = response['error'] == null || !response['error'];
+      if (isSuccess && mounted) {
+        final apiResponse = RegistrationApiResponse.fromJson(response);
+        final data = apiResponse.data;
+
+        // Store token and user credentials
+        final token = data?.token;
+        await _authService.saveToken(token.toString());
+
+        final user = data?.user;
+        await _authService.saveLogInCredentials(LogInCredentials(
+          email: user?.email,
+          name: user?.name,
+          imagesAddress: user?.image,
+          mobile: user?.mobile,
+          token: token,
+        ));
+
+        if (mounted) {
+          showLoadingIndicator(context: context, showLoader: false);
+
+          // Navigate based on mobile verification status
+          if (data?.mobileVerified == false) {
+            slideNavigationPushAndRemoveUntil(
+              Profile(
+                deviceId: deviceId,
+                isFromGmailOrFacebookLogin: true,
+                isMobileVerified: false,
+              ),
+              context,
+            );
+          } else {
+            slideNavigationPushAndRemoveUntil(const Navigation(), context);
+          }
+
+          // Show success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Registration successful.")),
+          );
         }
+      } else {
+        _handleRegistrationError(response['message']);
       }
-    } else {
-      if (mounted) {
-        showLoadingIndicator(context: context, showLoader: false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text("Registration failed: ${response['message']}")),
-        );
-      }
+    } catch (e) {
+      _handleRegistrationError(e.toString());
     }
   }
+
+  void _handleRegistrationError(String message) async {
+    await SignInMethods.logout();
+    if (mounted) {
+      showLoadingIndicator(context: context, showLoader: false);
+      log(message);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+    }
+  }
+
 }

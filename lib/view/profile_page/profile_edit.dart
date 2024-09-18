@@ -243,9 +243,16 @@ class _ProfileState extends State<Profile> {
                   children: [
                     CustomTextField(
                       controller: _mobileController,
+                      maxLength: 11,
                       label: "Phone Number",
                       errorMessage: _phoneError,
                       isEnabled: isNumberFieldActive,
+                      onChanged: (_) {
+                        if (_mobileController.text.isNotEmpty) {
+                          _phoneError = null;
+                          setState(() {});
+                        }
+                      },
                     ),
                     Positioned(
                       right: 8.0,

@@ -20,8 +20,9 @@ class ExamPage extends StatefulWidget {
 
 class _ExamPageState extends State<ExamPage> {
   final List<Map<String, dynamic>> courses = courseList();
-  List<QuestionSet> questionSet = [];
-  bool dataFound = true;
+  List<QuestionSets> questionSet = [];
+  QuestionSetResults? questionSetResults;
+  bool dataFound = false;
   Map<String, int> testStartCounts = {};
 
   @override
@@ -37,17 +38,17 @@ class _ExamPageState extends State<ExamPage> {
       QuestionSetRepository repository = QuestionSetRepository();
 
       // Access fetchQuestionSets as an instance method
-      List<QuestionSet> qstn = await repository.fetchQuestionSets(packageId: widget.packageId);
+      QuestionSetData qstn = await repository.fetchQuestionSets(packageId: widget.packageId);
 
       setState(() {
-        questionSet = qstn;
+        questionSet = qstn.questionSets ?? [];
+        // questionSetResults = qstn.results;
         dataFound = true;
       });
     } catch (e) {
-      print(e.toString()); // Handle the exception
+      log(e.toString()); // Handle the exception
     }
   }
-
 
   Future<void> _loadStartCounts() async {
     final prefs = await SharedPreferences.getInstance();
@@ -374,7 +375,8 @@ class _ExamPageState extends State<ExamPage> {
                     height: 80,
                     fit: BoxFit.cover,
                   ),
-                  const SizedBox(
+                   Container(
+                     padding: const EdgeInsets.all(8.0),
                     width: double.infinity,
                     height: 190,
                     child: Column(
@@ -382,21 +384,21 @@ class _ExamPageState extends State<ExamPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "10 out of 100 sets completed",
+                          "${questionSetResults?.completedQuestionSet ?? 0} out of ${questionSetResults?.totalQuestionSet ?? 0} sets completed",
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style:const TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                           ),
                         ),
-                        SizedBox(height: 5),
+                        const SizedBox(height: 5),
                         Text(
-                          "You’re among the top 10% of the students in this session.",
+                          "You’re among the top ${questionSetResults?.rankPercentage ?? 0}% of the students in this session.",
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: AppColor.grey600, fontSize: 12),
+                          style: const TextStyle(color: AppColor.grey600, fontSize: 12),
                         ),
-                        Gap(30)
+                        const Gap(30)
                       ],
                     ),
                   ),
@@ -422,13 +424,16 @@ class _ExamPageState extends State<ExamPage> {
                 child:
                 !dataFound ? const CircularProgressIndicator() :
                 ListView.builder(
-                  // itemCount: questionSet.length,
-                  itemCount: courses.length,
+                  itemCount: questionSet.length,
+                  // itemCount: courses.length,
                   itemBuilder: (context, index) {
-                    final question = courses[index];
-                    final title = question['title'] ?? 'No Title';
-                    final description = 'No Description';
-                    final score = 0;
+                    final question = questionSet[index];
+                    final title = question.title ?? 'No Title';
+
+                    // final question = courses[index];
+                    // final title = question['title'] ?? 'No Title';
+                    final description = question.subtitle ?? '';
+                    final score = question.score ?? 0;
                     final readingTestScore =  0;
                     final listingTestScore =  0;
                     final timeTaken =   'Unknown';
