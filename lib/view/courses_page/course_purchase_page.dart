@@ -210,8 +210,9 @@ class _CoursePurchasePageState extends State<CoursePurchasePage> {
                                               screenHeight * heightPercentage,
                                           content: BottomSheetPage(
                                             context: context,
-                                            price: packagePrice,
-                                            validityDate: validityDate,
+                                            packageId: package.id!,
+                                            price: packagePrice!.toDouble(),
+                                            validityDate: validityDate.toString(),
                                           ),
                                           actions: [],
                                           color: Colors.white,

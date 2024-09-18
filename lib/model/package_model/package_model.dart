@@ -31,7 +31,7 @@ class PackageModelList {
   String? subtitle;
   String? effectDate;
   String? validityDate;
-  int? price;
+  num? price;
   List<String>? features;
   bool? status;
 

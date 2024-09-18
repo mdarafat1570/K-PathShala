@@ -50,6 +50,7 @@ dependencies:
   path_provider: ^2.1.4
   flutter_image_compress: ^2.3.0
   flutter_tts: ^4.0.2
+  jwt_decoder: ^2.0.1
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
@@ -31,7 +32,9 @@ class _SplashScreenState extends State<SplashScreen> {
     if (credentials?.token != null && credentials?.token != "" &&
         credentials?.name != null && credentials?.name != "" &&
         credentials?.mobile != null && credentials?.mobile != "") {
-      signedIn = true;
+
+      (JwtDecoder.isExpired(credentials?.token ?? '') == false) ? signedIn = true : signedIn = false;
+
     } else {
       signedIn = false;
     }
