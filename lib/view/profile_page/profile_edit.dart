@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:kpathshala/api/api_container.dart';
@@ -17,11 +16,13 @@ import 'package:image/image.dart' as img;
 class Profile extends StatefulWidget {
   final String? deviceId;
   final bool isFromGmailOrFacebookLogin;
+  final bool isMobileVerified;
 
   const Profile({
     super.key,
     this.deviceId,
     this.isFromGmailOrFacebookLogin = false,
+    this.isMobileVerified = true,
   });
 
   @override
@@ -135,7 +136,8 @@ class _ProfileState extends State<Profile> {
 
 // Function to reduce image resolution
   Future<File> reduceImageResolution(
-      File imageFile, int targetWidth, int targetHeight) async {
+      File imageFile, int targetWidth, int targetHeight) async
+  {
     // Read the image file as bytes
     final bytes = await imageFile.readAsBytes();
 
@@ -170,24 +172,41 @@ class _ProfileState extends State<Profile> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 50),
+                const SizedBox(height: 80),
+                customText('Edit profile', TextType.title,
+                    fontSize: 18, color: AppColor.cancelled),
+                const SizedBox(height: 30),
                 Stack(
                   alignment: Alignment.topCenter,
                   children: [
                     Container(
                       height: 200,
                     ),
-                    _imageFile == null
-                        ? CircleAvatar(
-                            radius: 90,
-                            backgroundImage: _networkImageUrl != null
-                                ? NetworkImage(_networkImageUrl!)
-                                : null,
-                          )
-                        : CircleAvatar(
-                            radius: 90,
-                            backgroundImage: FileImage(_imageFile!),
-                          ),
+                    Container(
+                      width: 190, // Adjust size as needed
+                      height: 190,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.blueGrey, // Set your border color
+                          width: 0.5, // Set the border width
+                        ),
+                      ),
+                      child: CircleAvatar(
+                        radius: 90,
+                        backgroundImage: _imageFile != null
+                            ? FileImage(_imageFile!)
+                            : (_networkImageUrl != null
+                            ? NetworkImage(_networkImageUrl!)
+                            : AssetImage('assets/new_App_icon.png')) as ImageProvider,
+                        onBackgroundImageError: (_, __) {
+                          // Fallback to asset image if the network image is invalid
+                          setState(() {
+                            _networkImageUrl = null;
+                          });
+                        },
+                      ),
+                    ),
                     Positioned(
                       bottom: 0,
                       child: ElevatedButton.icon(
@@ -332,13 +351,18 @@ class _ProfileState extends State<Profile> {
       _nameError =
           _nameController.text.isEmpty ? "Full Name is required" : null;
 
-      _phoneError =
-          _mobileController.text.isEmpty ? "Phone Number is required" : null;
+      if (_mobileController.text.isEmpty) {
+        _phoneError = "Phone Number is required";
+      } else if (widget.isMobileVerified == false){
+        _phoneError = "Please verify your phone number to continue";
+      } else {
+        _phoneError = null;
+      }
 
       final email = _emailController.text;
-      if (email.isEmpty) {
-        _emailError = "Email is required";
-      } else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+      if (email.isEmpty){
+        _emailError = null;
+      }else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
           .hasMatch(email)) {
         _emailError = "Please enter a valid email address";
       } else {

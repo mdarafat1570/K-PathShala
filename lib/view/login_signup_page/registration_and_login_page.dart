@@ -124,9 +124,15 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     fontSize: 18,
                     maxLength: 11,
                     keyboardType: TextInputType.number,
-                    prefixIcon:const Text(
-                      "+88 ",
-                      style: TextStyle(fontSize: 18),
+                    prefixIcon: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset("assets/bangladesh.png", height: 30),
+                        const Text(
+                          " +88 ",
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ],
                     ),
                     errorMessage: errorMessage,
                     onChanged: (_){
@@ -307,7 +313,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       if (mounted) {
         if (apiResponse.data?.mobileVerified == false) {
           slideNavigationPushAndRemoveUntil(
-              Profile(deviceId: deviceId, isFromGmailOrFacebookLogin: true),
+              Profile(deviceId: deviceId, isFromGmailOrFacebookLogin: true, isMobileVerified: false,),
               context);
         } else {
           slideNavigationPushAndRemoveUntil(const Navigation(), context);

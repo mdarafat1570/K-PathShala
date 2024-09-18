@@ -79,7 +79,8 @@ class _PaymentHistoryState extends State<PaymentHistory> {
               child: ListView.builder(
                 itemCount: paymentHistory.data!.length,
                 itemBuilder: (context, index) {
-                  final payment = paymentHistory.data![index];
+                  final reversedPaymentList = paymentHistory.data!.reversed.toList();
+                  final payment = reversedPaymentList[index];
                   final title = payment.packageName ?? 'No Package Name';
                   final amount =
                       payment.paymentAmount?.toStringAsFixed(2) ?? 'No Amount';
