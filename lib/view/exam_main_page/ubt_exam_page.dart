@@ -1,6 +1,8 @@
 import 'dart:developer';
 
 import 'package:kpathshala/app_base/common_imports.dart';
+import 'package:kpathshala/model/question_model/question_set_model.dart';
+import 'package:kpathshala/repository/question/question_set_repo.dart';
 import 'package:kpathshala/view/common_widget/common_app_bar.dart';
 import 'package:kpathshala/view/exam_main_page/bottom_sheets/main_bottom_sheet.dart';
 import 'package:kpathshala/view/exam_main_page/quiz_attempt_page.dart';
@@ -9,7 +11,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kpathshala/model/item_list.dart';
 
 class ExamPage extends StatefulWidget {
-  const ExamPage({super.key});
+  final int packageId;
+  const ExamPage({super.key,required this.packageId});
 
   @override
   State<ExamPage> createState() => _ExamPageState();
@@ -17,13 +20,34 @@ class ExamPage extends StatefulWidget {
 
 class _ExamPageState extends State<ExamPage> {
   final List<Map<String, dynamic>> courses = courseList();
+  List<QuestionSet> questionSet = [];
+  bool dataFound = false;
   Map<String, int> testStartCounts = {};
 
   @override
   void initState() {
     super.initState();
     _loadStartCounts();
+    fetchData();
   }
+
+  void fetchData() async {
+    try {
+      // Create an instance of QuestionSetRepository
+      QuestionSetRepository repository = QuestionSetRepository();
+
+      // Access fetchQuestionSets as an instance method
+      List<QuestionSet> qstn = await repository.fetchQuestionSets(packageId: widget.packageId);
+
+      setState(() {
+        questionSet = qstn;
+        dataFound = true;
+      });
+    } catch (e) {
+      print(e.toString()); // Handle the exception
+    }
+  }
+
 
   Future<void> _loadStartCounts() async {
     final prefs = await SharedPreferences.getInstance();
@@ -395,17 +419,18 @@ class _ExamPageState extends State<ExamPage> {
               ),
               const SizedBox(height: 10),
               Expanded(
-                child: ListView.builder(
-                  itemCount: courses.length,
+                child:
+                !dataFound ? const CircularProgressIndicator() :
+                ListView.builder(
+                  itemCount: questionSet.length,
                   itemBuilder: (context, index) {
-                    final course = courses[index];
-                    final title = course['title'] ?? 'No Title';
-                    final description =
-                        course['description'] ?? 'No Description';
-                    final score = course['score'] ?? 0;
-                    final readingTestScore = course['readingTestScore'] ?? 0;
-                    final listingTestScore = course['listingTestScore'] ?? 0;
-                    final timeTaken = course['timeTaken'] ?? 'Unknown';
+                    final question = questionSet[index];
+                    final title = question.title ?? 'No Title';
+                    final description = 'No Description';
+                    final score = 0;
+                    final readingTestScore =  0;
+                    final listingTestScore =  0;
+                    final timeTaken =   'Unknown';
 
                     final Color containerColor = score >= 40
                         ? const Color.fromRGBO(136, 208, 236, 0.2)

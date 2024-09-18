@@ -33,7 +33,9 @@ class _SplashScreenState extends State<SplashScreen> {
         credentials?.name != null && credentials?.name != "" &&
         credentials?.mobile != null && credentials?.mobile != "") {
 
-      (JwtDecoder.isExpired(credentials?.token ?? '') == false) ? signedIn = true : signedIn = false;
+      // (JwtDecoder.isExpired(credentials?.token ?? '') == false) ? signedIn = true : signedIn = false;
+
+      signedIn = true;
 
     } else {
       signedIn = false;

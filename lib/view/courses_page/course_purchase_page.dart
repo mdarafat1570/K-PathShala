@@ -179,7 +179,7 @@ class _CoursePurchasePageState extends State<CoursePurchasePage> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  const ExamPage()),
+                                                  ExamPage(packageId: package.id!)),
                                         );
                                       },
                                       style: OutlinedButton.styleFrom(

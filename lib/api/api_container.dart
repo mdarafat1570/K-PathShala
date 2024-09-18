@@ -29,3 +29,7 @@ class KpatshalaPaymentHistory {
   static String paymentHistory = '${AuthorizationEndpoints.baseUrl}/payment_history';
   static String paymentPost = '${AuthorizationEndpoints.baseUrl}/payments';
 }
+
+class KpatshalaquestionSet{
+  static String questionSet = '${AuthorizationEndpoints.baseUrl}/question-sets';
+}
