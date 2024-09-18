@@ -21,7 +21,7 @@ class ExamPage extends StatefulWidget {
 class _ExamPageState extends State<ExamPage> {
   final List<Map<String, dynamic>> courses = courseList();
   List<QuestionSet> questionSet = [];
-  bool dataFound = false;
+  bool dataFound = true;
   Map<String, int> testStartCounts = {};
 
   @override
@@ -422,10 +422,11 @@ class _ExamPageState extends State<ExamPage> {
                 child:
                 !dataFound ? const CircularProgressIndicator() :
                 ListView.builder(
-                  itemCount: questionSet.length,
+                  // itemCount: questionSet.length,
+                  itemCount: courses.length,
                   itemBuilder: (context, index) {
-                    final question = questionSet[index];
-                    final title = question.title ?? 'No Title';
+                    final question = courses[index];
+                    final title = question['title'] ?? 'No Title';
                     final description = 'No Description';
                     final score = 0;
                     final readingTestScore =  0;

@@ -43,6 +43,7 @@ class PaymentRepository {
       if (vatAmount != null) "vat_amount": vatAmount, // Conditionally add if not null
       "gross_total": grossTotal,
       "payment_method": paymentMethod,
+      "payment_status" : "successful",
     };
 
     // Send the POST request
