@@ -19,9 +19,9 @@ class Navigation extends StatefulWidget {
 class _NavigationState extends State<Navigation> {
   int countIndex = 0;
   List<Widget> widgetList = [
-    const DashboardPage(),
-    const Courses(),
-    const CoursePurchasePage(),
+     DashboardPage(),
+     Courses(),
+     CoursePurchasePage(),
   ];
   LogInCredentials? credentials;
   final AuthService _authService = AuthService();
