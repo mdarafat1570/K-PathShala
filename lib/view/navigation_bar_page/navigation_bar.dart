@@ -8,6 +8,7 @@ import 'package:kpathshala/view/courses_page/courses.dart';
 import 'package:kpathshala/view/exam_main_page/ubt_exam_page.dart';
 import 'package:kpathshala/view/home_main_page/dashboard_page.dart';
 import 'package:kpathshala/view/profile_page/profile_screen_main.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 class Navigation extends StatefulWidget {
   const Navigation({super.key});
@@ -30,6 +31,13 @@ class _NavigationState extends State<Navigation> {
   void initState() {
     super.initState();
     readCredentials();
+    OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
+
+    OneSignal.initialize("<e701d691-d45f-4a70-b430-f9e7037085af>");
+
+    OneSignal.Notifications.requestPermission(true).then((value) {
+      print('single value: $value');
+    });
   }
 
   Future<void> readCredentials() async {

@@ -3,9 +3,10 @@
     package="com.inferloom.kpathshala">
 
     <uses-permission android:name="android.permission.INTERNET"/>
-    <queries>
-        <provider android:authorities="com.facebook.katana.provider.PlatformProvider" />
-    </queries>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.RECEIVE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
         android:label="K-Pathshala"
@@ -26,10 +27,6 @@
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
-            <!-- Specifies an Android theme to apply to this Activity as soon as
-                 the Android process has started. This theme is visible to the user
-                 while the Flutter UI initializes. After that, this theme continues
-                 to determine the Window background behind the Flutter UI. -->
             <meta-data
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
@@ -39,8 +36,30 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <!-- Don't delete the meta-data below.
-             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+
+        <!-- OneSignal configuration -->
+        <service
+            android:name="com.onesignal.NotificationServiceExtension"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="true"
+            tools:ignore="ExportedReceiver">
+        </service>
+        <receiver
+            android:name="com.onesignal.NotificationOpenedReceiver"
+            android:exported="true">
+        </receiver>
+        <receiver
+            android:name="com.onesignal.NotificationReceivedReceiver"
+            android:exported="true">
+        </receiver>
+        <meta-data
+            android:name="com.onesignal.NotificationOpenedReceiver"
+            android:value="true" />
+        <meta-data
+            android:name="com.onesignal.NotificationOpenedReceiver"
+            android:value="true" />
+
+        <!-- Don't delete the meta-data below. This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
