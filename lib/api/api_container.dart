@@ -26,10 +26,15 @@ class KpatshalaProfaile {
 }
 
 class KpatshalaPaymentHistory {
-  static String paymentHistory = '${AuthorizationEndpoints.baseUrl}/payment_history';
+  static String paymentHistory =
+      '${AuthorizationEndpoints.baseUrl}/payment_history';
   static String paymentPost = '${AuthorizationEndpoints.baseUrl}/payments';
 }
 
-class KpatshalaquestionSet{
+class KpatshalaquestionSet {
   static String questionSet = '${AuthorizationEndpoints.baseUrl}/question-sets';
+}
+
+class KpatshalaDashboardPage {
+  static String dashboard = '${AuthorizationEndpoints.baseUrl}/dashboard';
 }
