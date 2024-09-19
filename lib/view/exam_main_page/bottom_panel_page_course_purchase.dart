@@ -9,12 +9,16 @@ class BottomSheetPage extends StatefulWidget {
   final int packageId;
   final double price;
   final String validityDate;
+  final VoidCallback refreshPage;
 
-  const BottomSheetPage({super.key,
+  const BottomSheetPage({
+    super.key,
     required this.packageId,
     required this.context,
     required this.price,
-    required this.validityDate});
+    required this.validityDate,
+    required this.refreshPage,
+  });
 
   @override
   State<BottomSheetPage> createState() => _BottomSheetPageState();
@@ -23,14 +27,8 @@ class BottomSheetPage extends StatefulWidget {
 class _BottomSheetPageState extends State<BottomSheetPage> {
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
-    final double screenHeight = MediaQuery
-        .of(context)
-        .size
-        .height;
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
 
     return Column(
       children: [
@@ -73,7 +71,7 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
                     ),
                     children: [
                       TextSpan(
-                        text: "${widget.validityDate}",
+                        text: widget.validityDate,
                         style: const TextStyle(
                           color: AppColor.navyBlue,
                           fontWeight: FontWeight.bold,
@@ -96,12 +94,15 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) =>
-                  MyForm(
-                    packageId: widget.packageId.toString(),
-                    total: widget.price.toString(),
-                  )),
-            );
+              MaterialPageRoute(
+                  builder: (context) => MyForm(
+                        packageId: widget.packageId.toString(),
+                        total: widget.price.toString(),
+                      )),
+            ).then((_) {
+              widget.refreshPage();
+              Navigator.pop(context);
+            });
             // showPaymentDialog();
           },
           reversePosition: false,
@@ -118,7 +119,7 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
             textAlign: TextAlign.center,
             text: const TextSpan(
               text:
-              "By proceeding you’re agreeing with K-Pathshala’s purchasing ",
+                  "By proceeding you’re agreeing with K-Pathshala’s purchasing ",
               style: TextStyle(
                 color: AppColor.grey500,
                 fontSize: 14,
@@ -144,26 +145,25 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
   Future<void> showPaymentDialog() {
     return showDialog(
       context: context,
-      builder: (BuildContext context) =>
-          Dialog(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  const Text('This is a typical dialog.'),
-                  const SizedBox(height: 15),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Close'),
-                  ),
-                ],
+      builder: (BuildContext context) => Dialog(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Text('This is a typical dialog.'),
+              const SizedBox(height: 15),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Close'),
               ),
-            ),
+            ],
           ),
+        ),
+      ),
     );
   }
 }

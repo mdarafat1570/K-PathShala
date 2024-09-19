@@ -8,7 +8,7 @@ class DashboardRepository {
   final AuthService _authService = AuthService();
 
   // Fetch Dashboard Data
-  Future<List<DashboardPageModel>?> fetchDashboardData() async {
+  Future<DashboardPageModel?> fetchDashboardData() async {
     final url = Uri.parse(KpatshalaDashboardPage.dashboard);
     final token = await _authService.getToken();  // Get auth token
 
@@ -26,12 +26,11 @@ class DashboardRepository {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        if (data is List) {
-          // Parse each item in the list and return a list of models
-          return data.map<DashboardPageModel>((item) =>
-            DashboardPageModel.fromJson(item as Map<String, dynamic>)).toList();
+        if (data is Map<String, dynamic>) {
+          // Parse the data as a map, since it's not a list
+          return DashboardPageModel.fromJson(data['data']); // Use 'data' field from response
         } else {
-          throw Exception('Expected a list but got a ${data.runtimeType}');
+          throw Exception('Unexpected response format.');
         }
       } else if (response.statusCode == 401) {
         // Handle unauthorized error
