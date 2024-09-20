@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/repository/sign_in_methods.dart';
+import 'package:kpathshala/view/login_signup_page/registration_and_login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -96,25 +98,41 @@ class AuthService {
   }
 
   // Register User
-  Future<Map<String, dynamic>> registerUser(
-      {String? name,
-      String? email,
-      required String mobile,
-      String? image,
-      required String deviceId}) async {
-    final url = Uri.parse(AuthorizationEndpoints.registerUser);
-    final headers = {'Content-Type': 'application/json'};
-    final body = {
-      'name': name,
-      'email': email,
-      'mobile': mobile,
-      'image': image ?? '',
-      'device_id': deviceId,
-    };
+  Future<Map<String, dynamic>> registerUser({
+    String? name,
+    String? email,
+    required String mobile,
+    String? image,
+    required String deviceId,
+  }) async {
+    try {
+      final url = Uri.parse(AuthorizationEndpoints.registerUser);
+      final headers = {'Content-Type': 'application/json'};
+      final body = json.encode({
+        'name': name,
+        'email': email,
+        'mobile': mobile,
+        'image': image ?? '',
+        'device_id': deviceId,
+      });
 
-    final response =
-        await http.post(url, headers: headers, body: json.encode(body));
-    return json.decode(response.body);
+      final response = await http.post(url, headers: headers, body: body);
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else if (response.statusCode == 400){
+        throw Exception('This email is already in use. Please try another email or log in.');
+      }
+      else {
+        // You can customize the error message or throw an exception as needed
+        log('Failed to register user: ${response.statusCode}');
+        throw Exception('Failed to register user: ${response.statusCode}, ${jsonEncode(response.body)}');
+      }
+    } catch (error) {
+      log('Error registering user: $error');
+      // throw Exception('Error registering user: $error');
+      rethrow;
+    }
   }
   // Register User
 
@@ -232,7 +250,11 @@ class AuthService {
       }
       return jsonDecode(response.body);
     } else if (response.statusCode == 401) {
+      await prefs.remove('authToken');
+      await clearLogInCredentials();
       if(context.mounted){
+        slideNavigationPushAndRemoveUntil(
+            const RegistrationPage(title: "Registration Page"), context);
         _showSnackbar(context, 'Invalid or expired token.');
       }
       return jsonDecode(response.body);

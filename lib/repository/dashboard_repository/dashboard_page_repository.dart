@@ -27,8 +27,13 @@ class DashboardRepository {
       final response = await http.get(url, headers: headers);
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> data = jsonDecode(response.body);
-        return DashboardPageModel.fromJson(data);
+        final data = jsonDecode(response.body);
+        if (data is Map<String, dynamic>) {
+          // Parse the data as a map, since it's not a list
+          return DashboardPageModel.fromJson(data['data']); // Use 'data' field from response
+        } else {
+          throw Exception('Unexpected response format.');
+        }
       } else if (response.statusCode == 401) {
         // Handle unauthorized error
         throw Exception('Unauthorized: Token expired or invalid.');

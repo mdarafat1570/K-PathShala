@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:flutter/material.dart';
 import 'package:kpathshala/repository/payment/payment_repository.dart';
 import 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
 
@@ -177,7 +176,6 @@ class MyFormState extends State<MyForm> {
       if ((response['error'] == null || !response['error']) && mounted) {
         // Hide loading indicator
         showLoadingIndicator(context: context, showLoader: false);
-        Navigator.pop(context);
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Payment successful.")),

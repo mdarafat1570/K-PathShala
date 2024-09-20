@@ -1,70 +1,131 @@
 class QuestionSetModel {
   String? status;
-  List<QuestionSet>? data;
+  QuestionSetData? data;
   String? message;
 
   QuestionSetModel({this.status, this.data, this.message});
 
-  // From JSON constructor
   QuestionSetModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
+    data = json['data'] != null ? QuestionSetData.fromJson(json['data']) : null;
     message = json['message'];
-    if (json['data'] != null) {
-      data = [];
-      json['data'].forEach((v) {
-        data!.add(QuestionSet.fromJson(v));
-      });
-    }
   }
 
-  // To JSON method
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {};
-    data['status'] = this.status;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['status'] = status;
     if (this.data != null) {
-      data['data'] = this.data!.map((v) => v.toJson()).toList();
+      data['data'] = this.data!.toJson();
+    }
+    data['message'] = message;
+    return data;
+  }
+}
+
+class QuestionSetData {
+  List<QuestionSets>? questionSets;
+  QuestionSetResults? results;
+
+  QuestionSetData({this.questionSets, this.results});
+
+  QuestionSetData.fromJson(Map<String, dynamic> json) {
+    if (json['question_sets'] != null) {
+      questionSets = <QuestionSets>[];
+      json['question_sets'].forEach((v) {
+        questionSets!.add(QuestionSets.fromJson(v));
+      });
+    }
+    results =
+    json['results'] != null ? QuestionSetResults.fromJson(json['results']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (questionSets != null) {
+      data['question_sets'] =
+          questionSets!.map((v) => v.toJson()).toList();
+    }
+    if (results != null) {
+      data['results'] = results!.toJson();
     }
     return data;
   }
 }
 
-class QuestionSet {
-  int? id;
+class QuestionSets {
+  var id;
   String? title;
-  int? packageId;
+  String? subtitle;
+  var packageId;
   String? packageName;
-  int? duration;
-  int? totalQuestion;
+  var duration;
+  var totalQuestion;
+  String? status;
+  var score;
 
-  QuestionSet({
-    this.id,
-    this.title,
-    this.packageId,
-    this.packageName,
-    this.duration,
-    this.totalQuestion,
-  });
+  QuestionSets(
+      {this.id,
+        this.title,
+        this.subtitle,
+        this.packageId,
+        this.packageName,
+        this.duration,
+        this.totalQuestion,
+        this.status,
+        this.score});
 
-  // From JSON constructor for individual question sets
-  QuestionSet.fromJson(Map<String, dynamic> json) {
+  QuestionSets.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     title = json['title'];
+    subtitle = json['subtitle'];
     packageId = json['package_id'];
     packageName = json['package_name'];
     duration = json['duration'];
     totalQuestion = json['total_question'];
+    status = json['status'];
+    score = json['score'];
   }
 
-  // To JSON method for individual question sets
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {};
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['title'] = title;
+    data['subtitle'] = subtitle;
     data['package_id'] = packageId;
     data['package_name'] = packageName;
     data['duration'] = duration;
     data['total_question'] = totalQuestion;
+    data['status'] = status;
+    data['score'] = score;
+    return data;
+  }
+}
+
+class QuestionSetResults {
+  var completedQuestionSet;
+  var totalQuestionSet;
+  var batch;
+  var rankPercentage;
+
+  QuestionSetResults(
+      {this.completedQuestionSet,
+        this.totalQuestionSet,
+        this.batch,
+        this.rankPercentage});
+
+  QuestionSetResults.fromJson(Map<String, dynamic> json) {
+    completedQuestionSet = json['completedQuestionSet'];
+    totalQuestionSet = json['totalQuestionSet'];
+    batch = json['batch'];
+    rankPercentage = json['rank_percentage'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['completedQuestionSet'] = completedQuestionSet;
+    data['totalQuestionSet'] = totalQuestionSet;
+    data['batch'] = batch;
+    data['rank_percentage'] = rankPercentage;
     return data;
   }
 }

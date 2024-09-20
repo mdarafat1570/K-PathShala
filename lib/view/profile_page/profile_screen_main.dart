@@ -222,7 +222,9 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
                       child: Column(
                         children: [
                           customText(
-                            "${profileData?.memberSince?.toString() ?? "__"} days",
+                            profileData?.memberSince == 0
+                                ? "Today"
+                                : "${profileData?.memberSince?.toString() ?? "__"} days",
                             TextType.subtitle,
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
