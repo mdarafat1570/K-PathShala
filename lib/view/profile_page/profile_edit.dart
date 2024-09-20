@@ -1,33 +1,34 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:ui';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
 import 'package:kpathshala/api/api_container.dart';
-import 'package:kpathshala/model/api_response_models/user_update_success_response.dart';
+import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/view/login_signup_page/otp_verify_page.dart';
 import 'package:kpathshala/view/navigation_bar_page/navigation_bar.dart';
-import 'package:kpathshala/app_base/common_imports.dart';
-import 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:velocity_x/velocity_x.dart';
+import 'package:image/image.dart' as img;
 
 class Profile extends StatefulWidget {
   final String? deviceId;
   final bool isFromGmailOrFacebookLogin;
 
-  const Profile(
-      {super.key, this.deviceId, this.isFromGmailOrFacebookLogin = false});
+  const Profile({
+    super.key,
+    this.deviceId,
+    this.isFromGmailOrFacebookLogin = false,
+  });
 
   @override
   State<Profile> createState() => _ProfileState();
 }
 
 class _ProfileState extends State<Profile> {
-  final ImagePicker _picker = ImagePicker();
-  File? _imageFile;
   final _nameController = TextEditingController();
   final _mobileController = TextEditingController();
   final _emailController = TextEditingController();
@@ -65,20 +66,24 @@ class _ProfileState extends State<Profile> {
 
   @override
   void dispose() {
-    for (var c in [_nameController, _mobileController, _emailController]) {
-      c.dispose();
-    }
+    _nameController.dispose();
+    _mobileController.dispose();
+    _emailController.dispose();
     super.dispose();
   }
+
+// Image Picker and image file
+  final ImagePicker _picker = ImagePicker();
+  File? _imageFile;
 
   void _showImagePicker(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      builder: (builder) => bottomSheet(),
+      builder: (builder) => bottomSheet(context), // Pass the context
     );
   }
 
-  Widget bottomSheet() {
+  Widget bottomSheet(BuildContext context) {
     return Container(
       height: 100.0,
       width: MediaQuery.of(context).size.width,
@@ -91,7 +96,7 @@ class _ProfileState extends State<Profile> {
             TextButton.icon(
               icon: const Icon(Icons.camera),
               onPressed: () {
-                _takePhoto(ImageSource.camera);
+                _takePhoto(ImageSource.camera, context); // Pass context here
                 Navigator.of(context).pop();
               },
               label: const Text("Camera"),
@@ -99,100 +104,99 @@ class _ProfileState extends State<Profile> {
             TextButton.icon(
               icon: const Icon(Icons.image),
               onPressed: () {
-                _takePhoto(ImageSource.gallery);
+                _takePhoto(ImageSource.gallery, context); // Pass context here
                 Navigator.of(context).pop();
               },
               label: const Text("Gallery"),
             ),
-          ])
+          ]),
         ],
       ),
     );
   }
 
-  void _takePhoto(ImageSource source) async {
+// Function to take a photo and reduce resolution
+  void _takePhoto(ImageSource source, BuildContext context) async {
     final pickedFile = await _picker.pickImage(source: source);
-    setState(() {
-      if (pickedFile != null) {
-        _imageFile = File(pickedFile.path);
-      }
-    });
+    if (pickedFile != null) {
+      log('Original image path: ${pickedFile.path}');
+      File originalImage = File(pickedFile.path);
+
+      // Reduce image resolution
+      File resizedImage = await reduceImageResolution(
+          originalImage, 450, 600); // Adjust the resolution as needed
+      setState(() {
+        _imageFile = resizedImage;
+      });
+    } else {
+      log('No image selected.');
+    }
+  }
+
+// Function to reduce image resolution
+  Future<File> reduceImageResolution(
+      File imageFile, int targetWidth, int targetHeight) async {
+    // Read the image file as bytes
+    final bytes = await imageFile.readAsBytes();
+
+    // Decode the image using the image package
+    img.Image? image = img.decodeImage(bytes);
+
+    if (image != null) {
+      // Resize the image to the desired resolution
+      img.Image resizedImage =
+          img.copyResize(image, width: targetWidth, height: targetHeight);
+
+      // Encode the resized image back to a file
+      final resizedBytes = img.encodeJpg(resizedImage);
+      final resizedImageFile = File(imageFile.path)
+        ..writeAsBytesSync(resizedBytes);
+
+      return resizedImageFile;
+    } else {
+      throw Exception("Error decoding image");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    void _takePhoto(ImageSource source) async {
-      final pickedFile = await _picker.pickImage(source: source);
-      setState(() {
-        if (pickedFile != null) {
-          _imageFile = File(pickedFile.path);
-        }
-      });
-    }
-
     return Scaffold(
       body: GradientBackground(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(8.0),
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 10,
-            ),
+            padding: const EdgeInsets.all(10),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                const SizedBox(height: 50),
                 GestureDetector(
                   onTap: () => _showImagePicker(context),
                   child: _imageFile == null
                       ? CircleAvatar(
                           radius: 90,
-                          backgroundImage: NetworkImage(_networkImageUrl ?? ''))
+                          backgroundImage: _networkImageUrl != null
+                              ? NetworkImage(_networkImageUrl!)
+                              : null,
+                        )
                       : CircleAvatar(
-                          radius: 90, backgroundImage: FileImage(_imageFile!)),
+                          radius: 90,
+                          backgroundImage: FileImage(_imageFile!),
+                        ),
                 ),
-                // Stack(
-                //   alignment: Alignment.topCenter,
-                //   children: [
-                //     Container(
-                //       height: 200,
-                //     ),
-                //     CircleAvatar(radius: 90),
-                //     Positioned(
-                //       bottom: 0,
-                //       child: ElevatedButton.icon(
-                //         onPressed: () {
-                //           if (_validateFields()) {
-                //             updateProfile(
-                //               name: _nameController.text,
-                //               email: _emailController.text,
-                //               imageFile: _imageFile,
-                //             );
-                //           }
-                //         },
-                //         label: const Text('Add',
-                //             style:
-                //                 TextStyle(color: Colors.black, fontSize: 12)),
-                //         icon: const Icon(Icons.camera_alt_rounded,
-                //             color: Colors.black, size: 14),
-                //         style: ElevatedButton.styleFrom(
-                //             foregroundColor: Colors.black,
-                //             backgroundColor: Colors.white),
-                //       ),
-                //     ),
-                //   ],
-                // ),
                 const SizedBox(height: 30),
                 CustomTextField(
-                    controller: _nameController,
-                    label: "Full Name",
-                    errorMessage: _nameError,
-                    onChanged: (_) {
-                      if (_nameController.text.isNotEmpty) {
-                        _nameError = null;
-                        setState(() {});
-                      }
-                    }),
+                  controller: _nameController,
+                  label: "Full Name",
+                  errorMessage: _nameError,
+                  onChanged: (_) {
+                    if (_nameController.text.isNotEmpty) {
+                      _nameError = null;
+                      setState(() {});
+                    }
+                  },
+                ),
                 const SizedBox(height: 15),
                 Stack(
                   alignment: Alignment.centerRight,
@@ -283,22 +287,17 @@ class _ProfileState extends State<Profile> {
                   child: ElevatedButton(
                     onPressed: () {
                       if (_validateFields()) {
-                        File? imageFile;
-                        if (_networkImageUrl != null &&
-                            _networkImageUrl!.isNotEmpty) {
-                          imageFile = File(_networkImageUrl!);
-                        }
-
                         updateProfile(
+                          context: context, // Pass the context here
                           name: _nameController.text,
                           email: _emailController.text,
-                          imageFile: imageFile,
+                          imageFile: _imageFile,
                         );
                       }
                     },
                     child: const Text('Save'),
                   ),
-                ),
+                )
               ],
             ),
           ),
@@ -338,7 +337,6 @@ class _ProfileState extends State<Profile> {
       );
       return;
     }
-
     final response = await _authService.sendOtp(mobileNumber, email: email);
     log(jsonEncode(response));
     if (response['error'] == null || !response['error']) {
@@ -361,70 +359,112 @@ class _ProfileState extends State<Profile> {
     }
   }
 
-  void updateProfile({
+  // Update Profile function
+  Future<void> updateProfile({
+    required BuildContext context,
     required String name,
     required String email,
     File? imageFile,
+    String? networkImageUrl,
   }) async {
     showLoadingIndicator(context: context, showLoader: true);
 
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('authToken') ?? '';
+
+    if (token.isEmpty) {
+      showLoadingIndicator(context: context, showLoader: false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("You need to log in again.")),
+      );
+      return;
+    }
+
+    final request = http.MultipartRequest(
+        'POST', Uri.parse(AuthorizationEndpoints.userUpdate));
+
+    request.headers['Authorization'] = 'Bearer $token';
+    request.fields['name'] = name;
+    request.fields['email'] = email;
+
+    if (imageFile != null) {
+      request.files
+          .add(await http.MultipartFile.fromPath('image', imageFile.path));
+    } else if (networkImageUrl != null && networkImageUrl.isNotEmpty) {
+      request.fields['image_url'] = networkImageUrl;
+    }
+
     try {
-      // Create a multipart request for the updated profile
-      var uri = Uri.parse(AuthorizationEndpoints.userUpdate);
-      var request = http.MultipartRequest("POST", uri)
-        ..fields['name'] = name
-        ..fields['email'] = email;
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+      log('Server response: $responseBody');
+      final responseJson = jsonDecode(responseBody);
+      log('Parsed Response: $responseJson');
 
-      if (imageFile != null) {
-        // Attach the image file to the request if it is not null
-        request.files.add(await http.MultipartFile.fromPath(
-          'profile_image',
-          imageFile.path,
-        ));
-      }
+      showLoadingIndicator(context: context, showLoader: false);
 
-      // Send the request
-      var response = await request.send();
-
-      // Handle the response from the server
       if (response.statusCode == 200) {
-        String responseData = await response.stream.bytesToString();
-        var decodedResponse = jsonDecode(responseData);
+        if (responseJson['status'] == 'success') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(responseJson['message'] ??
+                    "Profile updated successfully.")),
+          );
 
-        if (decodedResponse['error'] == null || !decodedResponse['error']) {
-          final apiResponse =
-              UserUpdateSuccessResponse.fromJson(decodedResponse);
-          LogInCredentials? credentials =
-              await _authService.getLogInCredentials();
-          if (credentials != null) {
-            credentials.name = apiResponse.data?.name ?? name;
-            credentials.email = apiResponse.data?.email ?? email;
-            credentials.imagesAddress = apiResponse.data?.image ?? '';
+          // Extract the data from response
+          final updatedName = responseJson['data']['name'];
+          final updatedEmail = responseJson['data']['email'];
+          final updatedMobile = responseJson['data']['mobile'];
+          final updatedImageUrl = responseJson['data']['image'];
 
-            // Save the updated object back to SharedPreferences
-            await _authService.saveLogInCredentials(credentials);
-          }
-          slideNavigationPushAndRemoveUntil(const Navigation(), context);
+          // Save updated credentials to SharedPreferences
+          await _authService.saveLogInCredentials(LogInCredentials(
+            email: updatedEmail,
+            name: updatedName,
+            imagesAddress: updatedImageUrl,
+            mobile: updatedMobile,
+            token: token,
+          ));
+
+          Navigator.of(context)
+              .pushReplacement(MaterialPageRoute(builder: (_) => Navigation()));
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content: Text(
-                    "Failed to Update Profile: ${decodedResponse['message']}")),
+                content:
+                    Text(responseJson['message'] ?? "Something went wrong")),
           );
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text(
-                  "Failed to Update Profile: HTTP ${response.statusCode}")),
+              content:
+                  Text("Failed to update profile: ${response.statusCode}")),
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("An error occurred: $e")),
-      );
-    } finally {
+      log('Error parsing response: $e');
       showLoadingIndicator(context: context, showLoader: false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("An error occurred while updating profile")),
+      );
+    }
+  }
+
+// Helper method to show loading indicator
+  void showLoadingIndicator(
+      {required BuildContext context, required bool showLoader}) {
+    if (showLoader) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return Center(child: CircularProgressIndicator());
+        },
+      );
+    } else {
+      Navigator.of(context, rootNavigator: true)
+          .pop(); // Close the loading indicator
     }
   }
 }

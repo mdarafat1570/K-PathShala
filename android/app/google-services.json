@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "12864215087-1uucr076lkm59uoa24k7nq52enidjpvo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.inferloom.kpathshala",
+            "certificate_hash": "c40a0ef411fbb344934c57b56720d82b9bf1686f"
+          }
+        },
+        {
+          "client_id": "12864215087-5u1ac1fro4fkv4t322aq2i6136juu26v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.inferloom.kpathshala",
+            "certificate_hash": "c777b92b7b6f291ed2da10fe49a4a1e18312d1fa"
+          }
+        },
+        {
           "client_id": "12864215087-s87fjkan0rfcrqokff3s467nk0s7f42s.apps.googleusercontent.com",
           "client_type": 3
         }
