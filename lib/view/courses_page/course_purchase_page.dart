@@ -16,6 +16,7 @@ class CoursePurchasePage extends StatefulWidget {
 class _CoursePurchasePageState extends State<CoursePurchasePage> {
   final PackageRepository _packageRepository = PackageRepository();
   Future<List<PackageModelList>>? _packagesFuture;
+
   // bool _isLoading = true;
 
   @override
@@ -130,7 +131,7 @@ class _CoursePurchasePageState extends State<CoursePurchasePage> {
                                           fontWeight: FontWeight.bold),
                                       children: <TextSpan>[
                                         TextSpan(
-                                          text: ' ৳1,500.00',
+                                          text: '৳1,500.00',
                                           style: TextStyle(
                                             fontSize: 12,
                                             color: Colors.grey,
@@ -146,9 +147,7 @@ class _CoursePurchasePageState extends State<CoursePurchasePage> {
                               ),
                               const Gap(8),
                               customText(
-                                  package.subtitle ??
-                                      "Crack UBT with ease with our mock tests and study guide.",
-                                  TextType.normal,
+                                  package.subtitle ?? "", TextType.normal,
                                   fontSize: 10),
                               const Gap(16),
                               Padding(
@@ -166,69 +165,108 @@ class _CoursePurchasePageState extends State<CoursePurchasePage> {
                                 ),
                               ),
                               const Gap(16),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  SizedBox(
-                                    width:
-                                        MediaQuery.sizeOf(context).width * 0.35,
-                                    child: OutlinedButton(
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const ExamPage()),
-                                        );
-                                      },
-                                      style: OutlinedButton.styleFrom(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 6),
-                                        backgroundColor: const Color.fromRGBO(
-                                            26, 35, 126, 0.15),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(15),
-                                        ),
-                                      ),
-                                      child: const Text('Preview'),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width:
-                                        MediaQuery.sizeOf(context).width * 0.35,
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        final validityDate =
-                                            package.validityDate;
-                                        final packagePrice = package
-                                            .price; // Get price from the API
-                                        showCommonBottomSheet(
-                                          context: context,
-                                          height:
-                                              screenHeight * heightPercentage,
-                                          content: BottomSheetPage(
-                                            context: context,
-                                            price: packagePrice,
-                                            validityDate: validityDate,
+                              Visibility(
+                                visible: package.isUserAccess == false,
+                                replacement: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    SizedBox(
+                                      width: MediaQuery.sizeOf(context).width *
+                                          0.7,
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => ExamPage(
+                                                    packageId: package.id!)),
+                                          );
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 6),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15),
                                           ),
-                                          actions: [],
-                                          color: Colors.white,
-                                        );
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 6),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(15),
                                         ),
+                                        child: const Text('Continue'),
                                       ),
-                                      child: const Text('Buy now'),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    SizedBox(
+                                      width: MediaQuery.sizeOf(context).width *
+                                          0.35,
+                                      child: OutlinedButton(
+                                        onPressed: () {
+                                          // Navigator.push(
+                                          //   context,
+                                          //   MaterialPageRoute(
+                                          //       builder: (context) =>
+                                          //           ExamPage(packageId: package.id!)),
+                                          // );
+                                        },
+                                        style: OutlinedButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 6),
+                                          backgroundColor: const Color.fromRGBO(
+                                              26, 35, 126, 0.15),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                          ),
+                                        ),
+                                        child: const Text('Preview'),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: MediaQuery.sizeOf(context).width *
+                                          0.35,
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          final validityDate =
+                                              package.validityDate;
+                                          final packagePrice = package
+                                              .price; // Get price from the API
+                                          showCommonBottomSheet(
+                                            context: context,
+                                            height:
+                                                screenHeight * heightPercentage,
+                                            content: BottomSheetPage(
+                                              context: context,
+                                              packageId: package.id!,
+                                              price: packagePrice!.toDouble(),
+                                              validityDate:
+                                                  validityDate.toString(),
+                                              refreshPage: (){
+                                                _packagesFuture = null;
+                                                _fetchPackages();
+                                                setState(() {});
+                                              },
+                                            ),
+                                            actions: [],
+                                            color: Colors.white,
+                                          );
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 6),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                          ),
+                                        ),
+                                        child: const Text('Buy now'),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),

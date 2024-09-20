@@ -1,6 +1,8 @@
 import 'dart:developer';
 
 import 'package:kpathshala/app_base/common_imports.dart';
+import 'package:kpathshala/model/question_model/question_set_model.dart';
+import 'package:kpathshala/repository/question/question_set_repo.dart';
 import 'package:kpathshala/view/common_widget/common_app_bar.dart';
 import 'package:kpathshala/view/exam_main_page/bottom_sheets/main_bottom_sheet.dart';
 import 'package:kpathshala/view/exam_main_page/quiz_attempt_page.dart';
@@ -9,7 +11,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kpathshala/model/item_list.dart';
 
 class ExamPage extends StatefulWidget {
-  const ExamPage({super.key});
+  final int packageId;
+  const ExamPage({super.key,required this.packageId});
 
   @override
   State<ExamPage> createState() => _ExamPageState();
@@ -17,12 +20,34 @@ class ExamPage extends StatefulWidget {
 
 class _ExamPageState extends State<ExamPage> {
   final List<Map<String, dynamic>> courses = courseList();
+  List<QuestionSets> questionSet = [];
+  QuestionSetResults? questionSetResults;
+  bool dataFound = false;
   Map<String, int> testStartCounts = {};
 
   @override
   void initState() {
     super.initState();
     _loadStartCounts();
+    fetchData();
+  }
+
+  void fetchData() async {
+    try {
+      // Create an instance of QuestionSetRepository
+      QuestionSetRepository repository = QuestionSetRepository();
+
+      // Access fetchQuestionSets as an instance method
+      QuestionSetData qstn = await repository.fetchQuestionSets(packageId: widget.packageId);
+
+      setState(() {
+        questionSet = qstn.questionSets ?? [];
+        // questionSetResults = qstn.results;
+        dataFound = true;
+      });
+    } catch (e) {
+      log(e.toString()); // Handle the exception
+    }
   }
 
   Future<void> _loadStartCounts() async {
@@ -350,7 +375,8 @@ class _ExamPageState extends State<ExamPage> {
                     height: 80,
                     fit: BoxFit.cover,
                   ),
-                  const SizedBox(
+                   Container(
+                     padding: const EdgeInsets.all(8.0),
                     width: double.infinity,
                     height: 190,
                     child: Column(
@@ -358,21 +384,21 @@ class _ExamPageState extends State<ExamPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "10 out of 100 sets completed",
+                          "${questionSetResults?.completedQuestionSet ?? 0} out of ${questionSetResults?.totalQuestionSet ?? 0} sets completed",
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style:const TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                           ),
                         ),
-                        SizedBox(height: 5),
+                        const SizedBox(height: 5),
                         Text(
-                          "You’re among the top 10% of the students in this session.",
+                          "You’re among the top ${questionSetResults?.rankPercentage ?? 0}% of the students in this session.",
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: AppColor.grey600, fontSize: 12),
+                          style: const TextStyle(color: AppColor.grey600, fontSize: 12),
                         ),
-                        Gap(30)
+                        const Gap(30)
                       ],
                     ),
                   ),
@@ -395,17 +421,22 @@ class _ExamPageState extends State<ExamPage> {
               ),
               const SizedBox(height: 10),
               Expanded(
-                child: ListView.builder(
-                  itemCount: courses.length,
+                child:
+                !dataFound ? const CircularProgressIndicator() :
+                ListView.builder(
+                  itemCount: questionSet.length,
+                  // itemCount: courses.length,
                   itemBuilder: (context, index) {
-                    final course = courses[index];
-                    final title = course['title'] ?? 'No Title';
-                    final description =
-                        course['description'] ?? 'No Description';
-                    final score = course['score'] ?? 0;
-                    final readingTestScore = course['readingTestScore'] ?? 0;
-                    final listingTestScore = course['listingTestScore'] ?? 0;
-                    final timeTaken = course['timeTaken'] ?? 'Unknown';
+                    final question = questionSet[index];
+                    final title = question.title ?? 'No Title';
+
+                    // final question = courses[index];
+                    // final title = question['title'] ?? 'No Title';
+                    final description = question.subtitle ?? '';
+                    final score = question.score ?? 0;
+                    final readingTestScore =  0;
+                    final listingTestScore =  0;
+                    final timeTaken =   'Unknown';
 
                     final Color containerColor = score >= 40
                         ? const Color.fromRGBO(136, 208, 236, 0.2)

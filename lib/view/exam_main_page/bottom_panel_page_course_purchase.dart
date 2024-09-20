@@ -1,17 +1,24 @@
 import 'package:kpathshala/app_base/common_imports.dart';
+import 'package:kpathshala/view/exam_main_page/payment_example.dart';
 import 'package:kpathshala/view/exam_main_page/payment_sandbox.dart';
 
 // import 'package:kpathshala/view/exam_main_page/ubt_exam_page.dart';
 
 class BottomSheetPage extends StatefulWidget {
   final BuildContext context;
-  final int? price;
-  final String? validityDate;
-  const BottomSheetPage(
-      {super.key,
-      required this.context,
-      required this.price,
-      required this.validityDate});
+  final int packageId;
+  final double price;
+  final String validityDate;
+  final VoidCallback refreshPage;
+
+  const BottomSheetPage({
+    super.key,
+    required this.packageId,
+    required this.context,
+    required this.price,
+    required this.validityDate,
+    required this.refreshPage,
+  });
 
   @override
   State<BottomSheetPage> createState() => _BottomSheetPageState();
@@ -64,7 +71,7 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
                     ),
                     children: [
                       TextSpan(
-                        text: "${widget.validityDate}",
+                        text: widget.validityDate,
                         style: const TextStyle(
                           color: AppColor.navyBlue,
                           fontWeight: FontWeight.bold,
@@ -79,25 +86,32 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
           ),
         ),
         const Gap(30),
-        // commonCustomButton(
-        //   width: double.infinity,
-        //   backgroundColor: AppColor.navyBlue,
-        //   height: 55,
-        //   borderRadius: 30,
-        //   onPressed: () {
-        //     Navigator.push(
-        //       context,
-        //       MaterialPageRoute(builder: (context) =>ExamPage()),
-        //     );
-        //     // showPaymentDialog();
-        //   },
-        //   reversePosition: false,
-        //   child: const Text(
-        //     "Proceed to payment",
-        //     style: TextStyle(color: AppColor.white, fontSize: 20),
-        //   ),
-        // ),
-        const SSLCommerzPage(),
+        commonCustomButton(
+          width: double.infinity,
+          backgroundColor: AppColor.navyBlue,
+          height: 55,
+          borderRadius: 30,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => MyForm(
+                        packageId: widget.packageId.toString(),
+                        total: widget.price.toString(),
+                      )),
+            ).then((_) {
+              widget.refreshPage();
+              Navigator.pop(context);
+            });
+            // showPaymentDialog();
+          },
+          reversePosition: false,
+          child: const Text(
+            "Proceed to payment",
+            style: TextStyle(color: AppColor.white, fontSize: 20),
+          ),
+        ),
+        // const SSLCommerzPage(),
         Gap(screenHeight * 0.03),
         SizedBox(
           width: double.infinity,

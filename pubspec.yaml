@@ -50,6 +50,9 @@ dependencies:
   path_provider: ^2.1.4
   flutter_image_compress: ^2.3.0
   flutter_tts: ^4.0.2
+  jwt_decoder: ^2.0.1
+  fl_chart: ^0.69.0
+  carousel_slider: ^5.0.0
 
 dev_dependencies:
   flutter_test:
