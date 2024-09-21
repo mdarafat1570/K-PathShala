@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/model/dashboard_page_model/dashboard_page_model.dart';
@@ -129,187 +130,202 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _onWillPop,
-      child: Scaffold(
-        body: dataFound == false
-            ? const Center(child: CircularProgressIndicator())
-            : SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (dashboardPageModel?.banners != null && dashboardPageModel!.banners!.isNotEmpty)
-                        BannerCarousel(banners: dashboardPageModel!.banners!),
-                      const SizedBox(height: 20),
-                      GridView(
-                        physics: const NeverScrollableScrollPhysics(),
-                        padding: EdgeInsets.zero,
-                        shrinkWrap: true,
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 16,
-                          crossAxisSpacing: 16,
-                          childAspectRatio: 2.5,
-                        ),
-                        children: [
-                          if (dashboardPageModel?.videoClasses != null)
-                            InkWell(
-                              onTap: () {},
-                              child: _buildGridItem(
-                                icon: Icons.library_books,
-                                title: "Classes",
-                                subtitle: "${dashboardPageModel?.videoClasses ?? 0} videos",
-                              ),
-                            ),
+    return Scaffold(
+      body: dataFound == false
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (dashboardPageModel?.banners != null &&
+                        dashboardPageModel!.banners!.isNotEmpty)
+                      BannerCarousel(banners: dashboardPageModel!.banners!),
+                    const SizedBox(height: 20),
+                    GridView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding: EdgeInsets.zero,
+                      shrinkWrap: true,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 8,
+                        crossAxisSpacing: 8,
+                        childAspectRatio: 2.5,
+                      ),
+                      children: [
+                        if (dashboardPageModel?.videoClasses != null)
                           InkWell(
                             onTap: () {},
                             child: _buildGridItem(
-                              icon: Icons.assessment,
-                              title: "Skill test",
-                              subtitle: "Test your skills",
+                              icon: Icons.library_books,
+                              title: "Classes",
+                              subtitle:
+                                  "${dashboardPageModel?.videoClasses ?? 0} videos",
                             ),
                           ),
-                          // if (dashboardPageModel?.syllabus != null) // Example of another null check
-                            InkWell(
-                              onTap: () {},
-                              child: _buildGridItem(
-                                icon: Icons.book,
-                                title: "Syllabus",
-                                subtitle: "UBT exam syllabus",
-                              ),
-                            ),
-                          // if (dashboardPageModel?.books != null) // Another example
-                            InkWell(
-                              onTap: () {},
-                              child: _buildGridItem(
-                                icon: Icons.library_books,
-                                title: "Books",
-                                subtitle: "Order or read",
-                              ),
-                            ),
-                        ],
-                      ),
-                      const Gap(10),
-                      if (dashboardPageModel?.exam != null)
-                        Column(
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ExamPage(
-                                      packageId: dashboardPageModel!.exam!.packageId ?? -1,
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: _buildMockTestProgress(),
-                            ),
-                            const SizedBox(height: 10),
-                          ],
+                        InkWell(
+                          onTap: () {},
+                          child: _buildGridItem(
+                            icon: Icons.assessment,
+                            title: "Skill test",
+                            subtitle: "Test your skills",
+                          ),
                         ),
-                      Stack(
-                        alignment: Alignment.bottomCenter,
+                        // if (dashboardPageModel?.syllabus != null) // Example of another null check
+                        InkWell(
+                          onTap: () {},
+                          child: _buildGridItem(
+                            icon: Icons.book,
+                            title: "Syllabus",
+                            subtitle: "UBT exam syllabus",
+                          ),
+                        ),
+                        // if (dashboardPageModel?.books != null) // Another example
+                        InkWell(
+                          onTap: () {},
+                          child: _buildGridItem(
+                            icon: Icons.library_books,
+                            title: "Books",
+                            subtitle: "Order or read",
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Gap(10),
+                    if (dashboardPageModel?.exam != null)
+                      Column(
                         children: [
-                          const SizedBox(height: 220),
-                          Container(
-                            height: 180,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFFF6F61),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                          Positioned(
-                            left: 0,
-                            bottom: 0,
-                            child: ClipRRect(
-                              child: Image.asset(
-                                'assets/profile.png',
-                                width: 220,
-                                height: 220,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                          // Subscribers and Videos Info
-                          Positioned(
-                            right: 14,
-                            top: 60,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                              decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.8),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Column(
-                                children: [
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.wifi_tethering, color: Colors.white, size: 14),
-                                        customText(count, TextType.normal,
-                                            color: AppColor.white,
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.bold),
-                                      ],
-                                    ),
-                                    customText('Subscribers', TextType.normal,
-                                        color: AppColor.skyBlue,
-                                        fontSize: 12),
-                                    Row(
-                                      children: [
-                                        customText(vidCount, TextType.normal,
-                                            color: AppColor.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 13),
-                                        const SizedBox(width: 10),
-                                        customText('Free videos', TextType.normal,
-                                            color: AppColor.skyBlue,
-                                            fontSize: 12),
-                                      ],
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            left: 16,
-                            bottom: 16,
-                            right: 16,
-                            child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.black.withOpacity(0.5),
-                                padding: const EdgeInsets.symmetric(vertical: 12),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ExamPage(
+                                    packageId:
+                                        dashboardPageModel!.exam!.packageId ??
+                                            -1,
+                                  ),
                                 ),
-                              ),
-                              onPressed: _launchYouTubeChannel,
-                              icon: const Icon(Icons.play_circle_fill, color: Colors.white),
-                              label: customText('Free Korean lessons on YouTube', TextType.normal,
-                                  color: AppColor.white, fontSize: 16),
-                            ),
+                              );
+                            },
+                            child: _buildMockTestProgress(),
                           ),
+                          const SizedBox(height: 10),
                         ],
                       ),
-                    ],
-                  ),
+                    buildYoutubeChannelStatisticsStack(),
+                  ],
                 ),
               ),
-      ),
+            ),
+    );
+  }
+
+  Stack buildYoutubeChannelStatisticsStack() {
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+        const SizedBox(height: 220),
+        Container(
+          height: 180,
+          decoration: BoxDecoration(
+            color: const Color(0xFFFF6F61),
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+        Positioned(
+          left: 0,
+          bottom: 0,
+          child: ClipRRect(
+            child: Image.asset(
+              'assets/profile.png',
+              width: 220,
+              height: 220,
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+        // Subscribers and Videos Info
+        Positioned(
+          right: 14,
+          top: 60,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.8),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                Column(
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.wifi_tethering,
+                            color: Colors.white, size: 14),
+                        customText(count, TextType.normal,
+                            color: AppColor.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold),
+                      ],
+                    ),
+                    customText(
+                      'Subscribers',
+                      TextType.normal,
+                      color: AppColor.skyBlue,
+                      fontSize: 12,
+                    ),
+                  ],
+                ),
+                const Gap(8),
+                Column(
+                  children: [
+                    customText(vidCount, TextType.normal,
+                        color: AppColor.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13),
+                    const SizedBox(width: 10),
+                    customText('Free videos', TextType.normal,
+                        color: AppColor.skyBlue, fontSize: 12),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          left: 16,
+          bottom: 16,
+          right: 16,
+          child: ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black.withOpacity(0.5),
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            onPressed: _launchYouTubeChannel,
+            icon: const Icon(Icons.play_circle_fill, color: Colors.white),
+            label: customText('Free Korean lessons on YouTube', TextType.normal,
+                color: AppColor.white, fontSize: 16),
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildMockTestProgress() {
     double totalQuestionSet =
-    (dashboardPageModel?.exam?.totalQuestionSet ?? 0).toDouble();
+        (dashboardPageModel?.exam?.totalQuestionSet ?? 0).toDouble();
     double completedQuestionSet =
-    (dashboardPageModel?.exam?.completedQuestionSet ?? 0).toDouble();
+        (dashboardPageModel?.exam?.completedQuestionSet ?? 0).toDouble();
 
     // Avoid division by zero by checking if totalQuestionSet is greater than zero
-    double ratio = (totalQuestionSet > 0) ? (completedQuestionSet / totalQuestionSet) : 0;
+    double ratio =
+        (totalQuestionSet > 0) ? (completedQuestionSet / totalQuestionSet) : 0;
 
     // Check if there's a valid exam name to display
     String examName = dashboardPageModel?.exam?.examName ?? "";
@@ -364,7 +380,8 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
           ),
           const SizedBox(width: 12),
-          const Icon(Icons.arrow_forward_ios, size: 16, color: AppColor.navyBlue),
+          const Icon(Icons.arrow_forward_ios,
+              size: 16, color: AppColor.navyBlue),
         ],
       ),
     );
@@ -385,18 +402,39 @@ Widget _buildGridItem(
         ),
       ],
     ),
-    padding: const EdgeInsets.all(16),
+    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
     child: Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Icon(icon, color: AppColor.accentColor),
+        // Icon(icon, color: AppColor.navyBlue),
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                spreadRadius: 2,
+                blurRadius: 5,
+              ),
+            ],
+          ),
+          child: SvgPicture.asset(
+            'assets/Icon.svg',
+            width: 20.0,
+            height: 20.0,
+          ),
+        ),
         const Gap(12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Flexible(
                   child: FittedBox(
-                      child: customText(title, TextType.title, fontSize: 16))),
+                      child: customText(title, TextType.title, fontSize: 14))),
               Flexible(
                 child: FittedBox(
                   child: customText(subtitle, TextType.normal,
