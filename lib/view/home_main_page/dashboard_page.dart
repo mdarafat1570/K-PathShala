@@ -4,13 +4,11 @@ import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/model/dashboard_page_model/dashboard_page_model.dart';
 import 'package:kpathshala/repository/dashboard_repository/dashboard_page_repository.dart';
-import 'package:kpathshala/view/common_widget/common_card_book_slider.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:kpathshala/view/exam_main_page/ubt_exam_page.dart';
 import 'package:kpathshala/view/home_main_page/dashboard_image_carousel.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -40,7 +38,6 @@ class _DashboardPageState extends State<DashboardPage> {
   String count = "0";
   String vidCount = "0";
   int _currentTimer = 1;
-  final PageController _pageController = PageController();
   bool dataFound = false;
 
   DashboardPageModel? dashboardPageModel;
@@ -62,7 +59,6 @@ class _DashboardPageState extends State<DashboardPage> {
 
       setState(() {
         dashboardPageModel = dashModel;
-        // questionSetResults = qstn.results;
         log(jsonEncode(dashModel));
         dataFound = true;
       });
@@ -144,30 +140,29 @@ class _DashboardPageState extends State<DashboardPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      BannerCarousel(
-                          banners: dashboardPageModel!.banners ?? []),
+                      if (dashboardPageModel?.banners != null && dashboardPageModel!.banners!.isNotEmpty)
+                        BannerCarousel(banners: dashboardPageModel!.banners!),
                       const SizedBox(height: 20),
                       GridView(
                         physics: const NeverScrollableScrollPhysics(),
                         padding: EdgeInsets.zero,
                         shrinkWrap: true,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
                           mainAxisSpacing: 16,
                           crossAxisSpacing: 16,
                           childAspectRatio: 2.5,
                         ),
                         children: [
-                          InkWell(
-                            onTap: () {},
-                            child: _buildGridItem(
-                              icon: Icons.library_books,
-                              title: "Classes",
-                              subtitle:
-                                  "${dashboardPageModel?.videoClasses ?? 0} videos",
+                          if (dashboardPageModel?.videoClasses != null)
+                            InkWell(
+                              onTap: () {},
+                              child: _buildGridItem(
+                                icon: Icons.library_books,
+                                title: "Classes",
+                                subtitle: "${dashboardPageModel?.videoClasses ?? 0} videos",
+                              ),
                             ),
-                          ),
                           InkWell(
                             onTap: () {},
                             child: _buildGridItem(
@@ -176,22 +171,24 @@ class _DashboardPageState extends State<DashboardPage> {
                               subtitle: "Test your skills",
                             ),
                           ),
-                          InkWell(
-                            onTap: () {},
-                            child: _buildGridItem(
-                              icon: Icons.book,
-                              title: "Syllabus",
-                              subtitle: "UBT exam syllabus",
+                          // if (dashboardPageModel?.syllabus != null) // Example of another null check
+                            InkWell(
+                              onTap: () {},
+                              child: _buildGridItem(
+                                icon: Icons.book,
+                                title: "Syllabus",
+                                subtitle: "UBT exam syllabus",
+                              ),
                             ),
-                          ),
-                          InkWell(
-                            onTap: () {},
-                            child: _buildGridItem(
-                              icon: Icons.library_books,
-                              title: "Books",
-                              subtitle: "Order or read",
+                          // if (dashboardPageModel?.books != null) // Another example
+                            InkWell(
+                              onTap: () {},
+                              child: _buildGridItem(
+                                icon: Icons.library_books,
+                                title: "Books",
+                                subtitle: "Order or read",
+                              ),
                             ),
-                          ),
                         ],
                       ),
                       const Gap(10),
@@ -199,12 +196,14 @@ class _DashboardPageState extends State<DashboardPage> {
                         Column(
                           children: [
                             InkWell(
-                              onTap: (){
+                              onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => ExamPage(
-                                          packageId: dashboardPageModel?.exam?.packageId ?? -1)),
+                                    builder: (context) => ExamPage(
+                                      packageId: dashboardPageModel!.exam!.packageId ?? -1,
+                                    ),
+                                  ),
                                 );
                               },
                               child: _buildMockTestProgress(),
@@ -217,11 +216,12 @@ class _DashboardPageState extends State<DashboardPage> {
                         children: [
                           const SizedBox(height: 220),
                           Container(
-                              height: 180,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFF6F61),
-                                borderRadius: BorderRadius.circular(16),
-                              )),
+                            height: 180,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFF6F61),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
                           Positioned(
                             left: 0,
                             bottom: 0,
@@ -239,66 +239,37 @@ class _DashboardPageState extends State<DashboardPage> {
                             right: 14,
                             top: 60,
                             child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 8),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                               decoration: BoxDecoration(
                                 color: Colors.black.withOpacity(0.8),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Column(
                                 children: [
-                                  Row(
-                                    children: [
-                                      customGap(height: 10),
-                                      Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              const Icon(Icons.wifi_tethering,
-                                                  color: Colors.white,
-                                                  size: 14),
-                                              customText(count, TextType.normal,
-                                                  color: AppColor.white,
-                                                  fontSize: 13,
-                                                  fontWeight: FontWeight.bold),
-                                            ],
-                                          ),
-                                          customGap(height: 5),
-                                          customText(
-                                              'Subscribers', TextType.normal,
-                                              color: AppColor.skyBlue,
-                                              fontSize: 12),
-                                        ],
-                                      ),
-                                      customGap(width: 10),
-                                      Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          customText(vidCount, TextType.normal,
-                                              color: AppColor.white,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 13),
-                                          customGap(height: 5),
-                                          Row(
-                                            children: [
-                                              customText('Free videos',
-                                                  TextType.normal,
-                                                  color: AppColor.skyBlue,
-                                                  fontSize: 12),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 5),
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.wifi_tethering, color: Colors.white, size: 14),
+                                        customText(count, TextType.normal,
+                                            color: AppColor.white,
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.bold),
+                                      ],
+                                    ),
+                                    customText('Subscribers', TextType.normal,
+                                        color: AppColor.skyBlue,
+                                        fontSize: 12),
+                                    Row(
+                                      children: [
+                                        customText(vidCount, TextType.normal,
+                                            color: AppColor.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 13),
+                                        const SizedBox(width: 10),
+                                        customText('Free videos', TextType.normal,
+                                            color: AppColor.skyBlue,
+                                            fontSize: 12),
+                                      ],
+                                    ),
                                 ],
                               ),
                             ),
@@ -310,20 +281,15 @@ class _DashboardPageState extends State<DashboardPage> {
                             child: ElevatedButton.icon(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.black.withOpacity(0.5),
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
+                                padding: const EdgeInsets.symmetric(vertical: 12),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
                               onPressed: _launchYouTubeChannel,
-                              icon: const Icon(Icons.play_circle_fill,
-                                  color: Colors.white),
-                              label: customText(
-                                  'Free Korean lessons on YouTube',
-                                  TextType.normal,
-                                  color: AppColor.white,
-                                  fontSize: 16),
+                              icon: const Icon(Icons.play_circle_fill, color: Colors.white),
+                              label: customText('Free Korean lessons on YouTube', TextType.normal,
+                                  color: AppColor.white, fontSize: 16),
                             ),
                           ),
                         ],
@@ -338,13 +304,19 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Widget _buildMockTestProgress() {
     double totalQuestionSet =
-        (dashboardPageModel?.exam?.totalQuestionSet ?? 0).toDouble();
+    (dashboardPageModel?.exam?.totalQuestionSet ?? 0).toDouble();
     double completedQuestionSet =
-        (dashboardPageModel?.exam?.completedQuestionSet ?? 0).toDouble();
+    (dashboardPageModel?.exam?.completedQuestionSet ?? 0).toDouble();
 
-// Avoid division by zero by checking if totalQuestionSet is greater than zero
-    double ratio =
-        (totalQuestionSet > 0) ? (completedQuestionSet / totalQuestionSet) : 0;
+    // Avoid division by zero by checking if totalQuestionSet is greater than zero
+    double ratio = (totalQuestionSet > 0) ? (completedQuestionSet / totalQuestionSet) : 0;
+
+    // Check if there's a valid exam name to display
+    String examName = dashboardPageModel?.exam?.examName ?? "";
+    if (examName.isEmpty) {
+      return const SizedBox.shrink(); // Return an empty widget if no exam name
+    }
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -373,21 +345,26 @@ class _DashboardPageState extends State<DashboardPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 customText(
-                    dashboardPageModel?.exam?.examName ?? "", TextType.title,
-                    fontSize: 14, color: AppColor.neutralGrey),
+                  examName,
+                  TextType.title,
+                  fontSize: 14,
+                  color: AppColor.neutralGrey,
+                ),
                 FittedBox(
                   child: customText(
-                      "${dashboardPageModel?.exam?.completedQuestionSet ?? 0} out of ${dashboardPageModel?.exam?.totalQuestionSet ?? 0} sets completed",
-                      TextType.normal,
-                      fontSize: 10,
-                      color: AppColor.navyBlue),
+                    (totalQuestionSet > 0)
+                        ? "${completedQuestionSet.toInt()} out of ${totalQuestionSet.toInt()} sets completed"
+                        : "No sets available",
+                    TextType.normal,
+                    fontSize: 10,
+                    color: AppColor.navyBlue,
+                  ),
                 ),
               ],
             ),
           ),
           const SizedBox(width: 12),
-          const Icon(Icons.arrow_forward_ios,
-              size: 16, color: AppColor.navyBlue),
+          const Icon(Icons.arrow_forward_ios, size: 16, color: AppColor.navyBlue),
         ],
       ),
     );

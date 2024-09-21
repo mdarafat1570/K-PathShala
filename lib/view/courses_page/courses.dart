@@ -1,8 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:kpathshala/view/common_widget/custom_background.dart';
-import 'package:kpathshala/view/common_widget/custom_textfield_2.dart';
 
 class Courses extends StatefulWidget {
   const Courses({super.key});
