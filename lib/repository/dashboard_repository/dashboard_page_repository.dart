@@ -3,7 +3,9 @@ import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
+
 import '../../model/dashboard_page_model/dashboard_page_model.dart';
+
 
 class DashboardRepository {
   final AuthService _authService = AuthService();
@@ -38,8 +40,7 @@ class DashboardRepository {
         // Handle unauthorized error
         throw Exception('Unauthorized: Token expired or invalid.');
       } else {
-        // Other types of status code errors
-        throw Exception('Failed to load dashboard data. Status code: ${response.statusCode}');
+        throw Exception('Failed to load dashboard data.');
       }
     } catch (e) {
       throw Exception('Error fetching dashboard data: ${e.toString()}');
