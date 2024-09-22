@@ -127,7 +127,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     prefixIcon: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Image.asset("assets/bangladesh.png", height: 30),
+                        Image.asset("assets/bangladesh.png", height: 18),
                         const Text(
                           " +88 ",
                           style: TextStyle(fontSize: 18),

@@ -333,7 +333,7 @@ class _ProfileState extends State<Profile> {
                   width: 320,
                   child: ElevatedButton(
                     onPressed: () {
-                      if (_validateFields()) {
+                      if (_validateFieldsForSaveButton()) {
                         updateProfile(
                           context: context, // Pass the context here
                           name: _nameController.text,
@@ -354,6 +354,31 @@ class _ProfileState extends State<Profile> {
   }
 
   bool _validateFields() {
+    setState(() {
+      _nameError =
+          _nameController.text.isEmpty ? "Full Name is required" : null;
+
+      if (_mobileController.text.isEmpty) {
+        _phoneError = "Phone Number is required";
+      }else {
+        _phoneError = null;
+      }
+
+      final email = _emailController.text;
+      if (email.isEmpty){
+        _emailError = null;
+      }else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+          .hasMatch(email)) {
+        _emailError = "Please enter a valid email address";
+      } else {
+        _emailError = null;
+      }
+    });
+
+    return _nameError == null && _phoneError == null && _emailError == null;
+  }
+
+  bool _validateFieldsForSaveButton() {
     setState(() {
       _nameError =
           _nameController.text.isEmpty ? "Full Name is required" : null;

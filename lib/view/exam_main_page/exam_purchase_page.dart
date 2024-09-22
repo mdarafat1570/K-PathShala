@@ -1,19 +1,19 @@
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/model/package_model/package_model.dart';
 import 'package:kpathshala/repository/package_service_repository.dart';
-import 'package:kpathshala/view/courses_page/course_shimmer.dart';
-import 'package:kpathshala/view/exam_main_page/bottom_panel_page_course_purchase.dart';
+import 'package:kpathshala/view/exam_main_page/widgets/exam_purchase_page_shimmer.dart';
+import 'package:kpathshala/view/exam_main_page/bottom_sheets/bottom_panel_page_course_purchase.dart';
 import 'package:kpathshala/view/exam_main_page/ubt_exam_page.dart';
 import 'package:lottie/lottie.dart';
 
-class CoursePurchasePage extends StatefulWidget {
-  const CoursePurchasePage({super.key});
+class ExamPurchasePage extends StatefulWidget {
+  const ExamPurchasePage({super.key});
 
   @override
-  State<CoursePurchasePage> createState() => _CoursePurchasePageState();
+  State<ExamPurchasePage> createState() => _ExamPurchasePageState();
 }
 
-class _CoursePurchasePageState extends State<CoursePurchasePage> {
+class _ExamPurchasePageState extends State<ExamPurchasePage> {
   final PackageRepository _packageRepository = PackageRepository();
   Future<List<PackageModelList>>? _packagesFuture;
 
@@ -43,7 +43,7 @@ class _CoursePurchasePageState extends State<CoursePurchasePage> {
           future: _packagesFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CourseShimmer());
+              return const Center(child: ExamPurchasePageShimmer());
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (snapshot.hasData) {

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
@@ -28,6 +29,7 @@ class DashboardRepository {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+        log(jsonEncode(data));
         if (data is Map<String, dynamic>) {
           return DashboardPageModel.fromJson(data['data']); 
         } else {
