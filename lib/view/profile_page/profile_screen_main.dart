@@ -251,7 +251,7 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
                           color: AppColor.navyBlue,
                           fontWeight: FontWeight.bold),
                       onTap: () {
-                        slideNavigationPush(HomeScreen(), context);
+                        // slideNavigationPush(HomeScreen(), context);
                       },
                     ),
                     ListTile(

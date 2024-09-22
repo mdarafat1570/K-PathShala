@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/model/dashboard_page_model/dashboard_page_model.dart';
+import 'package:shimmer/shimmer.dart';
 
 class BannerCarousel extends StatefulWidget {
   final List<Banners> banners;
@@ -53,12 +54,40 @@ class BannerCarouselState extends State<BannerCarousel> {
                     child: Image.network(
                       banner.bannerUrl ?? '',
                       fit: BoxFit.cover,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Shimmer.fromColors(
+                          baseColor: Colors.grey[300]!,
+                          highlightColor: Colors.grey[100]!,
+                          child: Container(
+                            color: Colors.white,
+                            width: double.infinity,
+                            height: double.infinity,
+                          ),
+                        );
+                      },
                       errorBuilder: (context, error, stackTrace) {
-                        return const Center(
-                          child: Icon(
-                            Icons.broken_image,
-                            color: Colors.grey,
-                            size: 40,
+                        // Custom fallback when an error occurs
+                        return Container(
+                          color: Colors.grey[200],
+                          width: double.infinity,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.error_outline,
+                                color: Colors.redAccent,
+                                size: 40,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Image not available',
+                                style: TextStyle(
+                                  color: Colors.grey[700],
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
                           ),
                         );
                       },
@@ -73,21 +102,19 @@ class BannerCarouselState extends State<BannerCarousel> {
         Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(widget.banners.length,
-                  (index) {
-                return Container(
-                  width: 8,
-                  height: 8,
-                  margin: const EdgeInsets.symmetric(
-                      vertical: 10, horizontal: 2),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: _currentIndex == index
-                        ? AppColor.navyBlue
-                        : Colors.grey,
-                  ),
-                );
-              }),
+          children: List.generate(widget.banners.length, (index) {
+            return Container(
+              width: 8,
+              height: 8,
+              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 2),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: _currentIndex == index
+                    ? AppColor.navyBlue
+                    : Colors.grey,
+              ),
+            );
+          }),
         )
       ],
     );

@@ -2,7 +2,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
-import 'package:kpathshala/view/courses_page/course_purchase_page.dart';
+import 'package:kpathshala/view/exam_main_page/exam_purchase_page.dart';
 import 'package:kpathshala/view/Notifications/notifications_page.dart';
 import 'package:kpathshala/view/courses_page/courses.dart';
 import 'package:kpathshala/view/exam_main_page/ubt_exam_page.dart';
@@ -22,7 +22,7 @@ class _NavigationState extends State<Navigation> {
   List<Widget> widgetList = [
      DashboardPage(),
      Courses(),
-     CoursePurchasePage(),
+     ExamPurchasePage(),
   ];
   LogInCredentials? credentials;
   final AuthService _authService = AuthService();
