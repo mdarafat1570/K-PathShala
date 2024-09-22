@@ -36,7 +36,7 @@ Future<void> _launchYouTubeChannel() async {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  String apikey = "AIzaSyD8sL4JtVbg61XyNAh4xumqcXK9g2JwkfE";
+  String apikey = "AIzaSyClsZlG68dO9BB9mF5XzxrdXvFcxehh9RA";
   String count = "0";
   String vidCount = "0";
   int _currentTimer = 1;
@@ -199,12 +199,14 @@ class _DashboardPageState extends State<DashboardPage> {
                         Column(
                           children: [
                             InkWell(
-                              onTap: (){
+                              onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => ExamPage(
-                                          packageId: dashboardPageModel?.exam?.packageId ?? -1)),
+                                          packageId: dashboardPageModel
+                                                  ?.exam?.packageId ??
+                                              -1)),
                                 );
                               },
                               child: _buildMockTestProgress(),
