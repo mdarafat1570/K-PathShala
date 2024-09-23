@@ -22,7 +22,10 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
   int _currentTabIndex = 0; // Index to track the selected tab
   int _selectedTotalIndex =
       -1; // To track the selected question button in total questions
-  int _selectedSolvedIndex =
+  int _selectedSolvedIndex = -1;
+  int _selectedTotalIndex2 =
+      -1; // To track the selected question button in total questions
+  int _selectedSolvedIndex2 =
       -1; // To track the selected question button in solved questions
 
   @override
@@ -82,7 +85,7 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
       child: Scaffold(
         body: Column(
           children: [
-            Gap(20),
+            const Gap(20),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: Row(
@@ -98,7 +101,7 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
                             child: Container(
                               height: 40,
                               width: 80,
-                              child: FittedBox(
+                              child: const FittedBox(
                                 child: Row(
                                   children: [
                                     CircleAvatar(
@@ -129,10 +132,10 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
                             });
                           },
                           child: AnimatedContainer(
-                            duration: Duration(milliseconds: 300),
+                            duration: const Duration(milliseconds: 300),
                             padding: const EdgeInsets.all(12.0),
                             decoration: BoxDecoration(
-                              border: Border(
+                              border: const Border(
                                 right: BorderSide(
                                   width: 3,
                                   color: AppColor.navyBlue,
@@ -142,7 +145,7 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
                                   ? AppColor.navyBlue
                                   : Colors.grey[300],
                               borderRadius: _currentTabIndex == index
-                                  ? BorderRadius.only(
+                                  ? const BorderRadius.only(
                                       topLeft: Radius.circular(10),
                                       topRight: Radius.circular(10))
                                   : BorderRadius.zero,
@@ -168,8 +171,8 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 300),
                               padding: const EdgeInsets.all(12.0),
-                              decoration: BoxDecoration(
-                                color: Color.fromRGBO(26, 35, 126, 0.2),
+                              decoration: const BoxDecoration(
+                                color: AppColor.navyBlue,
                                 borderRadius: BorderRadius.only(
                                   topRight: Radius.circular(15),
                                 ),
@@ -187,11 +190,11 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
                         ),
                     ),
                   ),
-                  Gap(80),
+                  const Gap(80),
                 ],
               ),
             ),
-            Divider(
+            const Divider(
               color: AppColor.navyBlue,
               thickness: 0.8,
             ),
@@ -211,14 +214,14 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
     switch (index) {
       case 0:
         return buildGridContent(
-          title: 'Total Questions',
+          title: '읽기 (20 Question)',
           description: 'Here are all the questions.',
           questionCount: 20, // Total number of questions
           isSolved: false,
         );
       case 1:
         return buildGridContent(
-          title: 'Solved Questions',
+          title: '듣기 (20 Question)',
           description: 'Here are all the solved questions.',
           questionCount: 10, // Example: 10 solved questions
           isSolved: true,
@@ -242,152 +245,149 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
     required int questionCount,
     required bool isSolved,
   }) {
-    return Row(
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+    return Padding(
+      padding: const EdgeInsets.only(left: 20, right: 20),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
-              Expanded(
-                child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 5,
-                    childAspectRatio: 1,
-                    mainAxisSpacing: 8.0,
-                    crossAxisSpacing: 8.0,
-                  ),
-                  itemCount: questionCount,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (isSolved) {
-                            _selectedSolvedIndex = index;
-                          } else {
-                            _selectedTotalIndex = index;
-                          }
-                        });
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: isSolved
-                              ? (_selectedSolvedIndex == index
-                                  ? Colors.lightBlueAccent
-                                  : Colors.white)
-                              : (_selectedTotalIndex == index
-                                  ? Colors.lightBlueAccent
-                                  : Colors.white),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.blue,
-                            width: 1.5,
+                Expanded(
+                  child: GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 5,
+                      childAspectRatio: 1,
+                      mainAxisSpacing: 8.0,
+                      crossAxisSpacing: 8.0,
+                    ),
+                    itemCount: questionCount,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            if (isSolved) {
+                              _selectedSolvedIndex = index;
+                            } else {
+                              _selectedTotalIndex = index;
+                            }
+                          });
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: isSolved
+                                ? (_selectedSolvedIndex == index
+                                    ? AppColor.skyBlue
+                                    : Color.fromRGBO(245, 247, 250, 1))
+                                : (_selectedTotalIndex == index
+                                    ? AppColor.skyBlue
+                                    : Color.fromRGBO(245, 247, 250, 1)),
+                            borderRadius: BorderRadius.circular(15),
                           ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            '${index + 1}', // Button text (1, 2, 3, ...)
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: isSolved
-                                  ? (_selectedSolvedIndex == index
-                                      ? Colors.white
-                                      : Colors.blue)
-                                  : (_selectedTotalIndex == index
-                                      ? Colors.white
-                                      : Colors.blue),
+                          child: Center(
+                            child: Text(
+                              '${index + 1}', // Button text (1, 2, 3, ...)
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: isSolved
+                                    ? (_selectedSolvedIndex == index
+                                        ? Color.fromRGBO(245, 247, 250, 1)
+                                        : AppColor.skyBlue)
+                                    : (_selectedTotalIndex == index
+                                        ? AppColor.black
+                                        : AppColor.skyBlue),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        const SizedBox(width: 40), // Add spacing between the two columns
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+          const SizedBox(width: 40), // Add spacing between the two columns
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
-              Expanded(
-                child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 5,
-                    childAspectRatio: 1,
-                    mainAxisSpacing: 8.0,
-                    crossAxisSpacing: 8.0,
-                  ),
-                  itemCount: questionCount,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (isSolved) {
-                            _selectedSolvedIndex = index;
-                          } else {
-                            _selectedTotalIndex = index;
-                          }
-                        });
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: isSolved
-                              ? (_selectedSolvedIndex == index
-                                  ? Colors.lightBlueAccent
-                                  : Colors.white)
-                              : (_selectedTotalIndex == index
-                                  ? Colors.lightBlueAccent
-                                  : Colors.white),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.blue,
-                            width: 1.5,
+                Expanded(
+                  child: GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 5,
+                      childAspectRatio: 1,
+                      mainAxisSpacing: 8.0,
+                      crossAxisSpacing: 8.0,
+                    ),
+                    itemCount: questionCount,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            if (isSolved) {
+                              _selectedSolvedIndex2 = index;
+                            } else {
+                              _selectedTotalIndex2 = index;
+                            }
+                          });
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: isSolved
+                                ? (_selectedSolvedIndex2 == index
+                                    ? AppColor.skyBlue
+                                    : Color.fromRGBO(245, 247, 250, 1))
+                                : (_selectedTotalIndex2 == index
+                                    ? AppColor.skyBlue
+                                    : Color.fromRGBO(245, 247, 250, 1)),
+                            borderRadius: BorderRadius.circular(15),
                           ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            '${index + 1}', // Button text (1, 2, 3, ...)
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: isSolved
-                                  ? (_selectedSolvedIndex == index
-                                      ? Colors.white
-                                      : Colors.blue)
-                                  : (_selectedTotalIndex == index
-                                      ? Colors.white
-                                      : Colors.blue),
+                          child: Center(
+                            child: Text(
+                              '${index + 1}', // Button text (1, 2, 3, ...)
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: isSolved
+                                    ? (_selectedSolvedIndex2 == index
+                                        ? Color.fromRGBO(245, 247, 250, 1)
+                                        : AppColor.skyBlue)
+                                    : (_selectedTotalIndex2 == index
+                                        ? AppColor.black
+                                        : AppColor.skyBlue),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
