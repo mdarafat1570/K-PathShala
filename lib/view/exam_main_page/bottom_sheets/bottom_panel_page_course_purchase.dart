@@ -11,7 +11,7 @@ class BottomSheetPage extends StatefulWidget {
   final String validityDate;
   final VoidCallback refreshPage;
 
-  const BottomSheetPage({
+  const      BottomSheetPage({
     super.key,
     required this.packageId,
     required this.context,
@@ -42,7 +42,7 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
         ),
         Gap(screenHeight * 0.03),
         customText("Confirm purchase", TextType.paragraphTitle,
-            color: AppColor.grey500),
+            color: AppColor.naturalGrey, fontSize: 24),
         Gap(screenHeight * 0.03),
         Container(
           width: double.infinity,
@@ -57,8 +57,8 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                customText("Payment of ৳${widget.price}.00", TextType.subtitle,
-                    fontSize: 17,
+                customText("Payment of ৳${widget.price}", TextType.subtitle,
+                    fontSize: 14,
                     color: AppColor.navyBlue,
                     fontWeight: FontWeight.bold),
                 const Gap(5),
