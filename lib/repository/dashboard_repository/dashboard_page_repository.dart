@@ -29,9 +29,7 @@ class DashboardRepository {
         final data = jsonDecode(response.body);
         log(jsonEncode(data));
         if (data is Map<String, dynamic>) {
-          // Parse the data as a map, since it's not a list
-          return DashboardPageModel.fromJson(
-              data['data']); // Use 'data' field from response
+          return DashboardPageModel.fromJson(data['data']);
         } else {
           throw Exception('Unexpected response format.');
         }
