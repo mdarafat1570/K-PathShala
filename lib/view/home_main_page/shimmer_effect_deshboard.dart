@@ -11,27 +11,17 @@ class DashboardPageShimmerEffect extends StatefulWidget {
 
 class _DashboardPageShimmerEffectState
     extends State<DashboardPageShimmerEffect> {
-  bool _isLoading = true;
+  
 
   @override
   void initState() {
     super.initState();
-    _loadData();
-  }
-
-  Future<void> _loadData() async {
-    await Future.delayed(const Duration(seconds: 3));
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: _isLoading ? _buildShimmerContent() : DashboardPage(),
-      ),
+      body: SingleChildScrollView(child: _buildShimmerContent()),
     );
   }
 
