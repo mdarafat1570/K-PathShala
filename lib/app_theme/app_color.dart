@@ -46,6 +46,9 @@ class AppColor {
   static const Color brightCoral = Color(0xFFFF6F61);
   static const Color lightred = Color(0x33FF4C4C);
   static const Color neutralGrey = Color(0xFF3D3D3D);
+  static const Color lightBlue = Color.fromARGB(26, 35, 126, 1);
+  static const Color skyblue = Color.fromRGBO(135, 206, 235, 1);
+  static const Color naturalgrey2 = Color.fromRGBO(245, 247, 250, 1);
 
   // Grey colors with specific hex values
   static const Color grey50 = Color(0xFFF9F9F9);

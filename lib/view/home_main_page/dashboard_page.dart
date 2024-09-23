@@ -10,6 +10,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:kpathshala/view/exam_main_page/ubt_exam_page.dart';
 import 'package:kpathshala/view/home_main_page/dashboard_image_carousel.dart';
+import 'package:kpathshala/view/home_main_page/shimmer_effect_deshboard.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -132,7 +133,7 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: dataFound == false
-          ? const Center(child: CircularProgressIndicator())
+          ? DashboardPageShimmerEffect()
           : SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
