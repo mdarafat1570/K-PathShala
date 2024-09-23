@@ -1,8 +1,5 @@
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/view/exam_main_page/payment_example.dart';
-import 'package:kpathshala/view/exam_main_page/payment_sandbox.dart';
-
-// import 'package:kpathshala/view/exam_main_page/ubt_exam_page.dart';
 
 class BottomSheetPage extends StatefulWidget {
   final BuildContext context;
@@ -11,7 +8,7 @@ class BottomSheetPage extends StatefulWidget {
   final String validityDate;
   final VoidCallback refreshPage;
 
-  const      BottomSheetPage({
+  const BottomSheetPage({
     super.key,
     required this.packageId,
     required this.context,
@@ -57,7 +54,7 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                customText("Payment of ৳${widget.price}", TextType.subtitle,
+                customText("Payment of ৳${widget.price.toStringAsFixed(2)}", TextType.subtitle,
                     fontSize: 14,
                     color: AppColor.navyBlue,
                     fontWeight: FontWeight.bold),
@@ -67,15 +64,14 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
                     text: "You’ll have access to UBT Mock Test till ",
                     style: const TextStyle(
                       color: Colors.grey,
-                      fontSize: 15,
+                      fontSize: 12,
                     ),
                     children: [
                       TextSpan(
                         text: widget.validityDate,
                         style: const TextStyle(
                           color: AppColor.navyBlue,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                          fontSize: 12,
                         ),
                       ),
                     ],
@@ -122,14 +118,14 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
                   "By proceeding you’re agreeing with K-Pathshala’s purchasing ",
               style: TextStyle(
                 color: AppColor.grey500,
-                fontSize: 14,
+                fontSize: 10,
               ),
               children: [
                 TextSpan(
                   text: "and refund policy.",
                   style: TextStyle(
                     color: AppColor.grey500,
-                    fontSize: 14,
+                    fontSize: 10,
                   ),
                 ),
               ],

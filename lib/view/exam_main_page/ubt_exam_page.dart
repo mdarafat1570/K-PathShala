@@ -12,6 +12,7 @@ import 'package:kpathshala/model/item_list.dart';
 
 class ExamPage extends StatefulWidget {
   final int packageId;
+
   const ExamPage({super.key, required this.packageId});
 
   @override
@@ -38,12 +39,11 @@ class _ExamPageState extends State<ExamPage> {
       QuestionSetRepository repository = QuestionSetRepository();
 
       // Access fetchQuestionSets as an instance method
-      QuestionSetData qstn =
+      QuestionSetData question =
           await repository.fetchQuestionSets(packageId: widget.packageId);
 
       setState(() {
-        questionSet = qstn.questionSets ?? [];
-        // questionSetResults = qstn.results;
+        questionSet = question.questionSets ?? [];
         dataFound = true;
       });
     } catch (e) {
@@ -179,9 +179,9 @@ class _ExamPageState extends State<ExamPage> {
             ),
           ),
           const SizedBox(height: 16),
-          _buildButton("Solve video", Colors.lightBlue, () {}),
+          _buildButton("Solve video", AppColor.skyBlue.withOpacity(0.3), () {}),
           const SizedBox(height: 16),
-          _buildButton("Solve video", Colors.lightBlue, () {}),
+          _buildButton("Review performance", AppColor.skyBlue.withOpacity(0.3), () {}),
           const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
@@ -303,7 +303,12 @@ class _ExamPageState extends State<ExamPage> {
           backgroundColor: color,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(25),
+            side: const           BorderSide(
+              width: 1,
+              color: AppColor.navyBlue
+            )
           ),
+          elevation: 0
         ),
         child: Text(
           text,
@@ -349,112 +354,139 @@ class _ExamPageState extends State<ExamPage> {
         appBar: const CommonAppBar(
           title: "UBT Mock Test",
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            children: [
-              Stack(
-                alignment: Alignment.bottomCenter,
+        body: !dataFound
+            ? const Center(child: CircularProgressIndicator())
+            : Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: ListView(
                 children: [
-                  const SizedBox(
-                    height: 210,
-                    width: double.infinity,
-                  ),
-                  Container(
-                    width: double.infinity,
-                    height: 190,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [
-                          Color.fromRGBO(238, 240, 255, 1),
-                          Color.fromRGBO(145, 209, 236, 1),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
+                  Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      const SizedBox(
+                        height: 180,
+                        width: double.infinity,
                       ),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                  ),
-                  Image.asset(
-                    'assets/exploding-ribbon-and-confetti-9UErHOE0bL.png',
-                    height: 80,
-                    fit: BoxFit.cover,
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(8.0),
-                    width: double.infinity,
-                    height: 190,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "${questionSetResults?.completedQuestionSet ?? 0} out of ${questionSetResults?.totalQuestionSet ?? 0} sets completed",
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
+                      Container(
+                        width: double.infinity,
+                        height: 170,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [
+                              AppColor.examCardGradientStart,
+                              AppColor.examCardGradientEnd,
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                      Image.asset(
+                        'assets/exploding-ribbon-and-confetti-9UErHOE0bL.png',
+                        height: 80,
+                        fit: BoxFit.cover,
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(8.0),
+                        width: double.infinity,
+                        height: 180,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "${questionSetResults?.completedQuestionSet ?? 0} out of ${questionSetResults?.totalQuestionSet ?? 0} sets completed",
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              "You’re among the top ${questionSetResults?.rankPercentage ?? 0}% of the students in this session.",
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                  color: AppColor.grey600, fontSize: 12),
+                            ),
+                            const Gap(30)
+                          ],
+                        ),
+                      ),
+                      Positioned(
+                        top: 0,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 2, horizontal: 12),
+                          decoration: BoxDecoration(
+                            color: AppColor.brightCoral,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            'Batch ${questionSetResults?.batch ?? 0}',
+                            style: const TextStyle(
+                                fontSize: 12, color: Colors.white),
                           ),
                         ),
-                        const SizedBox(height: 5),
-                        Text(
-                          "You’re among the top ${questionSetResults?.rankPercentage ?? 0}% of the students in this session.",
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                              color: AppColor.grey600, fontSize: 12),
-                        ),
-                        const Gap(30)
-                      ],
-                    ),
-                  ),
-                  Positioned(
-                    top: 0,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColor.brightCoral,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
                       ),
-                      onPressed: () {
-                        log('Button on Stack pressed');
-                      },
-                      child: const Text(
-                        'Batch 1',
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Expanded(
-                child: !dataFound
-                    ? const Center(child: CircularProgressIndicator())
-                    : ListView.builder(
-                        itemCount: questionSet.length,
-                        // itemCount: courses.length,
-                        itemBuilder: (context, index) {
-                          final question = questionSet[index];
-                          final title = question.title ?? 'No Title';
+                  const SizedBox(height: 10),
+                  ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: questionSet.length,
+                    itemBuilder: (context, index) {
+                      final question = questionSet[index];
+                      final title = question.title ?? 'No Title';
+                      final description = question.subtitle ?? '';
+                      final score = question.score ?? 0;
+                      const readingTestScore = 0;
+                      const listingTestScore = 0;
+                      const timeTaken = 'Unknown';
 
-                          // final question = courses[index];
-                          // final title = question['title'] ?? 'No Title';
-                          final description = question.subtitle ?? '';
-                          final score = question.score ?? 0;
-                          final readingTestScore = 0;
-                          final listingTestScore = 0;
-                          final timeTaken = 'Unknown';
+                      final Color containerColor = score >= 40
+                          ? const Color.fromRGBO(136, 208, 236, 0.2)
+                          : Colors.white;
 
-                          final Color containerColor = score >= 40
-                              ? const Color.fromRGBO(136, 208, 236, 0.2)
-                              : Colors.white;
-
-                          return GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTap: () {
+                      return GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          _showBottomSheet(
+                            context,
+                            title,
+                            description,
+                            score,
+                            listingTestScore,
+                            readingTestScore,
+                            timeTaken,
+                          );
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 5),
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: containerColor,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.1),
+                                spreadRadius: 2,
+                                blurRadius: 5,
+                              ),
+                            ],
+                          ),
+                          child: CourseRow(
+                            title: title,
+                            description: description,
+                            readingTestScore: readingTestScore,
+                            listingTestScore: listingTestScore,
+                            timeTaken: timeTaken,
+                            score: score,
+                            onDetailsClick: () {
                               _showBottomSheet(
                                 context,
                                 title,
@@ -465,51 +497,18 @@ class _ExamPageState extends State<ExamPage> {
                                 timeTaken,
                               );
                             },
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(vertical: 5),
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: containerColor,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.1),
-                                    spreadRadius: 2,
-                                    blurRadius: 5,
-                                  ),
-                                ],
-                              ),
-                              child: CourseRow(
-                                title: title,
-                                description: description,
-                                readingTestScore: readingTestScore,
-                                listingTestScore: listingTestScore,
-                                timeTaken: timeTaken,
-                                score: score,
-                                onDetailsClick: () {
-                                  _showBottomSheet(
-                                    context,
-                                    title,
-                                    description,
-                                    score,
-                                    listingTestScore,
-                                    readingTestScore,
-                                    timeTaken,
-                                  );
-                                },
-                                onRetakeTestClick: () {
-                                  _handleRetakeTestClick(title, description);
-                                },
-                                buttonLabel: _getButtonLabel(title),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                            onRetakeTestClick: () {
+                              _handleRetakeTestClick(title, description);
+                            },
+                            buttonLabel: _getButtonLabel(title),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
         bottomNavigationBar: BottomAppBar(
           height: 65,
           color: Colors.white,
