@@ -74,12 +74,12 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused ||
-        state == AppLifecycleState.inactive) {
-      showExitConfirmation(context);
-    }
-  }
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   if (state == AppLifecycleState.paused ||
+  //       state == AppLifecycleState.inactive) {
+  //     showExitConfirmation(context);
+  //   }
+  // }
 
   LogInCredentials? credentials;
   final AuthService _authService = AuthService();
@@ -107,9 +107,24 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
 
     return WillPopScope(
       onWillPop: () async {
-        // Ask for exit confirmation only when back button is pressed
-        bool shouldExit = await showExitConfirmation(context);
-        return shouldExit;
+        // Check if user is on Courses or ExamPurchasePage
+        if (countIndex == 1 || countIndex == 2) {
+          // Navigate back to DashboardPage when back button is pressed
+          setState(() {
+            countIndex =
+                0; // This sets the index to 0, which is the DashboardPage
+          });
+          return false; // Prevent default back button action
+        }
+
+        if (countIndex == 0) {
+          // Show confirmation dialog only if on the Dashboard page
+          bool shouldExit = await showExitConfirmation(context);
+          return shouldExit;
+        }
+
+        // For any other index, allow normal back navigation
+        return true;
       },
       child: GradientBackground(
         child: Scaffold(

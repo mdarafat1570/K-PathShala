@@ -1,6 +1,6 @@
 class PackageModel {
   String? status;
-  List<PackageModelList>? data;
+  List<PackageList>? data;
   String? message;
 
   PackageModel({this.status, this.data, this.message});
@@ -8,90 +8,108 @@ class PackageModel {
   PackageModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     if (json['data'] != null) {
-      data = <PackageModelList>[];
+      data = <PackageList>[];
       json['data'].forEach((v) {
-        data!.add( PackageModelList.fromJson(v));
+        data!.add(new PackageList.fromJson(v));
       });
     }
     message = json['message'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data =  <String, dynamic>{};
-    data['status'] = status;
-    data['data'] = this.data!.map((v) => v.toJson()).toList();
-      data['message'] = message;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['status'] = this.status;
+    if (this.data != null) {
+      data['data'] = this.data!.map((v) => v.toJson()).toList();
+    }
+    data['message'] = this.message;
     return data;
   }
 }
 
-class PackageModelList {
-  int? id;
+class PackageList {
+  var id;
   String? title;
   String? subtitle;
   String? effectDate;
-  String? validityDate;
-  int? price;
+  var validity;
+  var price;
+  var withDiscountPrice;
   List<String>? features;
   bool? status;
+  var expiryIn;
+  var completedQuestionSet;
+  var totalQuestionSet;
   bool? isUserAccess;
   Subscription? subscription;
 
-  PackageModelList(
+  PackageList(
       {this.id,
         this.title,
         this.subtitle,
         this.effectDate,
-        this.validityDate,
+        this.validity,
         this.price,
+        this.withDiscountPrice,
         this.features,
         this.status,
+        this.expiryIn,
+        this.completedQuestionSet,
+        this.totalQuestionSet,
         this.isUserAccess,
         this.subscription});
 
-  PackageModelList.fromJson(Map<String, dynamic> json) {
+  PackageList.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     title = json['title'];
     subtitle = json['subtitle'];
     effectDate = json['effect_date'];
-    validityDate = json['validity_date'];
+    validity = json['validity'];
     price = json['price'];
+    withDiscountPrice = json['withDiscountPrice'];
     features = json['features'].cast<String>();
     status = json['status'];
+    expiryIn = json['expiry_in'];
+    completedQuestionSet = json['completedQuestionSet'];
+    totalQuestionSet = json['totalQuestionSet'];
     isUserAccess = json['isUserAccess'];
     subscription = json['subscription'] != null
-        ?  Subscription.fromJson(json['subscription'])
+        ? new Subscription.fromJson(json['subscription'])
         : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data =  <String, dynamic>{};
-    data['id'] = id;
-    data['title'] = title;
-    data['subtitle'] = subtitle;
-    data['effect_date'] = effectDate;
-    data['validity_date'] = validityDate;
-    data['price'] = price;
-    data['features'] = features;
-    data['status'] = status;
-    data['isUserAccess'] = isUserAccess;
-    if (subscription != null) {
-      data['subscription'] = subscription!.toJson();
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['title'] = this.title;
+    data['subtitle'] = this.subtitle;
+    data['effect_date'] = this.effectDate;
+    data['validity'] = this.validity;
+    data['price'] = this.price;
+    data['withDiscountPrice'] = this.withDiscountPrice;
+    data['features'] = this.features;
+    data['status'] = this.status;
+    data['expiry_in'] = this.expiryIn;
+    data['completedQuestionSet'] = this.completedQuestionSet;
+    data['totalQuestionSet'] = this.totalQuestionSet;
+    data['isUserAccess'] = this.isUserAccess;
+    if (this.subscription != null) {
+      data['subscription'] = this.subscription!.toJson();
     }
     return data;
   }
 }
 
 class Subscription {
-  int? id;
-  int? packageId;
-  int? bookId;
+  var id;
+  var packageId;
+  var bookId;
   String? subscriptionTypeId;
   String? effectDate;
-  int? userId;
+  var userId;
   String? expireDate;
-  int? validity;
-  int? couponId;
+  var validity;
+  var couponId;
   String? createdAt;
   String? updatedAt;
 
@@ -123,18 +141,18 @@ class Subscription {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['package_id'] = packageId;
-    data['book_id'] = bookId;
-    data['subscription_type_id'] = subscriptionTypeId;
-    data['effect_date'] = effectDate;
-    data['user_id'] = userId;
-    data['expire_date'] = expireDate;
-    data['validity'] = validity;
-    data['coupon_id'] = couponId;
-    data['created_at'] = createdAt;
-    data['updated_at'] = updatedAt;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['package_id'] = this.packageId;
+    data['book_id'] = this.bookId;
+    data['subscription_type_id'] = this.subscriptionTypeId;
+    data['effect_date'] = this.effectDate;
+    data['user_id'] = this.userId;
+    data['expire_date'] = this.expireDate;
+    data['validity'] = this.validity;
+    data['coupon_id'] = this.couponId;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
     return data;
   }
 }

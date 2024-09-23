@@ -40,12 +40,17 @@ class AppColor {
   static const Color lightGray = Color(0xFFF5F5F5); // #F5F5F5
   static const Color navyBlue = Color(0xFF1A237E);
   static const Color gradientStart = Color(0xFFF5F5F5);
+  static const Color examCardGradientStart = Color(0xFFEEF0FF);
   static const Color gradientEnd = Color(0xFFE9EBFF);
+  static const Color examCardGradientEnd = Color(0xFF91D1EC);
   static const Color gradient = Color.fromARGB(255, 215, 218, 253);
   static const Color black = Color.fromARGB(255, 0, 0, 0);
   static const Color brightCoral = Color(0xFFFF6F61);
   static const Color lightred = Color(0x33FF4C4C);
   static const Color neutralGrey = Color(0xFF3D3D3D);
+  static const Color lightBlue = Color.fromARGB(26, 35, 126, 1);
+  static const Color naturalGrey2 = Color.fromRGBO(245, 247, 250, 1);
+  static const Color naturalGrey =  Color(0xFF3D3D3D);
 
   // Grey colors with specific hex values
   static const Color grey50 = Color(0xFFF9F9F9);
