@@ -3,9 +3,7 @@ import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
-
 import '../../model/dashboard_page_model/dashboard_page_model.dart';
-
 
 class DashboardRepository {
   final AuthService _authService = AuthService();
@@ -13,7 +11,7 @@ class DashboardRepository {
   // Fetch Dashboard Data
   Future<DashboardPageModel?> fetchDashboardData() async {
     final url = Uri.parse(KpatshalaDashboardPage.dashboard);
-    final token = await _authService.getToken();  // Get auth token
+    final token = await _authService.getToken(); // Get auth token
 
     if (token == null) {
       throw Exception('Token not found, please log in again.');
@@ -21,7 +19,7 @@ class DashboardRepository {
 
     final headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',  // Add token to header
+      'Authorization': 'Bearer $token', // Add token to header
     };
 
     try {
@@ -31,7 +29,7 @@ class DashboardRepository {
         final data = jsonDecode(response.body);
         log(jsonEncode(data));
         if (data is Map<String, dynamic>) {
-          return DashboardPageModel.fromJson(data['data']); 
+          return DashboardPageModel.fromJson(data['data']);
         } else {
           throw Exception('Unexpected response format.');
         }
@@ -39,7 +37,9 @@ class DashboardRepository {
         // Handle unauthorized error
         throw Exception('Unauthorized: Token expired or invalid.');
       } else {
-        throw Exception('Failed to load dashboard data.');
+        // Other types of status code errors
+        throw Exception(
+            'Failed to load dashboard data. Status code: ${response.statusCode}');
       }
     } catch (e) {
       throw Exception('Error fetching dashboard data: ${e.toString()}');

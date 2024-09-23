@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // For orientation control
+import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/view/common_widget/custom_background.dart';
+
+import '../exam_main_page/quiz_attempt_page.dart';
 
 class Courses extends StatefulWidget {
   const Courses({super.key});
@@ -11,48 +15,49 @@ class Courses extends StatefulWidget {
 class _CoursesState extends State<Courses> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: GradientBackground(
-          child: Padding(
-        padding:  EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text( "Upcoming"),
-          ]
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text("Upcoming"),
+              ElevatedButton(
+                onPressed: () {
+                  // Set orientation to landscape when button is clicked
+                  SystemChrome.setPreferredOrientations([
+                    DeviceOrientation.landscapeRight,
+                    DeviceOrientation.landscapeLeft,
+                  ]);
+
+                  // Use Navigator.push to navigate to RetakeTestPage
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RetakeTestPage(
+                        title: '',
+                        description: '',
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('Trying'),
+              ),
+            ],
+          ),
         ),
-        // child: Column(
-        //   children: [
-        //     const Center(child: Text("Playground")),
-        //     const  Gap(20),
-        //     const CustomTextField2(
-        //       label: "Full Name",
-        //       errorMessage: "This Is A Error Message",
-        //     ),
-        //     const Gap(5),
-        //     const CustomTextField2(
-        //       label: "Mobile Number",
-        //       keyboardType: TextInputType.number,
-        //       prefix: Text("+88"),
-        //       isEnabled: false,
-        //     ),
-        //     const Gap(5),
-        //     CustomTextField2(
-        //       label: "Mobile Number",
-        //       keyboardType: TextInputType.number,
-        //       prefix: const Text("+88"),
-        //       controller: TextEditingController(text: "01772362414"),
-        //       maxLength: 11,
-        //     ),
-        //     const Gap(5),
-        //     const CustomTextField2(
-        //       label: "Email",
-        //       keyboardType: TextInputType.emailAddress,
-        //     ),
-        //     const Gap(5),
-        //   ],
-        // ),
-      )),
+      ),
     );
+  }
+
+  @override
+  void dispose() {
+    // Reset orientation back to portrait when exiting this page
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    super.dispose();
   }
 }
