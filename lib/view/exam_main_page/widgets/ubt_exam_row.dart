@@ -128,7 +128,6 @@ class CourseRow extends StatelessWidget {
                         ],
                       ),
                     const SizedBox(height: 8.0),
-
                     // Button Row
                     Row(
                       children: [
