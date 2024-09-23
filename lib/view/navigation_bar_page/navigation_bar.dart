@@ -74,12 +74,12 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused ||
-        state == AppLifecycleState.inactive) {
-      showExitConfirmation(context);
-    }
-  }
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   if (state == AppLifecycleState.paused ||
+  //       state == AppLifecycleState.inactive) {
+  //     showExitConfirmation(context);
+  //   }
+  // }
 
   LogInCredentials? credentials;
   final AuthService _authService = AuthService();
