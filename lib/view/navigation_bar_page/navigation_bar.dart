@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
+import 'package:kpathshala/model/log_in_credentials.dart';
+import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/view/exam_main_page/exam_purchase_page.dart';
 import 'package:kpathshala/view/courses_page/courses.dart';
 import 'package:kpathshala/view/home_main_page/dashboard_page.dart';
@@ -16,7 +18,7 @@ class Navigation extends StatefulWidget {
 
 class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
   int countIndex = 0;
-  bool isDialogVisible = false; // Track if the dialog is showing
+  bool isDialogVisible = false;
   List<Widget> widgetList = [
     DashboardPage(),
     Courses(),
@@ -26,6 +28,7 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    readCredentials();
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -78,10 +81,33 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
     }
   }
 
+  LogInCredentials? credentials;
+  final AuthService _authService = AuthService();
+
+  Future<void> readCredentials() async {
+    credentials = await _authService.getLogInCredentials();
+
+    if (credentials == null && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("No credentials found")),
+      );
+    }
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
+    ImageProvider<Object> imageProvider;
+    if (credentials?.imagesAddress != null &&
+        credentials?.imagesAddress != "") {
+      imageProvider = NetworkImage(credentials!.imagesAddress ?? '');
+    } else {
+      imageProvider = const AssetImage('assets/new_App_icon.png');
+    }
+
     return WillPopScope(
       onWillPop: () async {
+        // Ask for exit confirmation only when back button is pressed
         bool shouldExit = await showExitConfirmation(context);
         return shouldExit;
       },
@@ -97,20 +123,12 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
                   slideNavigationPush(const ProfileScreenInMainPage(), context);
                 },
                 child: CircleAvatar(
-                  backgroundImage: const AssetImage('assets/new_App_icon.png'),
+                  backgroundImage: imageProvider,
                 ),
               ),
             ),
-            title: const Center(child: Text('Navigation')),
+            title: const Center(child: Text('')),
             actions: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SvgPicture.asset(
-                  'assets/ic_Result_icon.svg',
-                  width: 23.0,
-                  height: 23.0,
-                ),
-              ),
               InkWell(
                 onTap: () {
                   slideNavigationPush(const NotificationsPage(), context);
@@ -124,7 +142,7 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
                   ),
                 ),
               ),
-              const Gap(7)
+              const Gap(15)
             ],
           ),
           body: Center(
@@ -133,15 +151,10 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
           bottomNavigationBar: BottomNavigationBar(
             backgroundColor: AppColor.lightGray,
             elevation: 0,
-            onTap: (index) async {
-              if (index != countIndex) {
-                bool shouldNavigate = await showExitConfirmation(context);
-                if (shouldNavigate) {
-                  setState(() {
-                    countIndex = index;
-                  });
-                }
-              }
+            onTap: (index) {
+              setState(() {
+                countIndex = index;
+              });
             },
             currentIndex: countIndex,
             selectedItemColor: AppColor.navyBlue,
