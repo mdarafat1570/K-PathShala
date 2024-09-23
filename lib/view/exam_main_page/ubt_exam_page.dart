@@ -303,7 +303,7 @@ class _ExamPageState extends State<ExamPage> {
           backgroundColor: color,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(25),
-            side: const           BorderSide(
+            side: const BorderSide(
               width: 1,
               color: AppColor.navyBlue
             )
@@ -372,6 +372,9 @@ class _ExamPageState extends State<ExamPage> {
                         height: 170,
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
+                          border: Border.all(
+                            color: AppColor.examCardGradientEnd
+                          ),
                           gradient: const LinearGradient(
                             colors: [
                               AppColor.examCardGradientStart,
@@ -443,14 +446,10 @@ class _ExamPageState extends State<ExamPage> {
                       final question = questionSet[index];
                       final title = question.title ?? 'No Title';
                       final description = question.subtitle ?? '';
-                      final score = question.score ?? 0;
+                      final score = question.score;
                       const readingTestScore = 0;
                       const listingTestScore = 0;
                       const timeTaken = 'Unknown';
-
-                      final Color containerColor = score >= 40
-                          ? const Color.fromRGBO(136, 208, 236, 0.2)
-                          : Colors.white;
 
                       return GestureDetector(
                         behavior: HitTestBehavior.opaque,
@@ -465,43 +464,28 @@ class _ExamPageState extends State<ExamPage> {
                             timeTaken,
                           );
                         },
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 5),
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: containerColor,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.1),
-                                spreadRadius: 2,
-                                blurRadius: 5,
-                              ),
-                            ],
-                          ),
-                          child: CourseRow(
-                            title: title,
-                            description: description,
-                            readingTestScore: readingTestScore,
-                            listingTestScore: listingTestScore,
-                            timeTaken: timeTaken,
-                            score: score,
-                            onDetailsClick: () {
-                              _showBottomSheet(
-                                context,
-                                title,
-                                description,
-                                score,
-                                listingTestScore,
-                                readingTestScore,
-                                timeTaken,
-                              );
-                            },
-                            onRetakeTestClick: () {
-                              _handleRetakeTestClick(title, description);
-                            },
-                            buttonLabel: _getButtonLabel(title),
-                          ),
+                        child: CourseRow(
+                          title: title,
+                          description: description,
+                          readingTestScore: readingTestScore,
+                          listingTestScore: listingTestScore,
+                          timeTaken: timeTaken,
+                          score: score,
+                          onDetailsClick: () {
+                            _showBottomSheet(
+                              context,
+                              title,
+                              description,
+                              score,
+                              listingTestScore,
+                              readingTestScore,
+                              timeTaken,
+                            );
+                          },
+                          onRetakeTestClick: () {
+                            _handleRetakeTestClick(title, description);
+                          },
+                          buttonLabel: _getButtonLabel(title),
                         ),
                       );
                     },

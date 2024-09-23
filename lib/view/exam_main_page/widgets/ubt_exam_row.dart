@@ -8,7 +8,7 @@ import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
 class CourseRow extends StatelessWidget {
   final String title;
   final String description;
-  final int score;
+  final int? score;
   final VoidCallback onDetailsClick;
   final VoidCallback onRetakeTestClick;
   final String buttonLabel;
@@ -31,15 +31,37 @@ class CourseRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color scoreTextColor =
-        score >= 40 ? AppColor.navyBlue : AppColor.brightCoral;
-    final String completionText = score >= 40 ? 'Flawless Score' : 'Complete';
-    final Color containerColor = score >= 40
+    final Color scoreTextColor = (score ?? 0) >= 40 ? AppColor.navyBlue : AppColor.brightCoral;
+    final String completionText = (score ?? 0) >= 40 ? 'Flawless Score' : (score == null ? '' : 'Completed');
+    final Color containerColor = (score ?? 0) >= 40
         ? const Color.fromRGBO(26, 35, 126, 0.2)
-        : const Color.fromRGBO(255, 111, 97, 0.2);
+        : (score == null ? Colors.red : const Color.fromRGBO(255, 111, 97, 0.2));
+    final Color borderColor = (score ?? 0) >= 40
+        ? const Color.fromRGBO(26, 35, 126, 0.2)
+        : (score == null ? Colors.white : AppColor.brightCoral);
+    final Color rowColor = (score ?? 0) >= 40
+        ? const Color.fromRGBO(136, 208, 236, 0.2)
+        : (score == null ? Colors.white : Colors.white);
 
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 5),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: rowColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: borderColor,
+          width: 0.5
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 2,
+            blurRadius: 5,
+          ),
+        ],
+      ),
       child: Column(
         children: [
           Row(
@@ -68,7 +90,7 @@ class CourseRow extends StatelessWidget {
                                   completionText,
                                   style: TextStyle(
                                     fontSize: 10,
-                                    color: score >= 40 ? AppColor.navyBlue : AppColor.brightCoral,
+                                    color: scoreTextColor,
                                   ),
                                 ),
                               ),
@@ -89,7 +111,7 @@ class CourseRow extends StatelessWidget {
                     const SizedBox(height: 3),
 
                     // Score Row
-
+                    if (score != null)
                       Row(
                         children: [
                           customText('Your Score:', TextType.normal,
