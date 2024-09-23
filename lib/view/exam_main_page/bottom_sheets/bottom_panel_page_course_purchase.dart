@@ -4,6 +4,7 @@ import 'package:kpathshala/view/exam_main_page/payment_example.dart';
 class BottomSheetPage extends StatefulWidget {
   final BuildContext context;
   final int packageId;
+  final String packageName;
   final double price;
   final String validityDate;
   final VoidCallback refreshPage;
@@ -11,6 +12,7 @@ class BottomSheetPage extends StatefulWidget {
   const BottomSheetPage({
     super.key,
     required this.packageId,
+    required this.packageName,
     required this.context,
     required this.price,
     required this.validityDate,
@@ -50,7 +52,7 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
             borderRadius: BorderRadius.circular(16),
           ),
           child: Padding(
-            padding: const EdgeInsets.only(left: 10, top: 10),
+            padding: const EdgeInsets.all(5),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -61,7 +63,7 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
                 const Gap(5),
                 RichText(
                   text: TextSpan(
-                    text: "You’ll have access to UBT Mock Test till ",
+                    text: "You’ll have access to ${widget.packageName} ",
                     style: const TextStyle(
                       color: Colors.grey,
                       fontSize: 12,
