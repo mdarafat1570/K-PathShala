@@ -11,8 +11,6 @@ class DashboardPageShimmerEffect extends StatefulWidget {
 
 class _DashboardPageShimmerEffectState
     extends State<DashboardPageShimmerEffect> {
-  
-
   @override
   void initState() {
     super.initState();
@@ -154,40 +152,6 @@ class _DashboardPageShimmerEffectState
               ),
             ),
           ),
-        ),
-      ],
-    );
-  }
-
-  // Actual dashboard content when data is loaded
-  Widget _buildDashboardContent() {
-    return Column(
-      children: [
-        Container(
-          height: 200,
-          width: double.infinity,
-          color: Colors.blueAccent,
-          child: const Center(
-              child: Text('Dashboard Content 1',
-                  style: TextStyle(color: Colors.white))),
-        ),
-        const SizedBox(height: 10),
-        Container(
-          height: 80,
-          width: double.infinity,
-          color: Colors.greenAccent,
-          child: const Center(
-              child: Text('Dashboard Content 2',
-                  style: TextStyle(color: Colors.white))),
-        ),
-        const SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildContentBox('Item 1', Colors.redAccent),
-            _buildContentBox('Item 2', Colors.purpleAccent),
-            _buildContentBox('Item 3', Colors.orangeAccent),
-          ],
         ),
       ],
     );
