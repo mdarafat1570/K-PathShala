@@ -30,7 +30,7 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
   void initState() {
     super.initState();
     readCredentials();
-    fetchProfileData(); // Fetch profile data on init
+    fetchProfileData();
   }
 
   Future<void> readCredentials() async {
@@ -44,12 +44,12 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
     setState(() {});
   }
 
-  // Fetch profile data from API
   Future<void> fetchProfileData() async {
     try {
       setState(() {
-        isLoadingProfile = true; // Start loading
+        isLoadingProfile = true;
       });
+
       ProfileGetDataModel? data = await _profileRepository.fetchProfile();
 
       if (data != null) {
@@ -59,7 +59,7 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
         });
       } else {
         setState(() {
-          isLoadingProfile = false; // Stop loading if failed
+          isLoadingProfile = false;
         });
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -68,8 +68,9 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
         }
       }
     } catch (e) {
+      // Handle exceptions
       setState(() {
-        isLoadingProfile = false; // Stop loading on error
+        isLoadingProfile = false;
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -318,7 +319,7 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
       if (mounted) {
         showLoadingIndicator(context: context, showLoader: false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("An error occurred: $e")),
+          SnackBar(content: Text("An error occurred during sign out: $e")),
         );
       }
     }
