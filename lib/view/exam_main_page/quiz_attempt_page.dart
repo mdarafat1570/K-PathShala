@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:kpathshala/app_base/common_imports.dart'; // Adjust as per your project
+import 'package:kpathshala/app_base/common_imports.dart';
+import 'package:kpathshala/view/exam_main_page/questionDetailPage.dart'; // Adjust as per your project
 
 class RetakeTestPage extends StatefulWidget {
   final String title;
@@ -27,7 +28,7 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
       -1; // To track the selected question button in total questions
   int _selectedSolvedIndex2 =
       -1; // To track the selected question button in solved questions
-
+  Map<String, dynamic>? _selectedQuestionData;
   @override
   void initState() {
     super.initState();
@@ -168,21 +169,29 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
                         ..add(
                           GestureDetector(
                             onTap: null,
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 300),
-                              padding: const EdgeInsets.all(12.0),
-                              decoration: const BoxDecoration(
-                                color: AppColor.navyBlue,
-                                borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(15),
+                            child: FittedBox(
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 300),
+                                padding: const EdgeInsets.all(12.0),
+                                decoration: const BoxDecoration(
+                                  border: Border(
+                                      top: BorderSide(
+                                          width: 1, color: AppColor.navyBlue),
+                                      bottom: BorderSide(
+                                          width: 1, color: AppColor.navyBlue),
+                                      right: BorderSide(
+                                          width: 1, color: AppColor.navyBlue)),
+                                  color: Color.fromRGBO(26, 35, 126, 0.2),
+                                  borderRadius: BorderRadius.only(
+                                      topRight: Radius.circular(15)),
                                 ),
-                              ),
-                              child: Text(
-                                _formattedTime,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                                child: Text(
+                                  _formattedTime,
+                                  style: const TextStyle(
+                                    color: AppColor.navyBlue,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ),
@@ -211,6 +220,10 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
 
   // Helper method to generate content for each tab
   Widget buildTabContent(int index) {
+    if (_selectedQuestionData != null) {
+      // If a question is selected, show the question details
+      return buildQuestionDetailContent();
+    }
     switch (index) {
       case 0:
         return buildGridContent(
@@ -238,6 +251,56 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
     }
   }
 
+  Widget buildQuestionDetailContent() {
+    if (_selectedQuestionData == null) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              _selectedQuestionData!['title'],
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              _selectedQuestionData!['description'],
+              style: const TextStyle(fontSize: 18),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Answers:',
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            Column(
+              children: (_selectedQuestionData!['answers'] as List<String>)
+                  .map((answer) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4.0),
+                        child: Text(
+                          answer,
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                      ))
+                  .toList(),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _selectedQuestionData = null; // Reset when going back
+                });
+              },
+              child: const Text('Back to Questions'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   // Helper widget to generate content for a tab with grid buttons
   Widget buildGridContent({
     required String title,
@@ -245,6 +308,19 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
     required int questionCount,
     required bool isSolved,
   }) {
+    List<Map<String, dynamic>> questionData = [
+      {
+        'title': 'Question 1',
+        'description': 'Description of Question 1',
+        'answers': ['Answer 1', 'Answer 2']
+      },
+      {
+        'title': 'Question 2',
+        'description': 'Description of Question 2',
+        'answers': ['Answer 3', 'Answer 4']
+      },
+      // Add more questions as needed.
+    ];
     return Padding(
       padding: const EdgeInsets.only(left: 20, right: 20),
       child: Row(
@@ -276,22 +352,16 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
                       return GestureDetector(
                         onTap: () {
                           setState(() {
-                            if (isSolved) {
-                              _selectedSolvedIndex = index;
-                            } else {
-                              _selectedTotalIndex = index;
-                            }
+                            _selectedTotalIndex = index;
+                            _selectedQuestionData = questionData[
+                                index]; // Store selected question data
                           });
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                            color: isSolved
-                                ? (_selectedSolvedIndex == index
-                                    ? AppColor.skyBlue
-                                    : Color.fromRGBO(245, 247, 250, 1))
-                                : (_selectedTotalIndex == index
-                                    ? AppColor.skyBlue
-                                    : Color.fromRGBO(245, 247, 250, 1)),
+                            color: (_selectedTotalIndex == index)
+                                ? AppColor.skyBlue
+                                : Color.fromRGBO(245, 247, 250, 1),
                             borderRadius: BorderRadius.circular(15),
                           ),
                           child: Center(
@@ -299,13 +369,9 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
                               '${index + 1}', // Button text (1, 2, 3, ...)
                               style: TextStyle(
                                 fontSize: 18,
-                                color: isSolved
-                                    ? (_selectedSolvedIndex == index
-                                        ? Color.fromRGBO(245, 247, 250, 1)
-                                        : AppColor.skyBlue)
-                                    : (_selectedTotalIndex == index
-                                        ? AppColor.black
-                                        : AppColor.skyBlue),
+                                color: (_selectedTotalIndex == index)
+                                    ? Color.fromRGBO(245, 247, 250, 1)
+                                    : AppColor.skyBlue,
                               ),
                             ),
                           ),
