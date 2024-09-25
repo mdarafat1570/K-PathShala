@@ -1,40 +1,29 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'dart:developer';
+
+import 'package:kpathshala/authentication/base_repository.dart';
 import 'package:kpathshala/model/profile_model/profile_get_data_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kpathshala/api/api_container.dart';
-// Import your Profile Model
 
 class ProfileRepository {
-  static const String _tokenKey = 'authToken';
-
-  // Fetch profile data
+  final BaseRepository _baseRepository = BaseRepository();
   Future<ProfileGetDataModel?> fetchProfile() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString(_tokenKey);
+    try {
+      final response =
+          await _baseRepository.getRequest(KpatshalaProfaile.profileData);
 
-    if (token == null) {
-      return null; // No token available
-    }
+      if (response['status'] == 'success') {
+        log("This is profile data : ${response}");
 
-    final url = Uri.parse(KpatshalaProfaile.profileData);
-    final response = await http.get(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final jsonResponse = json.decode(response.body);
-      if (jsonResponse['status'] == 'success') {
-        return ProfileGetDataModel.fromJson(jsonResponse['data']);
+        return ProfileGetDataModel.fromJson(response['data']);
       } else {
-        return null; // Handle non-success status
+        // Log error response
+        log('Error fetching profile: ${response['message']}');
+        return null;
       }
-    } else {
-      return null; // Handle error responses
+    } catch (e) {
+      // Handle exceptions or logging
+      log('Exception in fetching profile: $e');
+      return null;
     }
   }
 }
