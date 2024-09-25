@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/view/exam_main_page/questionDetailPage.dart'; // Adjust as per your project
 
@@ -82,138 +81,137 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
 
   @override
   Widget build(BuildContext context) {
-    return GradientBackground(
-      child: Scaffold(
-        body: Column(
-          children: [
-            const Gap(20),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        FittedBox(
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 20),
-                            child: Container(
-                              height: 40,
-                              width: 80,
-                              child: const FittedBox(
-                                child: Row(
-                                  children: [
-                                    CircleAvatar(
-                                      radius: 20,
-                                      backgroundImage:
-                                          AssetImage('assets/new_App_icon.png'),
-                                    ),
-                                    Gap(10),
-                                    Center(child: Text("Trying")),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    flex: 3,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(3, (index) {
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _currentTabIndex = index;
-                            });
-                          },
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            padding: const EdgeInsets.all(12.0),
-                            decoration: BoxDecoration(
-                              border: const Border(
-                                right: BorderSide(
-                                  width: 3,
-                                  color: AppColor.navyBlue,
-                                ),
-                              ),
-                              color: _currentTabIndex == index
-                                  ? AppColor.navyBlue
-                                  : Colors.grey[300],
-                              borderRadius: _currentTabIndex == index
-                                  ? const BorderRadius.only(
-                                      topLeft: Radius.circular(10),
-                                      topRight: Radius.circular(10))
-                                  : BorderRadius.zero,
-                            ),
-                            child: Text(
-                              index == 0
-                                  ? 'Total Questions'
-                                  : index == 1
-                                      ? 'Solved Questions'
-                                      : 'Unsolved Questions',
-                              style: TextStyle(
-                                color: _currentTabIndex == index
-                                    ? Colors.white
-                                    : Colors.black,
-                              ),
-                            ),
-                          ),
-                        );
-                      })
-                        ..add(
-                          GestureDetector(
-                            onTap: null,
-                            child: FittedBox(
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 300),
-                                padding: const EdgeInsets.all(12.0),
-                                decoration: const BoxDecoration(
-                                  border: Border(
-                                      top: BorderSide(
-                                          width: 1, color: AppColor.navyBlue),
-                                      bottom: BorderSide(
-                                          width: 1, color: AppColor.navyBlue),
-                                      right: BorderSide(
-                                          width: 1, color: AppColor.navyBlue)),
-                                  color: Color.fromRGBO(26, 35, 126, 0.2),
-                                  borderRadius: BorderRadius.only(
-                                      topRight: Radius.circular(15)),
-                                ),
-                                child: Text(
-                                  _formattedTime,
-                                  style: const TextStyle(
-                                    color: AppColor.navyBlue,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
+    return Scaffold(
+      backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
+      body: Column(
+        children: [
+          const Gap(20),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      FittedBox(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 20),
+                          child: Container(
+                            height: 40,
+                            width: 80,
+                            child: const FittedBox(
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 20,
+                                    backgroundImage:
+                                        AssetImage('assets/new_App_icon.png'),
                                   ),
+                                  Gap(10),
+                                  Center(child: Text("Trying")),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(3, (index) {
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _currentTabIndex = index;
+                          });
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          padding: const EdgeInsets.all(12.0),
+                          decoration: BoxDecoration(
+                            border: const Border(
+                              right: BorderSide(
+                                width: 3,
+                                color: AppColor.navyBlue,
+                              ),
+                            ),
+                            color: _currentTabIndex == index
+                                ? AppColor.navyBlue
+                                : Colors.grey[300],
+                            borderRadius: _currentTabIndex == index
+                                ? const BorderRadius.only(
+                                    topLeft: Radius.circular(10),
+                                    topRight: Radius.circular(10))
+                                : BorderRadius.zero,
+                          ),
+                          child: Text(
+                            index == 0
+                                ? 'Total Questions'
+                                : index == 1
+                                    ? 'Solved Questions'
+                                    : 'Unsolved Questions',
+                            style: TextStyle(
+                              color: _currentTabIndex == index
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
+                          ),
+                        ),
+                      );
+                    })
+                      ..add(
+                        GestureDetector(
+                          onTap: null,
+                          child: FittedBox(
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
+                              padding: const EdgeInsets.all(12.0),
+                              decoration: const BoxDecoration(
+                                border: Border(
+                                    top: BorderSide(
+                                        width: 1, color: AppColor.navyBlue),
+                                    bottom: BorderSide(
+                                        width: 1, color: AppColor.navyBlue),
+                                    right: BorderSide(
+                                        width: 1, color: AppColor.navyBlue)),
+                                color: Color.fromRGBO(26, 35, 126, 0.2),
+                                borderRadius: BorderRadius.only(
+                                    topRight: Radius.circular(15)),
+                              ),
+                              child: Text(
+                                _formattedTime,
+                                style: const TextStyle(
+                                  color: AppColor.navyBlue,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
                           ),
                         ),
-                    ),
+                      ),
                   ),
-                  const Gap(80),
-                ],
-              ),
+                ),
+                const Gap(80),
+              ],
             ),
-            const Divider(
-              color: AppColor.navyBlue,
-              thickness: 0.8,
-            ),
+          ),
+          const Divider(
+            color: AppColor.navyBlue,
+            thickness: 0.8,
+          ),
 
-            // Content for the selected tab
-            Expanded(
-              child: buildTabContent(_currentTabIndex),
-            ),
-          ],
-        ),
+          // Content for the selected tab
+          Expanded(
+            child: buildTabContent(_currentTabIndex),
+          ),
+        ],
       ),
     );
   }
@@ -251,53 +249,153 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
     }
   }
 
-  Widget buildQuestionDetailContent() {
+  Widget buildQuestionDetailContent(
+      // required bool isSolved,
+      ) {
     if (_selectedQuestionData == null) return const SizedBox.shrink();
 
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Stack(
+      children: [
+        // Watermark Image
+        Positioned.fill(
+          child: Opacity(
+            opacity: 0.1, // Adjust opacity for the watermark effect
+            child: Image.asset(
+              'assets/new_App_icon.png',
+              height: 80,
+              width: 150,
+            ),
+          ),
+        ),
+        Column(
           children: [
-            Text(
-              _selectedQuestionData!['title'],
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              _selectedQuestionData!['description'],
-              style: const TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Answers:',
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            Column(
-              children: (_selectedQuestionData!['answers'] as List<String>)
-                  .map((answer) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4.0),
-                        child: Text(
-                          answer,
-                          style: const TextStyle(fontSize: 18),
+            Padding(
+              padding: const EdgeInsets.only(left: 12, right: 12),
+              child: Row(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      customText(_selectedQuestionData!['title'],
+                          TextType.paragraphTitle,
+                          fontSize: 20),
+                      const Gap(8),
+                      customText(_selectedQuestionData!['description'],
+                          TextType.subtitle,
+                          fontSize: 20),
+                      const Gap(28),
+                      Container(
+                        height: 135,
+                        width: 355,
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                                color: const Color.fromRGBO(
+                                  100,
+                                  100,
+                                  100,
+                                  1,
+                                ),
+                                width: 1.5),
+                            color: const Color.fromRGBO(26, 35, 126, 0.2),
+                            borderRadius: BorderRadius.circular(12)),
+                        child: Center(
+                            child: customText(
+                                _selectedQuestionData!['Question'],
+                                TextType.paragraphTitle)),
+                      )
+                    ],
+                  ),
+                  const Gap(48),
+                  Column(
+                    children:
+                        (_selectedQuestionData!['answers'] as List<String>)
+                            .asMap()
+                            .entries
+                            .map((entry) {
+                      int index = entry.key; // Get the index
+                      String answer = entry.value; // Get the answer
+                      return Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              _selectedSolvedIndex = index;
+                            });
+                          },
+                          child: Container(
+                            height: 45,
+                            width: 355,
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 35,
+                                  height: 35,
+                                  decoration: BoxDecoration(
+                                      color: (_selectedSolvedIndex == index)
+                                          ? AppColor.black
+                                          : const Color.fromRGBO(
+                                              255, 255, 255, 1),
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                          width: 2, color: AppColor.black)),
+                                  child: Center(
+                                      child: Text(
+                                    '${index + 1}',
+                                    style: TextStyle(
+                                      color: (_selectedSolvedIndex == index)
+                                          ? const Color.fromRGBO(
+                                              255, 255, 255, 1)
+                                          : AppColor.black,
+                                    ),
+                                  )), // Displaying 1, 2, 3, 4
+                                ),
+                                const SizedBox(
+                                    width:
+                                        8), // Add spacing between circle and text
+                                Text(
+                                  answer,
+                                  style: const TextStyle(fontSize: 18),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ))
-                  .toList(),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _selectedQuestionData = null; // Reset when going back
-                });
-              },
-              child: const Text('Back to Questions'),
-            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: Container(
+                  width: double.infinity,
+                  height: 60,
+                  decoration: const BoxDecoration(
+                      color: Color.fromRGBO(245, 245, 245, 1)),
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        bottom: 5, left: 24, right: 25, top: 5),
+                    child: Row(
+                      children: [
+                        OutlinedButton(
+                          onPressed: () {},
+                          child: Text("Total questions"),
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all(
+                                Color.fromRGBO(26, 35, 126, 0.1)), // Wrap color
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            )
           ],
         ),
-      ),
+      ],
     );
   }
 
@@ -308,19 +406,6 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
     required int questionCount,
     required bool isSolved,
   }) {
-    List<Map<String, dynamic>> questionData = [
-      {
-        'title': 'Question 1',
-        'description': 'Description of Question 1',
-        'answers': ['Answer 1', 'Answer 2']
-      },
-      {
-        'title': 'Question 2',
-        'description': 'Description of Question 2',
-        'answers': ['Answer 3', 'Answer 4']
-      },
-      // Add more questions as needed.
-    ];
     return Padding(
       padding: const EdgeInsets.only(left: 20, right: 20),
       child: Row(
@@ -361,7 +446,7 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
                           decoration: BoxDecoration(
                             color: (_selectedTotalIndex == index)
                                 ? AppColor.skyBlue
-                                : Color.fromRGBO(245, 247, 250, 1),
+                                : const Color.fromRGBO(245, 247, 250, 1),
                             borderRadius: BorderRadius.circular(15),
                           ),
                           child: Center(
@@ -370,7 +455,7 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
                               style: TextStyle(
                                 fontSize: 18,
                                 color: (_selectedTotalIndex == index)
-                                    ? Color.fromRGBO(245, 247, 250, 1)
+                                    ? const Color.fromRGBO(245, 247, 250, 1)
                                     : AppColor.skyBlue,
                               ),
                             ),
@@ -423,10 +508,10 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
                             color: isSolved
                                 ? (_selectedSolvedIndex2 == index
                                     ? AppColor.skyBlue
-                                    : Color.fromRGBO(245, 247, 250, 1))
+                                    : const Color.fromRGBO(245, 247, 250, 1))
                                 : (_selectedTotalIndex2 == index
                                     ? AppColor.skyBlue
-                                    : Color.fromRGBO(245, 247, 250, 1)),
+                                    : const Color.fromRGBO(245, 247, 250, 1)),
                             borderRadius: BorderRadius.circular(15),
                           ),
                           child: Center(
@@ -436,7 +521,7 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
                                 fontSize: 18,
                                 color: isSolved
                                     ? (_selectedSolvedIndex2 == index
-                                        ? Color.fromRGBO(245, 247, 250, 1)
+                                        ? const Color.fromRGBO(245, 247, 250, 1)
                                         : AppColor.skyBlue)
                                     : (_selectedTotalIndex2 == index
                                         ? AppColor.black
