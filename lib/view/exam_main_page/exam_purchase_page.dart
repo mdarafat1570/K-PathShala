@@ -304,6 +304,7 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                                 content: BottomSheetPage(
                                                   context: context,
                                                   packageId: package.id!,
+                                                  packageName: package.title ?? '',
                                                   price:
                                                       packagePrice!.toDouble(),
                                                   validityDate:

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/services.dart';
@@ -7,13 +8,14 @@ import 'package:kpathshala/repository/question/question_set_repo.dart';
 import 'package:kpathshala/view/common_widget/common_app_bar.dart';
 import 'package:kpathshala/view/exam_main_page/bottom_sheets/main_bottom_sheet.dart';
 import 'package:kpathshala/view/exam_main_page/quiz_attempt_page.dart';
-import 'package:kpathshala/view/exam_main_page/test_sets_page_shimmar.dart';
+import 'package:kpathshala/view/exam_main_page/test_sets_page_shimmer.dart';
 import 'package:kpathshala/view/exam_main_page/widgets/ubt_exam_row.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kpathshala/model/item_list.dart';
 
 class ExamPage extends StatefulWidget {
   final int packageId;
+
   const ExamPage({super.key, required this.packageId});
 
   @override
@@ -40,13 +42,21 @@ class _ExamPageState extends State<ExamPage> {
       QuestionSetRepository repository = QuestionSetRepository();
 
       // Access fetchQuestionSets as an instance method
-      QuestionSetData qstn =
+      QuestionSetData question =
           await repository.fetchQuestionSets(packageId: widget.packageId);
 
       setState(() {
-        questionSet = qstn.questionSets ?? [];
-        // questionSetResults = qstn.results;
+        questionSet = question.questionSets ?? [];
+        questionSetResults = question.results ??  QuestionSetResults(
+          batch: -1,
+          completedQuestionSet: 0,
+          rankPercentage: 0,
+          totalQuestionSet: 0,
+        );
         dataFound = true;
+        log("-----------Data------");
+        log(jsonEncode(questionSet));
+        log("-----------Data------");
       });
     } catch (e) {
       log(e.toString()); // Handle the exception
@@ -101,8 +111,10 @@ class _ExamPageState extends State<ExamPage> {
     int readingTestScore,
     int listingTestScore,
     String timeTaken,
-  ) {
-    LinearGradient? gradient = score >= 40
+      int bottomSheetType,
+  )
+  {
+    LinearGradient? gradient = bottomSheetType == 1
         ? const LinearGradient(
             colors: [
               Color.fromRGBO(238, 240, 255, 1),
@@ -113,9 +125,9 @@ class _ExamPageState extends State<ExamPage> {
           )
         : null;
 
-    Color? backgroundColor = score < 40 ? Colors.white : null;
+    Color? backgroundColor = bottomSheetType == 1 ? null : Colors.white ;
 
-    Widget additionalContent = score >= 40
+    Widget additionalContent = bottomSheetType == 1
         ? _bottomSheetType1(
             context,
             score,
@@ -173,7 +185,7 @@ class _ExamPageState extends State<ExamPage> {
   Widget _bottomSheetType2(
       BuildContext context, String title, String description) {
     return Container(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(8.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -184,11 +196,22 @@ class _ExamPageState extends State<ExamPage> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 16),
-          _buildButton("Solve video", Colors.lightBlue, () {}),
-          const SizedBox(height: 16),
-          _buildButton("Solve video", Colors.lightBlue, () {}),
-          const SizedBox(height: 20),
+          const SizedBox(height: 12),
+          _buildButton("Solve video", AppColor.skyBlue.withOpacity(0.3), () {}),
+          const SizedBox(height: 12),
+          _buildButton("Review performance", AppColor.skyBlue.withOpacity(0.3), () {
+            _showBottomSheet(
+                context,
+                title,
+                description,
+                40,
+                20,
+                20,
+                "10 min",
+                1
+            );
+          }),
+          const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
             height: 50,
@@ -288,7 +311,9 @@ class _ExamPageState extends State<ExamPage> {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pop(context);
+            },
             child: const Text(
               "Close",
               style: TextStyle(fontSize: 12),
@@ -309,7 +334,12 @@ class _ExamPageState extends State<ExamPage> {
           backgroundColor: color,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(25),
+            side: const BorderSide(
+              width: 1,
+              color: AppColor.navyBlue
+            )
           ),
+          elevation: 0
         ),
         child: Text(
           text,
@@ -355,167 +385,148 @@ class _ExamPageState extends State<ExamPage> {
         appBar: const CommonAppBar(
           title: "UBT Mock Test",
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            children: [
-              Stack(
-                alignment: Alignment.bottomCenter,
+        body: !dataFound
+            ? TestSetsPageShimmer()
+            : Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: ListView(
                 children: [
-                  const SizedBox(
-                    height: 210,
-                    width: double.infinity,
-                  ),
-                  Container(
-                    width: double.infinity,
-                    height: 190,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [
-                          Color.fromRGBO(238, 240, 255, 1),
-                          Color.fromRGBO(145, 209, 236, 1),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
+                  Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      const SizedBox(
+                        height: 180,
+                        width: double.infinity,
                       ),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                  ),
-                  Image.asset(
-                    'assets/exploding-ribbon-and-confetti-9UErHOE0bL.png',
-                    height: 80,
-                    fit: BoxFit.cover,
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(8.0),
-                    width: double.infinity,
-                    height: 190,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "${questionSetResults?.completedQuestionSet ?? 0} out of ${questionSetResults?.totalQuestionSet ?? 0} sets completed",
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
+                      Container(
+                        width: double.infinity,
+                        height: 170,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: AppColor.examCardGradientEnd
+                          ),
+                          gradient: const LinearGradient(
+                            colors: [
+                              AppColor.examCardGradientStart,
+                              AppColor.examCardGradientEnd,
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                      Image.asset(
+                        'assets/exploding-ribbon-and-confetti-9UErHOE0bL.png',
+                        height: 80,
+                        fit: BoxFit.cover,
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(8.0),
+                        width: double.infinity,
+                        height: 180,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "${questionSetResults?.completedQuestionSet ?? 0} out of ${questionSetResults?.totalQuestionSet ?? 0} sets completed",
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              "You’re among the top ${questionSetResults?.rankPercentage ?? 0}% of the students in this session.",
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                  color: AppColor.grey600, fontSize: 12),
+                            ),
+                            const Gap(30)
+                          ],
+                        ),
+                      ),
+                      Positioned(
+                        top: 0,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 2, horizontal: 12),
+                          decoration: BoxDecoration(
+                            color: AppColor.brightCoral,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            'Batch ${questionSetResults?.batch ?? 0}',
+                            style: const TextStyle(
+                                fontSize: 12, color: Colors.white),
                           ),
                         ),
-                        const SizedBox(height: 5),
-                        Text(
-                          "You’re among the top ${questionSetResults?.rankPercentage ?? 0}% of the students in this session.",
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                              color: AppColor.grey600, fontSize: 12),
-                        ),
-                        const Gap(30)
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  Positioned(
-                    top: 0,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColor.brightCoral,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                  const SizedBox(height: 10),
+                  ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: questionSet.length,
+                    itemBuilder: (context, index) {
+                      final question = questionSet[index];
+                      final status = question.status.toString();
+                      final title = question.title ?? 'No Title';
+                      final description = question.subtitle ?? '';
+                      final score = (status == 'flawless' || status == 'completed') ? question.score : null;
+                      const readingTestScore = 0;
+                      const listingTestScore = 0;
+                      const timeTaken = 'Unknown';
+
+                      return GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          _showBottomSheet(
+                            context,
+                            title,
+                            description,
+                            score ?? 0,
+                            listingTestScore,
+                            readingTestScore,
+                            timeTaken,
+                            2
+                          );
+                        },
+                        child: CourseRow(
+                          title: title,
+                          description: description,
+                          readingTestScore: readingTestScore,
+                          listingTestScore: listingTestScore,
+                          timeTaken: timeTaken,
+                          score: score,
+                          status: status,
+                          onDetailsClick: () {
+                            _showBottomSheet(
+                              context,
+                              title,
+                              description,
+                              score ?? 0,
+                              listingTestScore,
+                              readingTestScore,
+                              timeTaken,
+                              2
+                            );
+                          },
+                          onRetakeTestClick: () {
+                            _handleRetakeTestClick(title, description);
+                          },
                         ),
-                      ),
-                      onPressed: () {
-                        log('Button on Stack pressed');
-                      },
-                      child: const Text(
-                        'Batch 1',
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ),
+                      );
+                    },
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
-              Expanded(
-                child: !dataFound
-                    ? TestSetsPageShimmer()
-                    : ListView.builder(
-                        itemCount: questionSet.length,
-                        // itemCount: courses.length,
-                        itemBuilder: (context, index) {
-                          final question = questionSet[index];
-                          final title = question.title ?? 'No Title';
-
-                          // final question = courses[index];
-                          // final title = question['title'] ?? 'No Title';
-                          final description = question.subtitle ?? '';
-                          final score = question.score ?? 0;
-                          final readingTestScore = 0;
-                          final listingTestScore = 0;
-                          final timeTaken = 'Unknown';
-
-                          final Color containerColor = score >= 40
-                              ? const Color.fromRGBO(136, 208, 236, 0.2)
-                              : Colors.white;
-
-                          return GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTap: () {
-                              _showBottomSheet(
-                                context,
-                                title,
-                                description,
-                                score,
-                                listingTestScore,
-                                readingTestScore,
-                                timeTaken,
-                              );
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(vertical: 5),
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: containerColor,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.1),
-                                    spreadRadius: 2,
-                                    blurRadius: 5,
-                                  ),
-                                ],
-                              ),
-                              child: CourseRow(
-                                title: title,
-                                description: description,
-                                readingTestScore: readingTestScore,
-                                listingTestScore: listingTestScore,
-                                timeTaken: timeTaken,
-                                score: score,
-                                onDetailsClick: () {
-                                  _showBottomSheet(
-                                    context,
-                                    title,
-                                    description,
-                                    score,
-                                    listingTestScore,
-                                    readingTestScore,
-                                    timeTaken,
-                                  );
-                                },
-                                onRetakeTestClick: () {
-                                  _handleRetakeTestClick(title, description);
-                                },
-                                buttonLabel: _getButtonLabel(title),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-              ),
-            ],
-          ),
-        ),
+            ),
         bottomNavigationBar: BottomAppBar(
           height: 65,
           color: Colors.white,
