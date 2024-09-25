@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/authentication/base_repository.dart';
@@ -5,7 +6,7 @@ import 'package:kpathshala/model/question_model/reading_question_page_model.dart
 class ReadingQuestionsRepository {
   final BaseRepository _baseRepository = BaseRepository();
 
-  Future<ReadingQuestions?> fetchReadingQuestions(int questionSetId) async {
+  Future<QuestionsModel?> fetchReadingQuestions(int questionSetId) async {
     try {
       // Construct the full API URL with the query parameter
       String url =
@@ -14,8 +15,12 @@ class ReadingQuestionsRepository {
       // Make the GET request using the BaseRepository's getRequest method
       Map<String, dynamic> response = await _baseRepository.getRequest(url);
 
+      log("api data----------");
+      log (response.toString());
       if (response.containsKey('data')) {
-        return ReadingQuestions.fromJson(response);
+        log("api data Found----------");
+        log(jsonDecode(response['data']));
+        return QuestionsModel.fromJson(response['data']);
       } else {
         log('No data found in the response');
         return null;
