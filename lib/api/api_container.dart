@@ -38,3 +38,7 @@ class KpatshalaquestionSet {
 class KpatshalaDashboardPage {
   static String dashboard = '${AuthorizationEndpoints.baseUrl}/dashboard';
 }
+
+class KpatshalaQuestionPage {
+  static String readingQuestion = '${AuthorizationEndpoints.baseUrl}/question';
+}

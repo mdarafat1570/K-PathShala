@@ -53,10 +53,8 @@ class _DashboardPageState extends State<DashboardPage> {
 
   void fetchData() async {
     try {
-      // Create an instance of QuestionSetRepository
       DashboardRepository repository = DashboardRepository();
 
-      // Access fetchQuestionSets as an instance method
       DashboardPageModel? dashModel = await repository.fetchDashboardData();
 
       setState(() {
@@ -65,7 +63,7 @@ class _DashboardPageState extends State<DashboardPage> {
         dataFound = true;
       });
     } catch (e) {
-      log(e.toString()); // Handle the exception
+      log(e.toString());
     }
   }
 
@@ -98,18 +96,17 @@ class _DashboardPageState extends State<DashboardPage> {
             content: const Text("Are you sure you want to exit the app?"),
             actions: [
               TextButton(
-                onPressed: () =>
-                    Navigator.of(context).pop(false), // Stay in app
+                onPressed: () => Navigator.of(context).pop(false),
                 child: const Text("No"),
               ),
               TextButton(
-                onPressed: () => Navigator.of(context).pop(true), // Exit app
+                onPressed: () => Navigator.of(context).pop(true),
                 child: const Text("Yes"),
               ),
             ],
           ),
         ) ??
-        false; // Return false if the dialog is dismissed without a response
+        false;
   }
 
   void _startCountdown() {
