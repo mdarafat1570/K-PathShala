@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/services.dart';
@@ -7,7 +8,7 @@ import 'package:kpathshala/repository/question/question_set_repo.dart';
 import 'package:kpathshala/view/common_widget/common_app_bar.dart';
 import 'package:kpathshala/view/exam_main_page/bottom_sheets/main_bottom_sheet.dart';
 import 'package:kpathshala/view/exam_main_page/quiz_attempt_page.dart';
-import 'package:kpathshala/view/exam_main_page/test_sets_page_shimmar.dart';
+import 'package:kpathshala/view/exam_main_page/test_sets_page_shimmer.dart';
 import 'package:kpathshala/view/exam_main_page/widgets/ubt_exam_row.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kpathshala/model/item_list.dart';
@@ -46,7 +47,16 @@ class _ExamPageState extends State<ExamPage> {
 
       setState(() {
         questionSet = question.questionSets ?? [];
+        questionSetResults = question.results ??  QuestionSetResults(
+          batch: -1,
+          completedQuestionSet: 0,
+          rankPercentage: 0,
+          totalQuestionSet: 0,
+        );
         dataFound = true;
+        log("-----------Data------");
+        log(jsonEncode(questionSet));
+        log("-----------Data------");
       });
     } catch (e) {
       log(e.toString()); // Handle the exception
@@ -101,8 +111,10 @@ class _ExamPageState extends State<ExamPage> {
     int readingTestScore,
     int listingTestScore,
     String timeTaken,
-  ) {
-    LinearGradient? gradient = score >= 40
+      int bottomSheetType,
+  )
+  {
+    LinearGradient? gradient = bottomSheetType == 1
         ? const LinearGradient(
             colors: [
               Color.fromRGBO(238, 240, 255, 1),
@@ -113,9 +125,9 @@ class _ExamPageState extends State<ExamPage> {
           )
         : null;
 
-    Color? backgroundColor = score < 40 ? Colors.white : null;
+    Color? backgroundColor = bottomSheetType == 1 ? null : Colors.white ;
 
-    Widget additionalContent = score >= 40
+    Widget additionalContent = bottomSheetType == 1
         ? _bottomSheetType1(
             context,
             score,
@@ -173,7 +185,7 @@ class _ExamPageState extends State<ExamPage> {
   Widget _bottomSheetType2(
       BuildContext context, String title, String description) {
     return Container(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(8.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -184,11 +196,22 @@ class _ExamPageState extends State<ExamPage> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           _buildButton("Solve video", AppColor.skyBlue.withOpacity(0.3), () {}),
-          const SizedBox(height: 16),
-          _buildButton("Review performance", AppColor.skyBlue.withOpacity(0.3), () {}),
-          const SizedBox(height: 20),
+          const SizedBox(height: 12),
+          _buildButton("Review performance", AppColor.skyBlue.withOpacity(0.3), () {
+            _showBottomSheet(
+                context,
+                title,
+                description,
+                40,
+                20,
+                20,
+                "10 min",
+                1
+            );
+          }),
+          const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
             height: 50,
@@ -288,7 +311,9 @@ class _ExamPageState extends State<ExamPage> {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pop(context);
+            },
             child: const Text(
               "Close",
               style: TextStyle(fontSize: 12),
@@ -411,7 +436,7 @@ class _ExamPageState extends State<ExamPage> {
                               style: const TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 18,
+                                fontSize: 14,
                               ),
                             ),
                             const SizedBox(height: 5),
@@ -450,9 +475,10 @@ class _ExamPageState extends State<ExamPage> {
                     itemCount: questionSet.length,
                     itemBuilder: (context, index) {
                       final question = questionSet[index];
+                      final status = question.status.toString();
                       final title = question.title ?? 'No Title';
                       final description = question.subtitle ?? '';
-                      final score = question.score;
+                      final score = (status == 'flawless' || status == 'completed') ? question.score : null;
                       const readingTestScore = 0;
                       const listingTestScore = 0;
                       const timeTaken = 'Unknown';
@@ -464,10 +490,11 @@ class _ExamPageState extends State<ExamPage> {
                             context,
                             title,
                             description,
-                            score,
+                            score ?? 0,
                             listingTestScore,
                             readingTestScore,
                             timeTaken,
+                            2
                           );
                         },
                         child: CourseRow(
@@ -477,21 +504,22 @@ class _ExamPageState extends State<ExamPage> {
                           listingTestScore: listingTestScore,
                           timeTaken: timeTaken,
                           score: score,
+                          status: status,
                           onDetailsClick: () {
                             _showBottomSheet(
                               context,
                               title,
                               description,
-                              score,
+                              score ?? 0,
                               listingTestScore,
                               readingTestScore,
                               timeTaken,
+                              2
                             );
                           },
                           onRetakeTestClick: () {
                             _handleRetakeTestClick(title, description);
                           },
-                          buttonLabel: _getButtonLabel(title),
                         ),
                       );
                     },
