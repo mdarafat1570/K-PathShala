@@ -125,11 +125,16 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(3, (index) {
+                      bool isClickable = index == 0;
                       return GestureDetector(
                         onTap: () {
-                          setState(() {
-                            _currentTabIndex = index;
-                          });
+                          isClickable
+                              ? () {
+                                  setState(() {
+                                    _currentTabIndex = index;
+                                  });
+                                }
+                              : null;
                         },
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
