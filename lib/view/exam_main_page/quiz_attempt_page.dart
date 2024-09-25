@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:kpathshala/app_base/common_imports.dart';
-import 'package:kpathshala/view/exam_main_page/questionDetailPage.dart'; // Adjust as per your project
+import 'package:kpathshala/view/exam_main_page/questionDetailPage.dart';
+import 'package:kpathshala/view/exam_main_page/readingQuestions/reading_questions_bottom_list.dart'; // Adjust as per your project
 
 class RetakeTestPage extends StatefulWidget {
   final String title;
@@ -429,46 +430,7 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
                   ),
                 ),
                 Expanded(
-                  child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 5,
-                      childAspectRatio: 1,
-                      mainAxisSpacing: 8.0,
-                      crossAxisSpacing: 8.0,
-                    ),
-                    itemCount: questionCount,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _selectedTotalIndex = index;
-                            _selectedQuestionData = questionData[
-                                index]; // Store selected question data
-                          });
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: (_selectedTotalIndex == index)
-                                ? AppColor.skyBlue
-                                : const Color.fromRGBO(245, 247, 250, 1),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Center(
-                            child: Text(
-                              '${index + 1}', // Button text (1, 2, 3, ...)
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: (_selectedTotalIndex == index)
-                                    ? const Color.fromRGBO(245, 247, 250, 1)
-                                    : AppColor.skyBlue,
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                  child: ReadingQuestionsPage(),
                 ),
               ],
             ),
@@ -488,62 +450,65 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
                   ),
                 ),
                 Expanded(
-                  child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 5,
-                      childAspectRatio: 1,
-                      mainAxisSpacing: 8.0,
-                      crossAxisSpacing: 8.0,
-                    ),
-                    itemCount: questionCount,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            if (isSolved) {
-                              _selectedSolvedIndex2 = index;
-                            } else {
-                              _selectedTotalIndex2 = index;
-                            }
-                          });
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: isSolved
-                                ? (_selectedSolvedIndex2 == index
-                                    ? AppColor.skyBlue
-                                    : const Color.fromRGBO(245, 247, 250, 1))
-                                : (_selectedTotalIndex2 == index
-                                    ? AppColor.skyBlue
-                                    : const Color.fromRGBO(245, 247, 250, 1)),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Center(
-                            child: Text(
-                              '${index + 1}', // Button text (1, 2, 3, ...)
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: isSolved
-                                    ? (_selectedSolvedIndex2 == index
-                                        ? const Color.fromRGBO(245, 247, 250, 1)
-                                        : AppColor.skyBlue)
-                                    : (_selectedTotalIndex2 == index
-                                        ? AppColor.black
-                                        : AppColor.skyBlue),
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                  child: ListeningQuestionList(questionCount, isSolved),
                 ),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  GridView ListeningQuestionList(int questionCount, bool isSolved) {
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 5,
+        childAspectRatio: 1,
+        mainAxisSpacing: 8.0,
+        crossAxisSpacing: 8.0,
+      ),
+      itemCount: questionCount,
+      itemBuilder: (context, index) {
+        return GestureDetector(
+          onTap: () {
+            setState(() {
+              if (isSolved) {
+                _selectedSolvedIndex2 = index;
+              } else {
+                _selectedTotalIndex2 = index;
+              }
+            });
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: isSolved
+                  ? (_selectedSolvedIndex2 == index
+                      ? AppColor.skyBlue
+                      : const Color.fromRGBO(245, 247, 250, 1))
+                  : (_selectedTotalIndex2 == index
+                      ? AppColor.skyBlue
+                      : const Color.fromRGBO(245, 247, 250, 1)),
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Center(
+              child: Text(
+                '${index + 1}', // Button text (1, 2, 3, ...)
+                style: TextStyle(
+                  fontSize: 18,
+                  color: isSolved
+                      ? (_selectedSolvedIndex2 == index
+                          ? const Color.fromRGBO(245, 247, 250, 1)
+                          : AppColor.skyBlue)
+                      : (_selectedTotalIndex2 == index
+                          ? AppColor.black
+                          : AppColor.skyBlue),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
