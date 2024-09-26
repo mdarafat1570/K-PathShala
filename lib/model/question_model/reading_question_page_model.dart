@@ -1,17 +1,23 @@
-class QuestionPageModel {
+class QuestionsModel {
+  String? status;
   Data? data;
+  String? message;
 
-  QuestionPageModel({this.data});
+  QuestionsModel({this.status, this.data, this.message});
 
-  QuestionPageModel.fromJson(Map<String, dynamic> json) {
-    data = json['data'] != null ? Data.fromJson(json['data']) : null;
+  QuestionsModel.fromJson(Map<String, dynamic> json) {
+    status = json['status'];
+    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+    message = json['message'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['status'] = this.status;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
+    data['message'] = this.message;
     return data;
   }
 }
@@ -20,9 +26,14 @@ class Data {
   int? duration;
   int? totalQuestion;
   List<ReadingQuestions>? readingQuestions;
-  List<ListeningQuestions>? listeningQuestions;
+  // List<Null>? listeningQuestions;
 
-  Data({this.duration, this.totalQuestion, this.readingQuestions, this.listeningQuestions});
+  Data(
+      {this.duration,
+        this.totalQuestion,
+        this.readingQuestions,
+        // this.listeningQuestions
+      });
 
   Data.fromJson(Map<String, dynamic> json) {
     duration = json['duration'];
@@ -30,27 +41,29 @@ class Data {
     if (json['reading_questions'] != null) {
       readingQuestions = <ReadingQuestions>[];
       json['reading_questions'].forEach((v) {
-        readingQuestions!.add(ReadingQuestions.fromJson(v));
+        readingQuestions!.add(new ReadingQuestions.fromJson(v));
       });
     }
-    if (json['listening_questions'] != null) {
-      listeningQuestions = <ListeningQuestions>[];
-      json['listening_questions'].forEach((v) {
-        listeningQuestions!.add(ListeningQuestions.fromJson(v));
-      });
-    }
+    // if (json['listening_questions'] != null) {
+    //   listeningQuestions = <Null>[];
+    //   json['listening_questions'].forEach((v) {
+    //     listeningQuestions!.add(new Null.fromJson(v));
+    //   });
+    // }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['duration'] = duration;
-    data['total_question'] = totalQuestion;
-    if (readingQuestions != null) {
-      data['reading_questions'] = readingQuestions!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['duration'] = this.duration;
+    data['total_question'] = this.totalQuestion;
+    if (this.readingQuestions != null) {
+      data['reading_questions'] =
+          this.readingQuestions!.map((v) => v.toJson()).toList();
     }
-    if (listeningQuestions != null) {
-      data['listening_questions'] = listeningQuestions!.map((v) => v.toJson()).toList();
-    }
+    // if (this.listeningQuestions != null) {
+    //   data['listening_questions'] =
+    //       this.listeningQuestions!.map((v) => v.toJson()).toList();
+    // }
     return data;
   }
 }
@@ -61,18 +74,19 @@ class ReadingQuestions {
   String? title;
   String? question;
   String? subtitle;
-  ImageUrl? imageUrl;
+  String? imageUrl;
+  Null? imageCaption;
   List<Options>? options;
 
-  ReadingQuestions({
-    this.id,
-    this.questionSetId,
-    this.title,
-    this.question,
-    this.subtitle,
-    this.imageUrl,
-    this.options,
-  });
+  ReadingQuestions(
+      {this.id,
+        this.questionSetId,
+        this.title,
+        this.question,
+        this.subtitle,
+        this.imageUrl,
+        this.imageCaption,
+        this.options});
 
   ReadingQuestions.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -80,63 +94,28 @@ class ReadingQuestions {
     title = json['title'];
     question = json['question'];
     subtitle = json['subtitle'];
-    imageUrl = json['image_url'] != null ? ImageUrl.fromJson(json['image_url']) : null;
+    imageUrl = json['image_url'];
+    imageCaption = json['image_caption'];
     if (json['options'] != null) {
       options = <Options>[];
       json['options'].forEach((v) {
-        options!.add(Options.fromJson(v));
+        options!.add(new Options.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['question_set_id'] = questionSetId;
-    data['title'] = title;
-    data['question'] = question;
-    data['subtitle'] = subtitle;
-    if (imageUrl != null) {
-      data['image_url'] = imageUrl!.toJson();
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['question_set_id'] = this.questionSetId;
+    data['title'] = this.title;
+    data['question'] = this.question;
+    data['subtitle'] = this.subtitle;
+    data['image_url'] = this.imageUrl;
+    data['image_caption'] = this.imageCaption;
+    if (this.options != null) {
+      data['options'] = this.options!.map((v) => v.toJson()).toList();
     }
-    if (options != null) {
-      data['options'] = options!.map((v) => v.toJson()).toList();
-    }
-    return data;
-  }
-}
-
-class ListeningQuestions {
-  int? id;
-  String? question;
-
-  ListeningQuestions({this.id, this.question});
-
-  ListeningQuestions.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    question = json['question'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['question'] = question;
-    return data;
-  }
-}
-
-class ImageUrl {
-  String? url;
-
-  ImageUrl({this.url});
-
-  ImageUrl.fromJson(Map<String, dynamic> json) {
-    url = json['url'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['url'] = url;
     return data;
   }
 }
@@ -145,20 +124,39 @@ class Options {
   int? id;
   String? optionType;
   String? title;
+  Null? subtitle;
+  Null? imageUrl;
+  Null? voiceScript;
+  Null? voiceGender;
 
-  Options({this.id, this.optionType, this.title});
+  Options(
+      {this.id,
+        this.optionType,
+        this.title,
+        this.subtitle,
+        this.imageUrl,
+        this.voiceScript,
+        this.voiceGender});
 
   Options.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     optionType = json['option_type'];
     title = json['title'];
+    subtitle = json['subtitle'];
+    imageUrl = json['image_url'];
+    voiceScript = json['voice_script'];
+    voiceGender = json['voice_gender'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['option_type'] = optionType;
-    data['title'] = title;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['option_type'] = this.optionType;
+    data['title'] = this.title;
+    data['subtitle'] = this.subtitle;
+    data['image_url'] = this.imageUrl;
+    data['voice_script'] = this.voiceScript;
+    data['voice_gender'] = this.voiceGender;
     return data;
   }
 }

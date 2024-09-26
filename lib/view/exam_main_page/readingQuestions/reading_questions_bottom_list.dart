@@ -28,9 +28,12 @@ class _ReadingQuestionsPageState extends State<ReadingQuestionsPage> {
       final questionData = await repository.fetchReadingQuestions(3);
 
       setState(() {
-        // _readingQuestions = questionData?.data?.readingQuestions;
+        _readingQuestions = questionData?.data?.readingQuestions ?? [];
 
+        log("-----------Data-----------");
         log(jsonEncode(_readingQuestions));
+        log("-----------Data-----------");
+
         _isLoading = false;
       });
     } catch (e) {
