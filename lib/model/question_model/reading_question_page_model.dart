@@ -50,78 +50,163 @@ class Data {
     return data;
   }
 }
+//
+// class ReadingQuestions {
+//   int? id;
+//   var questionSetId;
+//   var title;
+//   var question;
+//   var subtitle;
+//   var imageUrl;
+//   List<Options>? options;
+//
+//   ReadingQuestions({
+//     this.id,
+//     this.questionSetId,
+//     this.title,
+//     this.question,
+//     this.subtitle,
+//     this.imageUrl,
+//     this.options,
+//   });
+//
+//   ReadingQuestions.fromJson(Map<String, dynamic> json) {
+//     id = json['id'] as int?;
+//     questionSetId = json['question_set_id'];
+//     title = json['title'];
+//     question = json['question'];
+//     subtitle = json['subtitle'];
+//     imageUrl = json['image_url'];
+//     if (json['options'] != null) {
+//       options = <Options>[];
+//       json['options'].forEach((v) {
+//         options!.add(Options.fromJson(v));
+//       });
+//     }
+//   }
+//
+//   Map<String, dynamic> toJson() {
+//     final Map<String, dynamic> data = <String, dynamic>{};
+//     data['id'] = this.id;
+//     data['question_set_id'] = this.questionSetId;
+//     data['title'] = this.title;
+//     data['question'] = this.question;
+//     data['subtitle'] = this.subtitle;
+//     data['image_url'] = this.imageUrl;
+//     if (this.options != null) {
+//       data['options'] = this.options!.map((v) => v.toJson()).toList();
+//     }
+//     return data;
+//   }
+// }
+//
+// class Options {
+//   int? id;
+//   var optionType;
+//   var title;
+//
+//   Options({
+//     this.id,
+//     this.optionType,
+//     this.title,
+//   });
+//
+//   Options.fromJson(Map<String, dynamic> json) {
+//     id = json['id'] as int?;
+//     optionType = json['option_type'];
+//     title = json['title'];
+//   }
+//
+//   Map<String, dynamic> toJson() {
+//     final Map<String, dynamic> data = <String, dynamic>{};
+//     data['id'] = this.id;
+//     data['option_type'] = this.optionType;
+//     data['title'] = this.title;
+//     return data;
+//   }
+// }
+
 
 class ReadingQuestions {
-  int? id;
-  var questionSetId;
-  var title;
-  var question;
-  var subtitle;
-  var imageUrl;
-  List<Options>? options;
+  int id;
+  int questionSetId;
+  String title;
+  dynamic question;
+  dynamic subtitle;
+  dynamic imageUrl;
+  dynamic imageCaption;
+  List<Options> options;
 
   ReadingQuestions({
-    this.id,
-    this.questionSetId,
-    this.title,
-    this.question,
-    this.subtitle,
-    this.imageUrl,
-    this.options,
+    required this.id,
+    required this.questionSetId,
+    required this.title,
+    required this.question,
+    required this.subtitle,
+    required this.imageUrl,
+    required this.imageCaption,
+    required this.options,
   });
 
-  ReadingQuestions.fromJson(Map<String, dynamic> json) {
-    id = json['id'] as int?;
-    questionSetId = json['question_set_id'];
-    title = json['title'];
-    question = json['question'];
-    subtitle = json['subtitle'];
-    imageUrl = json['image_url'];
-    if (json['options'] != null) {
-      options = <Options>[];
-      json['options'].forEach((v) {
-        options!.add(Options.fromJson(v));
-      });
-    }
-  }
+  factory ReadingQuestions.fromJson(Map<String, dynamic> json) => ReadingQuestions(
+    id: json["id"],
+    questionSetId: json["question_set_id"],
+    title: json["title"],
+    question: json["question"],
+    subtitle: json["subtitle"],
+    imageUrl: json["image_url"],
+    imageCaption: json["image_caption"],
+    options: List<Options>.from(json["options"].map((x) => Options.fromJson(x))),
+  );
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = this.id;
-    data['question_set_id'] = this.questionSetId;
-    data['title'] = this.title;
-    data['question'] = this.question;
-    data['subtitle'] = this.subtitle;
-    data['image_url'] = this.imageUrl;
-    if (this.options != null) {
-      data['options'] = this.options!.map((v) => v.toJson()).toList();
-    }
-    return data;
-  }
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "question_set_id": questionSetId,
+    "title": title,
+    "question": question,
+    "subtitle": subtitle,
+    "image_url": imageUrl,
+    "image_caption": imageCaption,
+    "options": List<dynamic>.from(options.map((x) => x.toJson())),
+  };
 }
 
 class Options {
-  int? id;
-  var optionType;
-  var title;
+  int id;
+  String optionType;
+  String title;
+  dynamic subtitle;
+  dynamic imageUrl;
+  dynamic voiceScript;
+  dynamic voiceGender;
 
   Options({
-    this.id,
-    this.optionType,
-    this.title,
+    required this.id,
+    required this.optionType,
+    required this.title,
+    required this.subtitle,
+    required this.imageUrl,
+    required this.voiceScript,
+    required this.voiceGender,
   });
 
-  Options.fromJson(Map<String, dynamic> json) {
-    id = json['id'] as int?;
-    optionType = json['option_type'];
-    title = json['title'];
-  }
+  factory Options.fromJson(Map<String, dynamic> json) => Options(
+    id: json["id"],
+    optionType: json["option_type"],
+    title: json["title"],
+    subtitle: json["subtitle"],
+    imageUrl: json["image_url"],
+    voiceScript: json["voice_script"],
+    voiceGender: json["voice_gender"],
+  );
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = this.id;
-    data['option_type'] = this.optionType;
-    data['title'] = this.title;
-    return data;
-  }
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "option_type": optionType,
+    "title": title,
+    "subtitle": subtitle,
+    "image_url": imageUrl,
+    "voice_script": voiceScript,
+    "voice_gender": voiceGender,
+  };
 }

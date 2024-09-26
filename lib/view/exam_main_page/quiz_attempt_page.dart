@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/model/question_model/reading_question_page_model.dart';
 import 'package:kpathshala/repository/question/reading_questions_repository.dart';
-import 'package:kpathshala/view/exam_main_page/readingQuestions/reading_questions_bottom_list.dart';
 
 class RetakeTestPage extends StatefulWidget {
   final int questionSetId;
@@ -26,7 +25,7 @@ class RetakeTestPage extends StatefulWidget {
 class RetakeTestPageState extends State<RetakeTestPage> {
   int _remainingTime = 3600;
 
-  // late Timer _timer;
+  late Timer _timer;
   int _currentTabIndex = 0;
 
   int _selectedTotalIndex = -1;
@@ -42,7 +41,7 @@ class RetakeTestPageState extends State<RetakeTestPage> {
   @override
   void initState() {
     super.initState();
-    // _startTimer();
+    _startTimer();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
@@ -54,7 +53,7 @@ class RetakeTestPageState extends State<RetakeTestPage> {
     try {
       // Attempt to fetch the questions
       QuestionsModel? questionsModel =
-      await _repository.fetchReadingQuestions(widget.questionSetId);
+          await _repository.fetchReadingQuestions(widget.questionSetId);
 
       if (questionsModel != null && questionsModel.data != null) {
         _readingQuestions = questionsModel.data!.readingQuestions ?? [];
@@ -75,43 +74,46 @@ class RetakeTestPageState extends State<RetakeTestPage> {
 
       // Optionally, show an error message to the user (Snackbar, Dialog, etc.)
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load reading questions. Please try again.')),
+        SnackBar(
+            content:
+                Text('Failed to load reading questions. Please try again.')),
       );
     }
   }
 
-  // void _startTimer() {
-  //   _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-  //     setState(() {
-  //       if (_remainingTime > 0) {
-  //         _remainingTime--;
-  //       } else {
-  //         _timer.cancel();
-  //         _showTimeUpDialog();
-  //       }
-  //     });
-  //   });
-  // }
-  //
-  // void _showTimeUpDialog() {
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return AlertDialog(
-  //         title: const Text('Time Up'),
-  //         content: const Text('Your time for the test has ended.'),
-  //         actions: [
-  //           TextButton(
-  //             onPressed: () {
-  //               Navigator.of(context).pop(); // Close the dialog
-  //             },
-  //             child: const Text('OK'),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_remainingTime > 0) {
+          _remainingTime--;
+        } else {
+          _timer.cancel();
+          _showTimeUpDialog();
+        }
+      });
+    });
+  }
+
+  void _showTimeUpDialog() {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Time Up'),
+          content: const Text('Your time for the test has ended.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text('Submit Answer'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   void dispose() {
@@ -131,82 +133,141 @@ class RetakeTestPageState extends State<RetakeTestPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
-      body: SafeArea(
-        child: Column(
-          children: [
-            pageHeader(),
-            //  Content for the selected tab
-            Expanded(
-              child: ListView(children: [
-                  Visibility(
-                    visible: isListViewVisible,
-                    replacement: buildQuestionDetailContent(),
-                    child: buildGridContent(
-                      description: 'This is a sample description.',
-                      isSolved: false,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (bool didPop) async {
+        log("dip pop $didPop");
+
+        if (didPop) {
+          return;
+        }
+        if (!isListViewVisible) {
+          setState(() {
+            isListViewVisible = true;
+          });
+        } else {
+          Navigator.pop(context);
+        }
+      },
+      child: Scaffold(
+          backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
+          body: SafeArea(
+            child: Column(
+              children: [
+                pageHeader(),
+                //  Content for the selected tab
+                Expanded(
+                  child: ListView(children: [
+                    Visibility(
+                      visible: isListViewVisible,
+                      replacement: buildQuestionDetailContent(),
+                      child: buildGridContent(
+                        isSolved: false,
+                      ),
+                    ),
+                  ]),
+                ),
+              ],
+            ),
+          ),
+          bottomNavigationBar: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween, // Distribute space between items
+              children: [
+                if (!isListViewVisible)
+                  SizedBox(
+                    width: MediaQuery.sizeOf(context).width * 0.2,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        isListViewVisible = true;
+                        setState(() {});
+                      },
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(vertical: 12.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          side: const BorderSide(color: AppColor.grey400, width: 1),
+                        ),
+                        backgroundColor: AppColor.grey200, // Change color as needed
+                      ),
+                      child: const Text(
+                        'Total Questions',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColor.navyBlue,
+                        ),
+                      ),
                     ),
                   ),
-                ]),
+                const Spacer(),// Spacing between buttons
+                if (!isListViewVisible && _selectedQuestionData != null && _readingQuestions.indexOf(_selectedQuestionData!) > 0)
+                SizedBox(
+                  width: MediaQuery.sizeOf(context).width * 0.2,
+                  child: ElevatedButton(
+                    onPressed: moveToPrevious,
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      backgroundColor: AppColor.grey300, // Change color as needed
+                    ),
+                    child: const Text(
+                      'Previous',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColor.navyBlue,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                if ((isListViewVisible || (_selectedQuestionData != null && _readingQuestions.indexOf(_selectedQuestionData!) == _readingQuestions.length -1)))
+                SizedBox(
+                  width: MediaQuery.sizeOf(context).width * 0.2,
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      backgroundColor: AppColor.navyBlue, // Change color as needed
+                    ),
+                    child: const Text('Submit Answer',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+                if ((!isListViewVisible && (_selectedQuestionData != null && _readingQuestions.indexOf(_selectedQuestionData!) < _readingQuestions.length -1)))
+                SizedBox(
+                  width: MediaQuery.sizeOf(context).width * 0.2,
+                  child: ElevatedButton(
+                    onPressed:moveToNext,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      backgroundColor: AppColor.navyBlue, // Change color as needed
+                    ),
+                    child: const Text('Next',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-        bottomNavigationBar: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              if (!isListViewVisible)
-                ElevatedButton(
-                onPressed: () {
-                  isListViewVisible = true;
-                  setState(() {});
-                },
-                style: ElevatedButton.styleFrom(
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 32),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    side:const BorderSide(
-                      color: AppColor.grey400,
-                      width: 1
-                    )
-                  ),
-                  backgroundColor: AppColor.grey200, // Change color as needed
-                ),
-                child: const Text(
-                  'Total Questions',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColor.navyBlue,
-                  ),
-                ),
-              ),
-              const Spacer(),
-              ElevatedButton(
-                onPressed: () {
-                  // Your onPressed functionality here
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 32),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  backgroundColor: AppColor.navyBlue, // Change color as needed
-                ),
-                child: const Text(
-                  'Submit Answer',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        )
+          )),
     );
   }
 
@@ -245,23 +306,29 @@ class RetakeTestPageState extends State<RetakeTestPage> {
                   children: [
                     Container(
                         padding: const EdgeInsets.all(12.0),
-                        decoration: const BoxDecoration(
-                            border: const Border(
+                        decoration: isListViewVisible ? const BoxDecoration(
+                            border: Border(
                               right: BorderSide(
                                 width: 3,
                                 color: AppColor.navyBlue,
                               ),
                             ),
                             color: AppColor.navyBlue,
-                            borderRadius: const BorderRadius.only(
+                            borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(10),
                               topRight: Radius.circular(10),
-                            )),
-                        child: const Text(
+                            )) : null,
+                        child: Text(
                           'Total Questions',
-                          style: TextStyle(color: Colors.white, fontSize: 14),
+                          style: TextStyle(color: isListViewVisible ? Colors.white : AppColor.grey700, fontSize: 14),
                           overflow: TextOverflow.ellipsis,
                         )),
+                    if (!isListViewVisible)
+                    Container(
+                      height: 20,
+                      width: 2,
+                      color: AppColor.grey400,
+                    ),
                     Container(
                       padding: const EdgeInsets.all(12.0),
                       child: const Text(
@@ -323,158 +390,319 @@ class RetakeTestPageState extends State<RetakeTestPage> {
   Widget buildQuestionDetailContent(// required bool isSolved,
       ) {
     if (_selectedQuestionData == null) return const SizedBox.shrink();
-    return Container(
-      height: MediaQuery.sizeOf(context).height* 0.8,
-      child: Stack(
-        children: [
-          // Watermark Image
-          Positioned.fill(
-            child: Opacity(
-              opacity: 0.1, // Adjust opacity for the watermark effect
-              child: Image.asset(
-                'assets/new_App_icon.png',
-                height: 80,
-                width: 150,
-              ),
+    final options = _selectedQuestionData?.options ?? [];
+    bool isTextType = options.isNotEmpty && options.first.optionType == 'text';
+    return Stack(
+      children: [
+        // Watermark Image
+        Positioned.fill(
+          child: Opacity(
+            opacity: 0.1, // Adjust opacity for the watermark effect
+            child: Image.asset(
+              'assets/new_App_icon.png',
+              height: 80,
+              width: 150,
             ),
           ),
-          Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 12, right: 12),
-                child: Row(
-                  children: [
-                    Column(
+        ),
+        Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: MediaQuery.sizeOf(context).width * 0.45,
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        customText(_selectedQuestionData?.title,
-                            TextType.paragraphTitle,
-                            fontSize: 20),
-                        const Gap(8),
-                        customText(_selectedQuestionData?.subtitle ?? "",
-                            TextType.subtitle,
-                            fontSize: 20),
-                        const Gap(28),
-                        Container(
-                          height: 135,
-                          width: 355,
-                          decoration: BoxDecoration(
+                        if ((_selectedQuestionData?.title ?? "")
+                            .isNotEmpty) // Check for null or empty
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: customText(
+                              _selectedQuestionData?.title ?? "",
+                              TextType.paragraphTitle,
+                              fontSize: 20,
+                            ),
+                          ),
+                        if ((_selectedQuestionData?.subtitle ?? "")
+                            .isNotEmpty) // Check for null or empty
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: customText(
+                              _selectedQuestionData?.subtitle ?? "",
+                              TextType.subtitle,
+                              fontSize: 20,
+                            ),
+                          ),
+                        if ((_selectedQuestionData?.imageCaption ?? "")
+                            .isNotEmpty) // Check for null or empty
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: customText(
+                              _selectedQuestionData?.imageCaption ?? "",
+                              TextType.subtitle,
+                              fontSize: 20,
+                            ),
+                          ),
+                        if ((_selectedQuestionData?.question ?? "")
+                            .isNotEmpty) // Check for null or empty
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            margin: const EdgeInsets.symmetric(vertical: 10),
+                            width: double.maxFinite,
+                            decoration: BoxDecoration(
                               border: Border.all(
-                                  color: const Color.fromRGBO(
-                                    100,
-                                    100,
-                                    100,
-                                    1,
-                                  ),
-                                  width: 1.5),
+                                color: const Color.fromRGBO(100, 100, 100, 1),
+                                width: 1,
+                              ),
                               color: const Color.fromRGBO(26, 35, 126, 0.2),
-                              borderRadius: BorderRadius.circular(12)),
-                          child: Center(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Center(
                               child: customText(
-                                  _selectedQuestionData?.question?? "",
-                                  TextType.paragraphTitle)),
-                        )
-                      ],
-                    ),
-                    const Gap(48),
-                    Column(
-                      children:
-                          (_selectedQuestionData?.options?.map((option) => option.title as String).toList() ?? [])
-                              .asMap()
-                              .entries
-                              .map((entry) {
-                        int index = entry.key; // Get the index
-                        String answer = entry.value; // Get the answer
-                        return Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: InkWell(
-                            onTap: () {
-                              setState(() {
-                                _selectedSolvedIndex = index;
-                              });
-                            },
-                            child: SizedBox(
-                              height: 45,
-                              width: 355,
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 35,
-                                    height: 35,
-                                    decoration: BoxDecoration(
-                                        color: (_selectedSolvedIndex == index)
-                                            ? AppColor.black
-                                            : const Color.fromRGBO(
-                                                255, 255, 255, 1),
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                            width: 2, color: AppColor.black)),
-                                    child: Center(
-                                        child: Text(
-                                      '${index + 1}',
-                                      style: TextStyle(
-                                        color: (_selectedSolvedIndex == index)
-                                            ? const Color.fromRGBO(
-                                                255, 255, 255, 1)
-                                            : AppColor.black,
+                                  _selectedQuestionData?.question ?? "",
+                                  TextType.paragraphTitle,
+                                  textAlign: TextAlign.center),
+                            ),
+                          ),
+                        if ((_selectedQuestionData?.imageUrl ?? "")
+                            .isNotEmpty) // Check for null or empty
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            margin: const EdgeInsets.symmetric(vertical: 10),
+                            width: double.maxFinite,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: const Color.fromRGBO(100, 100, 100, 1),
+                                width: 1,
+                              ),
+                              color: const Color.fromRGBO(26, 35, 126, 0.2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Center(
+                              child: Image.network(
+                                _selectedQuestionData?.imageUrl ?? "",
+                                errorBuilder: (context, error, stackTrace) {
+                                  // Show something when the image fails to load
+                                  return const Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.broken_image,
+                                          color: AppColor.navyBlue,
+                                          size: 50), // Error icon
+                                      SizedBox(height: 10),
+                                      Text(
+                                        "Image failed to load",
+                                        style: TextStyle(
+                                            color: AppColor.navyBlue, fontSize: 16),
                                       ),
-                                    )),
-                                  ),
-                                  const SizedBox(
-                                      width:
-                                          8), // Add spacing between circle and text
-                                  Text(
-                                    answer,
-                                    style: const TextStyle(fontSize: 18),
-                                  ),
-                                ],
+                                    ],
+                                  );
+                                },
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                  if (loadingProgress == null) {
+                                    return child; // Image loaded successfully
+                                  } else {
+                                    // Show a loading indicator while the image is being loaded
+                                    return const CircularProgressIndicator();
+                                  }
+                                },
                               ),
                             ),
                           ),
-                        );
-                      }).toList(),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  SizedBox(
+                    width: MediaQuery.sizeOf(context).width * 0.45,
+                    child: isTextType
+                        ? ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                            itemCount: options.length,
+                            itemBuilder: (context, index) {
+                              String answer =
+                                  options[index].title; // Access option title
+                              return Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      _selectedSolvedIndex = index;
+                                    });
+                                  },
+                                  child: SizedBox(
+                                    height: 45,
+                                    width: 355,
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: 35,
+                                          height: 35,
+                                          decoration: BoxDecoration(
+                                              color: (_selectedSolvedIndex ==
+                                                      index)
+                                                  ? AppColor.black
+                                                  : const Color.fromRGBO(
+                                                      255, 255, 255, 1),
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                  width: 2,
+                                                  color: AppColor.black)),
+                                          child: Center(
+                                              child: Text(
+                                            '${index + 1}',
+                                            style: TextStyle(
+                                              color: (_selectedSolvedIndex ==
+                                                      index)
+                                                  ? const Color.fromRGBO(
+                                                      255, 255, 255, 1)
+                                                  : AppColor.black,
+                                            ),
+                                          )),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        // Spacing between circle and text
+                                        Expanded(
+                                          child: Text(
+                                            answer,
+                                            style: const TextStyle(fontSize: 18),
+                                          ),
+                                        ),
+                                        if((options[index].subtitle ?? "").isNotEmpty)
+                                        Expanded(
+                                          child: Text(
+                                            options[index].subtitle ?? "",
+                                            style: const TextStyle(fontSize: 18),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          )
+                        : GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount:
+                                  2, // Number of columns in grid view
+                              childAspectRatio:
+                                  2, // Adjust this to control item size
+                            ),
+                            itemCount: options.length,
+                            itemBuilder: (context, index) {
+                              String answer =
+                                  options[index].imageUrl ?? ""; // Access option title
+                              return Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      _selectedSolvedIndex = index;
+                                    });
+                                  },
+                                  child: SizedBox(
+                                    height: 45,
+                                    width: 355,
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: 35,
+                                          height: 35,
+                                          decoration: BoxDecoration(
+                                              color: (_selectedSolvedIndex ==
+                                                      index)
+                                                  ? AppColor.black
+                                                  : const Color.fromRGBO(
+                                                      255, 255, 255, 1),
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                  width: 2,
+                                                  color: AppColor.black)),
+                                          child: Center(
+                                              child: Text(
+                                            '${index + 1}',
+                                            style: TextStyle(
+                                              color: (_selectedSolvedIndex ==
+                                                      index)
+                                                  ? const Color.fromRGBO(
+                                                      255, 255, 255, 1)
+                                                  : AppColor.black,
+                                            ),
+                                          )),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        // Spacing between circle and text
+                                        Column(
+                                          children: [
+                                            Expanded(
+                                              child: Image.network(
+                                                answer,
+                                                errorBuilder: (context, error, stackTrace) {
+                                                  // Show something when the image fails to load
+                                                  return const Column(
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    children: [
+                                                      Icon(Icons.broken_image,
+                                                          color: AppColor.navyBlue,
+                                                          size: 30), // Error icon
+                                                      SizedBox(height: 5),
+                                                      Text(
+                                                        "Image failed to load",
+                                                        style: TextStyle(
+                                                            color: AppColor.navyBlue, fontSize: 12),
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                                loadingBuilder:
+                                                    (context, child, loadingProgress) {
+                                                  if (loadingProgress == null) {
+                                                    return child; // Image loaded successfully
+                                                  } else {
+                                                    // Show a loading indicator while the image is being loaded
+                                                    return const CircularProgressIndicator();
+                                                  }
+                                                },
+                                              ),
+                                            ),
+                                            if((options[index].subtitle ?? "").isNotEmpty)
+                                            Expanded(
+                                              child: Text(
+                                                options[index].subtitle ?? "",
+                                                style: const TextStyle(fontSize: 18),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                  ),
+                ],
               ),
-              // Expanded(
-              //   child: Padding(
-              //     padding: const EdgeInsets.only(top: 5),
-              //     child: Container(
-              //       width: double.infinity,
-              //       height: 60,
-              //       decoration: const BoxDecoration(
-              //           color: Color.fromRGBO(245, 245, 245, 1)),
-              //       child: Padding(
-              //         padding: const EdgeInsets.only(
-              //             bottom: 5, left: 24, right: 25, top: 5),
-              //         child: Row(
-              //           children: [
-              //             OutlinedButton(
-              //               onPressed: () {},
-              //               style: ButtonStyle(
-              //                 backgroundColor: WidgetStateProperty.all(
-              //                     const Color.fromRGBO(
-              //                         26, 35, 126, 0.1)), // Wrap color
-              //               ),
-              //               child: const Text("Total questions"),
-              //             )
-              //           ],
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // )
-            ],
-          ),
-        ],
-      ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
   Widget buildGridContent({
-    required String description,
-    required bool isSolved,// Add the required questionSetId parameter
+    required bool isSolved, // Add the required questionSetId parameter
   }) {
     return Padding(
       padding: const EdgeInsets.only(left: 10, right: 10, top: 5),
@@ -483,26 +711,32 @@ class RetakeTestPageState extends State<RetakeTestPage> {
         children: [
           SizedBox(
             width: MediaQuery.sizeOf(context).width * 0.45,
-            child:  Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                 Row(
-                   mainAxisAlignment: MainAxisAlignment.center,
-                   children: [
-                     Image.asset("assets/book-open.png", height: 16,),
-                     Text(
-                       " 읽기 (${_readingQuestions.length}Question)",
-                       style: const TextStyle(
-                         fontSize: 14,
-                         fontWeight: FontWeight.bold,
-                       ),
-                     ),
-                   ],
-                 ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      "assets/book-open.png",
+                      height: 16,
+                    ),
+                    Text(
+                      " 읽기 (${_readingQuestions.length}Question)",
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
                 Padding(
                   padding: const EdgeInsets.only(top: 5.0, bottom: 10),
-                  child: dataFound == false ? const Center(child: CircularProgressIndicator()) : _readingQuestions.isEmpty ? const Center(child:Text("No Questions Available")) :
-                  questionsGrid(_readingQuestions.length, false),
+                  child: dataFound == false
+                      ? const Center(child: CircularProgressIndicator())
+                      : _readingQuestions.isEmpty
+                          ? const Center(child: Text("No Questions Available"))
+                          : questionsGrid(_readingQuestions.length, false),
                 ),
               ],
             ),
@@ -515,7 +749,10 @@ class RetakeTestPageState extends State<RetakeTestPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset("assets/headphones.png", height: 16,),
+                    Image.asset(
+                      "assets/headphones.png",
+                      height: 16,
+                    ),
                     Text(
                       " 듣기 (${_readingQuestions.length}Question)",
                       style: const TextStyle(
@@ -553,12 +790,14 @@ class RetakeTestPageState extends State<RetakeTestPage> {
       itemCount: questionCount,
       itemBuilder: (context, index) {
         // Check if this index is selected
-        bool isSelected = (!isListening) ? solvedReadingQuestions.contains(index) : solvedListeningQuestions.contains(index);
+        bool isSelected = (!isListening)
+            ? solvedReadingQuestions.contains(index)
+            : solvedListeningQuestions.contains(index);
 
         return GestureDetector(
           onTap: () {
             setState(() {
-              if (!isListening){
+              if (!isListening) {
                 if (isSelected) {
                   // If already selected, remove from selectedIndexes
                   solvedReadingQuestions.remove(index);
@@ -593,7 +832,8 @@ class RetakeTestPageState extends State<RetakeTestPage> {
                 style: TextStyle(
                   fontSize: 18,
                   color: isSelected
-                      ? const Color.fromRGBO(245, 247, 250, 1) // Text color when selected
+                      ? const Color.fromRGBO(
+                          245, 247, 250, 1) // Text color when selected
                       : AppColor.navyBlue, // Default text color
                 ),
               ),
@@ -604,4 +844,26 @@ class RetakeTestPageState extends State<RetakeTestPage> {
     );
   }
 
+  void moveToPrevious (){
+    int index = (_selectedQuestionData != null)
+        ? _readingQuestions.indexOf(_selectedQuestionData!)
+        : -1;
+    if (index > 0 ){
+      _selectedQuestionData = _readingQuestions[index-1];
+      setState(() {});
+    }
+
+  }
+  void moveToNext (){
+    int index = (_selectedQuestionData != null)
+        ? _readingQuestions.indexOf(_selectedQuestionData!)
+        : -1;
+    if (index < _readingQuestions.length ){
+      _selectedQuestionData = _readingQuestions[index + 1];
+      setState(() {});
+    } else {
+      setState(() {});
+    }
+
+  }
 }
