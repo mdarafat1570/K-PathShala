@@ -213,7 +213,7 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
             thickness: 0.8,
           ),
 
-          // Content for the selected tab
+          //  Content for the selected tab
           Expanded(
             child: buildTabContent(_currentTabIndex),
           ),
@@ -222,7 +222,7 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
     );
   }
 
-  // Helper method to generate content for each tab
+  //Helper method to generate content for each tab
   Widget buildTabContent(int index) {
     if (_selectedQuestionData != null) {
       // If a question is selected, show the question details
@@ -231,24 +231,27 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
     switch (index) {
       case 0:
         return buildGridContent(
-          title: '읽기 (20 Question)',
-          description: 'Here are all the questions.',
-          questionCount: 20, // Total number of questions
+          title: 'Sample Title',
+          description: 'This is a sample description.',
+          questionCount: 10,
           isSolved: false,
+          questionSetId: 1,
         );
       case 1:
         return buildGridContent(
-          title: '듣기 (20 Question)',
-          description: 'Here are all the solved questions.',
-          questionCount: 10, // Example: 10 solved questions
-          isSolved: true,
+          title: 'Sample Title',
+          description: 'This is a sample description.',
+          questionCount: 10,
+          isSolved: false,
+          questionSetId: 1,
         );
       case 2:
         return buildGridContent(
-          title: 'Unsolved Questions',
-          description: 'Here are all the unsolved questions.',
-          questionCount: 10, // Example: 10 unsolved questions
+          title: 'Sample Title',
+          description: 'This is a sample description.',
+          questionCount: 10,
           isSolved: false,
+          questionSetId: 1,
         );
       default:
         return const SizedBox.shrink();
@@ -405,12 +408,12 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
     );
   }
 
-  // Helper widget to generate content for a tab with grid buttons
   Widget buildGridContent({
     required String title,
     required String description,
     required int questionCount,
     required bool isSolved,
+    required int questionSetId, // Add the required questionSetId parameter
   }) {
     return Padding(
       padding: const EdgeInsets.only(left: 20, right: 20),
@@ -430,7 +433,8 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
                   ),
                 ),
                 Expanded(
-                  child: ReadingQuestionsPage(),
+                  // Use 'const' if the widget is constant and has no dynamic state.
+                  child: ReadingQuestionsPage(questionSetId: 3),
                 ),
               ],
             ),
@@ -450,6 +454,7 @@ class _RetakeTestPageState extends State<RetakeTestPage> {
                   ),
                 ),
                 Expanded(
+                  // Assuming ListeningQuestionList is also a widget that takes parameters
                   child: ListeningQuestionList(questionCount, isSolved),
                 ),
               ],

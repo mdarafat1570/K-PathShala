@@ -1,8 +1,8 @@
-import 'dart:convert';
 import 'dart:developer';
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/authentication/base_repository.dart';
 import 'package:kpathshala/model/question_model/reading_question_page_model.dart';
+
 class ReadingQuestionsRepository {
   final BaseRepository _baseRepository = BaseRepository();
 
@@ -16,10 +16,10 @@ class ReadingQuestionsRepository {
       Map<String, dynamic> response = await _baseRepository.getRequest(url);
 
       log("api data----------");
-      log (response.toString());
+      log(response.toString());
+
       if (response.containsKey('data')) {
         log("api data Found----------");
-        log(jsonDecode(response['data']));
         return QuestionsModel.fromJson(response['data']);
       } else {
         log('No data found in the response');

@@ -8,6 +8,7 @@ import 'package:kpathshala/repository/dashboard_repository/dashboard_page_reposi
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:kpathshala/repository/question/UbuyPage.dart';
 import 'package:kpathshala/view/exam_main_page/ubt_exam_page.dart';
 import 'package:kpathshala/view/home_main_page/dashboard_image_carousel.dart';
 import 'package:kpathshala/view/home_main_page/shimmer_effect_deshboard.dart';
@@ -173,7 +174,15 @@ class _DashboardPageState extends State<DashboardPage> {
                         ),
                         // if (dashboardPageModel?.syllabus != null) // Example of another null check
                         InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    ExamScreen(), // Replace with the actual ID
+                              ),
+                            );
+                          },
                           child: _buildGridItem(
                             icon: Icons.book,
                             title: "Syllabus",
