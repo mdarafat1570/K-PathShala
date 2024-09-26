@@ -35,6 +35,8 @@ class BaseRepository {
 
     try {
       final response = await http.get(uri, headers: headers);
+      log("Data Found From $url");
+      log(response.body);
       return _processResponse(response);
     } catch (e) {
       log('Error in GET request: $e');
