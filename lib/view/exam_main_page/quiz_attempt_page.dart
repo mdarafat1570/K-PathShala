@@ -37,6 +37,7 @@ class RetakeTestPageState extends State<RetakeTestPage> {
   final ReadingQuestionsRepository _repository = ReadingQuestionsRepository();
   List<ReadingQuestions> _readingQuestions = [];
   bool dataFound = false;
+  bool isListViewVisible = true;
 
   @override
   void initState() {
@@ -139,17 +140,73 @@ class RetakeTestPageState extends State<RetakeTestPage> {
             //  Content for the selected tab
             Expanded(
               child: ListView(children: [
-                  buildGridContent(
-                    description: 'This is a sample description.',
-                    isSolved: false,
+                  Visibility(
+                    visible: isListViewVisible,
+                    replacement: buildQuestionDetailContent(),
+                    child: buildGridContent(
+                      description: 'This is a sample description.',
+                      isSolved: false,
+                    ),
                   ),
-                buildQuestionDetailContent(),
                 ]),
             ),
           ],
         ),
       ),
-      // bottomNavigationBar: ,
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              if (!isListViewVisible)
+                ElevatedButton(
+                onPressed: () {
+                  isListViewVisible = true;
+                  setState(() {});
+                },
+                style: ElevatedButton.styleFrom(
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 32),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side:const BorderSide(
+                      color: AppColor.grey400,
+                      width: 1
+                    )
+                  ),
+                  backgroundColor: AppColor.grey200, // Change color as needed
+                ),
+                child: const Text(
+                  'Total Questions',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColor.navyBlue,
+                  ),
+                ),
+              ),
+              const Spacer(),
+              ElevatedButton(
+                onPressed: () {
+                  // Your onPressed functionality here
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 32),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  backgroundColor: AppColor.navyBlue, // Change color as needed
+                ),
+                child: const Text(
+                  'Submit Answer',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        )
     );
   }
 
@@ -380,34 +437,34 @@ class RetakeTestPageState extends State<RetakeTestPage> {
                   ],
                 ),
               ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 5),
-                  child: Container(
-                    width: double.infinity,
-                    height: 60,
-                    decoration: const BoxDecoration(
-                        color: Color.fromRGBO(245, 245, 245, 1)),
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                          bottom: 5, left: 24, right: 25, top: 5),
-                      child: Row(
-                        children: [
-                          OutlinedButton(
-                            onPressed: () {},
-                            style: ButtonStyle(
-                              backgroundColor: WidgetStateProperty.all(
-                                  const Color.fromRGBO(
-                                      26, 35, 126, 0.1)), // Wrap color
-                            ),
-                            child: const Text("Total questions"),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              )
+              // Expanded(
+              //   child: Padding(
+              //     padding: const EdgeInsets.only(top: 5),
+              //     child: Container(
+              //       width: double.infinity,
+              //       height: 60,
+              //       decoration: const BoxDecoration(
+              //           color: Color.fromRGBO(245, 245, 245, 1)),
+              //       child: Padding(
+              //         padding: const EdgeInsets.only(
+              //             bottom: 5, left: 24, right: 25, top: 5),
+              //         child: Row(
+              //           children: [
+              //             OutlinedButton(
+              //               onPressed: () {},
+              //               style: ButtonStyle(
+              //                 backgroundColor: WidgetStateProperty.all(
+              //                     const Color.fromRGBO(
+              //                         26, 35, 126, 0.1)), // Wrap color
+              //               ),
+              //               child: const Text("Total questions"),
+              //             )
+              //           ],
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // )
             ],
           ),
         ],
@@ -444,7 +501,7 @@ class RetakeTestPageState extends State<RetakeTestPage> {
                  ),
                 Padding(
                   padding: const EdgeInsets.only(top: 5.0, bottom: 10),
-                  child: dataFound == false ? const Center(child: CircularProgressIndicator()) : _readingQuestions.isEmpty ?Center(child:Text("No Questions Available")) :
+                  child: dataFound == false ? const Center(child: CircularProgressIndicator()) : _readingQuestions.isEmpty ? const Center(child:Text("No Questions Available")) :
                   questionsGrid(_readingQuestions.length, false),
                 ),
               ],
@@ -510,6 +567,7 @@ class RetakeTestPageState extends State<RetakeTestPage> {
                   // If not selected, add to selectedIndexes
                   solvedReadingQuestions.add(index);
                   _selectedQuestionData = _readingQuestions[index];
+                  isListViewVisible = false;
                 }
               } else {
                 if (isSelected) {
