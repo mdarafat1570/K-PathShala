@@ -15,35 +15,29 @@ class Courses extends StatefulWidget {
 class _CoursesState extends State<Courses> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: GradientBackground(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding:EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text("Upcoming"),
-              ElevatedButton(
-                onPressed: () {
-                  // Set orientation to landscape when button is clicked
-                  SystemChrome.setPreferredOrientations([
-                    DeviceOrientation.landscapeRight,
-                    DeviceOrientation.landscapeLeft,
-                  ]);
-
-                  // Use Navigator.push to navigate to RetakeTestPage
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const RetakeTestPage(
-                        title: '',
-                        description: '',
-                      ),
-                    ),
-                  );
-                },
-                child: const Text('Trying'),
-              ),
+              Text("Upcoming"),
+              // ElevatedButton(
+              //   onPressed: () {
+              //
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(
+              //         builder: (context) => const RetakeTestPage(
+              //           title: '',
+              //           description: '',
+              //         ),
+              //       ),
+              //     );
+              //   },
+              //   child: const Text('Trying'),
+              // ),
             ],
           ),
         ),

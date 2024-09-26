@@ -8,19 +8,14 @@ class ReadingQuestionsRepository {
 
   Future<QuestionsModel?> fetchReadingQuestions(int questionSetId) async {
     try {
-      // Construct the full API URL with the query parameter
       String url =
           '${KpatshalaQuestionPage.readingQuestion}?questionSetId=$questionSetId';
 
       // Make the GET request using the BaseRepository's getRequest method
       Map<String, dynamic> response = await _baseRepository.getRequest(url);
 
-      log("api data----------");
-      log(response.toString());
-
       if (response.containsKey('data')) {
-        log("api data Found----------");
-        return QuestionsModel.fromJson(response['data']);
+        return QuestionsModel.fromJson(response);
       } else {
         log('No data found in the response');
         return null;
@@ -29,5 +24,12 @@ class ReadingQuestionsRepository {
       log('Error fetching reading questions: $e');
       return null;
     }
+  }
+
+  Future<QuestionsModel> fetchQuestions() async {
+    var response = await BaseRepository().getRequest(
+        'http://159.203.105.5:8012/api/v1/question?questionSetId=3');
+    // Assuming the response returns a map that can be directly used by QuestionsModel.fromJson()
+    return QuestionsModel.fromJson(response);
   }
 }

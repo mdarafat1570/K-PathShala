@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:flutter/services.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/model/question_model/question_set_model.dart';
 import 'package:kpathshala/repository/question/question_set_repo.dart';
@@ -155,11 +154,12 @@ class _ExamPageState extends State<ExamPage> {
     );
   }
 
-  void _navigateToRetakeTest(String title, String description) {
+  void _navigateToRetakeTest(String title, String description, int questionSetId) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => RetakeTestPage(
+          questionSetId: questionSetId,
           title: title,
           description: description,
         ),
@@ -167,19 +167,15 @@ class _ExamPageState extends State<ExamPage> {
     );
   }
 
-  String _getButtonLabel(String title) {
-    return testStartCounts[title] != null && testStartCounts[title]! > 0
-        ? 'Retake Test'
-        : 'Start';
-  }
+  // String _getButtonLabel(String title) {
+  //   return testStartCounts[title] != null && testStartCounts[title]! > 0
+  //       ? 'Retake Test'
+  //       : 'Start';
+  // }
 
   void _handleRetakeTestClick(String title, String description) {
     _incrementTestStartCount(title);
-    _navigateToRetakeTest(title, description);
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeRight,
-      DeviceOrientation.landscapeLeft,
-    ]);
+
   }
 
   Widget _bottomSheetType2(
@@ -518,7 +514,7 @@ class _ExamPageState extends State<ExamPage> {
                             );
                           },
                           onRetakeTestClick: () {
-                            _handleRetakeTestClick(title, description);
+                            _navigateToRetakeTest(title, description, question.id);
                           },
                         ),
                       );
@@ -551,11 +547,6 @@ class _ExamPageState extends State<ExamPage> {
 
   @override
   void dispose() {
-    // Reset orientation back to portrait when exiting this page
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
     super.dispose();
   }
 }
