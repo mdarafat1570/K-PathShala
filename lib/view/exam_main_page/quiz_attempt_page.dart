@@ -53,7 +53,7 @@ class RetakeTestPageState extends State<RetakeTestPage> {
     try {
       // Attempt to fetch the questions
       QuestionsModel? questionsModel =
-      await _repository.fetchReadingQuestions(widget.questionSetId);
+          await _repository.fetchReadingQuestions(widget.questionSetId);
 
       if (questionsModel != null && questionsModel.data != null) {
         _readingQuestions = questionsModel.data!.readingQuestions ?? [];
@@ -74,7 +74,9 @@ class RetakeTestPageState extends State<RetakeTestPage> {
 
       // Optionally, show an error message to the user (Snackbar, Dialog, etc.)
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load reading questions. Please try again.')),
+        SnackBar(
+            content:
+                Text('Failed to load reading questions. Please try again.')),
       );
     }
   }
@@ -139,11 +141,11 @@ class RetakeTestPageState extends State<RetakeTestPage> {
             //  Content for the selected tab
             Expanded(
               child: ListView(children: [
-                  buildGridContent(
-                    description: 'This is a sample description.',
-                    isSolved: false,
-                  ),
-                ]),
+                buildGridContent(
+                  description: 'This is a sample description.',
+                  isSolved: false,
+                ),
+              ]),
             ),
           ],
         ),
@@ -412,7 +414,7 @@ class RetakeTestPageState extends State<RetakeTestPage> {
 
   Widget buildGridContent({
     required String description,
-    required bool isSolved,// Add the required questionSetId parameter
+    required bool isSolved, // Add the required questionSetId parameter
   }) {
     return Padding(
       padding: const EdgeInsets.only(left: 10, right: 10, top: 5),
@@ -421,26 +423,32 @@ class RetakeTestPageState extends State<RetakeTestPage> {
         children: [
           SizedBox(
             width: MediaQuery.sizeOf(context).width * 0.45,
-            child:  Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                 Row(
-                   mainAxisAlignment: MainAxisAlignment.center,
-                   children: [
-                     Image.asset("assets/book-open.png", height: 16,),
-                     Text(
-                       " 읽기 (${_readingQuestions.length}Question)",
-                       style: const TextStyle(
-                         fontSize: 14,
-                         fontWeight: FontWeight.bold,
-                       ),
-                     ),
-                   ],
-                 ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      "assets/book-open.png",
+                      height: 16,
+                    ),
+                    Text(
+                      " 읽기 (${_readingQuestions.length}Question)",
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
                 Padding(
                   padding: const EdgeInsets.only(top: 5.0, bottom: 10),
-                  child: dataFound == false ? const Center(child: CircularProgressIndicator()) : _readingQuestions.isEmpty ?Center(child:Text("No Questions Available")) :
-                  questionsGrid(_readingQuestions.length, false),
+                  child: dataFound == false
+                      ? const Center(child: CircularProgressIndicator())
+                      : _readingQuestions.isEmpty
+                          ? Center(child: Text("No Questions Available"))
+                          : questionsGrid(_readingQuestions.length, false),
                 ),
               ],
             ),
@@ -453,7 +461,10 @@ class RetakeTestPageState extends State<RetakeTestPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset("assets/headphones.png", height: 16,),
+                    Image.asset(
+                      "assets/headphones.png",
+                      height: 16,
+                    ),
                     Text(
                       " 듣기 (${_readingQuestions.length}Question)",
                       style: const TextStyle(
@@ -491,12 +502,14 @@ class RetakeTestPageState extends State<RetakeTestPage> {
       itemCount: questionCount,
       itemBuilder: (context, index) {
         // Check if this index is selected
-        bool isSelected = (!isListening) ? solvedReadingQuestions.contains(index) : solvedListeningQuestions.contains(index);
+        bool isSelected = (!isListening)
+            ? solvedReadingQuestions.contains(index)
+            : solvedListeningQuestions.contains(index);
 
         return GestureDetector(
           onTap: () {
             setState(() {
-              if (!isListening){
+              if (!isListening) {
                 if (isSelected) {
                   // If already selected, remove from selectedIndexes
                   solvedReadingQuestions.remove(index);
@@ -528,7 +541,8 @@ class RetakeTestPageState extends State<RetakeTestPage> {
                 style: TextStyle(
                   fontSize: 18,
                   color: isSelected
-                      ? const Color.fromRGBO(245, 247, 250, 1) // Text color when selected
+                      ? const Color.fromRGBO(
+                          245, 247, 250, 1) // Text color when selected
                       : AppColor.navyBlue, // Default text color
                 ),
               ),
@@ -538,5 +552,4 @@ class RetakeTestPageState extends State<RetakeTestPage> {
       },
     );
   }
-
 }
