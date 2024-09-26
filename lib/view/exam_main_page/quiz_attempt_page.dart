@@ -33,7 +33,7 @@ class RetakeTestPageState extends State<RetakeTestPage> {
   int _selectedSolvedIndex = -1;
   int _selectedTotalIndex2 = -1;
   int _selectedSolvedIndex2 = -1;
-  Map<String, dynamic>? _selectedQuestionData;
+  ReadingQuestions? _selectedQuestionData;
   final ReadingQuestionsRepository _repository = ReadingQuestionsRepository();
   List<ReadingQuestions> _readingQuestions = [];
   bool dataFound = false;
@@ -143,11 +143,13 @@ class RetakeTestPageState extends State<RetakeTestPage> {
                     description: 'This is a sample description.',
                     isSolved: false,
                   ),
+                buildQuestionDetailContent(),
                 ]),
             ),
           ],
         ),
       ),
+      // bottomNavigationBar: ,
     );
   }
 
@@ -264,149 +266,152 @@ class RetakeTestPageState extends State<RetakeTestPage> {
   Widget buildQuestionDetailContent(// required bool isSolved,
       ) {
     if (_selectedQuestionData == null) return const SizedBox.shrink();
-    return Stack(
-      children: [
-        // Watermark Image
-        Positioned.fill(
-          child: Opacity(
-            opacity: 0.1, // Adjust opacity for the watermark effect
-            child: Image.asset(
-              'assets/new_App_icon.png',
-              height: 80,
-              width: 150,
-            ),
-          ),
-        ),
-        Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 12, right: 12),
-              child: Row(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      customText(_selectedQuestionData!['title'],
-                          TextType.paragraphTitle,
-                          fontSize: 20),
-                      const Gap(8),
-                      customText(_selectedQuestionData!['description'],
-                          TextType.subtitle,
-                          fontSize: 20),
-                      const Gap(28),
-                      Container(
-                        height: 135,
-                        width: 355,
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                                color: const Color.fromRGBO(
-                                  100,
-                                  100,
-                                  100,
-                                  1,
-                                ),
-                                width: 1.5),
-                            color: const Color.fromRGBO(26, 35, 126, 0.2),
-                            borderRadius: BorderRadius.circular(12)),
-                        child: Center(
-                            child: customText(
-                                _selectedQuestionData!['Question'],
-                                TextType.paragraphTitle)),
-                      )
-                    ],
-                  ),
-                  const Gap(48),
-                  Column(
-                    children:
-                        (_selectedQuestionData!['answers'] as List<String>)
-                            .asMap()
-                            .entries
-                            .map((entry) {
-                      int index = entry.key; // Get the index
-                      String answer = entry.value; // Get the answer
-                      return Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: InkWell(
-                          onTap: () {
-                            setState(() {
-                              _selectedSolvedIndex = index;
-                            });
-                          },
-                          child: SizedBox(
-                            height: 45,
-                            width: 355,
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 35,
-                                  height: 35,
-                                  decoration: BoxDecoration(
-                                      color: (_selectedSolvedIndex == index)
-                                          ? AppColor.black
-                                          : const Color.fromRGBO(
-                                              255, 255, 255, 1),
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                          width: 2, color: AppColor.black)),
-                                  child: Center(
-                                      child: Text(
-                                    '${index + 1}',
-                                    style: TextStyle(
-                                      color: (_selectedSolvedIndex == index)
-                                          ? const Color.fromRGBO(
-                                              255, 255, 255, 1)
-                                          : AppColor.black,
-                                    ),
-                                  )),
-                                ),
-                                const SizedBox(
-                                    width:
-                                        8), // Add spacing between circle and text
-                                Text(
-                                  answer,
-                                  style: const TextStyle(fontSize: 18),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ],
+    return Container(
+      height: MediaQuery.sizeOf(context).height* 0.8,
+      child: Stack(
+        children: [
+          // Watermark Image
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.1, // Adjust opacity for the watermark effect
+              child: Image.asset(
+                'assets/new_App_icon.png',
+                height: 80,
+                width: 150,
               ),
             ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 5),
-                child: Container(
-                  width: double.infinity,
-                  height: 60,
-                  decoration: const BoxDecoration(
-                      color: Color.fromRGBO(245, 245, 245, 1)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                        bottom: 5, left: 24, right: 25, top: 5),
-                    child: Row(
+          ),
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 12, right: 12),
+                child: Row(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        OutlinedButton(
-                          onPressed: () {},
-                          style: ButtonStyle(
-                            backgroundColor: WidgetStateProperty.all(
-                                const Color.fromRGBO(
-                                    26, 35, 126, 0.1)), // Wrap color
-                          ),
-                          child: const Text("Total questions"),
+                        customText(_selectedQuestionData?.title,
+                            TextType.paragraphTitle,
+                            fontSize: 20),
+                        const Gap(8),
+                        customText(_selectedQuestionData?.subtitle ?? "",
+                            TextType.subtitle,
+                            fontSize: 20),
+                        const Gap(28),
+                        Container(
+                          height: 135,
+                          width: 355,
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                  color: const Color.fromRGBO(
+                                    100,
+                                    100,
+                                    100,
+                                    1,
+                                  ),
+                                  width: 1.5),
+                              color: const Color.fromRGBO(26, 35, 126, 0.2),
+                              borderRadius: BorderRadius.circular(12)),
+                          child: Center(
+                              child: customText(
+                                  _selectedQuestionData?.question?? "",
+                                  TextType.paragraphTitle)),
                         )
                       ],
                     ),
-                  ),
+                    const Gap(48),
+                    Column(
+                      children:
+                          (_selectedQuestionData?.options?.map((option) => option.title as String).toList() ?? [])
+                              .asMap()
+                              .entries
+                              .map((entry) {
+                        int index = entry.key; // Get the index
+                        String answer = entry.value; // Get the answer
+                        return Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                _selectedSolvedIndex = index;
+                              });
+                            },
+                            child: SizedBox(
+                              height: 45,
+                              width: 355,
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 35,
+                                    height: 35,
+                                    decoration: BoxDecoration(
+                                        color: (_selectedSolvedIndex == index)
+                                            ? AppColor.black
+                                            : const Color.fromRGBO(
+                                                255, 255, 255, 1),
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                            width: 2, color: AppColor.black)),
+                                    child: Center(
+                                        child: Text(
+                                      '${index + 1}',
+                                      style: TextStyle(
+                                        color: (_selectedSolvedIndex == index)
+                                            ? const Color.fromRGBO(
+                                                255, 255, 255, 1)
+                                            : AppColor.black,
+                                      ),
+                                    )),
+                                  ),
+                                  const SizedBox(
+                                      width:
+                                          8), // Add spacing between circle and text
+                                  Text(
+                                    answer,
+                                    style: const TextStyle(fontSize: 18),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
                 ),
               ),
-            )
-          ],
-        ),
-      ],
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 5),
+                  child: Container(
+                    width: double.infinity,
+                    height: 60,
+                    decoration: const BoxDecoration(
+                        color: Color.fromRGBO(245, 245, 245, 1)),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          bottom: 5, left: 24, right: 25, top: 5),
+                      child: Row(
+                        children: [
+                          OutlinedButton(
+                            onPressed: () {},
+                            style: ButtonStyle(
+                              backgroundColor: WidgetStateProperty.all(
+                                  const Color.fromRGBO(
+                                      26, 35, 126, 0.1)), // Wrap color
+                            ),
+                            child: const Text("Total questions"),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -500,9 +505,11 @@ class RetakeTestPageState extends State<RetakeTestPage> {
                 if (isSelected) {
                   // If already selected, remove from selectedIndexes
                   solvedReadingQuestions.remove(index);
+                  _selectedQuestionData = null;
                 } else {
                   // If not selected, add to selectedIndexes
                   solvedReadingQuestions.add(index);
+                  _selectedQuestionData = _readingQuestions[index];
                 }
               } else {
                 if (isSelected) {
