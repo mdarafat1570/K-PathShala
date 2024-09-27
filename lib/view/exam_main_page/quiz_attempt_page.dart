@@ -23,7 +23,7 @@ class RetakeTestPage extends StatefulWidget {
   RetakeTestPageState createState() => RetakeTestPageState();
 }
 
-class RetakeTestPageState extends State<RetakeTestPage> {
+class RetakeTestPageState extends State<RetakeTestPage> with WidgetsBindingObserver {
   int _remainingTime = 3600;
 
   late Timer _timer;
@@ -37,16 +37,50 @@ class RetakeTestPageState extends State<RetakeTestPage> {
   List<ReadingQuestions> _readingQuestions = [];
   bool dataFound = false;
   bool isListViewVisible = true;
+  static const platform = MethodChannel('com.inferloom.kpathshala/exit_confirmation');
 
   @override
   void initState() {
     super.initState();
     // _startTimer();
+    WidgetsBinding.instance.addObserver(this);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
     ]);
+    // platform.setMethodCallHandler((call) async {
+    //   log("Ureka------------------------");
+    //   if (call.method == 'onUserLeaveHint') {
+    //     // return await _showExitExamConfirmation(context);
+    //   }
+    //   return null;
+    // });
     _fetchReadingQuestions();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // The app has come back to the foreground
+      // Here you can check if the user was taking an exam
+      _showDisqualificationDialog(context);
+    }
+  }
+
+  Future<void> _showDisqualificationDialog(BuildContext context) async {
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Disqualification"),
+        content: Text("You have exited the exam. You are now disqualified."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text("OK"),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _fetchReadingQuestions() async {
@@ -57,7 +91,6 @@ class RetakeTestPageState extends State<RetakeTestPage> {
 
       if (questionsModel != null && questionsModel.data != null) {
         _readingQuestions = questionsModel.data!.readingQuestions ?? [];
-        log(jsonEncode(_readingQuestions));
         setState(() {
           dataFound = true;
         });
@@ -73,11 +106,13 @@ class RetakeTestPageState extends State<RetakeTestPage> {
       log('Stack trace: $stackTrace');
 
       // Optionally, show an error message to the user (Snackbar, Dialog, etc.)
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content:
-                Text('Failed to load reading questions. Please try again.')),
-      );
+          if (mounted){
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content:
+                  Text('Failed to load reading questions. Please try again.')),
+        );
+      }
     }
   }
 
@@ -115,10 +150,38 @@ class RetakeTestPageState extends State<RetakeTestPage> {
     );
   }
 
+  Future<bool?> _showExitExamConfirmation(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Exit Exam"),
+        content: const Text(
+          "If you close this page, all your progress will be permanently lost. "
+              "Are you sure you want to exit the exam?",
+          style: TextStyle(fontSize: 16.0),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false), // Stay on the page
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true), // Exit the page
+            child: const Text(
+              "Exit",
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   void dispose() {
     // _timer.cancel();
     super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -144,7 +207,10 @@ class RetakeTestPageState extends State<RetakeTestPage> {
             isListViewVisible = true;
           });
         } else {
-          Navigator.pop(context);
+          final bool shouldPop = await _showExitExamConfirmation(context) ?? false;
+          if (context.mounted && shouldPop) {
+            Navigator.pop(context);
+          }
         }
       },
       child: Scaffold(
