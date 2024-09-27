@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
-import 'dashboard_page.dart';
 
 class DashboardPageShimmerEffect extends StatefulWidget {
+  const DashboardPageShimmerEffect({super.key});
+
   @override
-  _DashboardPageShimmerEffectState createState() =>
-      _DashboardPageShimmerEffectState();
+  DashboardPageShimmerEffectState createState() =>
+      DashboardPageShimmerEffectState();
 }
 
-class _DashboardPageShimmerEffectState
+class DashboardPageShimmerEffectState
     extends State<DashboardPageShimmerEffect> {
   @override
   void initState() {
@@ -179,13 +180,13 @@ class _DashboardPageShimmerEffectState
     );
   }
 
-  Widget _buildContentBox(String title, Color color) {
-    return Container(
-      height: 100,
-      width: 100,
-      color: color,
-      child: Center(
-          child: Text(title, style: const TextStyle(color: Colors.white))),
-    );
-  }
+  // Widget _buildContentBox(String title, Color color) {
+  //   return Container(
+  //     height: 100,
+  //     width: 100,
+  //     color: color,
+  //     child: Center(
+  //         child: Text(title, style: const TextStyle(color: Colors.white))),
+  //   );
+  // }
 }

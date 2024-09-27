@@ -1,5 +1,5 @@
 import 'package:kpathshala/app_base/common_imports.dart';
-import 'package:kpathshala/view/exam_main_page/payment_example.dart';
+import 'package:kpathshala/view/exam_main_page/widgets/payment_example.dart';
 
 class BottomSheetPage extends StatefulWidget {
   final BuildContext context;

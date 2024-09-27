@@ -4,7 +4,7 @@ import 'package:kpathshala/model/package_model/package_model.dart';
 import 'package:kpathshala/repository/package_service_repository.dart';
 import 'package:kpathshala/view/exam_main_page/widgets/exam_purchase_page_shimmer.dart';
 import 'package:kpathshala/view/exam_main_page/bottom_sheets/bottom_panel_page_course_purchase.dart';
-import 'package:kpathshala/view/exam_main_page/ubt_exam_page.dart';
+import 'package:kpathshala/view/exam_main_page/ubt_mock_test_page.dart';
 
 class ExamPurchasePage extends StatefulWidget {
   const ExamPurchasePage({super.key});
@@ -124,7 +124,7 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                                 context,
                                                 MaterialPageRoute(
                                                     builder: (context) =>
-                                                        ExamPage(
+                                                        UBTMockTestPage(
                                                             packageId:
                                                                 package.id!)),
                                               );

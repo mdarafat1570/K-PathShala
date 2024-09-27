@@ -1,5 +1,4 @@
-import 'dart:convert';
-import 'dart:developer';
+
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/authentication/base_repository.dart';
 import '../../model/dashboard_page_model/dashboard_page_model.dart';
@@ -15,8 +14,6 @@ class DashboardRepository {
     try {
       final response = await _baseRepository
           .getRequest(url); // Use BaseRepository's getRequest
-
-      log(jsonEncode(response));
       return DashboardPageModel.fromJson(
           response['data']); // Directly return parsed JSON
     } catch (e) {

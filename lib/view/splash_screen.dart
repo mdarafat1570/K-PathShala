@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';

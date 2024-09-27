@@ -13,11 +13,11 @@ class QuestionsModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['status'] = this.status;
+    data['status'] = status;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
-    data['message'] = this.message;
+    data['message'] = message;
     return data;
   }
 }
@@ -42,10 +42,10 @@ class Data {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['duration'] = this.duration;
-    data['total_question'] = this.totalQuestion;
-    if (this.readingQuestions != null) {
-      data['reading_questions'] = this.readingQuestions!.map((v) => v.toJson()).toList();
+    data['duration'] = duration;
+    data['total_question'] = totalQuestion;
+    if (readingQuestions != null) {
+      data['reading_questions'] = readingQuestions!.map((v) => v.toJson()).toList();
     }
     return data;
   }

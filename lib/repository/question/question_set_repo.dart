@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'dart:developer';
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/authentication/base_repository.dart';
 import 'package:kpathshala/model/question_model/question_set_model.dart';
@@ -19,7 +17,6 @@ class QuestionSetRepository {
 
       // Parse the JSON response and log the result
       final questionSetModel = QuestionSetModel.fromJson(response);
-      log(jsonEncode(questionSetModel));
 
       // Return the data from the question set model
       return questionSetModel.data!;

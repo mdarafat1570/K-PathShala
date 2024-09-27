@@ -1,4 +1,4 @@
-import 'dart:io'; // Add this to handle local file paths
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
@@ -123,48 +123,48 @@ class BannerCarouselState extends State<BannerCarousel> {
   }
 
   // Function to build the image
-  Widget _buildImage(String? imagePath) {
-    if (imagePath == null || imagePath.isEmpty) {
-      return const Center(
-        child: Icon(
-          Icons.broken_image,
-          color: Colors.grey,
-          size: 40,
-        ),
-      );
-    }
-
-    if (imagePath.startsWith('http')) {
-      // Image from network (API)
-      return Image.network(
-        imagePath,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return const Center(
-            child: Icon(
-              Icons.broken_image,
-              color: Colors.grey,
-              size: 40,
-            ),
-          );
-        },
-      );
-    } else {
-      // Image from local storage
-      final File imageFile = File(imagePath);
-      return Image.file(
-        imageFile,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return const Center(
-            child: Icon(
-              Icons.broken_image,
-              color: Colors.grey,
-              size: 40,
-            ),
-          );
-        },
-      );
-    }
-  }
+  // Widget _buildImage(String? imagePath) {
+  //   if (imagePath == null || imagePath.isEmpty) {
+  //     return const Center(
+  //       child: Icon(
+  //         Icons.broken_image,
+  //         color: Colors.grey,
+  //         size: 40,
+  //       ),
+  //     );
+  //   }
+  //
+  //   if (imagePath.startsWith('http')) {
+  //     // Image from network (API)
+  //     return Image.network(
+  //       imagePath,
+  //       fit: BoxFit.cover,
+  //       errorBuilder: (context, error, stackTrace) {
+  //         return const Center(
+  //           child: Icon(
+  //             Icons.broken_image,
+  //             color: Colors.grey,
+  //             size: 40,
+  //           ),
+  //         );
+  //       },
+  //     );
+  //   } else {
+  //     // Image from local storage
+  //     final File imageFile = File(imagePath);
+  //     return Image.file(
+  //       imageFile,
+  //       fit: BoxFit.cover,
+  //       errorBuilder: (context, error, stackTrace) {
+  //         return const Center(
+  //           child: Icon(
+  //             Icons.broken_image,
+  //             color: Colors.grey,
+  //             size: 40,
+  //           ),
+  //         );
+  //       },
+  //     );
+  //   }
+  // }
 }

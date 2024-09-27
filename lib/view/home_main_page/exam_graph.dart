@@ -5,7 +5,7 @@ import 'package:kpathshala/model/dashboard_page_model/dashboard_page_model.dart'
 class ExamGraph extends StatelessWidget {
   final Exam exam;
 
-  ExamGraph({required this.exam});
+  const ExamGraph({super.key, required this.exam});
 
   @override
   Widget build(BuildContext context) {
@@ -13,8 +13,8 @@ class ExamGraph extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: BarChart(
         BarChartData(
-          gridData: FlGridData(show: false),
-          titlesData: FlTitlesData(show: false),
+          gridData: const FlGridData(show: false),
+          titlesData: const FlTitlesData(show: false),
           borderData: FlBorderData(show: false),
           barGroups: [
             BarChartGroupData(

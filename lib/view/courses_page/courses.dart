@@ -1,9 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // For orientation control
+import 'package:flutter/services.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
-import 'package:kpathshala/view/common_widget/custom_background.dart';
 
-import '../exam_main_page/quiz_attempt_page.dart';
 
 class Courses extends StatefulWidget {
   const Courses({super.key});
@@ -15,29 +12,15 @@ class Courses extends StatefulWidget {
 class _CoursesState extends State<Courses> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return  Scaffold(
       body: GradientBackground(
         child: Padding(
-          padding:EdgeInsets.all(16.0),
+          padding:const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Upcoming"),
-              // ElevatedButton(
-              //   onPressed: () {
-              //
-              //     Navigator.push(
-              //       context,
-              //       MaterialPageRoute(
-              //         builder: (context) => const RetakeTestPage(
-              //           title: '',
-              //           description: '',
-              //         ),
-              //       ),
-              //     );
-              //   },
-              //   child: const Text('Trying'),
-              // ),
+              Image.asset('assets/new_App_icon.png', height: 150,),
+              const Text("Stay tuned premium\ncourses are coming soon",textAlign: TextAlign.center, style: TextStyle(color: AppColor.navyBlue, fontSize: 20,),),
             ],
           ),
         ),

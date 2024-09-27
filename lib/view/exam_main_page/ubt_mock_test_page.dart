@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:kpathshala/app_base/common_imports.dart';
@@ -12,16 +11,16 @@ import 'package:kpathshala/view/exam_main_page/widgets/ubt_exam_row.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kpathshala/model/item_list.dart';
 
-class ExamPage extends StatefulWidget {
+class UBTMockTestPage extends StatefulWidget {
   final int packageId;
 
-  const ExamPage({super.key, required this.packageId});
+  const UBTMockTestPage({super.key, required this.packageId});
 
   @override
-  State<ExamPage> createState() => _ExamPageState();
+  State<UBTMockTestPage> createState() => _UBTMockTestPageState();
 }
 
-class _ExamPageState extends State<ExamPage> {
+class _UBTMockTestPageState extends State<UBTMockTestPage> {
   final List<Map<String, dynamic>> courses = courseList();
   List<QuestionSets> questionSet = [];
   QuestionSetResults? questionSetResults;
@@ -53,9 +52,6 @@ class _ExamPageState extends State<ExamPage> {
           totalQuestionSet: 0,
         );
         dataFound = true;
-        log("-----------Data------");
-        log(jsonEncode(questionSet));
-        log("-----------Data------");
       });
     } catch (e) {
       log(e.toString()); // Handle the exception
@@ -76,19 +72,19 @@ class _ExamPageState extends State<ExamPage> {
     });
   }
 
-  Future<void> _saveStartCounts() async {
-    final prefs = await SharedPreferences.getInstance();
-    for (var entry in testStartCounts.entries) {
-      await prefs.setInt(entry.key, entry.value);
-    }
-  }
+  // Future<void> _saveStartCounts() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   for (var entry in testStartCounts.entries) {
+  //     await prefs.setInt(entry.key, entry.value);
+  //   }
+  // }
 
-  void _incrementTestStartCount(String courseTitle) {
-    setState(() {
-      testStartCounts[courseTitle] = (testStartCounts[courseTitle] ?? 0) + 1;
-    });
-    _saveStartCounts();
-  }
+  // void _incrementTestStartCount(String courseTitle) {
+  //   setState(() {
+  //     testStartCounts[courseTitle] = (testStartCounts[courseTitle] ?? 0) + 1;
+  //   });
+  //   _saveStartCounts();
+  // }
 
   // void _decrementTestStartCount(String courseTitle) {
   //   setState(() {
@@ -173,10 +169,10 @@ class _ExamPageState extends State<ExamPage> {
   //       : 'Start';
   // }
 
-  void _handleRetakeTestClick(String title, String description) {
-    _incrementTestStartCount(title);
-
-  }
+  // void _handleRetakeTestClick(String title, String description) {
+  //   _incrementTestStartCount(title);
+  //
+  // }
 
   Widget _bottomSheetType2(
       BuildContext context, String title, String description) {

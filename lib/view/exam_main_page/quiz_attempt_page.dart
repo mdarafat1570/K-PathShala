@@ -41,7 +41,7 @@ class RetakeTestPageState extends State<RetakeTestPage> {
   @override
   void initState() {
     super.initState();
-    _startTimer();
+    // _startTimer();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
@@ -117,7 +117,7 @@ class RetakeTestPageState extends State<RetakeTestPage> {
 
   @override
   void dispose() {
-    // _timer.cancel();
+    _timer.cancel();
     super.dispose();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -136,8 +136,6 @@ class RetakeTestPageState extends State<RetakeTestPage> {
     return PopScope(
       canPop: false,
       onPopInvoked: (bool didPop) async {
-        log("dip pop $didPop");
-
         if (didPop) {
           return;
         }

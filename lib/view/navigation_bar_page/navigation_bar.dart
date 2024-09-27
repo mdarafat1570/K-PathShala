@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
@@ -20,9 +20,9 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
   int countIndex = 0;
   bool isDialogVisible = false;
   List<Widget> widgetList = [
-    DashboardPage(),
-    Courses(),
-    ExamPurchasePage(),
+    const DashboardPage(),
+    const Courses(),
+    const ExamPurchasePage(),
   ];
 
   @override
@@ -73,7 +73,6 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
     }
   }
 
-  @override
   // void didChangeAppLifecycleState(AppLifecycleState state) {
   //   if (state == AppLifecycleState.paused ||
   //       state == AppLifecycleState.inactive) {
@@ -105,26 +104,22 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
       imageProvider = const AssetImage('assets/new_App_icon.png');
     }
 
-    return WillPopScope(
-      onWillPop: () async {
-        // Check if user is on Courses or ExamPurchasePage
-        if (countIndex == 1 || countIndex == 2) {
-          // Navigate back to DashboardPage when back button is pressed
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (bool didPop) async {
+        if (didPop) {
+          return;
+        }
+        if (countIndex > 0) {
           setState(() {
-            countIndex =
-                0; // This sets the index to 0, which is the DashboardPage
+            countIndex = 0;
           });
-          return false; // Prevent default back button action
-        }
-
-        if (countIndex == 0) {
-          // Show confirmation dialog only if on the Dashboard page
+        } else {
           bool shouldExit = await showExitConfirmation(context);
-          return shouldExit;
+          if(shouldExit) {
+            SystemNavigator.pop();
+          }
         }
-
-        // For any other index, allow normal back navigation
-        return true;
       },
       child: GradientBackground(
         child: Scaffold(

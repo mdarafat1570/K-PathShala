@@ -8,10 +8,9 @@ import 'package:kpathshala/repository/dashboard_repository/dashboard_page_reposi
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:kpathshala/repository/question/UbuyPage.dart';
-import 'package:kpathshala/view/exam_main_page/ubt_exam_page.dart';
+import 'package:kpathshala/view/exam_main_page/ubt_mock_test_page.dart';
 import 'package:kpathshala/view/home_main_page/dashboard_image_carousel.dart';
-import 'package:kpathshala/view/home_main_page/shimmer_effect_deshboard.dart';
+import 'package:kpathshala/view/home_main_page/shimmer_effect_dashboard.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -42,6 +41,7 @@ class _DashboardPageState extends State<DashboardPage> {
   String vidCount = "0";
   int _currentTimer = 1;
   bool dataFound = false;
+  Timer? _timer;
 
   DashboardPageModel? dashboardPageModel;
 
@@ -52,6 +52,14 @@ class _DashboardPageState extends State<DashboardPage> {
     fetchData();
   }
 
+  @override
+  void dispose() {
+    if (_timer != null) {
+      _timer!.cancel();
+    }
+    super.dispose();
+  }
+
   void fetchData() async {
     try {
       DashboardRepository repository = DashboardRepository();
@@ -60,7 +68,6 @@ class _DashboardPageState extends State<DashboardPage> {
 
       setState(() {
         dashboardPageModel = dashModel;
-        log(jsonEncode(dashModel));
         dataFound = true;
       });
     } catch (e) {
@@ -89,32 +96,11 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
-  Future<bool> _onWillPop() async {
-    return await showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text("Exit App"),
-            content: const Text("Are you sure you want to exit the app?"),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text("No"),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text("Yes"),
-              ),
-            ],
-          ),
-        ) ??
-        false;
-  }
-
   void _startCountdown() {
     const interval = Duration(seconds: 1);
 
     if (mounted) {
-      Timer.periodic(interval, (Timer t) {
+      _timer = Timer.periodic(interval, (Timer t) {
         setState(() {
           if (_currentTimer > 0) {
             _currentTimer -= 1;
@@ -131,7 +117,7 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: dataFound == false
-          ? DashboardPageShimmerEffect()
+          ? const DashboardPageShimmerEffect()
           : SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -175,13 +161,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         // if (dashboardPageModel?.syllabus != null) // Example of another null check
                         InkWell(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    ExamScreen(), // Replace with the actual ID
-                              ),
-                            );
+
                           },
                           child: _buildGridItem(
                             icon: Icons.book,
@@ -209,7 +189,7 @@ class _DashboardPageState extends State<DashboardPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => ExamPage(
+                                  builder: (context) => UBTMockTestPage(
                                     packageId:
                                         dashboardPageModel!.exam!.packageId ??
                                             -1,
