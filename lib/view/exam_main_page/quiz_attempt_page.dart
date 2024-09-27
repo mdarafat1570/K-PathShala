@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
+import 'package:kpathshala/model/question_model/answer_model.dart';
 import 'package:kpathshala/model/question_model/reading_question_page_model.dart';
 import 'package:kpathshala/repository/question/reading_questions_repository.dart';
 
@@ -26,12 +27,11 @@ class RetakeTestPageState extends State<RetakeTestPage> {
   int _remainingTime = 3600;
 
   late Timer _timer;
-  int _currentTabIndex = 0;
-
-  int _selectedTotalIndex = -1;
-  int _selectedSolvedIndex = -1;
-  int _selectedTotalIndex2 = -1;
-  int _selectedSolvedIndex2 = -1;
+  // int _currentTabIndex = 0;
+  //
+  // int _selectedTotalIndex = -1;
+  // int _selectedTotalIndex2 = -1;
+  // int _selectedSolvedIndex2 = -1;
   ReadingQuestions? _selectedQuestionData;
   final ReadingQuestionsRepository _repository = ReadingQuestionsRepository();
   List<ReadingQuestions> _readingQuestions = [];
@@ -117,7 +117,7 @@ class RetakeTestPageState extends State<RetakeTestPage> {
 
   @override
   void dispose() {
-    _timer.cancel();
+    // _timer.cancel();
     super.dispose();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -316,12 +316,28 @@ class RetakeTestPageState extends State<RetakeTestPage> {
                               topLeft: Radius.circular(10),
                               topRight: Radius.circular(10),
                             )) : null,
-                        child: Text(
-                          'Total Questions',
-                          style: TextStyle(color: isListViewVisible ? Colors.white : AppColor.grey700, fontSize: 14),
-                          overflow: TextOverflow.ellipsis,
+                        child: RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: "Total Questions",
+                                style: TextStyle(
+                                  color: isListViewVisible ? Colors.white : AppColor.grey700,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              if(!isListViewVisible)
+                              TextSpan(
+                                text: "-${_readingQuestions.length}",
+                                style:const TextStyle(
+                                  color: AppColor.grey700,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
                         )),
-                    if (!isListViewVisible)
+                        if (!isListViewVisible)
                     Container(
                       height: 20,
                       width: 2,
@@ -329,9 +345,9 @@ class RetakeTestPageState extends State<RetakeTestPage> {
                     ),
                     Container(
                       padding: const EdgeInsets.all(12.0),
-                      child: const Text(
-                        'Solved Questions',
-                        style: TextStyle(color: AppColor.grey700, fontSize: 14),
+                      child: Text(
+                        'Solved Questions-${solvedReadingQuestions.length}',
+                        style: const TextStyle(color: AppColor.grey700, fontSize: 14),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -342,9 +358,9 @@ class RetakeTestPageState extends State<RetakeTestPage> {
                     ),
                     Container(
                       padding: const EdgeInsets.all(12.0),
-                      child: const Text(
-                        'Unsolved Questions',
-                        style: TextStyle(color: AppColor.grey700, fontSize: 14),
+                      child: Text(
+                        'Unsolved Questions-${_readingQuestions.length - solvedReadingQuestions.length}',
+                        style: const TextStyle(color: AppColor.grey700, fontSize: 14),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -390,6 +406,14 @@ class RetakeTestPageState extends State<RetakeTestPage> {
     if (_selectedQuestionData == null) return const SizedBox.shrink();
     final options = _selectedQuestionData?.options ?? [];
     bool isTextType = options.isNotEmpty && options.first.optionType == 'text';
+    int selectedSolvedIndex = -1;
+    if (solvedReadingQuestions.any((answer) => answer.questionId == _selectedQuestionData?.id)) {
+      // Find the solved question's matching index in options
+      selectedSolvedIndex = options.indexWhere((option) =>
+      option.id == solvedReadingQuestions.firstWhere(
+              (answer) => answer.questionId == _selectedQuestionData?.id).questionOptionId);
+    }
+
     return Stack(
       children: [
         // Watermark Image
@@ -522,70 +546,86 @@ class RetakeTestPageState extends State<RetakeTestPage> {
                         ? ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                            itemCount: options.length,
-                            itemBuilder: (context, index) {
-                              String answer =
-                                  options[index].title; // Access option title
-                              return Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      _selectedSolvedIndex = index;
-                                    });
-                                  },
-                                  child: SizedBox(
-                                    height: 45,
-                                    width: 355,
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          width: 35,
-                                          height: 35,
-                                          decoration: BoxDecoration(
-                                              color: (_selectedSolvedIndex ==
-                                                      index)
-                                                  ? AppColor.black
-                                                  : const Color.fromRGBO(
-                                                      255, 255, 255, 1),
-                                              shape: BoxShape.circle,
-                                              border: Border.all(
-                                                  width: 2,
-                                                  color: AppColor.black)),
-                                          child: Center(
-                                              child: Text(
-                                            '${index + 1}',
-                                            style: TextStyle(
-                                              color: (_selectedSolvedIndex ==
-                                                      index)
-                                                  ? const Color.fromRGBO(
-                                                      255, 255, 255, 1)
-                                                  : AppColor.black,
-                                            ),
-                                          )),
+                      itemCount: options.length,
+                      itemBuilder: (context, index) {
+                        options.shuffle();
+                        String answer = options[index].title;
+                        int answerId = options[index].id;
+
+                        return Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                selectedSolvedIndex = index;
+
+                                // Create a new Answers object based on the selected option
+                                Answers selectedAnswer = Answers(
+                                  questionId: _selectedQuestionData?.id,
+                                  questionOptionId: answerId,
+                                );
+
+                                // Check if the answer already exists in solvedReadingQuestions
+                                int existingAnswerIndex = solvedReadingQuestions.indexWhere(
+                                      (answer) => answer.questionId == selectedAnswer.questionId,
+                                );
+
+                                if (existingAnswerIndex != -1) {
+                                  // Update the existing answer with the new selected option ID
+                                  solvedReadingQuestions[existingAnswerIndex].questionOptionId = answerId;
+                                } else {
+                                  // Add the new answer to the list if it doesn't exist
+                                  solvedReadingQuestions.add(selectedAnswer);
+                                }
+                              });
+                            },
+                            child: SizedBox(
+                              height: 45,
+                              width: 355,
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 35,
+                                    height: 35,
+                                    decoration: BoxDecoration(
+                                      color: (selectedSolvedIndex == index)
+                                          ? AppColor.black
+                                          : const Color.fromRGBO(255, 255, 255, 1),
+                                      shape: BoxShape.circle,
+                                      border: Border.all(width: 2, color: AppColor.black),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        '${index + 1}',
+                                        style: TextStyle(
+                                          color: (selectedSolvedIndex == index)
+                                              ? const Color.fromRGBO(255, 255, 255, 1)
+                                              : AppColor.black,
                                         ),
-                                        const SizedBox(width: 8),
-                                        // Spacing between circle and text
-                                        Expanded(
-                                          child: Text(
-                                            answer,
-                                            style: const TextStyle(fontSize: 18),
-                                          ),
-                                        ),
-                                        if((options[index].subtitle ?? "").isNotEmpty)
-                                        Expanded(
-                                          child: Text(
-                                            options[index].subtitle ?? "",
-                                            style: const TextStyle(fontSize: 18),
-                                          ),
-                                        ),
-                                      ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                              );
-                            },
-                          )
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      answer,
+                                      style: const TextStyle(fontSize: 18),
+                                    ),
+                                  ),
+                                  if ((options[index].subtitle ?? "").isNotEmpty)
+                                    Expanded(
+                                      child: Text(
+                                        options[index].subtitle ?? "",
+                                        style: const TextStyle(fontSize: 18),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    )
                         : GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -598,14 +638,35 @@ class RetakeTestPageState extends State<RetakeTestPage> {
                             ),
                             itemCount: options.length,
                             itemBuilder: (context, index) {
+                              options.shuffle();
                               String answer =
-                                  options[index].imageUrl ?? ""; // Access option title
+                                  options[index].imageUrl ?? "";
+                              int answerId = options[index].id;
                               return Padding(
                                 padding: const EdgeInsets.all(8),
                                 child: InkWell(
                                   onTap: () {
                                     setState(() {
-                                      _selectedSolvedIndex = index;
+                                      selectedSolvedIndex = index;
+
+                                      // Create a new Answers object based on the selected option
+                                      Answers selectedAnswer = Answers(
+                                        questionId: _selectedQuestionData?.id,
+                                        questionOptionId: answerId,
+                                      );
+
+                                      // Check if the answer already exists in solvedReadingQuestions
+                                      int existingAnswerIndex = solvedReadingQuestions.indexWhere(
+                                            (answer) => answer.questionId == selectedAnswer.questionId,
+                                      );
+
+                                      if (existingAnswerIndex != -1) {
+                                        // Update the existing answer with the new selected option ID
+                                        solvedReadingQuestions[existingAnswerIndex].questionOptionId = answerId;
+                                      } else {
+                                        // Add the new answer to the list if it doesn't exist
+                                        solvedReadingQuestions.add(selectedAnswer);
+                                      }
                                     });
                                   },
                                   child: SizedBox(
@@ -617,7 +678,7 @@ class RetakeTestPageState extends State<RetakeTestPage> {
                                           width: 35,
                                           height: 35,
                                           decoration: BoxDecoration(
-                                              color: (_selectedSolvedIndex ==
+                                              color: (selectedSolvedIndex ==
                                                       index)
                                                   ? AppColor.black
                                                   : const Color.fromRGBO(
@@ -630,7 +691,7 @@ class RetakeTestPageState extends State<RetakeTestPage> {
                                               child: Text(
                                             '${index + 1}',
                                             style: TextStyle(
-                                              color: (_selectedSolvedIndex ==
+                                              color: (selectedSolvedIndex ==
                                                       index)
                                                   ? const Color.fromRGBO(
                                                       255, 255, 255, 1)
@@ -772,7 +833,7 @@ class RetakeTestPageState extends State<RetakeTestPage> {
     );
   }
 
-  List<int> solvedReadingQuestions = [];
+  List<Answers> solvedReadingQuestions = [];
   List<int> solvedListeningQuestions = [];
 
   GridView questionsGrid(int questionCount, bool isListening) {
@@ -789,23 +850,15 @@ class RetakeTestPageState extends State<RetakeTestPage> {
       itemBuilder: (context, index) {
         // Check if this index is selected
         bool isSelected = (!isListening)
-            ? solvedReadingQuestions.contains(index)
+            ? solvedReadingQuestions.any((answer) => answer.questionId == _readingQuestions[index].id)
             : solvedListeningQuestions.contains(index);
 
         return GestureDetector(
           onTap: () {
             setState(() {
-              if (!isListening) {
-                if (isSelected) {
-                  // If already selected, remove from selectedIndexes
-                  solvedReadingQuestions.remove(index);
-                  _selectedQuestionData = null;
-                } else {
-                  // If not selected, add to selectedIndexes
-                  solvedReadingQuestions.add(index);
-                  _selectedQuestionData = _readingQuestions[index];
-                  isListViewVisible = false;
-                }
+              if (!isListening){
+                _selectedQuestionData = _readingQuestions[index];
+                isListViewVisible = false;
               } else {
                 if (isSelected) {
                   // If already selected, remove from selectedIndexes
@@ -820,19 +873,19 @@ class RetakeTestPageState extends State<RetakeTestPage> {
           child: Container(
             decoration: BoxDecoration(
               color: isSelected
-                  ? AppColor.skyBlue // Selected color
-                  : const Color.fromRGBO(245, 247, 250, 1), // Default color
+                  ? AppColor.skyBlue
+                  : const Color.fromRGBO(245, 247, 250, 1),
               borderRadius: BorderRadius.circular(15),
             ),
             child: Center(
               child: Text(
-                '${index + 1}', // Button text (1, 2, 3, ...)
+                '${index + 1}',
                 style: TextStyle(
                   fontSize: 18,
                   color: isSelected
                       ? const Color.fromRGBO(
-                          245, 247, 250, 1) // Text color when selected
-                      : AppColor.navyBlue, // Default text color
+                          245, 247, 250, 1)
+                      : AppColor.navyBlue,
                 ),
               ),
             ),
