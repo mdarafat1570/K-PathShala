@@ -11,9 +11,18 @@ class Courses extends StatefulWidget {
 class _CoursesState extends State<Courses> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body:
-          GradientBackground(child: Center(child: Text("Under Construction"))),
+    return Scaffold(
+      body: GradientBackground(
+          child: Column(
+        children: [
+          Center(
+              child: InkWell(onTap: () {}, child: Text("Under Construction"))),
+          Center(
+              child: InkWell(onTap: () {}, child: Text("Under Construction"))),
+          Center(
+              child: InkWell(onTap: () {}, child: Text("Under Construction"))), 
+        ],
+      )),
     );
   }
 }
