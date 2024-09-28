@@ -20,7 +20,7 @@ class _PaymentHistoryState extends State<PaymentHistory> {
   @override
   void initState() {
     super.initState();
-    _paymentHistoryFuture = PaymentHistoryRepository().fetchPaymentHistory();
+    _paymentHistoryFuture = PaymentHistoryRepository().fetchPaymentHistory(context);
   }
 
   @override

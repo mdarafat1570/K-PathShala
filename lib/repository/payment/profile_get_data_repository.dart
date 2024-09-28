@@ -1,15 +1,16 @@
 import 'dart:developer';
 
+import 'package:flutter/material.dart';
 import 'package:kpathshala/authentication/base_repository.dart';
 import 'package:kpathshala/model/profile_model/profile_get_data_model.dart';
 import 'package:kpathshala/api/api_container.dart';
 
 class ProfileRepository {
   final BaseRepository _baseRepository = BaseRepository();
-  Future<ProfileGetDataModel?> fetchProfile() async {
+  Future<ProfileGetDataModel?> fetchProfile(BuildContext context) async {
     try {
       final response =
-          await _baseRepository.getRequest(KpatshalaProfaile.profileData);
+          await _baseRepository.getRequest(KpatshalaProfaile.profileData,context: context);
 
       if (response['status'] == 'success') {
         log("This is profile data : ${response}");

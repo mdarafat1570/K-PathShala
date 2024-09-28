@@ -27,7 +27,7 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
 
   void _fetchPackages() {
     _packagesFuture = _packageRepository
-        .fetchPackages()
+        .fetchPackages(context)
         .then((packageModel) => packageModel.data ?? []);
   }
 

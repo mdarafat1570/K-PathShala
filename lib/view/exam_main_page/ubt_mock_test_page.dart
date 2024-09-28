@@ -41,7 +41,7 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
 
       // Access fetchQuestionSets as an instance method
       QuestionSetData question =
-          await repository.fetchQuestionSets(packageId: widget.packageId);
+          await repository.fetchQuestionSets(packageId: widget.packageId,context: context);
 
       setState(() {
         questionSet = question.questionSets ?? [];

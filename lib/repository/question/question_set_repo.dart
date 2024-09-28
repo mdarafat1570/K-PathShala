@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/authentication/base_repository.dart';
 import 'package:kpathshala/model/question_model/question_set_model.dart';
@@ -7,13 +8,13 @@ class QuestionSetRepository {
       BaseRepository(); // Utilize BaseRepository
 
   // Fetch question sets for a specific package
-  Future<QuestionSetData> fetchQuestionSets({required int packageId}) async {
+  Future<QuestionSetData> fetchQuestionSets({required int packageId,required BuildContext context}) async {
     try {
       // Build the request URL with package ID
       final url = '${KpatshalaquestionSet.questionSet}?package_id=$packageId';
 
       // Perform the GET request using BaseRepository
-      final response = await _baseRepository.getRequest(url);
+      final response = await _baseRepository.getRequest(url ,context: context);
 
       // Parse the JSON response and log the result
       final questionSetModel = QuestionSetModel.fromJson(response);
