@@ -51,7 +51,6 @@ class BaseRepository {
     try {
       final response = await http.get(uri, headers: headers);
       log("Data Found From $url");
-      log(response.body);
       return _processResponse(response);
     } catch (e) {
       log('Error in GET request: $e');
@@ -64,6 +63,7 @@ class BaseRepository {
     if (_isJson(response.body)) {
       final decodedBody = jsonDecode(response.body);
       if (response.statusCode >= 200 && response.statusCode < 300) {
+        log(decodedBody.toString());
         return decodedBody;
       } else {
         throw Exception('Error: ${response.statusCode}, ${response.body}');

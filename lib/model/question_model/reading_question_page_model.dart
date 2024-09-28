@@ -26,8 +26,11 @@ class Data {
   int? duration;
   int? totalQuestion;
   List<ReadingQuestions>? readingQuestions;
+  List<ListeningQuestions>? listeningQuestions;
 
-  Data({this.duration, this.totalQuestion, this.readingQuestions});
+  Data({this.duration, this.totalQuestion, this.readingQuestions,
+    this.listeningQuestions
+  });
 
   Data.fromJson(Map<String, dynamic> json) {
     duration = json['duration'] as int?;
@@ -36,6 +39,12 @@ class Data {
       readingQuestions = <ReadingQuestions>[];
       json['reading_questions'].forEach((v) {
         readingQuestions!.add(ReadingQuestions.fromJson(v));
+      });
+    }
+    if (json['listening_questions'] != null) {
+      listeningQuestions = <ListeningQuestions>[];
+      json['listening_questions'].forEach((v) {
+        listeningQuestions!.add(ListeningQuestions.fromJson(v));
       });
     }
   }
@@ -47,94 +56,22 @@ class Data {
     if (readingQuestions != null) {
       data['reading_questions'] = readingQuestions!.map((v) => v.toJson()).toList();
     }
+    if (listeningQuestions != null) {
+      data['listening_questions'] = listeningQuestions!.map((v) => v.toJson()).toList();
+    }
     return data;
   }
 }
-//
-// class ReadingQuestions {
-//   int? id;
-//   var questionSetId;
-//   var title;
-//   var question;
-//   var subtitle;
-//   var imageUrl;
-//   List<Options>? options;
-//
-//   ReadingQuestions({
-//     this.id,
-//     this.questionSetId,
-//     this.title,
-//     this.question,
-//     this.subtitle,
-//     this.imageUrl,
-//     this.options,
-//   });
-//
-//   ReadingQuestions.fromJson(Map<String, dynamic> json) {
-//     id = json['id'] as int?;
-//     questionSetId = json['question_set_id'];
-//     title = json['title'];
-//     question = json['question'];
-//     subtitle = json['subtitle'];
-//     imageUrl = json['image_url'];
-//     if (json['options'] != null) {
-//       options = <Options>[];
-//       json['options'].forEach((v) {
-//         options!.add(Options.fromJson(v));
-//       });
-//     }
-//   }
-//
-//   Map<String, dynamic> toJson() {
-//     final Map<String, dynamic> data = <String, dynamic>{};
-//     data['id'] = this.id;
-//     data['question_set_id'] = this.questionSetId;
-//     data['title'] = this.title;
-//     data['question'] = this.question;
-//     data['subtitle'] = this.subtitle;
-//     data['image_url'] = this.imageUrl;
-//     if (this.options != null) {
-//       data['options'] = this.options!.map((v) => v.toJson()).toList();
-//     }
-//     return data;
-//   }
-// }
-//
-// class Options {
-//   int? id;
-//   var optionType;
-//   var title;
-//
-//   Options({
-//     this.id,
-//     this.optionType,
-//     this.title,
-//   });
-//
-//   Options.fromJson(Map<String, dynamic> json) {
-//     id = json['id'] as int?;
-//     optionType = json['option_type'];
-//     title = json['title'];
-//   }
-//
-//   Map<String, dynamic> toJson() {
-//     final Map<String, dynamic> data = <String, dynamic>{};
-//     data['id'] = this.id;
-//     data['option_type'] = this.optionType;
-//     data['title'] = this.title;
-//     return data;
-//   }
-// }
 
 
 class ReadingQuestions {
   int id;
   int questionSetId;
-  String title;
-  dynamic question;
-  dynamic subtitle;
-  dynamic imageUrl;
-  dynamic imageCaption;
+  String? title;
+  String? question;
+  String? subtitle;
+  String? imageUrl;
+  String? imageCaption;
   List<Options> options;
 
   ReadingQuestions({
@@ -167,6 +104,62 @@ class ReadingQuestions {
     "subtitle": subtitle,
     "image_url": imageUrl,
     "image_caption": imageCaption,
+    "options": List<dynamic>.from(options.map((x) => x.toJson())),
+  };
+}
+
+class ListeningQuestions {
+  int id;
+  int questionSetId;
+  String? questionType;
+  String? title;
+  String? subtitle;
+  String? imageUrl;
+  String? imageCaption;
+  String? voiceScript;
+  String? voiceGender;
+  dynamic dialogues;
+  List<Options> options;
+
+  ListeningQuestions({
+    required this.id,
+    required this.questionSetId,
+    required this.questionType,
+    required this.title,
+    required this.subtitle,
+    required this.imageUrl,
+    required this.imageCaption,
+    required this.voiceScript,
+    required this.voiceGender,
+    required this.dialogues,
+    required this.options,
+  });
+
+  factory ListeningQuestions.fromJson(Map<String, dynamic> json) => ListeningQuestions(
+    id: json["id"],
+    questionSetId: json["question_set_id"],
+    questionType: json["question_type"],
+    title: json["title"],
+    subtitle: json["subtitle"],
+    imageUrl: json["image_url"],
+    imageCaption: json["image_caption"],
+    voiceScript: json["voice_script"],
+    voiceGender: json["voice_gender"],
+    dialogues: json["dialogues"],
+    options: List<Options>.from(json["options"].map((x) => Options.fromJson(x))),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "question_set_id": questionSetId,
+    "question_type": questionType,
+    "title": title,
+    "subtitle": subtitle,
+    "image_url": imageUrl,
+    "image_caption": imageCaption,
+    "voice_script": voiceScript,
+    "voice_gender": voiceGender,
+    "dialogues": dialogues,
     "options": List<dynamic>.from(options.map((x) => x.toJson())),
   };
 }

@@ -3,7 +3,7 @@ import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/authentication/base_repository.dart';
 import 'package:kpathshala/model/question_model/reading_question_page_model.dart';
 
-class ReadingQuestionsRepository {
+class QuestionsRepository {
   final BaseRepository _baseRepository = BaseRepository();
 
   Future<QuestionsModel?> fetchReadingQuestions(int questionSetId) async {
@@ -15,12 +15,14 @@ class ReadingQuestionsRepository {
       Map<String, dynamic> response = await _baseRepository.getRequest(url);
 
       if (response.containsKey('data')) {
+        log("ok");
         return QuestionsModel.fromJson(response);
       } else {
         log('No data found in the response');
         return null;
       }
     } catch (e) {
+      log("not ok");
       log('Error fetching reading questions: $e');
       return null;
     }
