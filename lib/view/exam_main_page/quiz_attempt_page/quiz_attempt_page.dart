@@ -935,24 +935,17 @@ class RetakeTestPageState extends State<RetakeTestPage>
                                               Expanded(
                                               child: InkWell(
                                                 onTap: () {
-                                                  showZoomedImage(answer);
+                                                  showZoomedImage(answerImage);
                                                 },
                                                 child: Image.network(
-                                                  answer,
+                                                  answerImage,
                                                   errorBuilder: (context, error,
                                                       stackTrace) {
                                                     // Show something when the image fails to load
-                                                    return const Column(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Icon(Icons.broken_image,
-                                                            color: AppColor
-                                                                .navyBlue,
-                                                            size: 20),
-                                                      ],
-                                                    );
+                                                    return const Icon(Icons.broken_image,
+                                                        color: AppColor
+                                                            .navyBlue,
+                                                        size: 20);
                                                   },
                                                   loadingBuilder: (context,
                                                       child, loadingProgress) {
