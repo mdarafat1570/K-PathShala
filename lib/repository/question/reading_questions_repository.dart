@@ -3,7 +3,7 @@ import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/authentication/base_repository.dart';
 import 'package:kpathshala/model/question_model/reading_question_page_model.dart';
 
-class ReadingQuestionsRepository {
+class QuestionsRepository {
   final BaseRepository _baseRepository = BaseRepository();
 
   Future<QuestionsModel?> fetchReadingQuestions(int questionSetId) async {

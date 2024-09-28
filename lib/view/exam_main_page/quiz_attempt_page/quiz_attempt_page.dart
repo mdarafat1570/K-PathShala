@@ -7,6 +7,7 @@ import 'package:kpathshala/model/question_model/answer_model.dart';
 import 'package:kpathshala/model/question_model/reading_question_page_model.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/repository/question/reading_questions_repository.dart';
+import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/playVoice.dart';
 
 class RetakeTestPage extends StatefulWidget {
   final int questionSetId;
@@ -37,7 +38,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
   // int _selectedSolvedIndex2 = -1;
   ReadingQuestions? _selectedReadingQuestionData;
   ListeningQuestions? _selectedListeningQuestionData;
-  final ReadingQuestionsRepository _repository = ReadingQuestionsRepository();
+  final QuestionsRepository _repository = QuestionsRepository();
   List<ReadingQuestions> _readingQuestions = [];
   List<ListeningQuestions> _listeningQuestions = [];
   bool dataFound = false, shuffleOptions = false;
@@ -113,8 +114,10 @@ class RetakeTestPageState extends State<RetakeTestPage>
       if (questionsModel != null && questionsModel.data != null) {
         _readingQuestions = questionsModel.data?.readingQuestions ?? [];
         _listeningQuestions = questionsModel.data?.listeningQuestions ?? [];
+        _remainingTime = (questionsModel.data?.duration ?? 60)* 60;
         setState(() {
           dataFound = true;
+          _startTimer();
         });
       } else {
         log('Questions model or data is null');
@@ -203,7 +206,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
 
   @override
   void dispose() {
-    // _timer.cancel();
+    _timer.cancel();
     super.dispose();
     // WidgetsBinding.instance.removeObserver(this);
     SystemChrome.setPreferredOrientations([
@@ -519,6 +522,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
     final imageCaption = isListening ?_selectedListeningQuestionData?.imageCaption ?? ""  : _selectedReadingQuestionData?.imageCaption ?? "";
     final question = _selectedReadingQuestionData?.question ?? "";
     final imageUrl = isListening ?_selectedListeningQuestionData?.imageUrl ?? ""  : _selectedReadingQuestionData?.imageUrl ?? "";
+    final voiceScript = _selectedListeningQuestionData?.voiceScript ?? "";
     final options = isListening ?_selectedListeningQuestionData?.options ?? []  : _selectedReadingQuestionData?.options ?? [];
     bool isTextType = options.isNotEmpty && options.first.optionType == 'text';
     int questionId = isListening ? _selectedListeningQuestionData?.id ?? -1 :  _selectedReadingQuestionData?.id ?? -1;
@@ -624,7 +628,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                               fontSize: 20,
                             ),
                           ),
-                        if (question.isNotEmpty || imageUrl.isNotEmpty) // Check for null or empty
+                        if (question.isNotEmpty || imageUrl.isNotEmpty || voiceScript.isNotEmpty) // Check for null or empty
                           Container(
                             padding: const EdgeInsets.all(12),
                             margin: const EdgeInsets.symmetric(vertical: 10),
@@ -683,6 +687,12 @@ class RetakeTestPageState extends State<RetakeTestPage>
                                         },
                                       ),
                                     ),
+                                  if (voiceScript.isNotEmpty)
+                                    // InkWell(
+                                    //   onTap: (){},
+                                    //   child: Image.asset("assets/speaker.png",height: 100, color: AppColor.navyBlue,),
+                                    // )
+                                    PlayVoice(size: 100, script: voiceScript, model: _selectedListeningQuestionData?.voiceGender)
                                 ],
                               ),
                             ),
@@ -749,7 +759,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Expanded(
+                                              if (answer.isNotEmpty)
+                                                Expanded(
                                                 child: Text(
                                                   answer,
                                                   style: const TextStyle(
@@ -791,8 +802,10 @@ class RetakeTestPageState extends State<RetakeTestPage>
                             ),
                             itemCount: options.length,
                             itemBuilder: (context, index) {
-                              String answer = options[index].imageUrl ?? "";
+                              String answer = options[index].title ?? "";
+                              String answerImage = options[index].imageUrl ?? "";
                               int answerId = options[index].id ?? -1;
+                              String voiceScript = options[index].voiceScript ?? "";
                               return Padding(
                                 padding: const EdgeInsets.all(8),
                                 child: InkWell(
@@ -833,7 +846,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
                                         // Spacing between circle and text
                                         Column(
                                           children: [
-                                            Expanded(
+                                            if (answerImage.isNotEmpty)
+                                              Expanded(
                                               child: InkWell(
                                                 onTap: () {
                                                   showZoomedImage(answer);
@@ -868,6 +882,20 @@ class RetakeTestPageState extends State<RetakeTestPage>
                                                 ),
                                               ),
                                             ),
+                                            if (voiceScript.isNotEmpty)
+                                              // InkWell(
+                                              //   onTap: (){},
+                                              //   child: Image.asset("assets/speaker.png",height: 40, color: AppColor.navyBlue,),
+                                              // ),
+                                              PlayVoice(size: 40, model: options[index].voiceGender,script: voiceScript),
+                                            if (answer.isNotEmpty)
+                                              Expanded(
+                                                child: Text(
+                                                  answer,
+                                                  style: const TextStyle(
+                                                      fontSize: 18),
+                                                ),
+                                              ),
                                             if ((options[index].subtitle ?? "")
                                                 .isNotEmpty)
                                               Expanded(
