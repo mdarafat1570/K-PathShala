@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/services.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/model/question_model/answer_model.dart';
@@ -47,6 +48,16 @@ class RetakeTestPageState extends State<RetakeTestPage>
       MethodChannel('com.inferloom.kpathshala/exit_confirmation');
   final AuthService _authService = AuthService();
   LogInCredentials? credentials;
+  late FlutterTts flutterTts;
+  String? selectedLanguage;
+  String? selectedEngine;
+  String? selectedVoice;
+  List<dynamic> availableVoices = [];
+  String? _newVoiceText;
+
+  double volume = 0.5;
+  double pitch = 1.0;
+  double rate = 0.5;
 
   @override
   void initState() {
@@ -64,8 +75,10 @@ class RetakeTestPageState extends State<RetakeTestPage>
     //   }
     //   return null;
     // });
-    _fetchReadingQuestions();
     readCredentials();
+    initTts();
+    _fetchReadingQuestions();
+
   }
 
   Future<void> readCredentials() async {
@@ -77,6 +90,77 @@ class RetakeTestPageState extends State<RetakeTestPage>
       );
     }
     setState(() {});
+  }
+  Future<void> initTts() async {
+    flutterTts = FlutterTts();
+
+    // Set defaults (Korean language, Google TTS engine)
+    await flutterTts.setLanguage("ko-KR");
+    await flutterTts.setEngine("com.google.android.tts");
+
+    _getVoices();
+  }
+
+  Future<void> _getVoices() async {
+    List<dynamic> voices = await flutterTts.getVoices as List<dynamic>;
+
+    // Filter only Korean voices
+    setState(() {
+      availableVoices = voices.where((voice) {
+        // Check if the voice is a Map and has the correct keys
+        if (voice is Map && voice.containsKey('locale') && voice.containsKey('name')) {
+          return voice['locale'] == 'ko-KR';
+        }
+        return false;
+      }).map((voice) {
+        // Ensure the map is correctly typed
+        return {
+          'name': voice['name'] as String,
+          'locale': voice['locale'] as String,
+        } as Map<String, String>;
+      }).toList();
+
+      // Set default voice if available
+      selectedVoice = availableVoices.isNotEmpty ? availableVoices[0]['name'] : null;
+    });
+  }
+
+
+  Future<void> _speak(String? model, String voiceScript) async {
+    _newVoiceText = voiceScript;
+    if (_newVoiceText == null || _newVoiceText!.isEmpty) {
+      log("No text provided for speech.");
+      return;
+    }
+
+    await flutterTts.setVolume(volume);
+    await flutterTts.setPitch(pitch);
+    await flutterTts.setSpeechRate(rate);
+
+    if (model == "female" || model == null){
+      selectedVoice = "ko-kr-x-ism-local";
+    } else {
+      selectedVoice = "ko-kr-x-kod-local";
+    }
+
+    if (selectedVoice != null) {
+      // Safely retrieve the voice map
+      Map<String, String>? voice = availableVoices.firstWhere(
+            (v) => v['name'] == selectedVoice,
+        orElse: () => {'name': '', 'locale': ''}, // Return a default map instead of null
+      ) as Map<String, String>?; // Ensure the correct type
+
+      if (voice != null && voice['name']!.isNotEmpty) {
+        await flutterTts.setVoice(voice);
+        log("Using voice: ${voice['name']}");
+      } else {
+        log("Selected voice not found.");
+        return;
+      }
+    }
+
+    log("Speaking: $_newVoiceText");
+    await flutterTts.speak(_newVoiceText!);
   }
 
   @override
@@ -208,6 +292,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
   void dispose() {
     _timer.cancel();
     super.dispose();
+    flutterTts.stop();
     // WidgetsBinding.instance.removeObserver(this);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -688,11 +773,12 @@ class RetakeTestPageState extends State<RetakeTestPage>
                                       ),
                                     ),
                                   if (voiceScript.isNotEmpty)
-                                    // InkWell(
-                                    //   onTap: (){},
-                                    //   child: Image.asset("assets/speaker.png",height: 100, color: AppColor.navyBlue,),
-                                    // )
-                                    PlayVoice(size: 100, script: voiceScript, model: _selectedListeningQuestionData?.voiceGender)
+                                    InkWell(
+                                      onTap: (){
+                                        _speak(_selectedListeningQuestionData?.voiceGender, voiceScript);
+                                      },
+                                      child: Image.asset("assets/speaker.png",height: 100, color: AppColor.navyBlue,),
+                                    )
                                 ],
                               ),
                             ),
@@ -883,11 +969,12 @@ class RetakeTestPageState extends State<RetakeTestPage>
                                               ),
                                             ),
                                             if (voiceScript.isNotEmpty)
-                                              // InkWell(
-                                              //   onTap: (){},
-                                              //   child: Image.asset("assets/speaker.png",height: 40, color: AppColor.navyBlue,),
-                                              // ),
-                                              PlayVoice(size: 40, model: options[index].voiceGender,script: voiceScript),
+                                              InkWell(
+                                                onTap: (){
+                                                  _speak(_selectedListeningQuestionData?.voiceGender, voiceScript);
+                                                },
+                                                child: Image.asset("assets/speaker.png",height: 40, color: AppColor.navyBlue,),
+                                              ),
                                             if (answer.isNotEmpty)
                                               Expanded(
                                                 child: Text(
