@@ -8,7 +8,6 @@ import 'package:kpathshala/model/question_model/answer_model.dart';
 import 'package:kpathshala/model/question_model/reading_question_page_model.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/repository/question/reading_questions_repository.dart';
-import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/playVoice.dart';
 
 class RetakeTestPage extends StatefulWidget {
   final int questionSetId;
@@ -684,8 +683,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Is Listening $isListening", style: TextStyle(color: Colors.red),),
-                        Text("Index ${index+1}", style: TextStyle(color: Colors.red),),
+                        // Text("Is Listening $isListening", style: TextStyle(color: Colors.red),),
+                        // Text("Index ${index+1}", style: TextStyle(color: Colors.red),),
                         if (title.isNotEmpty) // Check for null or empty
                           Padding(
                             padding: const EdgeInsets.only(bottom: 8.0),
