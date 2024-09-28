@@ -15,12 +15,14 @@ class ReadingQuestionsRepository {
       Map<String, dynamic> response = await _baseRepository.getRequest(url);
 
       if (response.containsKey('data')) {
+        log("ok");
         return QuestionsModel.fromJson(response);
       } else {
         log('No data found in the response');
         return null;
       }
     } catch (e) {
+      log("not ok");
       log('Error fetching reading questions: $e');
       return null;
     }
