@@ -2,12 +2,23 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:connectivity_plus/connectivity_plus.dart'; // For connectivity checking
 
 class BaseRepository {
   static const String _tokenKey = 'authToken';
 
+  // Check if there is internet connection
+  Future<bool> _hasInternetConnection() async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+    return connectivityResult != ConnectivityResult.none;
+  }
+
   // Perform HTTP POST request
   Future<Map<String, dynamic>> postRequest(String url, Map<String, dynamic> body, {Map<String, String>? headers}) async {
+    if (!await _hasInternetConnection()) {
+      throw Exception('No Internet Connection');
+    }
+
     final uri = Uri.parse(url);
     final defaultHeaders = {
       'Content-Type': 'application/json',
@@ -26,6 +37,10 @@ class BaseRepository {
 
   // Perform HTTP GET request
   Future<Map<String, dynamic>> getRequest(String url, {Map<String, String>? headers}) async {
+    if (!await _hasInternetConnection()) {
+      throw Exception('No Internet Connection');
+    }
+
     final uri = Uri.parse(url);
     final defaultHeaders = {
       'Content-Type': 'application/json',
