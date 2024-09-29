@@ -160,6 +160,12 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
           description: description,
         ),
       ),
+    ).then(
+        (_){
+          dataFound = false;
+          setState(() {});
+          fetchData();
+        }
     );
   }
 
@@ -432,13 +438,13 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
                               ),
                             ),
                             const SizedBox(height: 5),
-                            Text(
-                              "You’re among the top ${questionSetResults?.rankPercentage ?? 0}% of the students in this session.",
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                  color: AppColor.grey600, fontSize: 12),
-                            ),
-                            const Gap(30)
+                            // Text(
+                            //   "You’re among the top ${questionSetResults?.rankPercentage ?? 0}% of the students in this session.",
+                            //   textAlign: TextAlign.center,
+                            //   style: const TextStyle(
+                            //       color: AppColor.grey600, fontSize: 12),
+                            // ),
+                            // const Gap(30)
                           ],
                         ),
                       ),
@@ -519,24 +525,24 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
                 ],
               ),
             ),
-        bottomNavigationBar: BottomAppBar(
-          height: 65,
-          color: Colors.white,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            onPressed: () {
-              // Button press logic here
-            },
-            child: const Text(
-              'Continue to Set 11',
-              style: TextStyle(fontSize: 12),
-            ),
-          ),
-        ),
+        // bottomNavigationBar: BottomAppBar(
+        //   height: 65,
+        //   color: Colors.white,
+        //   child: ElevatedButton(
+        //     style: ElevatedButton.styleFrom(
+        //       shape: RoundedRectangleBorder(
+        //         borderRadius: BorderRadius.circular(12),
+        //       ),
+        //     ),
+        //     onPressed: () {
+        //       // Button press logic here
+        //     },
+        //     child: const Text(
+        //       'Continue to Set 11',
+        //       style: TextStyle(fontSize: 12),
+        //     ),
+        //   ),
+        // ),
       ),
     );
   }
