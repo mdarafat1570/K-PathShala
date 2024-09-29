@@ -8,7 +8,6 @@ import 'package:kpathshala/repository/sign_in_methods.dart';
 import 'package:kpathshala/view/login_signup_page/registration_and_login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 // Credit by Md. Arafat Mia Date 20/8/2024
 
 class AuthService {
@@ -120,13 +119,14 @@ class AuthService {
 
       if (response.statusCode == 200) {
         return json.decode(response.body);
-      } else if (response.statusCode == 400){
-        throw Exception('This email is already in use. Please try another email or log in.');
-      }
-      else {
+      } else if (response.statusCode == 400) {
+        throw Exception(
+            'This email is already in use. Please try another email or log in.');
+      } else {
         // You can customize the error message or throw an exception as needed
         log('Failed to register user: ${response.statusCode}');
-        throw Exception('Failed to register user: ${response.statusCode}, ${jsonEncode(response.body)}');
+        throw Exception(
+            'Failed to register user: ${response.statusCode}, ${jsonEncode(response.body)}');
       }
     } catch (error) {
       log('Error registering user: $error');
@@ -137,8 +137,7 @@ class AuthService {
   // Register User
 
   Future<Map<String, dynamic>> userUpdate(
-      {String? name, String? email, String? image})
-  async {
+      {String? name, String? email, String? image}) async {
     final url = Uri.parse(AuthorizationEndpoints.userUpdate);
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('authToken') ?? '';
@@ -221,9 +220,10 @@ class AuthService {
     final prefs = await SharedPreferences.getInstance();
     final LogInCredentials? loginCredentials = await getLogInCredentials();
 
-    if (loginCredentials != null && (loginCredentials.token == null || loginCredentials.token == "")) {
+    if (loginCredentials != null &&
+        (loginCredentials.token == null || loginCredentials.token == "")) {
       // No token found, perhaps already logged out
-      if (context.mounted){
+      if (context.mounted) {
         _showSnackbar(context, 'No active session found.');
       }
       return {'status': 'error', 'message': 'No active session.'};
@@ -242,24 +242,24 @@ class AuthService {
       // Remove token from local storage on successful logout
       await prefs.remove('authToken');
       await clearLogInCredentials();
-      if (SignInMethods.isUserSignedIn()){
+      if (SignInMethods.isUserSignedIn()) {
         await SignInMethods.logout();
       }
-      if (context.mounted){
+      if (context.mounted) {
         _showSnackbar(context, 'Logout successful');
       }
       return jsonDecode(response.body);
     } else if (response.statusCode == 401) {
       await prefs.remove('authToken');
       await clearLogInCredentials();
-      if(context.mounted){
+      if (context.mounted) {
         slideNavigationPushAndRemoveUntil(
             const RegistrationPage(title: "Registration Page"), context);
         _showSnackbar(context, 'Invalid or expired token.');
       }
       return jsonDecode(response.body);
     } else {
-      if(context.mounted){
+      if (context.mounted) {
         _showSnackbar(context, 'Logout failed. Please try again.');
       }
       return jsonDecode(response.body);
@@ -277,7 +277,4 @@ class AuthService {
   //     Navigator.pushReplacementNamed(context, '/login');  // Navigate to login or initial screen
   //   }
   // },
-
-
-  
 }
