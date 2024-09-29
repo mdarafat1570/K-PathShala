@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
 import 'package:kpathshala/view/login_signup_page/registration_and_login_page.dart';
+import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:connectivity_plus/connectivity_plus.dart'; // For connectivity checking
 
@@ -118,7 +119,7 @@ class BaseRepository {
     log("Calling userSignOut");
     showLoadingIndicator(context: context, showLoader: true);
     try {
-      final response = await _authService.logout(context);
+      final response = await _authService.logoutIfInvalidToken(context);
 
       if (response['error'] == null || !response['error']) {
         showLoadingIndicator(context: context, showLoader: false);
@@ -149,7 +150,7 @@ Future<void> showSessionExpiredDialog(BuildContext context) async {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset('assets/unauth_error.json'), 
+            Lottie.asset('assets/unauth_error.json'),
             const SizedBox(height: 16),
             const Text('Your session has expired. Please log in again.'),
           ],
@@ -167,5 +168,4 @@ Future<void> showSessionExpiredDialog(BuildContext context) async {
     },
   );
 }
-
 }
