@@ -1259,4 +1259,15 @@ class RetakeTestPageState extends State<RetakeTestPage>
       },
     );
   }
+
+  // void submitAnswer(){
+  //   final List<Answers> combinedList = [];
+  //   combinedList.addAll(solvedReadingQuestions);
+  //   combinedList.addAll(solvedListeningQuestions);
+  //   AnswerModel finalAnswer = AnswerModel(
+  //     answers: combinedList,
+  //     duration: ,
+  //     questionSetId: widget.questionSetId,
+  //   );
+  // }
 }
