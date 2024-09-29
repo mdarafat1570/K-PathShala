@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:kpathshala/api/api_container.dart';
@@ -247,6 +248,7 @@ class _ProfileState extends State<Profile> {
                       label: "Phone Number",
                       errorMessage: _phoneError,
                       isEnabled: isNumberFieldActive,
+                      keyboardType: TextInputType.phone,
                       onChanged: (_) {
                         if (_mobileController.text.isNotEmpty) {
                           _phoneError = null;

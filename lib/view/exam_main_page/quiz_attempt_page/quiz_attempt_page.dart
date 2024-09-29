@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -7,7 +8,9 @@ import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/model/question_model/answer_model.dart';
 import 'package:kpathshala/model/question_model/reading_question_page_model.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
+import 'package:kpathshala/repository/question/answer_submission_repository.dart';
 import 'package:kpathshala/repository/question/reading_questions_repository.dart';
+import 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
 
 class RetakeTestPage extends StatefulWidget {
   final int questionSetId;
@@ -28,6 +31,7 @@ class RetakeTestPage extends StatefulWidget {
 class RetakeTestPageState extends State<RetakeTestPage>
     with WidgetsBindingObserver {
   int _remainingTime = 3600;
+  int _examTime = 3600;
 
   late Timer _timer;
 
@@ -41,10 +45,11 @@ class RetakeTestPageState extends State<RetakeTestPage>
   final QuestionsRepository _repository = QuestionsRepository();
   List<ReadingQuestions> _readingQuestions = [];
   List<ListeningQuestions> _listeningQuestions = [];
-  bool dataFound = false, shuffleOptions = false;
+  bool dataFound = false,
+      shuffleOptions = false;
   bool isListViewVisible = true;
   static const platform =
-      MethodChannel('com.inferloom.kpathshala/exit_confirmation');
+  MethodChannel('com.inferloom.kpathshala/exit_confirmation');
   final AuthService _authService = AuthService();
   LogInCredentials? credentials;
   late FlutterTts flutterTts;
@@ -77,7 +82,6 @@ class RetakeTestPageState extends State<RetakeTestPage>
     readCredentials();
     initTts();
     _fetchReadingQuestions();
-
   }
 
   Future<void> readCredentials() async {
@@ -90,6 +94,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
     }
     setState(() {});
   }
+
   Future<void> initTts() async {
     flutterTts = FlutterTts();
 
@@ -107,7 +112,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
     setState(() {
       availableVoices = voices.where((voice) {
         // Check if the voice is a Map and has the correct keys
-        if (voice is Map && voice.containsKey('locale') && voice.containsKey('name')) {
+        if (voice is Map && voice.containsKey('locale') &&
+            voice.containsKey('name')) {
           return voice['locale'] == 'ko-KR';
         }
         return false;
@@ -120,7 +126,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
       }).toList();
 
       // Set default voice if available
-      selectedVoice = availableVoices.isNotEmpty ? availableVoices[0]['name'] : null;
+      selectedVoice =
+      availableVoices.isNotEmpty ? availableVoices[0]['name'] : null;
     });
   }
 
@@ -136,7 +143,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
     await flutterTts.setPitch(pitch);
     await flutterTts.setSpeechRate(rate);
 
-    if (model == "female" || model == null){
+    if (model == "female" || model == null) {
       selectedVoice = "ko-kr-x-ism-local";
     } else {
       selectedVoice = "ko-kr-x-kod-local";
@@ -146,7 +153,11 @@ class RetakeTestPageState extends State<RetakeTestPage>
       // Safely retrieve the voice map
       Map<String, String>? voice = availableVoices.firstWhere(
             (v) => v['name'] == selectedVoice,
-        orElse: () => {'name': '', 'locale': ''}, // Return a default map instead of null
+        orElse: () =>
+        {
+          'name': '',
+          'locale': ''
+        }, // Return a default map instead of null
       ) as Map<String, String>?; // Ensure the correct type
 
       if (voice != null && voice['name']!.isNotEmpty) {
@@ -174,17 +185,18 @@ class RetakeTestPageState extends State<RetakeTestPage>
   Future<void> _showDisqualificationDialog(BuildContext context) async {
     await showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Disqualification"),
-        content:
+      builder: (context) =>
+          AlertDialog(
+            title: const Text("Disqualification"),
+            content:
             const Text("You have exited the exam. You are now disqualified."),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text("OK"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("OK"),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -192,12 +204,13 @@ class RetakeTestPageState extends State<RetakeTestPage>
     try {
       // Attempt to fetch the questions
       QuestionsModel? questionsModel =
-          await _repository.fetchReadingQuestions(widget.questionSetId,context);
+      await _repository.fetchReadingQuestions(widget.questionSetId, context);
 
       if (questionsModel != null && questionsModel.data != null) {
         _readingQuestions = questionsModel.data?.readingQuestions ?? [];
         _listeningQuestions = questionsModel.data?.listeningQuestions ?? [];
-        _remainingTime = (questionsModel.data?.duration ?? 60)* 60;
+        _remainingTime = (questionsModel.data?.duration ?? 60) * 60;
+        _examTime = (questionsModel.data?.duration ?? 60) * 60;
         setState(() {
           dataFound = true;
           _startTimer();
@@ -218,7 +231,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               content:
-                  Text('Failed to load reading questions. Please try again.')),
+              Text('Failed to load reading questions. Please try again.')),
         );
       }
     }
@@ -248,7 +261,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                submitAnswer();
               },
               child: const Text('Submit Answer'),
             ),
@@ -261,29 +274,30 @@ class RetakeTestPageState extends State<RetakeTestPage>
   Future<bool?> _showExitExamConfirmation(BuildContext context) {
     return showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Exit Exam"),
-        content: const Text(
-          "If you close this page, all your progress will be permanently lost. "
-          "Are you sure you want to exit the exam?",
-          style: TextStyle(fontSize: 16.0),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            // Stay on the page
-            child: const Text("Cancel"),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            // Exit the page
-            child: const Text(
-              "Exit",
-              style: TextStyle(color: Colors.red),
+      builder: (context) =>
+          AlertDialog(
+            title: const Text("Exit Exam"),
+            content: const Text(
+              "If you close this page, all your progress will be permanently lost. "
+                  "Are you sure you want to exit the exam?",
+              style: TextStyle(fontSize: 16.0),
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                // Stay on the page
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                // Exit the page
+                child: const Text(
+                  "Exit",
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -356,7 +370,9 @@ class RetakeTestPageState extends State<RetakeTestPage>
               children: [
                 if (!isListViewVisible)
                   SizedBox(
-                    width: MediaQuery.sizeOf(context).width * 0.2,
+                    width: MediaQuery
+                        .sizeOf(context)
+                        .width * 0.2,
                     child: ElevatedButton(
                       onPressed: () {
                         isListViewVisible = true;
@@ -373,7 +389,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                               color: AppColor.grey400, width: 1),
                         ),
                         backgroundColor:
-                            AppColor.grey200, // Change color as needed
+                        AppColor.grey200, // Change color as needed
                       ),
                       child: const Text(
                         'Total Questions',
@@ -387,7 +403,9 @@ class RetakeTestPageState extends State<RetakeTestPage>
                 const Spacer(), // Spacing between buttons
                 if (isPreviousButtonVisible())
                   SizedBox(
-                    width: MediaQuery.sizeOf(context).width * 0.2,
+                    width: MediaQuery
+                        .sizeOf(context)
+                        .width * 0.2,
                     child: ElevatedButton(
                       onPressed: moveToPrevious,
                       style: ElevatedButton.styleFrom(
@@ -397,7 +415,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                           borderRadius: BorderRadius.circular(10),
                         ),
                         backgroundColor:
-                            AppColor.grey300, // Change color as needed
+                        AppColor.grey300, // Change color as needed
                       ),
                       child: const Text(
                         'Previous',
@@ -411,16 +429,20 @@ class RetakeTestPageState extends State<RetakeTestPage>
                 const SizedBox(width: 10),
                 if (isSubmitAnswerButtonVisible())
                   SizedBox(
-                    width: MediaQuery.sizeOf(context).width * 0.2,
+                    width: MediaQuery
+                        .sizeOf(context)
+                        .width * 0.2,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        submitAnswer();
+                      },
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12.0),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
                         backgroundColor:
-                            AppColor.navyBlue, // Change color as needed
+                        AppColor.navyBlue, // Change color as needed
                       ),
                       child: const Text(
                         'Submit Answer',
@@ -433,7 +455,9 @@ class RetakeTestPageState extends State<RetakeTestPage>
                   ),
                 if (isNextButtonVisible())
                   SizedBox(
-                    width: MediaQuery.sizeOf(context).width * 0.2,
+                    width: MediaQuery
+                        .sizeOf(context)
+                        .width * 0.2,
                     child: ElevatedButton(
                       onPressed: moveToNext,
                       style: ElevatedButton.styleFrom(
@@ -442,7 +466,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                           borderRadius: BorderRadius.circular(10),
                         ),
                         backgroundColor:
-                            AppColor.navyBlue, // Change color as needed
+                        AppColor.navyBlue, // Change color as needed
                       ),
                       child: const Text(
                         'Next',
@@ -506,22 +530,23 @@ class RetakeTestPageState extends State<RetakeTestPage>
                       padding: const EdgeInsets.all(12.0),
                       decoration: isListViewVisible
                           ? const BoxDecoration(
-                              border: Border(
-                                right: BorderSide(
-                                  width: 3,
-                                  color: AppColor.navyBlue,
-                                ),
-                              ),
+                          border: Border(
+                            right: BorderSide(
+                              width: 3,
                               color: AppColor.navyBlue,
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10),
-                                topRight: Radius.circular(10),
-                              ))
+                            ),
+                          ),
+                          color: AppColor.navyBlue,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10),
+                          ))
                           : null,
                       child: Text(
                         isListViewVisible
                             ? "Total Questions"
-                            : "Total Questions - ${_readingQuestions.length + _listeningQuestions.length}",
+                            : "Total Questions - ${_readingQuestions.length +
+                            _listeningQuestions.length}",
                         style: TextStyle(
                           color: isListViewVisible
                               ? Colors.white
@@ -570,7 +595,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                         ),
                         color: Color.fromRGBO(26, 35, 126, 0.2),
                         borderRadius:
-                            BorderRadius.only(topRight: Radius.circular(15)),
+                        BorderRadius.only(topRight: Radius.circular(15)),
                       ),
                       child: Text(
                         _formattedTime,
@@ -596,40 +621,57 @@ class RetakeTestPageState extends State<RetakeTestPage>
     );
   }
 
-  Widget buildQuestionDetailContent(// required bool isSolved,
+  Widget buildQuestionDetailContent( // required bool isSolved,
       ) {
-    if (_selectedReadingQuestionData == null && _selectedListeningQuestionData == null) return const SizedBox.shrink();
+    if (_selectedReadingQuestionData == null &&
+        _selectedListeningQuestionData == null) return const SizedBox.shrink();
     bool isListening = _selectedReadingQuestionData == null;
-    int index = isListening ? _listeningQuestions.indexOf(_selectedListeningQuestionData!) : _readingQuestions.indexOf(_selectedReadingQuestionData!);
-    final title = isListening ?_selectedListeningQuestionData?.title ?? ""  : _selectedReadingQuestionData?.title ?? "";
-    final subTitle = isListening ?_selectedListeningQuestionData?.subtitle ?? ""  : _selectedReadingQuestionData?.subtitle ?? "";
-    final imageCaption = isListening ?_selectedListeningQuestionData?.imageCaption ?? ""  : _selectedReadingQuestionData?.imageCaption ?? "";
+    int index = isListening ? _listeningQuestions.indexOf(
+        _selectedListeningQuestionData!) : _readingQuestions.indexOf(
+        _selectedReadingQuestionData!);
+    final title = isListening
+        ? _selectedListeningQuestionData?.title ?? ""
+        : _selectedReadingQuestionData?.title ?? "";
+    final subTitle = isListening ? _selectedListeningQuestionData?.subtitle ??
+        "" : _selectedReadingQuestionData?.subtitle ?? "";
+    final imageCaption = isListening ? _selectedListeningQuestionData
+        ?.imageCaption ?? "" : _selectedReadingQuestionData?.imageCaption ?? "";
     final question = _selectedReadingQuestionData?.question ?? "";
-    final imageUrl = isListening ?_selectedListeningQuestionData?.imageUrl ?? ""  : _selectedReadingQuestionData?.imageUrl ?? "";
+    final imageUrl = isListening ? _selectedListeningQuestionData?.imageUrl ??
+        "" : _selectedReadingQuestionData?.imageUrl ?? "";
     final voiceScript = _selectedListeningQuestionData?.voiceScript ?? "";
-    final options = isListening ?_selectedListeningQuestionData?.options ?? []  : _selectedReadingQuestionData?.options ?? [];
+    final options = isListening
+        ? _selectedListeningQuestionData?.options ?? []
+        : _selectedReadingQuestionData?.options ?? [];
     bool isTextType = options.isNotEmpty && options.first.optionType == 'text';
-    int questionId = isListening ? _selectedListeningQuestionData?.id ?? -1 :  _selectedReadingQuestionData?.id ?? -1;
+    int questionId = isListening
+        ? _selectedListeningQuestionData?.id ?? -1
+        : _selectedReadingQuestionData?.id ?? -1;
     int selectedSolvedIndex = -1;
-    if (!isListening && (solvedReadingQuestions.any((answer) => answer.questionId == _selectedReadingQuestionData?.id))) {
+    if (!isListening &&
+        (solvedReadingQuestions.any((answer) => answer.questionId ==
+            _selectedReadingQuestionData?.id))) {
       // Find the solved question's matching index in options
       selectedSolvedIndex = options.indexWhere((option) =>
-          option.id ==
+      option.id ==
           solvedReadingQuestions
               .firstWhere(
-                  (answer) => answer.questionId == _selectedReadingQuestionData?.id)
+                  (answer) =>
+              answer.questionId == _selectedReadingQuestionData?.id)
               .questionOptionId);
     }
-    else if ((solvedListeningQuestions.any((answer) => answer.questionId == _selectedListeningQuestionData?.id))){
+    else if ((solvedListeningQuestions.any((answer) => answer.questionId ==
+        _selectedListeningQuestionData?.id))) {
       selectedSolvedIndex = options.indexWhere((option) =>
       option.id ==
           solvedListeningQuestions
               .firstWhere(
-                  (answer) => answer.questionId == _selectedListeningQuestionData?.id)
+                  (answer) =>
+              answer.questionId == _selectedListeningQuestionData?.id)
               .questionOptionId);
     }
 
-    void selectionHandling (index, answerId) {
+    void selectionHandling(index, answerId) {
       setState(() {
         selectedSolvedIndex = index;
 
@@ -641,18 +683,27 @@ class RetakeTestPageState extends State<RetakeTestPage>
 
         // Check if the answer already exists in solvedReadingQuestions
         int existingAnswerIndex = -1;
-        if (isListening){
-          existingAnswerIndex = solvedListeningQuestions.indexWhere((answer) => answer.questionId == selectedAnswer.questionId);
-        } else{
-          existingAnswerIndex = solvedReadingQuestions.indexWhere((answer) => answer.questionId == selectedAnswer.questionId);
+        if (isListening) {
+          existingAnswerIndex =
+              solvedListeningQuestions.indexWhere((answer) => answer
+                  .questionId == selectedAnswer.questionId);
+        } else {
+          existingAnswerIndex =
+              solvedReadingQuestions.indexWhere((answer) => answer.questionId ==
+                  selectedAnswer.questionId);
         }
 
         if (existingAnswerIndex != -1) {
           // Update the existing answer with the new selected option ID
-          isListening ? solvedListeningQuestions[existingAnswerIndex].questionOptionId = answerId : solvedReadingQuestions[existingAnswerIndex].questionOptionId = answerId;
+          isListening ?
+          solvedListeningQuestions[existingAnswerIndex].questionOptionId =
+              answerId : solvedReadingQuestions[existingAnswerIndex]
+              .questionOptionId = answerId;
         } else {
           // Add the new answer to the list if it doesn't exist
-          isListening ? solvedListeningQuestions.add(selectedAnswer) : solvedReadingQuestions.add(selectedAnswer);
+          isListening
+              ? solvedListeningQuestions.add(selectedAnswer)
+              : solvedReadingQuestions.add(selectedAnswer);
         }
       });
     }
@@ -666,7 +717,9 @@ class RetakeTestPageState extends State<RetakeTestPage>
             opacity: 0.1, // Adjust opacity for the watermark effect
             child: Image.asset(
               'assets/new_App_icon.png',
-              height: MediaQuery.sizeOf(context).height * 0.7,
+              height: MediaQuery
+                  .sizeOf(context)
+                  .height * 0.7,
             ),
           ),
         ),
@@ -679,7 +732,9 @@ class RetakeTestPageState extends State<RetakeTestPage>
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(
-                    width: MediaQuery.sizeOf(context).width * 0.45,
+                    width: MediaQuery
+                        .sizeOf(context)
+                        .width * 0.45,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -712,7 +767,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
                               fontSize: 20,
                             ),
                           ),
-                        if (question.isNotEmpty || imageUrl.isNotEmpty || voiceScript.isNotEmpty) // Check for null or empty
+                        if (question.isNotEmpty || imageUrl.isNotEmpty ||
+                            voiceScript.isNotEmpty) // Check for null or empty
                           Container(
                             padding: const EdgeInsets.all(12),
                             margin: const EdgeInsets.symmetric(vertical: 10),
@@ -745,7 +801,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                                           // Show something when the image fails to load
                                           return const Column(
                                             mainAxisAlignment:
-                                                MainAxisAlignment.center,
+                                            MainAxisAlignment.center,
                                             children: [
                                               Icon(Icons.broken_image,
                                                   color: AppColor.navyBlue,
@@ -773,10 +829,13 @@ class RetakeTestPageState extends State<RetakeTestPage>
                                     ),
                                   if (voiceScript.isNotEmpty)
                                     InkWell(
-                                      onTap: (){
-                                        _speak(_selectedListeningQuestionData?.voiceGender, voiceScript);
+                                      onTap: () {
+                                        _speak(_selectedListeningQuestionData
+                                            ?.voiceGender, voiceScript);
                                       },
-                                      child: Image.asset("assets/speaker.png",height: 100, color: AppColor.navyBlue,),
+                                      child: Image.asset(
+                                        "assets/speaker.png", height: 100,
+                                        color: AppColor.navyBlue,),
                                     )
                                 ],
                               ),
@@ -786,214 +845,221 @@ class RetakeTestPageState extends State<RetakeTestPage>
                     ),
                   ),
                   SizedBox(
-                    width: MediaQuery.sizeOf(context).width * 0.45,
+                    width: MediaQuery
+                        .sizeOf(context)
+                        .width * 0.45,
                     child: isTextType
                         ? ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: options.length,
-                            itemBuilder: (context, index) {
-                              // if (shuffleOptions) {
-                              //   options.shuffle();
-                              //   shuffleOptions = false;
-                              // }
-                              String answer = options[index].title ?? '';
-                              int answerId = options[index].id ?? -1;
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: options.length,
+                      itemBuilder: (context, index) {
+                        // if (shuffleOptions) {
+                        //   options.shuffle();
+                        //   shuffleOptions = false;
+                        // }
+                        String answer = options[index].title ?? '';
+                        int answerId = options[index].id ?? -1;
 
-                              return Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: InkWell(
-                                  onTap: (){
-                                    selectionHandling(index, answerId);
-                                  },
-                                  child: SizedBox(
-                                    height: 45,
-                                    width: 355,
-                                    child: Row(
+                        return Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: InkWell(
+                            onTap: () {
+                              selectionHandling(index, answerId);
+                            },
+                            child: SizedBox(
+                              height: 45,
+                              width: 355,
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 35,
+                                    height: 35,
+                                    decoration: BoxDecoration(
+                                      color:
+                                      (selectedSolvedIndex == index)
+                                          ? AppColor.black
+                                          : const Color.fromRGBO(
+                                          255, 255, 255, 1),
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                          width: 2,
+                                          color: AppColor.black),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        '${index + 1}',
+                                        style: TextStyle(
+                                          color: (selectedSolvedIndex ==
+                                              index)
+                                              ? const Color.fromRGBO(
+                                              255, 255, 255, 1)
+                                              : AppColor.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
                                       children: [
-                                        Container(
-                                          width: 35,
-                                          height: 35,
-                                          decoration: BoxDecoration(
-                                            color:
-                                                (selectedSolvedIndex == index)
-                                                    ? AppColor.black
-                                                    : const Color.fromRGBO(
-                                                        255, 255, 255, 1),
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                                width: 2,
-                                                color: AppColor.black),
-                                          ),
-                                          child: Center(
+                                        if (answer.isNotEmpty)
+                                          Expanded(
                                             child: Text(
-                                              '${index + 1}',
-                                              style: TextStyle(
-                                                color: (selectedSolvedIndex ==
-                                                        index)
-                                                    ? const Color.fromRGBO(
-                                                        255, 255, 255, 1)
-                                                    : AppColor.black,
-                                              ),
+                                              answer,
+                                              style: const TextStyle(
+                                                  fontSize: 18),
                                             ),
                                           ),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              if (answer.isNotEmpty)
-                                                Expanded(
-                                                child: Text(
-                                                  answer,
-                                                  style: const TextStyle(
-                                                      fontSize: 18),
-                                                ),
-                                              ),
-                                              if ((options[index].subtitle ??
-                                                      "")
-                                                  .isNotEmpty)
-                                                Expanded(
-                                                  child: Text(
-                                                    options[index].subtitle ??
-                                                        "",
-                                                    style: const TextStyle(
-                                                        fontSize: 14,
-                                                        color:
-                                                            AppColor.grey500),
-                                                  ),
-                                                )
-                                            ],
-                                          ),
-                                        ),
+                                        if ((options[index].subtitle ??
+                                            "")
+                                            .isNotEmpty)
+                                          Expanded(
+                                            child: Text(
+                                              options[index].subtitle ??
+                                                  "",
+                                              style: const TextStyle(
+                                                  fontSize: 14,
+                                                  color:
+                                                  AppColor.grey500),
+                                            ),
+                                          )
                                       ],
                                     ),
                                   ),
-                                ),
-                              );
-                            },
-                          )
-                        : GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount:
-                                  2, // Number of columns in grid view
-                              childAspectRatio:
-                                  2, // Adjust this to control item size
+                                ],
+                              ),
                             ),
-                            itemCount: options.length,
-                            itemBuilder: (context, index) {
-                              String answer = options[index].title ?? "";
-                              String answerImage = options[index].imageUrl ?? "";
-                              int answerId = options[index].id ?? -1;
-                              String voiceScript = options[index].voiceScript ?? "";
-                              return Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: InkWell(
-                                  onTap: (){
-                                    selectionHandling(index, answerId);
-                                  },
-                                  child: SizedBox(
-                                    // height: 45,
-                                    // width: 355,
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          width: 35,
-                                          height: 35,
-                                          decoration: BoxDecoration(
-                                              color:
-                                                  (selectedSolvedIndex == index)
-                                                      ? AppColor.black
-                                                      : const Color.fromRGBO(
-                                                          255, 255, 255, 1),
-                                              shape: BoxShape.circle,
-                                              border: Border.all(
-                                                  width: 2,
-                                                  color: AppColor.black)),
-                                          child: Center(
-                                              child: Text(
-                                            '${index + 1}',
-                                            style: TextStyle(
-                                              color:
-                                                  (selectedSolvedIndex == index)
-                                                      ? const Color.fromRGBO(
-                                                          255, 255, 255, 1)
-                                                      : AppColor.black,
-                                            ),
-                                          )),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        // Spacing between circle and text
-                                        Column(
-                                          children: [
-                                            if (answerImage.isNotEmpty)
-                                              Expanded(
-                                              child: InkWell(
-                                                onTap: () {
-                                                  showZoomedImage(answerImage);
-                                                },
-                                                child: Image.network(
-                                                  answerImage,
-                                                  errorBuilder: (context, error,
-                                                      stackTrace) {
-                                                    // Show something when the image fails to load
-                                                    return const Icon(Icons.broken_image,
-                                                        color: AppColor
-                                                            .navyBlue,
-                                                        size: 20);
-                                                  },
-                                                  loadingBuilder: (context,
-                                                      child, loadingProgress) {
-                                                    if (loadingProgress ==
-                                                        null) {
-                                                      return child; // Image loaded successfully
-                                                    } else {
-                                                      // Show a loading indicator while the image is being loaded
-                                                      return const CircularProgressIndicator();
-                                                    }
-                                                  },
-                                                ),
-                                              ),
-                                            ),
-                                            if (voiceScript.isNotEmpty)
-                                              InkWell(
-                                                onTap: (){
-                                                  _speak(_selectedListeningQuestionData?.voiceGender, voiceScript);
-                                                },
-                                                child: Image.asset("assets/speaker.png",height: 40, color: AppColor.navyBlue,),
-                                              ),
-                                            if (answer.isNotEmpty)
-                                              Expanded(
-                                                child: Text(
-                                                  answer,
-                                                  style: const TextStyle(
-                                                      fontSize: 18),
-                                                ),
-                                              ),
-                                            if ((options[index].subtitle ?? "")
-                                                .isNotEmpty)
-                                              Expanded(
-                                                child: Text(
-                                                  options[index].subtitle ?? "",
-                                                  style: const TextStyle(
-                                                      fontSize: 14,
-                                                      color: AppColor.grey500),
-                                                ),
-                                              ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
                           ),
+                        );
+                      },
+                    )
+                        : GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                      const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount:
+                        2, // Number of columns in grid view
+                        childAspectRatio:
+                        2, // Adjust this to control item size
+                      ),
+                      itemCount: options.length,
+                      itemBuilder: (context, index) {
+                        String answer = options[index].title ?? "";
+                        String answerImage = options[index].imageUrl ?? "";
+                        int answerId = options[index].id ?? -1;
+                        String voiceScript = options[index].voiceScript ?? "";
+                        return Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: InkWell(
+                            onTap: () {
+                              selectionHandling(index, answerId);
+                            },
+                            child: SizedBox(
+                              // height: 45,
+                              // width: 355,
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 35,
+                                    height: 35,
+                                    decoration: BoxDecoration(
+                                        color:
+                                        (selectedSolvedIndex == index)
+                                            ? AppColor.black
+                                            : const Color.fromRGBO(
+                                            255, 255, 255, 1),
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                            width: 2,
+                                            color: AppColor.black)),
+                                    child: Center(
+                                        child: Text(
+                                          '${index + 1}',
+                                          style: TextStyle(
+                                            color:
+                                            (selectedSolvedIndex == index)
+                                                ? const Color.fromRGBO(
+                                                255, 255, 255, 1)
+                                                : AppColor.black,
+                                          ),
+                                        )),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  // Spacing between circle and text
+                                  Column(
+                                    children: [
+                                      if (answerImage.isNotEmpty)
+                                        Expanded(
+                                          child: InkWell(
+                                            onTap: () {
+                                              showZoomedImage(answerImage);
+                                            },
+                                            child: Image.network(
+                                              answerImage,
+                                              errorBuilder: (context, error,
+                                                  stackTrace) {
+                                                // Show something when the image fails to load
+                                                return const Icon(
+                                                    Icons.broken_image,
+                                                    color: AppColor
+                                                        .navyBlue,
+                                                    size: 20);
+                                              },
+                                              loadingBuilder: (context,
+                                                  child, loadingProgress) {
+                                                if (loadingProgress ==
+                                                    null) {
+                                                  return child; // Image loaded successfully
+                                                } else {
+                                                  // Show a loading indicator while the image is being loaded
+                                                  return const CircularProgressIndicator();
+                                                }
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      if (voiceScript.isNotEmpty)
+                                        InkWell(
+                                          onTap: () {
+                                            _speak(
+                                                _selectedListeningQuestionData
+                                                    ?.voiceGender, voiceScript);
+                                          },
+                                          child: Image.asset(
+                                            "assets/speaker.png", height: 40,
+                                            color: AppColor.navyBlue,),
+                                        ),
+                                      if (answer.isNotEmpty)
+                                        Expanded(
+                                          child: Text(
+                                            answer,
+                                            style: const TextStyle(
+                                                fontSize: 18),
+                                          ),
+                                        ),
+                                      if ((options[index].subtitle ?? "")
+                                          .isNotEmpty)
+                                        Expanded(
+                                          child: Text(
+                                            options[index].subtitle ?? "",
+                                            style: const TextStyle(
+                                                fontSize: 14,
+                                                color: AppColor.grey500),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -1013,7 +1079,9 @@ class RetakeTestPageState extends State<RetakeTestPage>
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           SizedBox(
-            width: MediaQuery.sizeOf(context).width * 0.45,
+            width: MediaQuery
+                .sizeOf(context)
+                .width * 0.45,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -1038,14 +1106,16 @@ class RetakeTestPageState extends State<RetakeTestPage>
                   child: dataFound == false
                       ? const Center(child: CircularProgressIndicator())
                       : _readingQuestions.isEmpty
-                          ? const Center(child: Text("No Questions Available"))
-                          : questionsGrid(_readingQuestions.length, false),
+                      ? const Center(child: Text("No Questions Available"))
+                      : questionsGrid(_readingQuestions.length, false),
                 ),
               ],
             ),
           ),
           SizedBox(
-            width: MediaQuery.sizeOf(context).width * 0.45,
+            width: MediaQuery
+                .sizeOf(context)
+                .width * 0.45,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -1126,7 +1196,9 @@ class RetakeTestPageState extends State<RetakeTestPage>
             ),
             child: Center(
               child: Text(
-                isListening ? '${_readingQuestions.length+index+1}' : '${index + 1}',
+                isListening
+                    ? '${_readingQuestions.length + index + 1}'
+                    : '${index + 1}',
                 style: TextStyle(
                   fontSize: 18,
                   color: isSelected
@@ -1141,19 +1213,22 @@ class RetakeTestPageState extends State<RetakeTestPage>
     );
   }
 
-  bool isPreviousButtonVisible(){
-    if (!isListViewVisible && _selectedReadingQuestionData != null && _selectedListeningQuestionData == null) {
+  bool isPreviousButtonVisible() {
+    if (!isListViewVisible && _selectedReadingQuestionData != null &&
+        _selectedListeningQuestionData == null) {
       return (_readingQuestions.indexOf(_selectedReadingQuestionData!) > 0);
-    } else if (!isListViewVisible &&_selectedListeningQuestionData != null) {
+    } else if (!isListViewVisible && _selectedListeningQuestionData != null) {
       return true;
     } else {
       return false;
     }
   }
 
-  bool isNextButtonVisible(){
-    if (!isListViewVisible && _selectedReadingQuestionData == null && _selectedListeningQuestionData != null) {
-      return (_listeningQuestions.indexOf(_selectedListeningQuestionData!) < _listeningQuestions.length -1);
+  bool isNextButtonVisible() {
+    if (!isListViewVisible && _selectedReadingQuestionData == null &&
+        _selectedListeningQuestionData != null) {
+      return (_listeningQuestions.indexOf(_selectedListeningQuestionData!) <
+          _listeningQuestions.length - 1);
     } else if (!isListViewVisible && _selectedReadingQuestionData != null) {
       return true;
     } else {
@@ -1161,16 +1236,17 @@ class RetakeTestPageState extends State<RetakeTestPage>
     }
   }
 
-  bool isSubmitAnswerButtonVisible (){
+  bool isSubmitAnswerButtonVisible() {
     return isListViewVisible || (_selectedListeningQuestionData != null &&
         _listeningQuestions.indexOf(_selectedListeningQuestionData!) ==
             _listeningQuestions.length - 1);
   }
 
   void moveToPrevious() {
-    void updateSelectedData<T>(List<T> questions, T? selectedData, Function(T?) setSelectedData) {
+    void updateSelectedData<T>(List<T> questions, T? selectedData,
+        Function(T?) setSelectedData) {
       int index = questions.indexOf(selectedData!);
-      if (index > 0) {  // Ensure it's not the first item
+      if (index > 0) { // Ensure it's not the first item
         setSelectedData(questions[index - 1]);
       } else {
         setSelectedData(null);
@@ -1179,21 +1255,25 @@ class RetakeTestPageState extends State<RetakeTestPage>
     }
 
     if (_selectedListeningQuestionData != null) {
-      updateSelectedData(_listeningQuestions, _selectedListeningQuestionData, (data) {
+      updateSelectedData(
+          _listeningQuestions, _selectedListeningQuestionData, (data) {
         _selectedListeningQuestionData = data;
         if (data == null && _readingQuestions.isNotEmpty) {
-          _selectedReadingQuestionData = _readingQuestions[_readingQuestions.length - 1];
+          _selectedReadingQuestionData =
+          _readingQuestions[_readingQuestions.length - 1];
         }
       });
     } else if (_selectedReadingQuestionData != null) {
-      updateSelectedData(_readingQuestions, _selectedReadingQuestionData, (data) {
+      updateSelectedData(
+          _readingQuestions, _selectedReadingQuestionData, (data) {
         _selectedReadingQuestionData = data;
       });
     }
   }
 
   void moveToNext() {
-    void updateSelectedData<T>(List<T> questions, T? selectedData, Function(T?) setSelectedData) {
+    void updateSelectedData<T>(List<T> questions, T? selectedData,
+        Function(T?) setSelectedData) {
       int index = questions.indexOf(selectedData!);
       if (index != -1 && index < questions.length - 1) {
         setSelectedData(questions[index + 1]);
@@ -1204,25 +1284,29 @@ class RetakeTestPageState extends State<RetakeTestPage>
     }
 
     if (_selectedReadingQuestionData != null) {
-      updateSelectedData(_readingQuestions, _selectedReadingQuestionData, (data) {
+      updateSelectedData(
+          _readingQuestions, _selectedReadingQuestionData, (data) {
         _selectedReadingQuestionData = data;
         if (data == null) {
-          _selectedListeningQuestionData = _listeningQuestions.isNotEmpty ? _listeningQuestions[0] : null;
+          _selectedListeningQuestionData =
+          _listeningQuestions.isNotEmpty ? _listeningQuestions[0] : null;
         }
       });
     } else if (_selectedListeningQuestionData != null) {
-      updateSelectedData(_listeningQuestions, _selectedListeningQuestionData, (data) {
+      updateSelectedData(
+          _listeningQuestions, _selectedListeningQuestionData, (data) {
         _selectedListeningQuestionData = data;
       });
     }
   }
 
-  int calculateSolved (){
+  int calculateSolved() {
     return solvedReadingQuestions.length + solvedListeningQuestions.length;
   }
 
-  int calculateUnsolved (){
-    return (_readingQuestions.length + _listeningQuestions.length) -calculateSolved();
+  int calculateUnsolved() {
+    return (_readingQuestions.length + _listeningQuestions.length) -
+        calculateSolved();
   }
 
   void showZoomedImage(imageUrl) {
@@ -1232,7 +1316,10 @@ class RetakeTestPageState extends State<RetakeTestPage>
         return Dialog(
           backgroundColor: Colors.transparent,
           child: SizedBox(
-            height: MediaQuery.of(context).size.height * 0.9,
+            height: MediaQuery
+                .of(context)
+                .size
+                .height * 0.9,
             child: Image.network(
               imageUrl,
               errorBuilder: (context, error, stackTrace) {
@@ -1253,6 +1340,218 @@ class RetakeTestPageState extends State<RetakeTestPage>
                   return const CircularProgressIndicator();
                 }
               },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void submitAnswer() async {
+
+    int duration = (_examTime - _remainingTime) ~/ 60;
+
+    final List<Answers> combinedList = [];
+    combinedList.addAll(solvedReadingQuestions);
+    combinedList.addAll(solvedListeningQuestions);
+    AnswerModel finalAnswer = AnswerModel(
+      answers: combinedList,
+      duration: duration < 1 ? 1 : duration,
+      questionSetId: widget.questionSetId,
+    );
+
+    log("------------");
+    log((duration.toString()));
+    log(jsonEncode(finalAnswer));
+
+    if (combinedList.isEmpty){
+      _showNOAnswerSubmissionDialog(context);
+      return;
+    }
+
+    try {
+      showLoadingIndicator(context: context, showLoader: true);
+
+      final response = await AnswerSubmissionRepository().submitAnswers(
+          answers: finalAnswer,
+          context: context
+      );
+
+      log(jsonEncode(response));
+
+      // Process the response
+      if ((response['error'] == null || !response['error']) && mounted) {
+        // Hide loading indicator
+        showLoadingIndicator(context: context, showLoader: false);
+
+        _showSuccessDialog(context);
+
+        log("Submission Successful");
+        // Optionally store token or any other data
+        // final prefs = await SharedPreferences.getInstance();
+        // prefs.setString('paymentToken', response['payment_token'] ?? '');
+
+        // Perform any other success actions
+      } else {
+        if (mounted) {
+          showLoadingIndicator(context: context, showLoader: false);
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   SnackBar(content: Text("Payment failed: ${response['message']}")),
+          // );
+          log("Submission Failed: ${response['message']}");
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        showLoadingIndicator(context: context, showLoader: false);
+        _showErrorDialog(context);
+        log("An error occurred: $e");
+      }
+    }
+  }
+
+  void _showSuccessDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const CircleAvatar(
+                  radius: 20,
+                  backgroundColor: Colors.green,
+                  child: Icon(Icons.check, color: Colors.white, size: 40),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  "Success!",
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  "Answer Submitted Successfully",
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green, // Background color
+                  ),
+                  child: const Text("See Result!"),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showErrorDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const CircleAvatar(
+                  radius: 20,
+                  backgroundColor: Colors.red,
+                  child: Icon(Icons.close, color: Colors.white, size: 40),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  "Error!",
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  "Something went wrong while submitting!",
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red, // Background color
+                  ),
+                  child: const Text("TRY AGAIN"),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showNOAnswerSubmissionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const CircleAvatar(
+                  radius: 20,
+                  backgroundColor: Colors.red,
+                  child: Icon(Icons.close, color: Colors.white, size: 40),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  "No Answer Select",
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  "Please select a answer",
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red, // Background color
+                  ),
+                  child: const Text("Ok"),
+                ),
+              ],
             ),
           ),
         );

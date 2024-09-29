@@ -266,6 +266,34 @@ class AuthService {
     }
   }
 
+  Future<Map<String, dynamic>> logoutIfInvalidToken(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final LogInCredentials? loginCredentials = await getLogInCredentials();
+
+
+
+    if (loginCredentials != null && (loginCredentials.token == null || loginCredentials.token == "")) {
+      // No token found, perhaps already logged out
+      if (context.mounted){
+        _showSnackbar(context, 'No active session found.');
+      }
+      return {'status': 'error', 'message': 'No active session.'};
+    }
+
+    await prefs.remove('authToken');
+    await clearLogInCredentials();
+    if (SignInMethods.isUserSignedIn()){
+      await SignInMethods.logout();
+    }
+
+    if(context.mounted){
+      slideNavigationPushAndRemoveUntil(const RegistrationPage(title: "Registration Page"), context);
+    }
+    return {'status': 'error', 'message': 'Log Out..'};
+
+
+  }
+
   void _showSnackbar(BuildContext context, String message) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));
