@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:kpathshala/authentication/base_repository.dart';
 import 'package:kpathshala/model/package_model/package_model.dart';
 import 'package:kpathshala/api/api_container.dart';
@@ -5,10 +6,10 @@ import 'package:kpathshala/api/api_container.dart';
 class PackageRepository {
   final BaseRepository _baseRepository = BaseRepository();
 
-  Future<PackageModel> fetchPackages() async {
+  Future<PackageModel> fetchPackages( BuildContext context) async {
     try {
       final response =
-          await _baseRepository.getRequest(KpatshalaPackage.packages);
+          await _baseRepository.getRequest(KpatshalaPackage.packages,context:context );
       return PackageModel.fromJson(response);
     } catch (e) {
       throw Exception('Failed to load packages: $e');

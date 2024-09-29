@@ -192,7 +192,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
     try {
       // Attempt to fetch the questions
       QuestionsModel? questionsModel =
-          await _repository.fetchReadingQuestions(widget.questionSetId);
+          await _repository.fetchReadingQuestions(widget.questionSetId,context);
 
       if (questionsModel != null && questionsModel.data != null) {
         _readingQuestions = questionsModel.data?.readingQuestions ?? [];

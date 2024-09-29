@@ -64,7 +64,7 @@ class _DashboardPageState extends State<DashboardPage> {
     try {
       DashboardRepository repository = DashboardRepository();
 
-      DashboardPageModel? dashModel = await repository.fetchDashboardData();
+      DashboardPageModel? dashModel = await repository.fetchDashboardData(context);
 
       setState(() {
         dashboardPageModel = dashModel;

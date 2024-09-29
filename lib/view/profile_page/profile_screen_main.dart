@@ -50,7 +50,7 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
         isLoadingProfile = true;
       });
 
-      ProfileGetDataModel? data = await _profileRepository.fetchProfile();
+      ProfileGetDataModel? data = await _profileRepository.fetchProfile(context);
 
       if (data != null) {
         setState(() {

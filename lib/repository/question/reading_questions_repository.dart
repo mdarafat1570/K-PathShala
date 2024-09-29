@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:flutter/material.dart';
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/authentication/base_repository.dart';
 import 'package:kpathshala/model/question_model/reading_question_page_model.dart';
@@ -6,32 +7,32 @@ import 'package:kpathshala/model/question_model/reading_question_page_model.dart
 class QuestionsRepository {
   final BaseRepository _baseRepository = BaseRepository();
 
-  Future<QuestionsModel?> fetchReadingQuestions(int questionSetId) async {
+  Future<QuestionsModel?> fetchReadingQuestions(int questionSetId,BuildContext context) async {
     try {
       String url =
           '${KpatshalaQuestionPage.readingQuestion}?questionSetId=$questionSetId';
 
       // Make the GET request using the BaseRepository's getRequest method
-      Map<String, dynamic> response = await _baseRepository.getRequest(url);
+      Map<String, dynamic> response = await _baseRepository.getRequest(url ,context:context );
 
       if (response.containsKey('data')) {
-        log("ok");
+      
         return QuestionsModel.fromJson(response);
       } else {
         log('No data found in the response');
         return null;
       }
     } catch (e) {
-      log("not ok");
+  
       log('Error fetching reading questions: $e');
       return null;
     }
   }
 
-  Future<QuestionsModel> fetchQuestions() async {
-    var response = await BaseRepository().getRequest(
-        'http://159.203.105.5:8012/api/v1/question?questionSetId=3');
-    // Assuming the response returns a map that can be directly used by QuestionsModel.fromJson()
-    return QuestionsModel.fromJson(response);
-  }
+  // Future<QuestionsModel> fetchQuestions() async {
+  //   var response = await BaseRepository().getRequest(
+  //       'http://159.203.105.5:8012/api/v1/question?questionSetId=3');
+  //   // Assuming the response returns a map that can be directly used by QuestionsModel.fromJson()
+  //   return QuestionsModel.fromJson(response);
+  // }
 }
