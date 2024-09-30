@@ -11,6 +11,7 @@ import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/repository/question/answer_submission_repository.dart';
 import 'package:kpathshala/repository/question/reading_questions_repository.dart';
 import 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
+import 'package:lottie/lottie.dart';
 
 class RetakeTestPage extends StatefulWidget {
   final int questionSetId;
@@ -33,7 +34,9 @@ class RetakeTestPageState extends State<RetakeTestPage>
   int _remainingTime = 3600;
   int _examTime = 3600;
 
-  late Timer _timer;
+   Timer? _timer;
+
+  Map <int, Widget>? questionImages;
 
   // int _currentTabIndex = 0;
   //
@@ -48,6 +51,9 @@ class RetakeTestPageState extends State<RetakeTestPage>
   bool dataFound = false,
       shuffleOptions = false;
   bool isListViewVisible = true;
+  bool firstSpeechCompleted = false;
+  bool isInDelay = false;
+  bool isSpeaking = false;
   static const platform =
   MethodChannel('com.inferloom.kpathshala/exit_confirmation');
   final AuthService _authService = AuthService();
@@ -57,6 +63,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
   String? selectedEngine;
   String? selectedVoice;
   List<dynamic> availableVoices = [];
+  List<PlayedAudios> playedAudiosList = [];
   String? _newVoiceText;
 
   double volume = 0.5;
@@ -73,7 +80,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
       DeviceOrientation.landscapeLeft,
     ]);
     // platform.setMethodCallHandler((call) async {
-    //   log("Ureka------------------------");
+    //
     //   if (call.method == 'onUserLeaveHint') {
     //     // return await _showExitExamConfirmation(context);
     //   }
@@ -81,6 +88,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
     // });
     readCredentials();
     initTts();
+    _initializeTtsHandlers();
     _fetchReadingQuestions();
   }
 
@@ -101,8 +109,10 @@ class RetakeTestPageState extends State<RetakeTestPage>
     // Set defaults (Korean language, Google TTS engine)
     await flutterTts.setLanguage("ko-KR");
     await flutterTts.setEngine("com.google.android.tts");
-
     _getVoices();
+    await flutterTts.setVolume(volume);
+    await flutterTts.setPitch(pitch);
+    await flutterTts.setSpeechRate(rate);
   }
 
   Future<void> _getVoices() async {
@@ -122,7 +132,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
         return {
           'name': voice['name'] as String,
           'locale': voice['locale'] as String,
-        } as Map<String, String>;
+        };
       }).toList();
 
       // Set default voice if available
@@ -131,17 +141,13 @@ class RetakeTestPageState extends State<RetakeTestPage>
     });
   }
 
-
   Future<void> _speak(String? model, String voiceScript) async {
     _newVoiceText = voiceScript;
+
     if (_newVoiceText == null || _newVoiceText!.isEmpty) {
       log("No text provided for speech.");
       return;
     }
-
-    await flutterTts.setVolume(volume);
-    await flutterTts.setPitch(pitch);
-    await flutterTts.setSpeechRate(rate);
 
     if (model == "female" || model == null) {
       selectedVoice = "ko-kr-x-ism-local";
@@ -153,11 +159,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
       // Safely retrieve the voice map
       Map<String, String>? voice = availableVoices.firstWhere(
             (v) => v['name'] == selectedVoice,
-        orElse: () =>
-        {
-          'name': '',
-          'locale': ''
-        }, // Return a default map instead of null
+        orElse: () => {'name': '', 'locale': ''}, // Return a default map instead of null
       ) as Map<String, String>?; // Ensure the correct type
 
       if (voice != null && voice['name']!.isNotEmpty) {
@@ -168,10 +170,75 @@ class RetakeTestPageState extends State<RetakeTestPage>
         return;
       }
     }
+    if (isSpeaking || isInDelay) {
+      log("Audio is already playing or in delay. Ignoring click.");
+      return; // Prevent playing if already speaking or in delay
+    }
 
-    log("Speaking: $_newVoiceText");
+    // Mark the speaking state as true
+    setState(() {
+      isInDelay = true; // Start delay period
+    });
+
+    // Start the first speech
+    log("Speaking first: $_newVoiceText");
     await flutterTts.speak(_newVoiceText!);
+
+    // Wait for a 3-second delay before deciding if the second speech should start
+    await Future.delayed(const Duration(seconds: 3));
+
+    // Only play the second speech if the first one has completed and wasn't interrupted
+    if (firstSpeechCompleted) {
+      log("Speaking second: $_newVoiceText");
+      await flutterTts.speak(_newVoiceText!);
+    } else {
+      log("First speech was interrupted, second speech will not be played.");
+    }
+
+    setState(() {
+      isInDelay = false;
+    });
   }
+
+  Future<void> _stopSpeaking() async {
+    if (isSpeaking){
+      await flutterTts.stop();
+      firstSpeechCompleted = false;
+      log("Speech stopped");
+    }
+  }
+
+  void _initializeTtsHandlers() {
+    flutterTts.setStartHandler(() {
+      log("Speech started");
+      setState(() {
+        isSpeaking = true;
+      });
+    });
+
+    flutterTts.setCompletionHandler((){
+      log("Speech completed");
+      setState(() {
+        isSpeaking = false;
+        firstSpeechCompleted = true;
+      });
+    });
+
+    flutterTts.setCancelHandler(() {
+      log("Speech canceled");
+      setState(() {
+        isSpeaking = false;
+      });
+    });
+
+    flutterTts.setErrorHandler((msg) {
+      log("An error occurred: $msg");
+      setState(() {
+        isSpeaking = false;
+      });
+    });
+  }
+
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -202,39 +269,103 @@ class RetakeTestPageState extends State<RetakeTestPage>
 
   Future<void> _fetchReadingQuestions() async {
     try {
-      // Attempt to fetch the questions
+      // Fetch the questions asynchronously
       QuestionsModel? questionsModel =
       await _repository.fetchReadingQuestions(widget.questionSetId, context);
+
+      // After fetching the questions, check if the widget is still mounted
+      if (!mounted) return;
 
       if (questionsModel != null && questionsModel.data != null) {
         _readingQuestions = questionsModel.data?.readingQuestions ?? [];
         _listeningQuestions = questionsModel.data?.listeningQuestions ?? [];
-        _remainingTime = (questionsModel.data?.duration ?? 60) * 60;
+
+        await _preloadImages();
+
+        _remainingTime = 3600;  // Set your initial remaining time
         _examTime = (questionsModel.data?.duration ?? 60) * 60;
+
+        // Now that the widget is still mounted, safely update the state
         setState(() {
           dataFound = true;
           _startTimer();
         });
       } else {
         log('Questions model or data is null');
-        setState(() {
+        if (mounted) {
           dataFound = true;
-        });
+          setState(() {});
+        }
       }
     } catch (error, stackTrace) {
-      // Log the error and stack trace for debugging purposes
       log('Error fetching reading questions: $error');
       log('Stack trace: $stackTrace');
 
-      // Optionally, show an error message to the user (Snackbar, Dialog, etc.)
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-              content:
-              Text('Failed to load reading questions. Please try again.')),
+            content: Text('Failed to load reading questions. Please try again.'),
+          ),
         );
       }
     }
+  }
+
+  Future<void> _preloadImages() async {
+    log("Loading Image");
+    List<Future> preloadFutures = [];
+    int index = 1;
+
+    for (ReadingQuestions question in _readingQuestions) {
+      log("Reading question ${index++}");
+      if (question.imageUrl != null && question.imageUrl!.isNotEmpty) {
+        log("Question Image loading...");
+        // Add each image preloading task to the list
+        preloadFutures.add(
+          precacheImage(NetworkImage(question.imageUrl!), context),
+        );
+        log("Successful...");
+      }
+      int optionIndex = 1;
+      for (var option in question.options) {
+        log("Option ${optionIndex++}");
+        if (option.imageUrl != null && option.imageUrl!.isNotEmpty){
+          log("Option Image loading...");
+          // Add each image preloading task to the list
+          preloadFutures.add(
+            precacheImage(NetworkImage(option.imageUrl!), context),
+          );
+          log("Successful...");
+        }
+      }
+    }
+
+    for (ListeningQuestions question in _listeningQuestions) {
+      log("Listening question ${index++}");
+      if (question.imageUrl != null && question.imageUrl!.isNotEmpty) {
+        log("Image loading...");
+        // Add each image preloading task to the list
+        preloadFutures.add(
+          precacheImage(NetworkImage(question.imageUrl!), context),
+        );
+        log("Successful...");
+      }
+      int optionIndex = 1;
+      for (var option in question.options) {
+        log("Option ${optionIndex++}");
+        if (option.imageUrl != null && option.imageUrl!.isNotEmpty){
+          log("Option Image loading...");
+          // Add each image preloading task to the list
+          preloadFutures.add(
+            precacheImage(NetworkImage(option.imageUrl!), context),
+          );
+          log("Successful...");
+        }
+      }
+    }
+
+    // Wait for all images to be preloaded
+    await Future.wait(preloadFutures);
   }
 
   void _startTimer() {
@@ -243,7 +374,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
         if (_remainingTime > 0) {
           _remainingTime--;
         } else {
-          _timer.cancel();
+          _timer?.cancel();
           _showTimeUpDialog();
         }
       });
@@ -259,6 +390,13 @@ class RetakeTestPageState extends State<RetakeTestPage>
           title: const Text('Time Up'),
           content: const Text('Your time for the test has ended.'),
           actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              child: const Text('Cancel'),
+            ),
             TextButton(
               onPressed: () {
                 submitAnswer();
@@ -303,7 +441,10 @@ class RetakeTestPageState extends State<RetakeTestPage>
 
   @override
   void dispose() {
-    _timer.cancel();
+    if (_timer != null && _timer!.isActive) {
+      _timer?.cancel();
+    }
+    log ("Disposed");
     super.dispose();
     flutterTts.stop();
     // WidgetsBinding.instance.removeObserver(this);
@@ -344,7 +485,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
       child: Scaffold(
           backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
           body: SafeArea(
-            child: Column(
+            child:! dataFound ? loadingScreen() : Column(
               children: [
                 pageHeader(),
                 //  Content for the selected tab
@@ -362,7 +503,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
               ],
             ),
           ),
-          bottomNavigationBar: Padding(
+          bottomNavigationBar:!dataFound ? null : Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -378,6 +519,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                         isListViewVisible = true;
                         _selectedReadingQuestionData = null;
                         _selectedListeningQuestionData = null;
+                        _stopSpeaking();
                         setState(() {});
                       },
                       style: ElevatedButton.styleFrom(
@@ -621,8 +763,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
     );
   }
 
-  Widget buildQuestionDetailContent( // required bool isSolved,
-      ) {
+  Widget buildQuestionDetailContent() {
     if (_selectedReadingQuestionData == null &&
         _selectedListeningQuestionData == null) return const SizedBox.shrink();
     bool isListening = _selectedReadingQuestionData == null;
@@ -644,6 +785,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
         ? _selectedListeningQuestionData?.options ?? []
         : _selectedReadingQuestionData?.options ?? [];
     bool isTextType = options.isNotEmpty && options.first.optionType == 'text';
+    bool isVoiceType = options.isNotEmpty && options.first.optionType == 'voice';
     int questionId = isListening
         ? _selectedListeningQuestionData?.id ?? -1
         : _selectedReadingQuestionData?.id ?? -1;
@@ -707,6 +849,10 @@ class RetakeTestPageState extends State<RetakeTestPage>
         }
       });
     }
+
+    bool exists = playedAudiosList.any((audio) =>
+    audio.audioId == _selectedListeningQuestionData?.id && audio.audioType == 'question'
+    );
 
     return Stack(
       alignment: Alignment.center,
@@ -827,15 +973,26 @@ class RetakeTestPageState extends State<RetakeTestPage>
                                         },
                                       ),
                                     ),
+                                  if ((imageUrl.isNotEmpty && voiceScript.isNotEmpty) ||
+                                      (question.isNotEmpty && voiceScript.isNotEmpty))
+                                    Container(
+                                      margin: const EdgeInsets.symmetric(vertical: 4),
+                                      height: 1,
+                                      width: double.maxFinite,
+                                      color: Colors.black54,
+                                    ),
                                   if (voiceScript.isNotEmpty)
                                     InkWell(
-                                      onTap: () {
-                                        _speak(_selectedListeningQuestionData
-                                            ?.voiceGender, voiceScript);
+                                      onTap: exists ? null : () {
+                                        playedAudiosList.add(PlayedAudios(audioId: questionId, audioType: "question"));
+                                        if (!isSpeaking){
+                                          _speak(_selectedListeningQuestionData
+                                              ?.voiceGender, voiceScript);
+                                        }
                                       },
                                       child: Image.asset(
-                                        "assets/speaker.png", height: 100,
-                                        color: AppColor.navyBlue,),
+                                        "assets/speaker.png", height: 40,
+                                        color: exists ? Colors.black54 : AppColor.navyBlue,),
                                     )
                                 ],
                               ),
@@ -848,7 +1005,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                     width: MediaQuery
                         .sizeOf(context)
                         .width * 0.45,
-                    child: isTextType
+                    child: isTextType || isVoiceType
                         ? ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -860,6 +1017,10 @@ class RetakeTestPageState extends State<RetakeTestPage>
                         // }
                         String answer = options[index].title ?? '';
                         int answerId = options[index].id ?? -1;
+                        String voiceScript = options[index].voiceScript ?? "";
+                        bool optionExists = playedAudiosList.any((audio) =>
+                        audio.audioId == answerId && audio.audioType == 'option'
+                        );
 
                         return Padding(
                           padding: const EdgeInsets.all(8),
@@ -867,70 +1028,63 @@ class RetakeTestPageState extends State<RetakeTestPage>
                             onTap: () {
                               selectionHandling(index, answerId);
                             },
-                            child: SizedBox(
-                              height: 45,
-                              width: 355,
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 35,
-                                    height: 35,
-                                    decoration: BoxDecoration(
-                                      color:
-                                      (selectedSolvedIndex == index)
-                                          ? AppColor.black
-                                          : const Color.fromRGBO(
-                                          255, 255, 255, 1),
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                          width: 2,
-                                          color: AppColor.black),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        '${index + 1}',
-                                        style: TextStyle(
-                                          color: (selectedSolvedIndex ==
-                                              index)
-                                              ? const Color.fromRGBO(
-                                              255, 255, 255, 1)
-                                              : AppColor.black,
-                                        ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  width: 35,
+                                  height: 35,
+                                  decoration: BoxDecoration(
+                                    color:
+                                    (selectedSolvedIndex == index)
+                                        ? AppColor.black
+                                        : const Color.fromRGBO(
+                                        255, 255, 255, 1),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                        width: 2,
+                                        color: AppColor.black),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      '${index + 1}',
+                                      style: TextStyle(
+                                        color: (selectedSolvedIndex ==
+                                            index)
+                                            ? const Color.fromRGBO(
+                                            255, 255, 255, 1)
+                                            : AppColor.black,
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(width: 8),
+                                ),
+                                const SizedBox(width: 8),
+                                if (answer.isNotEmpty && isTextType)
                                   Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                      children: [
-                                        if (answer.isNotEmpty)
-                                          Expanded(
-                                            child: Text(
-                                              answer,
-                                              style: const TextStyle(
-                                                  fontSize: 18),
-                                            ),
-                                          ),
-                                        if ((options[index].subtitle ??
-                                            "")
-                                            .isNotEmpty)
-                                          Expanded(
-                                            child: Text(
-                                              options[index].subtitle ??
-                                                  "",
-                                              style: const TextStyle(
-                                                  fontSize: 14,
-                                                  color:
-                                                  AppColor.grey500),
-                                            ),
-                                          )
-                                      ],
+                                    child: Text(
+                                      answer,
+                                      style: const TextStyle(
+                                          fontSize: 18),
                                     ),
                                   ),
-                                ],
-                              ),
+                                if (voiceScript.isNotEmpty && isVoiceType)
+                                  Container(
+                                    margin: const EdgeInsets.only(left: 20),
+                                    child: InkWell(
+                                      onTap:optionExists ? null : () {
+                                        playedAudiosList.add(PlayedAudios(audioId: answerId, audioType: "option"));
+                                        if (!isSpeaking && !isInDelay){
+                                          _speak(
+                                              _selectedListeningQuestionData
+                                                  ?.voiceGender, voiceScript);
+                                        }
+                                      },
+                                      child: Image.asset(
+                                        "assets/speaker.png", height: 40,
+                                        color: optionExists ? Colors.black54 : AppColor.navyBlue,),
+                                    ),
+                                  ),
+                              ],
                             ),
                           ),
                         );
@@ -941,120 +1095,80 @@ class RetakeTestPageState extends State<RetakeTestPage>
                       physics: const NeverScrollableScrollPhysics(),
                       gridDelegate:
                       const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount:
-                        2, // Number of columns in grid view
-                        childAspectRatio:
-                        2, // Adjust this to control item size
+                        crossAxisCount: 2,
+                        childAspectRatio: 2,
                       ),
                       itemCount: options.length,
                       itemBuilder: (context, index) {
-                        String answer = options[index].title ?? "";
                         String answerImage = options[index].imageUrl ?? "";
-                        int answerId = options[index].id ?? -1;
-                        String voiceScript = options[index].voiceScript ?? "";
+                        int answerId = options[index].id;
                         return Padding(
                           padding: const EdgeInsets.all(8),
                           child: InkWell(
                             onTap: () {
                               selectionHandling(index, answerId);
                             },
-                            child: SizedBox(
-                              // height: 45,
-                              // width: 355,
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 35,
-                                    height: 35,
-                                    decoration: BoxDecoration(
-                                        color:
-                                        (selectedSolvedIndex == index)
-                                            ? AppColor.black
-                                            : const Color.fromRGBO(
-                                            255, 255, 255, 1),
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                            width: 2,
-                                            color: AppColor.black)),
-                                    child: Center(
-                                        child: Text(
-                                          '${index + 1}',
-                                          style: TextStyle(
-                                            color:
-                                            (selectedSolvedIndex == index)
-                                                ? const Color.fromRGBO(
-                                                255, 255, 255, 1)
-                                                : AppColor.black,
-                                          ),
-                                        )),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  width: 35,
+                                  height: 35,
+                                  decoration: BoxDecoration(
+                                      color:
+                                      (selectedSolvedIndex == index)
+                                          ? AppColor.black
+                                          : const Color.fromRGBO(
+                                          255, 255, 255, 1),
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                          width: 2,
+                                          color: AppColor.black)),
+                                  child: Center(
+                                      child: Text(
+                                        '${index + 1}',
+                                        style: TextStyle(
+                                          color:
+                                          (selectedSolvedIndex == index)
+                                              ? const Color.fromRGBO(
+                                              255, 255, 255, 1)
+                                              : AppColor.black,
+                                        ),
+                                      )),
+                                ),
+                                const SizedBox(width: 8),
+                                // Spacing between circle and text
+                                if (answerImage.isNotEmpty)
+                                  Expanded(
+                                    child: InkWell(
+                                      onTap: () {
+                                        showZoomedImage(answerImage);
+                                      },
+                                      child: Image.network(
+                                        answerImage,
+                                        errorBuilder: (context, error,
+                                            stackTrace) {
+                                          // Show something when the image fails to load
+                                          return const Icon(
+                                              Icons.broken_image,
+                                              color: AppColor
+                                                  .navyBlue,
+                                              size: 20);
+                                        },
+                                        loadingBuilder: (context,
+                                            child, loadingProgress) {
+                                          if (loadingProgress ==
+                                              null) {
+                                            return child; // Image loaded successfully
+                                          } else {
+                                            // Show a loading indicator while the image is being loaded
+                                            return const CircularProgressIndicator();
+                                          }
+                                        },
+                                      ),
+                                    ),
                                   ),
-                                  const SizedBox(width: 8),
-                                  // Spacing between circle and text
-                                  Column(
-                                    children: [
-                                      if (answerImage.isNotEmpty)
-                                        Expanded(
-                                          child: InkWell(
-                                            onTap: () {
-                                              showZoomedImage(answerImage);
-                                            },
-                                            child: Image.network(
-                                              answerImage,
-                                              errorBuilder: (context, error,
-                                                  stackTrace) {
-                                                // Show something when the image fails to load
-                                                return const Icon(
-                                                    Icons.broken_image,
-                                                    color: AppColor
-                                                        .navyBlue,
-                                                    size: 20);
-                                              },
-                                              loadingBuilder: (context,
-                                                  child, loadingProgress) {
-                                                if (loadingProgress ==
-                                                    null) {
-                                                  return child; // Image loaded successfully
-                                                } else {
-                                                  // Show a loading indicator while the image is being loaded
-                                                  return const CircularProgressIndicator();
-                                                }
-                                              },
-                                            ),
-                                          ),
-                                        ),
-                                      if (voiceScript.isNotEmpty)
-                                        InkWell(
-                                          onTap: () {
-                                            _speak(
-                                                _selectedListeningQuestionData
-                                                    ?.voiceGender, voiceScript);
-                                          },
-                                          child: Image.asset(
-                                            "assets/speaker.png", height: 40,
-                                            color: AppColor.navyBlue,),
-                                        ),
-                                      if (answer.isNotEmpty)
-                                        Expanded(
-                                          child: Text(
-                                            answer,
-                                            style: const TextStyle(
-                                                fontSize: 18),
-                                          ),
-                                        ),
-                                      if ((options[index].subtitle ?? "")
-                                          .isNotEmpty)
-                                        Expanded(
-                                          child: Text(
-                                            options[index].subtitle ?? "",
-                                            style: const TextStyle(
-                                                fontSize: 14,
-                                                color: AppColor.grey500),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                              ],
                             ),
                           ),
                         );
@@ -1243,9 +1357,10 @@ class RetakeTestPageState extends State<RetakeTestPage>
   }
 
   void moveToPrevious() {
+    _stopSpeaking();
     void updateSelectedData<T>(List<T> questions, T? selectedData,
         Function(T?) setSelectedData) {
-      int index = questions.indexOf(selectedData!);
+      int index = questions.indexOf(selectedData as T);
       if (index > 0) { // Ensure it's not the first item
         setSelectedData(questions[index - 1]);
       } else {
@@ -1272,9 +1387,10 @@ class RetakeTestPageState extends State<RetakeTestPage>
   }
 
   void moveToNext() {
+    _stopSpeaking();
     void updateSelectedData<T>(List<T> questions, T? selectedData,
         Function(T?) setSelectedData) {
-      int index = questions.indexOf(selectedData!);
+      int index = questions.indexOf(selectedData as T);
       if (index != -1 && index < questions.length - 1) {
         setSelectedData(questions[index + 1]);
       } else {
@@ -1348,9 +1464,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
   }
 
   void submitAnswer() async {
-
+    _stopSpeaking();
     int duration = (_examTime - _remainingTime) ~/ 60;
-
     final List<Answers> combinedList = [];
     combinedList.addAll(solvedReadingQuestions);
     combinedList.addAll(solvedListeningQuestions);
@@ -1558,4 +1673,46 @@ class RetakeTestPageState extends State<RetakeTestPage>
       },
     );
   }
+  Widget loadingScreen (){
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Lottie.asset("assets/exam_loading_2.json", height: 150),
+            const Gap(5),
+            const Text("Hang tight! We’re getting your exam ready for you.", style: TextStyle(fontSize: 16),),
+            const Gap(10),
+             SizedBox(
+              width: MediaQuery.sizeOf(context).width *0.5,
+                child: const LinearProgressIndicator(),
+            ),
+            const Gap(20)
+          ],
+        ),
+      ],
+    );
+  }
 }
+
+class PlayedAudios {
+  // Properties
+  final String audioType;
+  final int audioId;
+
+  // Constructor
+  PlayedAudios({
+    required this.audioType,
+    required this.audioId,
+  });
+
+  // Override toString for easier debugging
+  @override
+  String toString() {
+    return 'PlayedAudios(audioType: $audioType, audioId: $audioId)';
+  }
+}
+
