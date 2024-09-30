@@ -45,11 +45,10 @@ class RetakeTestPageState extends State<RetakeTestPage>
   final QuestionsRepository _repository = QuestionsRepository();
   List<ReadingQuestions> _readingQuestions = [];
   List<ListeningQuestions> _listeningQuestions = [];
-  bool dataFound = false,
-      shuffleOptions = false;
+  bool dataFound = false, shuffleOptions = false;
   bool isListViewVisible = true;
   static const platform =
-  MethodChannel('com.inferloom.kpathshala/exit_confirmation');
+      MethodChannel('com.designdebugger.kpathshala/exit_confirmation');
   final AuthService _authService = AuthService();
   LogInCredentials? credentials;
   late FlutterTts flutterTts;
@@ -112,7 +111,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
     setState(() {
       availableVoices = voices.where((voice) {
         // Check if the voice is a Map and has the correct keys
-        if (voice is Map && voice.containsKey('locale') &&
+        if (voice is Map &&
+            voice.containsKey('locale') &&
             voice.containsKey('name')) {
           return voice['locale'] == 'ko-KR';
         }
@@ -127,10 +127,9 @@ class RetakeTestPageState extends State<RetakeTestPage>
 
       // Set default voice if available
       selectedVoice =
-      availableVoices.isNotEmpty ? availableVoices[0]['name'] : null;
+          availableVoices.isNotEmpty ? availableVoices[0]['name'] : null;
     });
   }
-
 
   Future<void> _speak(String? model, String voiceScript) async {
     _newVoiceText = voiceScript;
@@ -152,12 +151,9 @@ class RetakeTestPageState extends State<RetakeTestPage>
     if (selectedVoice != null) {
       // Safely retrieve the voice map
       Map<String, String>? voice = availableVoices.firstWhere(
-            (v) => v['name'] == selectedVoice,
+        (v) => v['name'] == selectedVoice,
         orElse: () =>
-        {
-          'name': '',
-          'locale': ''
-        }, // Return a default map instead of null
+            {'name': '', 'locale': ''}, // Return a default map instead of null
       ) as Map<String, String>?; // Ensure the correct type
 
       if (voice != null && voice['name']!.isNotEmpty) {
@@ -185,26 +181,25 @@ class RetakeTestPageState extends State<RetakeTestPage>
   Future<void> _showDisqualificationDialog(BuildContext context) async {
     await showDialog(
       context: context,
-      builder: (context) =>
-          AlertDialog(
-            title: const Text("Disqualification"),
-            content:
+      builder: (context) => AlertDialog(
+        title: const Text("Disqualification"),
+        content:
             const Text("You have exited the exam. You are now disqualified."),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text("OK"),
-              ),
-            ],
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("OK"),
           ),
+        ],
+      ),
     );
   }
 
   Future<void> _fetchReadingQuestions() async {
     try {
       // Attempt to fetch the questions
-      QuestionsModel? questionsModel =
-      await _repository.fetchReadingQuestions(widget.questionSetId, context);
+      QuestionsModel? questionsModel = await _repository.fetchReadingQuestions(
+          widget.questionSetId, context);
 
       if (questionsModel != null && questionsModel.data != null) {
         _readingQuestions = questionsModel.data?.readingQuestions ?? [];
@@ -231,7 +226,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               content:
-              Text('Failed to load reading questions. Please try again.')),
+                  Text('Failed to load reading questions. Please try again.')),
         );
       }
     }
@@ -274,30 +269,29 @@ class RetakeTestPageState extends State<RetakeTestPage>
   Future<bool?> _showExitExamConfirmation(BuildContext context) {
     return showDialog<bool>(
       context: context,
-      builder: (context) =>
-          AlertDialog(
-            title: const Text("Exit Exam"),
-            content: const Text(
-              "If you close this page, all your progress will be permanently lost. "
-                  "Are you sure you want to exit the exam?",
-              style: TextStyle(fontSize: 16.0),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                // Stay on the page
-                child: const Text("Cancel"),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                // Exit the page
-                child: const Text(
-                  "Exit",
-                  style: TextStyle(color: Colors.red),
-                ),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: const Text("Exit Exam"),
+        content: const Text(
+          "If you close this page, all your progress will be permanently lost. "
+          "Are you sure you want to exit the exam?",
+          style: TextStyle(fontSize: 16.0),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            // Stay on the page
+            child: const Text("Cancel"),
           ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            // Exit the page
+            child: const Text(
+              "Exit",
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -370,9 +364,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
               children: [
                 if (!isListViewVisible)
                   SizedBox(
-                    width: MediaQuery
-                        .sizeOf(context)
-                        .width * 0.2,
+                    width: MediaQuery.sizeOf(context).width * 0.2,
                     child: ElevatedButton(
                       onPressed: () {
                         isListViewVisible = true;
@@ -389,7 +381,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                               color: AppColor.grey400, width: 1),
                         ),
                         backgroundColor:
-                        AppColor.grey200, // Change color as needed
+                            AppColor.grey200, // Change color as needed
                       ),
                       child: const Text(
                         'Total Questions',
@@ -403,9 +395,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                 const Spacer(), // Spacing between buttons
                 if (isPreviousButtonVisible())
                   SizedBox(
-                    width: MediaQuery
-                        .sizeOf(context)
-                        .width * 0.2,
+                    width: MediaQuery.sizeOf(context).width * 0.2,
                     child: ElevatedButton(
                       onPressed: moveToPrevious,
                       style: ElevatedButton.styleFrom(
@@ -415,7 +405,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                           borderRadius: BorderRadius.circular(10),
                         ),
                         backgroundColor:
-                        AppColor.grey300, // Change color as needed
+                            AppColor.grey300, // Change color as needed
                       ),
                       child: const Text(
                         'Previous',
@@ -429,9 +419,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                 const SizedBox(width: 10),
                 if (isSubmitAnswerButtonVisible())
                   SizedBox(
-                    width: MediaQuery
-                        .sizeOf(context)
-                        .width * 0.2,
+                    width: MediaQuery.sizeOf(context).width * 0.2,
                     child: ElevatedButton(
                       onPressed: () {
                         submitAnswer();
@@ -442,7 +430,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                           borderRadius: BorderRadius.circular(10),
                         ),
                         backgroundColor:
-                        AppColor.navyBlue, // Change color as needed
+                            AppColor.navyBlue, // Change color as needed
                       ),
                       child: const Text(
                         'Submit Answer',
@@ -455,9 +443,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                   ),
                 if (isNextButtonVisible())
                   SizedBox(
-                    width: MediaQuery
-                        .sizeOf(context)
-                        .width * 0.2,
+                    width: MediaQuery.sizeOf(context).width * 0.2,
                     child: ElevatedButton(
                       onPressed: moveToNext,
                       style: ElevatedButton.styleFrom(
@@ -466,7 +452,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                           borderRadius: BorderRadius.circular(10),
                         ),
                         backgroundColor:
-                        AppColor.navyBlue, // Change color as needed
+                            AppColor.navyBlue, // Change color as needed
                       ),
                       child: const Text(
                         'Next',
@@ -513,8 +499,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                         child: Text(
                           credentials?.name ?? 'User',
                           style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColor.grey700),
+                              fontSize: 12, color: AppColor.grey700),
                         ),
                       ),
                   ],
@@ -530,23 +515,22 @@ class RetakeTestPageState extends State<RetakeTestPage>
                       padding: const EdgeInsets.all(12.0),
                       decoration: isListViewVisible
                           ? const BoxDecoration(
-                          border: Border(
-                            right: BorderSide(
-                              width: 3,
+                              border: Border(
+                                right: BorderSide(
+                                  width: 3,
+                                  color: AppColor.navyBlue,
+                                ),
+                              ),
                               color: AppColor.navyBlue,
-                            ),
-                          ),
-                          color: AppColor.navyBlue,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(10),
-                            topRight: Radius.circular(10),
-                          ))
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(10),
+                                topRight: Radius.circular(10),
+                              ))
                           : null,
                       child: Text(
                         isListViewVisible
                             ? "Total Questions"
-                            : "Total Questions - ${_readingQuestions.length +
-                            _listeningQuestions.length}",
+                            : "Total Questions - ${_readingQuestions.length + _listeningQuestions.length}",
                         style: TextStyle(
                           color: isListViewVisible
                               ? Colors.white
@@ -595,7 +579,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                         ),
                         color: Color.fromRGBO(26, 35, 126, 0.2),
                         borderRadius:
-                        BorderRadius.only(topRight: Radius.circular(15)),
+                            BorderRadius.only(topRight: Radius.circular(15)),
                       ),
                       child: Text(
                         _formattedTime,
@@ -621,24 +605,27 @@ class RetakeTestPageState extends State<RetakeTestPage>
     );
   }
 
-  Widget buildQuestionDetailContent( // required bool isSolved,
+  Widget buildQuestionDetailContent(// required bool isSolved,
       ) {
     if (_selectedReadingQuestionData == null &&
         _selectedListeningQuestionData == null) return const SizedBox.shrink();
     bool isListening = _selectedReadingQuestionData == null;
-    int index = isListening ? _listeningQuestions.indexOf(
-        _selectedListeningQuestionData!) : _readingQuestions.indexOf(
-        _selectedReadingQuestionData!);
+    int index = isListening
+        ? _listeningQuestions.indexOf(_selectedListeningQuestionData!)
+        : _readingQuestions.indexOf(_selectedReadingQuestionData!);
     final title = isListening
         ? _selectedListeningQuestionData?.title ?? ""
         : _selectedReadingQuestionData?.title ?? "";
-    final subTitle = isListening ? _selectedListeningQuestionData?.subtitle ??
-        "" : _selectedReadingQuestionData?.subtitle ?? "";
-    final imageCaption = isListening ? _selectedListeningQuestionData
-        ?.imageCaption ?? "" : _selectedReadingQuestionData?.imageCaption ?? "";
+    final subTitle = isListening
+        ? _selectedListeningQuestionData?.subtitle ?? ""
+        : _selectedReadingQuestionData?.subtitle ?? "";
+    final imageCaption = isListening
+        ? _selectedListeningQuestionData?.imageCaption ?? ""
+        : _selectedReadingQuestionData?.imageCaption ?? "";
     final question = _selectedReadingQuestionData?.question ?? "";
-    final imageUrl = isListening ? _selectedListeningQuestionData?.imageUrl ??
-        "" : _selectedReadingQuestionData?.imageUrl ?? "";
+    final imageUrl = isListening
+        ? _selectedListeningQuestionData?.imageUrl ?? ""
+        : _selectedReadingQuestionData?.imageUrl ?? "";
     final voiceScript = _selectedListeningQuestionData?.voiceScript ?? "";
     final options = isListening
         ? _selectedListeningQuestionData?.options ?? []
@@ -649,25 +636,22 @@ class RetakeTestPageState extends State<RetakeTestPage>
         : _selectedReadingQuestionData?.id ?? -1;
     int selectedSolvedIndex = -1;
     if (!isListening &&
-        (solvedReadingQuestions.any((answer) => answer.questionId ==
-            _selectedReadingQuestionData?.id))) {
+        (solvedReadingQuestions.any((answer) =>
+            answer.questionId == _selectedReadingQuestionData?.id))) {
       // Find the solved question's matching index in options
       selectedSolvedIndex = options.indexWhere((option) =>
-      option.id ==
+          option.id ==
           solvedReadingQuestions
-              .firstWhere(
-                  (answer) =>
-              answer.questionId == _selectedReadingQuestionData?.id)
+              .firstWhere((answer) =>
+                  answer.questionId == _selectedReadingQuestionData?.id)
               .questionOptionId);
-    }
-    else if ((solvedListeningQuestions.any((answer) => answer.questionId ==
-        _selectedListeningQuestionData?.id))) {
+    } else if ((solvedListeningQuestions.any(
+        (answer) => answer.questionId == _selectedListeningQuestionData?.id))) {
       selectedSolvedIndex = options.indexWhere((option) =>
-      option.id ==
+          option.id ==
           solvedListeningQuestions
-              .firstWhere(
-                  (answer) =>
-              answer.questionId == _selectedListeningQuestionData?.id)
+              .firstWhere((answer) =>
+                  answer.questionId == _selectedListeningQuestionData?.id)
               .questionOptionId);
     }
 
@@ -684,21 +668,20 @@ class RetakeTestPageState extends State<RetakeTestPage>
         // Check if the answer already exists in solvedReadingQuestions
         int existingAnswerIndex = -1;
         if (isListening) {
-          existingAnswerIndex =
-              solvedListeningQuestions.indexWhere((answer) => answer
-                  .questionId == selectedAnswer.questionId);
+          existingAnswerIndex = solvedListeningQuestions.indexWhere(
+              (answer) => answer.questionId == selectedAnswer.questionId);
         } else {
-          existingAnswerIndex =
-              solvedReadingQuestions.indexWhere((answer) => answer.questionId ==
-                  selectedAnswer.questionId);
+          existingAnswerIndex = solvedReadingQuestions.indexWhere(
+              (answer) => answer.questionId == selectedAnswer.questionId);
         }
 
         if (existingAnswerIndex != -1) {
           // Update the existing answer with the new selected option ID
-          isListening ?
-          solvedListeningQuestions[existingAnswerIndex].questionOptionId =
-              answerId : solvedReadingQuestions[existingAnswerIndex]
-              .questionOptionId = answerId;
+          isListening
+              ? solvedListeningQuestions[existingAnswerIndex].questionOptionId =
+                  answerId
+              : solvedReadingQuestions[existingAnswerIndex].questionOptionId =
+                  answerId;
         } else {
           // Add the new answer to the list if it doesn't exist
           isListening
@@ -717,9 +700,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
             opacity: 0.1, // Adjust opacity for the watermark effect
             child: Image.asset(
               'assets/new_App_icon.png',
-              height: MediaQuery
-                  .sizeOf(context)
-                  .height * 0.7,
+              height: MediaQuery.sizeOf(context).height * 0.7,
             ),
           ),
         ),
@@ -732,9 +713,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(
-                    width: MediaQuery
-                        .sizeOf(context)
-                        .width * 0.45,
+                    width: MediaQuery.sizeOf(context).width * 0.45,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -767,7 +746,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
                               fontSize: 20,
                             ),
                           ),
-                        if (question.isNotEmpty || imageUrl.isNotEmpty ||
+                        if (question.isNotEmpty ||
+                            imageUrl.isNotEmpty ||
                             voiceScript.isNotEmpty) // Check for null or empty
                           Container(
                             padding: const EdgeInsets.all(12),
@@ -786,8 +766,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                                 children: [
                                   if (question.isNotEmpty)
                                     customText(
-                                        question,
-                                        TextType.paragraphTitle,
+                                        question, TextType.paragraphTitle,
                                         textAlign: TextAlign.center),
                                   if (imageUrl.isNotEmpty)
                                     InkWell(
@@ -801,7 +780,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                                           // Show something when the image fails to load
                                           return const Column(
                                             mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                                MainAxisAlignment.center,
                                             children: [
                                               Icon(Icons.broken_image,
                                                   color: AppColor.navyBlue,
@@ -830,12 +809,16 @@ class RetakeTestPageState extends State<RetakeTestPage>
                                   if (voiceScript.isNotEmpty)
                                     InkWell(
                                       onTap: () {
-                                        _speak(_selectedListeningQuestionData
-                                            ?.voiceGender, voiceScript);
+                                        _speak(
+                                            _selectedListeningQuestionData
+                                                ?.voiceGender,
+                                            voiceScript);
                                       },
                                       child: Image.asset(
-                                        "assets/speaker.png", height: 100,
-                                        color: AppColor.navyBlue,),
+                                        "assets/speaker.png",
+                                        height: 100,
+                                        color: AppColor.navyBlue,
+                                      ),
                                     )
                                 ],
                               ),
@@ -845,221 +828,226 @@ class RetakeTestPageState extends State<RetakeTestPage>
                     ),
                   ),
                   SizedBox(
-                    width: MediaQuery
-                        .sizeOf(context)
-                        .width * 0.45,
+                    width: MediaQuery.sizeOf(context).width * 0.45,
                     child: isTextType
                         ? ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: options.length,
-                      itemBuilder: (context, index) {
-                        // if (shuffleOptions) {
-                        //   options.shuffle();
-                        //   shuffleOptions = false;
-                        // }
-                        String answer = options[index].title ?? '';
-                        int answerId = options[index].id ?? -1;
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: options.length,
+                            itemBuilder: (context, index) {
+                              // if (shuffleOptions) {
+                              //   options.shuffle();
+                              //   shuffleOptions = false;
+                              // }
+                              String answer = options[index].title ?? '';
+                              int answerId = options[index].id ?? -1;
 
-                        return Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: InkWell(
-                            onTap: () {
-                              selectionHandling(index, answerId);
-                            },
-                            child: SizedBox(
-                              height: 45,
-                              width: 355,
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 35,
-                                    height: 35,
-                                    decoration: BoxDecoration(
-                                      color:
-                                      (selectedSolvedIndex == index)
-                                          ? AppColor.black
-                                          : const Color.fromRGBO(
-                                          255, 255, 255, 1),
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                          width: 2,
-                                          color: AppColor.black),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        '${index + 1}',
-                                        style: TextStyle(
-                                          color: (selectedSolvedIndex ==
-                                              index)
-                                              ? const Color.fromRGBO(
-                                              255, 255, 255, 1)
-                                              : AppColor.black,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                              return Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: InkWell(
+                                  onTap: () {
+                                    selectionHandling(index, answerId);
+                                  },
+                                  child: SizedBox(
+                                    height: 45,
+                                    width: 355,
+                                    child: Row(
                                       children: [
-                                        if (answer.isNotEmpty)
-                                          Expanded(
+                                        Container(
+                                          width: 35,
+                                          height: 35,
+                                          decoration: BoxDecoration(
+                                            color:
+                                                (selectedSolvedIndex == index)
+                                                    ? AppColor.black
+                                                    : const Color.fromRGBO(
+                                                        255, 255, 255, 1),
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                                width: 2,
+                                                color: AppColor.black),
+                                          ),
+                                          child: Center(
                                             child: Text(
-                                              answer,
-                                              style: const TextStyle(
-                                                  fontSize: 18),
+                                              '${index + 1}',
+                                              style: TextStyle(
+                                                color: (selectedSolvedIndex ==
+                                                        index)
+                                                    ? const Color.fromRGBO(
+                                                        255, 255, 255, 1)
+                                                    : AppColor.black,
+                                              ),
                                             ),
                                           ),
-                                        if ((options[index].subtitle ??
-                                            "")
-                                            .isNotEmpty)
-                                          Expanded(
-                                            child: Text(
-                                              options[index].subtitle ??
-                                                  "",
-                                              style: const TextStyle(
-                                                  fontSize: 14,
-                                                  color:
-                                                  AppColor.grey500),
-                                            ),
-                                          )
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              if (answer.isNotEmpty)
+                                                Expanded(
+                                                  child: Text(
+                                                    answer,
+                                                    style: const TextStyle(
+                                                        fontSize: 18),
+                                                  ),
+                                                ),
+                                              if ((options[index].subtitle ??
+                                                      "")
+                                                  .isNotEmpty)
+                                                Expanded(
+                                                  child: Text(
+                                                    options[index].subtitle ??
+                                                        "",
+                                                    style: const TextStyle(
+                                                        fontSize: 14,
+                                                        color:
+                                                            AppColor.grey500),
+                                                  ),
+                                                )
+                                            ],
+                                          ),
+                                        ),
                                       ],
                                     ),
                                   ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    )
-                        : GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount:
-                        2, // Number of columns in grid view
-                        childAspectRatio:
-                        2, // Adjust this to control item size
-                      ),
-                      itemCount: options.length,
-                      itemBuilder: (context, index) {
-                        String answer = options[index].title ?? "";
-                        String answerImage = options[index].imageUrl ?? "";
-                        int answerId = options[index].id ?? -1;
-                        String voiceScript = options[index].voiceScript ?? "";
-                        return Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: InkWell(
-                            onTap: () {
-                              selectionHandling(index, answerId);
+                                ),
+                              );
                             },
-                            child: SizedBox(
-                              // height: 45,
-                              // width: 355,
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 35,
-                                    height: 35,
-                                    decoration: BoxDecoration(
-                                        color:
-                                        (selectedSolvedIndex == index)
-                                            ? AppColor.black
-                                            : const Color.fromRGBO(
-                                            255, 255, 255, 1),
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                            width: 2,
-                                            color: AppColor.black)),
-                                    child: Center(
-                                        child: Text(
-                                          '${index + 1}',
-                                          style: TextStyle(
-                                            color:
-                                            (selectedSolvedIndex == index)
-                                                ? const Color.fromRGBO(
-                                                255, 255, 255, 1)
-                                                : AppColor.black,
-                                          ),
-                                        )),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  // Spacing between circle and text
-                                  Column(
-                                    children: [
-                                      if (answerImage.isNotEmpty)
-                                        Expanded(
-                                          child: InkWell(
-                                            onTap: () {
-                                              showZoomedImage(answerImage);
-                                            },
-                                            child: Image.network(
-                                              answerImage,
-                                              errorBuilder: (context, error,
-                                                  stackTrace) {
-                                                // Show something when the image fails to load
-                                                return const Icon(
-                                                    Icons.broken_image,
-                                                    color: AppColor
-                                                        .navyBlue,
-                                                    size: 20);
-                                              },
-                                              loadingBuilder: (context,
-                                                  child, loadingProgress) {
-                                                if (loadingProgress ==
-                                                    null) {
-                                                  return child; // Image loaded successfully
-                                                } else {
-                                                  // Show a loading indicator while the image is being loaded
-                                                  return const CircularProgressIndicator();
-                                                }
-                                              },
-                                            ),
-                                          ),
-                                        ),
-                                      if (voiceScript.isNotEmpty)
-                                        InkWell(
-                                          onTap: () {
-                                            _speak(
-                                                _selectedListeningQuestionData
-                                                    ?.voiceGender, voiceScript);
-                                          },
-                                          child: Image.asset(
-                                            "assets/speaker.png", height: 40,
-                                            color: AppColor.navyBlue,),
-                                        ),
-                                      if (answer.isNotEmpty)
-                                        Expanded(
-                                          child: Text(
-                                            answer,
-                                            style: const TextStyle(
-                                                fontSize: 18),
-                                          ),
-                                        ),
-                                      if ((options[index].subtitle ?? "")
-                                          .isNotEmpty)
-                                        Expanded(
-                                          child: Text(
-                                            options[index].subtitle ?? "",
-                                            style: const TextStyle(
-                                                fontSize: 14,
-                                                color: AppColor.grey500),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                          )
+                        : GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount:
+                                  2, // Number of columns in grid view
+                              childAspectRatio:
+                                  2, // Adjust this to control item size
                             ),
+                            itemCount: options.length,
+                            itemBuilder: (context, index) {
+                              String answer = options[index].title ?? "";
+                              String answerImage =
+                                  options[index].imageUrl ?? "";
+                              int answerId = options[index].id ?? -1;
+                              String voiceScript =
+                                  options[index].voiceScript ?? "";
+                              return Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: InkWell(
+                                  onTap: () {
+                                    selectionHandling(index, answerId);
+                                  },
+                                  child: SizedBox(
+                                    // height: 45,
+                                    // width: 355,
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: 35,
+                                          height: 35,
+                                          decoration: BoxDecoration(
+                                              color:
+                                                  (selectedSolvedIndex == index)
+                                                      ? AppColor.black
+                                                      : const Color.fromRGBO(
+                                                          255, 255, 255, 1),
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                  width: 2,
+                                                  color: AppColor.black)),
+                                          child: Center(
+                                              child: Text(
+                                            '${index + 1}',
+                                            style: TextStyle(
+                                              color:
+                                                  (selectedSolvedIndex == index)
+                                                      ? const Color.fromRGBO(
+                                                          255, 255, 255, 1)
+                                                      : AppColor.black,
+                                            ),
+                                          )),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        // Spacing between circle and text
+                                        Column(
+                                          children: [
+                                            if (answerImage.isNotEmpty)
+                                              Expanded(
+                                                child: InkWell(
+                                                  onTap: () {
+                                                    showZoomedImage(
+                                                        answerImage);
+                                                  },
+                                                  child: Image.network(
+                                                    answerImage,
+                                                    errorBuilder: (context,
+                                                        error, stackTrace) {
+                                                      // Show something when the image fails to load
+                                                      return const Icon(
+                                                          Icons.broken_image,
+                                                          color:
+                                                              AppColor.navyBlue,
+                                                          size: 20);
+                                                    },
+                                                    loadingBuilder: (context,
+                                                        child,
+                                                        loadingProgress) {
+                                                      if (loadingProgress ==
+                                                          null) {
+                                                        return child; // Image loaded successfully
+                                                      } else {
+                                                        // Show a loading indicator while the image is being loaded
+                                                        return const CircularProgressIndicator();
+                                                      }
+                                                    },
+                                                  ),
+                                                ),
+                                              ),
+                                            if (voiceScript.isNotEmpty)
+                                              InkWell(
+                                                onTap: () {
+                                                  _speak(
+                                                      _selectedListeningQuestionData
+                                                          ?.voiceGender,
+                                                      voiceScript);
+                                                },
+                                                child: Image.asset(
+                                                  "assets/speaker.png",
+                                                  height: 40,
+                                                  color: AppColor.navyBlue,
+                                                ),
+                                              ),
+                                            if (answer.isNotEmpty)
+                                              Expanded(
+                                                child: Text(
+                                                  answer,
+                                                  style: const TextStyle(
+                                                      fontSize: 18),
+                                                ),
+                                              ),
+                                            if ((options[index].subtitle ?? "")
+                                                .isNotEmpty)
+                                              Expanded(
+                                                child: Text(
+                                                  options[index].subtitle ?? "",
+                                                  style: const TextStyle(
+                                                      fontSize: 14,
+                                                      color: AppColor.grey500),
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
                   ),
                 ],
               ),
@@ -1079,9 +1067,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           SizedBox(
-            width: MediaQuery
-                .sizeOf(context)
-                .width * 0.45,
+            width: MediaQuery.sizeOf(context).width * 0.45,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -1106,16 +1092,14 @@ class RetakeTestPageState extends State<RetakeTestPage>
                   child: dataFound == false
                       ? const Center(child: CircularProgressIndicator())
                       : _readingQuestions.isEmpty
-                      ? const Center(child: Text("No Questions Available"))
-                      : questionsGrid(_readingQuestions.length, false),
+                          ? const Center(child: Text("No Questions Available"))
+                          : questionsGrid(_readingQuestions.length, false),
                 ),
               ],
             ),
           ),
           SizedBox(
-            width: MediaQuery
-                .sizeOf(context)
-                .width * 0.45,
+            width: MediaQuery.sizeOf(context).width * 0.45,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -1140,8 +1124,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
                   child: dataFound == false
                       ? const Center(child: CircularProgressIndicator())
                       : _listeningQuestions.isEmpty
-                      ? const Center(child: Text("No Questions Available"))
-                      : questionsGrid(_listeningQuestions.length, true),
+                          ? const Center(child: Text("No Questions Available"))
+                          : questionsGrid(_listeningQuestions.length, true),
                 ),
               ],
             ),
@@ -1214,7 +1198,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
   }
 
   bool isPreviousButtonVisible() {
-    if (!isListViewVisible && _selectedReadingQuestionData != null &&
+    if (!isListViewVisible &&
+        _selectedReadingQuestionData != null &&
         _selectedListeningQuestionData == null) {
       return (_readingQuestions.indexOf(_selectedReadingQuestionData!) > 0);
     } else if (!isListViewVisible && _selectedListeningQuestionData != null) {
@@ -1225,7 +1210,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
   }
 
   bool isNextButtonVisible() {
-    if (!isListViewVisible && _selectedReadingQuestionData == null &&
+    if (!isListViewVisible &&
+        _selectedReadingQuestionData == null &&
         _selectedListeningQuestionData != null) {
       return (_listeningQuestions.indexOf(_selectedListeningQuestionData!) <
           _listeningQuestions.length - 1);
@@ -1237,16 +1223,18 @@ class RetakeTestPageState extends State<RetakeTestPage>
   }
 
   bool isSubmitAnswerButtonVisible() {
-    return isListViewVisible || (_selectedListeningQuestionData != null &&
-        _listeningQuestions.indexOf(_selectedListeningQuestionData!) ==
-            _listeningQuestions.length - 1);
+    return isListViewVisible ||
+        (_selectedListeningQuestionData != null &&
+            _listeningQuestions.indexOf(_selectedListeningQuestionData!) ==
+                _listeningQuestions.length - 1);
   }
 
   void moveToPrevious() {
-    void updateSelectedData<T>(List<T> questions, T? selectedData,
-        Function(T?) setSelectedData) {
+    void updateSelectedData<T>(
+        List<T> questions, T? selectedData, Function(T?) setSelectedData) {
       int index = questions.indexOf(selectedData!);
-      if (index > 0) { // Ensure it's not the first item
+      if (index > 0) {
+        // Ensure it's not the first item
         setSelectedData(questions[index - 1]);
       } else {
         setSelectedData(null);
@@ -1255,25 +1243,25 @@ class RetakeTestPageState extends State<RetakeTestPage>
     }
 
     if (_selectedListeningQuestionData != null) {
-      updateSelectedData(
-          _listeningQuestions, _selectedListeningQuestionData, (data) {
+      updateSelectedData(_listeningQuestions, _selectedListeningQuestionData,
+          (data) {
         _selectedListeningQuestionData = data;
         if (data == null && _readingQuestions.isNotEmpty) {
           _selectedReadingQuestionData =
-          _readingQuestions[_readingQuestions.length - 1];
+              _readingQuestions[_readingQuestions.length - 1];
         }
       });
     } else if (_selectedReadingQuestionData != null) {
-      updateSelectedData(
-          _readingQuestions, _selectedReadingQuestionData, (data) {
+      updateSelectedData(_readingQuestions, _selectedReadingQuestionData,
+          (data) {
         _selectedReadingQuestionData = data;
       });
     }
   }
 
   void moveToNext() {
-    void updateSelectedData<T>(List<T> questions, T? selectedData,
-        Function(T?) setSelectedData) {
+    void updateSelectedData<T>(
+        List<T> questions, T? selectedData, Function(T?) setSelectedData) {
       int index = questions.indexOf(selectedData!);
       if (index != -1 && index < questions.length - 1) {
         setSelectedData(questions[index + 1]);
@@ -1284,17 +1272,17 @@ class RetakeTestPageState extends State<RetakeTestPage>
     }
 
     if (_selectedReadingQuestionData != null) {
-      updateSelectedData(
-          _readingQuestions, _selectedReadingQuestionData, (data) {
+      updateSelectedData(_readingQuestions, _selectedReadingQuestionData,
+          (data) {
         _selectedReadingQuestionData = data;
         if (data == null) {
           _selectedListeningQuestionData =
-          _listeningQuestions.isNotEmpty ? _listeningQuestions[0] : null;
+              _listeningQuestions.isNotEmpty ? _listeningQuestions[0] : null;
         }
       });
     } else if (_selectedListeningQuestionData != null) {
-      updateSelectedData(
-          _listeningQuestions, _selectedListeningQuestionData, (data) {
+      updateSelectedData(_listeningQuestions, _selectedListeningQuestionData,
+          (data) {
         _selectedListeningQuestionData = data;
       });
     }
@@ -1316,10 +1304,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
         return Dialog(
           backgroundColor: Colors.transparent,
           child: SizedBox(
-            height: MediaQuery
-                .of(context)
-                .size
-                .height * 0.9,
+            height: MediaQuery.of(context).size.height * 0.9,
             child: Image.network(
               imageUrl,
               errorBuilder: (context, error, stackTrace) {
@@ -1348,7 +1333,6 @@ class RetakeTestPageState extends State<RetakeTestPage>
   }
 
   void submitAnswer() async {
-
     int duration = (_examTime - _remainingTime) ~/ 60;
 
     final List<Answers> combinedList = [];
@@ -1364,7 +1348,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
     log((duration.toString()));
     log(jsonEncode(finalAnswer));
 
-    if (combinedList.isEmpty){
+    if (combinedList.isEmpty) {
       _showNOAnswerSubmissionDialog(context);
       return;
     }
@@ -1372,10 +1356,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
     try {
       showLoadingIndicator(context: context, showLoader: true);
 
-      final response = await AnswerSubmissionRepository().submitAnswers(
-          answers: finalAnswer,
-          context: context
-      );
+      final response = await AnswerSubmissionRepository()
+          .submitAnswers(answers: finalAnswer, context: context);
 
       log(jsonEncode(response));
 
@@ -1420,7 +1402,6 @@ class RetakeTestPageState extends State<RetakeTestPage>
           ),
           child: Container(
             padding: const EdgeInsets.all(20),
-
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

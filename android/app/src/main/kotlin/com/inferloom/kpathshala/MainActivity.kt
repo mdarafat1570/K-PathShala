@@ -1,11 +1,11 @@
-package com.inferloom.kpathshala
+package com.designdebugger.kpathshala
 
 import android.os.Bundle
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
-    private val CHANNEL = "com.inferloom.kpathshala/exit_confirmation"
+    private val CHANNEL = "com.designdebugger.kpathshala/exit_confirmation"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

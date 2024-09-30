@@ -18,7 +18,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor.white,
-      appBar:const CommonAppBar(
+      appBar: const CommonAppBar(
         title: "Notifications",
       ),
       body: GradientBackground(
@@ -31,7 +31,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 height: 300,
                 width: 300,
               ),
-              customText("There are no notifications for now", TextType.subtitle),
+              customText(
+                  "There are no notifications for now", TextType.subtitle),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _openNotificationSettings,
@@ -63,7 +64,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
     const AndroidIntent intent = AndroidIntent(
       action: 'android.settings.APP_NOTIFICATION_SETTINGS',
       arguments: <String, dynamic>{
-        'android.provider.extra.APP_PACKAGE': 'com.inferloom.kpathshala',
+        'android.provider.extra.APP_PACKAGE': 'com.designdebugger.kpathshala',
       },
     );
     await intent.launch();
