@@ -33,61 +33,52 @@ class RetakeTestPageState extends State<RetakeTestPage>
     with WidgetsBindingObserver {
   int _remainingTime = 3600;
   int _examTime = 3600;
+  int totalQuestion = 0;
+  double volume = 0.5;
+  double pitch = 1.0;
+  double rate = 0.5;
 
   Timer? _timer;
+  late FlutterTts flutterTts;
 
   Map<int, Widget>? questionImages;
 
-  // int _currentTabIndex = 0;
-  //
-  // int _selectedTotalIndex = -1;
-  // int _selectedTotalIndex2 = -1;
-  // int _selectedSolvedIndex2 = -1;
+  final QuestionsRepository _repository = QuestionsRepository();
+  final AuthService _authService = AuthService();
+
   ReadingQuestions? _selectedReadingQuestionData;
   ListeningQuestions? _selectedListeningQuestionData;
-  final QuestionsRepository _repository = QuestionsRepository();
+  LogInCredentials? credentials;
+
   List<ReadingQuestions> _readingQuestions = [];
   List<ListeningQuestions> _listeningQuestions = [];
+  List<Dialogue> dialogue = [];
   List<Answers> solvedReadingQuestions = [];
   List<Answers> solvedListeningQuestions = [];
+  List<dynamic> availableVoices = [];
+  List<PlayedAudios> playedAudiosList = [];
+
   bool dataFound = false, shuffleOptions = false;
   bool isListViewVisible = true;
   bool firstSpeechCompleted = false;
   bool isInDelay = false;
   bool isSpeaking = false;
   bool _isTimeUp = false;
-  static const platform =
-      MethodChannel('com.inferloom.kpathshala/exit_confirmation');
-  final AuthService _authService = AuthService();
-  LogInCredentials? credentials;
-  late FlutterTts flutterTts;
+
   String? selectedLanguage;
   String? selectedEngine;
   String? selectedVoice;
-  List<dynamic> availableVoices = [];
-  List<PlayedAudios> playedAudiosList = [];
   String? _newVoiceText;
 
-  double volume = 0.5;
-  double pitch = 1.0;
-  double rate = 0.5;
+
 
   @override
   void initState() {
     super.initState();
-    // _startTimer();
-    // WidgetsBinding.instance.addObserver(this);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
     ]);
-    // platform.setMethodCallHandler((call) async {
-    //
-    //   if (call.method == 'onUserLeaveHint') {
-    //     // return await _showExitExamConfirmation(context);
-    //   }
-    //   return null;
-    // });
     readCredentials();
     initTts();
     _initializeTtsHandlers();
@@ -205,7 +196,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
   }
 
   Future<void> _stopSpeaking() async {
-    if (isSpeaking) {
+    if (isSpeaking || isInDelay) {
       await flutterTts.stop();
       firstSpeechCompleted = false;
       log("Speech stopped");
@@ -243,32 +234,6 @@ class RetakeTestPageState extends State<RetakeTestPage>
     });
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      // The app has come back to the foreground
-      // Here you can check if the user was taking an exam
-      _showDisqualificationDialog(context);
-    }
-  }
-
-  Future<void> _showDisqualificationDialog(BuildContext context) async {
-    await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Disqualification"),
-        content:
-            const Text("You have exited the exam. You are now disqualified."),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text("OK"),
-          ),
-        ],
-      ),
-    );
-  }
-
   Future<void> _fetchReadingQuestions() async {
     try {
       // Fetch the questions asynchronously
@@ -281,9 +246,11 @@ class RetakeTestPageState extends State<RetakeTestPage>
       if (questionsModel != null && questionsModel.data != null) {
         _readingQuestions = questionsModel.data?.readingQuestions ?? [];
         _listeningQuestions = questionsModel.data?.listeningQuestions ?? [];
+        totalQuestion = questionsModel.data?.totalQuestion ?? 0;
 
         await _preloadImages();
 
+        // _remainingTime = (questionsModel.data?.duration ?? 60) * 60; // Set your initial remaining time
         _remainingTime = 3600; // Set your initial remaining time
         _examTime = (questionsModel.data?.duration ?? 60) * 60;
 
@@ -383,35 +350,6 @@ class RetakeTestPageState extends State<RetakeTestPage>
         }
       });
     });
-  }
-
-  void _showTimeUpDialog() {
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Time Up'),
-          content: const Text(
-              'Your time for the test has ended.You have to submit the answer'),
-          actions: [
-            // TextButton(
-            //   onPressed: () {
-            //     Navigator.pop(context);
-            //     Navigator.pop(context);
-            //   },
-            //   child: const Text('Cancel'),
-            // ),
-            TextButton(
-              onPressed: () {
-                submitAnswer();
-              },
-              child: const Text('Submit Answer'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   Future<bool?> _showExitExamConfirmation(BuildContext context) {
@@ -584,51 +522,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                           width: MediaQuery.sizeOf(context).width * 0.2,
                           child: ElevatedButton(
                             onPressed: () {
-                              // Combine the lists and calculate total_answer
-                              final List<Answers> combinedList = [];
-                              combinedList.addAll(solvedReadingQuestions);
-                              combinedList.addAll(solvedListeningQuestions);
-                              int total_answer = combinedList
-                                  .length; // Calculate total number of answers
-
-                              // Calculate the number of missed questions
-                              int missedQuestions = 40 - total_answer;
-                              // Logic to calculate missed questions should be implemented here
-
-                              // Check if total_answer is less than 40 or if there are missed questions
-                              if (total_answer < 40 || missedQuestions > 0) {
-                                // Show a dialog if total questions attempted is less than 40 or if there are missed questions
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: const Text('Warning'),
-                                      content: Text(missedQuestions > 0
-                                          ? 'You have $missedQuestions missed questions. Do you want to submit anyway?'
-                                          : 'You must attempt at least 40 questions before submitting.'),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context)
-                                                .pop(); // Close the dialog
-                                          },
-                                          child: const Text('Cancel'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context)
-                                                .pop(); // Close the dialog
-                                            submitAnswer(); // Proceed with submitting the answer
-                                          },
-                                          child: const Text('Submit Anyway'),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              } else {
-                                submitAnswer(); // Proceed with submitting the answer
-                              }
+                              checkAnswerLength();
                             },
                             style: ElevatedButton.styleFrom(
                               padding:
@@ -834,6 +728,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
         ? _selectedListeningQuestionData?.imageUrl ?? ""
         : _selectedReadingQuestionData?.imageUrl ?? "";
     final voiceScript = _selectedListeningQuestionData?.voiceScript ?? "";
+    dialogue = _selectedListeningQuestionData?.dialogues ?? [];
+    final listeningQuestionType = _selectedListeningQuestionData?.questionType ?? "";
     final options = isListening
         ? _selectedListeningQuestionData?.options ?? []
         : _selectedReadingQuestionData?.options ?? [];
@@ -930,8 +826,6 @@ class RetakeTestPageState extends State<RetakeTestPage>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Text("Is Listening $isListening", style: TextStyle(color: Colors.red),),
-                        // Text("Index ${index+1}", style: TextStyle(color: Colors.red),),
                         if (title.isNotEmpty) // Check for null or empty
                           Padding(
                             padding: const EdgeInsets.only(bottom: 8.0),
@@ -1035,10 +929,10 @@ class RetakeTestPageState extends State<RetakeTestPage>
                                       onTap: exists
                                           ? null
                                           : () {
-                                              playedAudiosList.add(PlayedAudios(
-                                                  audioId: questionId,
-                                                  audioType: "question"));
-                                              if (!isSpeaking) {
+                                              if (!isSpeaking && !isInDelay) {
+                                                playedAudiosList.add(PlayedAudios(
+                                                    audioId: questionId,
+                                                    audioType: "question"));
                                                 _speak(
                                                     _selectedListeningQuestionData
                                                         ?.voiceGender,
@@ -1133,13 +1027,13 @@ class RetakeTestPageState extends State<RetakeTestPage>
                                             onTap: optionExists
                                                 ? null
                                                 : () {
-                                                    playedAudiosList.add(
-                                                        PlayedAudios(
-                                                            audioId: answerId,
-                                                            audioType:
-                                                                "option"));
                                                     if (!isSpeaking &&
                                                         !isInDelay) {
+                                                      playedAudiosList.add(
+                                                          PlayedAudios(
+                                                              audioId: answerId,
+                                                              audioType:
+                                                              "option"));
                                                       _speak(
                                                           _selectedListeningQuestionData
                                                               ?.voiceGender,
@@ -1173,7 +1067,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                             itemBuilder: (context, index) {
                               String answerImage =
                                   options[index].imageUrl ?? "";
-                              int answerId = options[index].id;
+                              int answerId = options[index].id ?? -1;
                               return Padding(
                                 padding: const EdgeInsets.all(8),
                                 child: InkWell(
@@ -1261,6 +1155,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
       padding: const EdgeInsets.only(left: 10, right: 10, top: 5),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
             width: MediaQuery.sizeOf(context).width * 0.45,
@@ -1527,8 +1422,18 @@ class RetakeTestPageState extends State<RetakeTestPage>
     );
   }
 
-  void submitAnswer() async {
+  void checkAnswerLength () {
     _stopSpeaking();
+    int answerLength = solvedReadingQuestions.length + solvedListeningQuestions.length;
+    if(answerLength < totalQuestion){
+      showWarningDialog(context, totalQuestion - answerLength);
+    } else {
+      submitAnswer();
+    }
+  }
+
+  void submitAnswer() async {
+
     int duration = (_examTime - _remainingTime) ~/ 60;
     final List<Answers> combinedList = [];
     combinedList.addAll(solvedReadingQuestions);
@@ -1544,15 +1449,14 @@ class RetakeTestPageState extends State<RetakeTestPage>
     log(jsonEncode(finalAnswer));
 
     if (combinedList.isEmpty) {
-      _showNOAnswerSubmissionDialog(context);
+      _showNoAnswerSubmissionDialog(context);
       return;
     }
 
     try {
       showLoadingIndicator(context: context, showLoader: true);
 
-      final response = await AnswerSubmissionRepository()
-          .submitAnswers(answers: finalAnswer, context: context);
+      final response = await AnswerSubmissionRepository().submitAnswers(answers: finalAnswer, context: context);
 
       log(jsonEncode(response));
 
@@ -1564,17 +1468,9 @@ class RetakeTestPageState extends State<RetakeTestPage>
         _showSuccessDialog(context);
 
         log("Submission Successful");
-        // Optionally store token or any other data
-        // final prefs = await SharedPreferences.getInstance();
-        // prefs.setString('paymentToken', response['payment_token'] ?? '');
-
-        // Perform any other success actions
       } else {
         if (mounted) {
           showLoadingIndicator(context: context, showLoader: false);
-          // ScaffoldMessenger.of(context).showSnackBar(
-          //   SnackBar(content: Text("Payment failed: ${response['message']}")),
-          // );
           log("Submission Failed: ${response['message']}");
         }
       }
@@ -1587,49 +1483,120 @@ class RetakeTestPageState extends State<RetakeTestPage>
     }
   }
 
+  void _showTimeUpDialog() {
+    _stopSpeaking();
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) {
+        return PopScope(
+          canPop: false ,
+          onPopInvoked: (bool didPop) async {
+            Navigator.pop(context);
+            Navigator.pop(context);
+          },
+          child: AlertDialog(
+            title: const Text('Time Up'),
+            content: const Text(
+                'Your time for the test has ended.You have to submit the answer'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  submitAnswer();
+                },
+                child: const Text('Submit Answer'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void showWarningDialog (BuildContext context, int missedQuestions){
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Warning'),
+          content: Text('You have $missedQuestions missed questions. Do you want to submit anyway?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                submitAnswer();
+              },
+              child: const Text('Submit Anyway'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _showSuccessDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const CircleAvatar(
-                  radius: 20,
-                  backgroundColor: Colors.green,
-                  child: Icon(Icons.check, color: Colors.white, size: 40),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  "Success!",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
+        return PopScope(
+          canPop: false ,
+          onPopInvoked: (bool didPop) async {
+            Navigator.pop(context);
+            Navigator.pop(context);
+          },
+          child: Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CircleAvatar(
+                    radius: 20,
+                    backgroundColor: Colors.green,
+                    child: Icon(Icons.check, color: Colors.white, size: 40),
                   ),
-                ),
-                const SizedBox(height: 10),
-                const Text(
-                  "Answer Submitted Successfully",
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green, // Background color
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Success!",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  child: const Text("See Result!"),
-                ),
-              ],
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Answer Submitted Successfully",
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green, // Background color
+                    ),
+                    child: const Text("See Result!"),
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -1641,44 +1608,52 @@ class RetakeTestPageState extends State<RetakeTestPage>
     showDialog(
       context: context,
       builder: (context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const CircleAvatar(
-                  radius: 20,
-                  backgroundColor: Colors.red,
-                  child: Icon(Icons.close, color: Colors.white, size: 40),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  "Error!",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
+        return PopScope(
+          canPop: false ,
+          onPopInvoked: (bool didPop) async {
+            Navigator.pop(context);
+            Navigator.pop(context);
+          },
+          child: Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CircleAvatar(
+                    radius: 20,
+                    backgroundColor: Colors.red,
+                    child: Icon(Icons.close, color: Colors.white, size: 40),
                   ),
-                ),
-                const SizedBox(height: 10),
-                const Text(
-                  "Something went wrong while submitting!",
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red, // Background color
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Error!",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  child: const Text("TRY AGAIN"),
-                ),
-              ],
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Something went wrong while submitting!",
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red, // Background color
+                    ),
+                    child: const Text("TRY AGAIN"),
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -1686,7 +1661,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
     );
   }
 
-  void _showNOAnswerSubmissionDialog(BuildContext context) {
+  void _showNoAnswerSubmissionDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) {
@@ -1714,7 +1689,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                 ),
                 const SizedBox(height: 10),
                 const Text(
-                  "Please select a answer",
+                  "Please select an answer",
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),

@@ -65,8 +65,8 @@ class Data {
 
 
 class ReadingQuestions {
-  int id;
-  int questionSetId;
+  int? id;
+  int? questionSetId;
   String? title;
   String? question;
   String? subtitle;
@@ -109,8 +109,8 @@ class ReadingQuestions {
 }
 
 class ListeningQuestions {
-  int id;
-  int questionSetId;
+  int? id;
+  int? questionSetId;
   String? questionType;
   String? title;
   String? subtitle;
@@ -118,7 +118,7 @@ class ListeningQuestions {
   String? imageCaption;
   String? voiceScript;
   String? voiceGender;
-  dynamic dialogues;
+  List<Dialogue> dialogues;
   List<Options> options;
 
   ListeningQuestions({
@@ -145,7 +145,7 @@ class ListeningQuestions {
     imageCaption: json["image_caption"],
     voiceScript: json["voice_script"],
     voiceGender: json["voice_gender"],
-    dialogues: json["dialogues"],
+    dialogues: List<Dialogue>.from(json["dialogues"].map((x) => Dialogue.fromJson(x))),
     options: List<Options>.from(json["options"].map((x) => Options.fromJson(x))),
   );
 
@@ -159,14 +159,37 @@ class ListeningQuestions {
     "image_caption": imageCaption,
     "voice_script": voiceScript,
     "voice_gender": voiceGender,
-    "dialogues": dialogues,
+    "dialogues": List<dynamic>.from(dialogues.map((x) => x.toJson())),
     "options": List<dynamic>.from(options.map((x) => x.toJson())),
   };
 }
 
+class Dialogue {
+  String? voiceScript;
+  String? voiceGender;
+  int? sequence;
+
+  Dialogue({this.voiceScript, this.voiceGender, this.sequence});
+
+  Dialogue.fromJson(Map<String, dynamic> json) {
+    voiceScript = json['voice_script'];
+    voiceGender = json['voice_gender'];
+    sequence = json['sequence'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['voice_script'] = voiceScript;
+    data['voice_gender'] = voiceGender;
+    data['sequence'] = sequence;
+    return data;
+  }
+}
+
+
 class Options {
-  int id;
-  String optionType;
+  int? id;
+  String? optionType;
   String? title;
   dynamic subtitle;
   dynamic imageUrl;
