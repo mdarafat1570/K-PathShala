@@ -109,6 +109,7 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
     String timeTaken,
     int bottomSheetType,
     int questionId,
+    String status,
   ) {
     LinearGradient? gradient = bottomSheetType == 1
         ? const LinearGradient(
@@ -132,7 +133,7 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
             timeTaken,
           )
         : _bottomSheetType2(
-            context, courseTitle, courseDescription, questionId);
+            context, courseTitle, courseDescription, questionId, status);
 
     showCommonBottomSheet(
       context: context,
@@ -177,8 +178,11 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
   //
   // }
 
-  Widget _bottomSheetType2(
-      BuildContext context, String title, String description, int questionId) {
+  Widget _bottomSheetType2(BuildContext context, String title,
+      String description, int questionId, String status) {
+    final String buttonLabel = (status == 'flawless' || status == 'completed')
+        ? 'Retake Test'
+        : 'Start';
     return Container(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -196,20 +200,21 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
           const SizedBox(height: 12),
           _buildButton("Review performance", AppColor.skyBlue.withOpacity(0.3),
               () {
-            _showBottomSheet(
-                context, title, description, 40, 20, 20, "10 min", 1, 1);
+            _showBottomSheet(context, title, description, 40, 20, 20, "10 min",
+                1, 1, status);
           }),
           const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
-              onPressed: () {
-                _navigateToRetakeTest(title, description, questionId);
-              },
-              child: const Text("Retake test"),
+          if (buttonLabel.isNotEmpty)
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () {
+                  _navigateToRetakeTest(title, description, questionId);
+                },
+                child: Text(buttonLabel),
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -474,16 +479,16 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
                           behavior: HitTestBehavior.opaque,
                           onTap: () {
                             _showBottomSheet(
-                              context,
-                              title,
-                              description,
-                              score ?? 0,
-                              listingTestScore,
-                              readingTestScore,
-                              timeTaken,
-                              2,
-                              question.id,
-                            );
+                                context,
+                                title,
+                                description,
+                                score ?? 0,
+                                listingTestScore,
+                                readingTestScore,
+                                timeTaken,
+                                2,
+                                question.id,
+                                status);
                           },
                           child: CourseRow(
                             title: title,
@@ -503,7 +508,8 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
                                   readingTestScore,
                                   timeTaken,
                                   2,
-                                  question.id);
+                                  question.id,
+                                  status);
                             },
                             onRetakeTestClick: () {
                               _navigateToRetakeTest(
@@ -516,24 +522,24 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
                   ],
                 ),
               ),
-        // bottomNavigationBar: BottomAppBar(
-        //   height: 65,
-        //   color: Colors.white,
-        //   child: ElevatedButton(
-        //     style: ElevatedButton.styleFrom(
-        //       shape: RoundedRectangleBorder(
-        //         borderRadius: BorderRadius.circular(12),
-        //       ),
-        //     ),
-        //     onPressed: () {
-        //       // Button press logic here
-        //     },
-        //     child: const Text(
-        //       'Continue to Set 11',
-        //       style: TextStyle(fontSize: 12),
-        //     ),
-        //   ),
-        // ),
+        bottomNavigationBar: BottomAppBar(
+          height: 65,
+          color: Colors.white,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            onPressed: () {
+              // Button press logic here
+            },
+            child: const Text(
+              'Continue to Set 11',
+              style: TextStyle(fontSize: 12),
+            ),
+          ),
+        ),
       ),
     );
   }
