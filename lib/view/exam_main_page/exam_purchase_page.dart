@@ -35,7 +35,7 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final heightPercentage = 490 / screenHeight;
+    final heightPercentage = 350 / screenHeight;
 
     return Scaffold(
       body: GradientBackground(
@@ -68,14 +68,17 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                 margin: const EdgeInsets.only(bottom: 16),
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
-                                    gradient:const LinearGradient(
-                                      colors: [AppColor.examCardGradientStart, AppColor.examCardGradientEnd],
+                                    gradient: const LinearGradient(
+                                      colors: [
+                                        AppColor.examCardGradientStart,
+                                        AppColor.examCardGradientEnd
+                                      ],
                                       begin: Alignment.topLeft,
                                       end: Alignment.bottomRight,
                                     ),
-                                  borderRadius: BorderRadius.circular(30),
-                                  border: Border.all(color: AppColor.skyBlue)
-                                ),
+                                    borderRadius: BorderRadius.circular(30),
+                                    border:
+                                        Border.all(color: AppColor.skyBlue)),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -94,20 +97,23 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 12, vertical: 4),
                                       decoration: BoxDecoration(
-                                        color: AppColor.brightCoral.withOpacity(0.3),
+                                        color: AppColor.brightCoral
+                                            .withOpacity(0.3),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Text(
                                         "Expiring in ${package.expiryIn} days",
                                         style: const TextStyle(
-                                            color: AppColor.brightCoral, fontSize: 10),
+                                            color: AppColor.brightCoral,
+                                            fontSize: 10),
                                       ),
                                     ),
                                     const Gap(5),
                                     Text(
                                       "${package.completedQuestionSet} out of ${package.totalQuestionSet} sets completed",
                                       style: const TextStyle(
-                                          color: AppColor.naturalGrey, fontSize: 10),
+                                          color: AppColor.naturalGrey,
+                                          fontSize: 10),
                                     ),
                                     const Gap(8),
                                     Row(
@@ -304,7 +310,8 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                                 content: BottomSheetPage(
                                                   context: context,
                                                   packageId: package.id!,
-                                                  packageName: package.title ?? '',
+                                                  packageName:
+                                                      package.title ?? '',
                                                   price:
                                                       packagePrice!.toDouble(),
                                                   validityDate:
