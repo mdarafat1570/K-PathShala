@@ -167,7 +167,7 @@ class ListeningQuestions {
 class Options {
   int id;
   String optionType;
-  String title;
+  String? title;
   dynamic subtitle;
   dynamic imageUrl;
   dynamic voiceScript;
