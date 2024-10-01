@@ -116,7 +116,7 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
           });
         } else {
           bool shouldExit = await showExitConfirmation(context);
-          if(shouldExit) {
+          if (shouldExit) {
             SystemNavigator.pop();
           }
         }
@@ -139,19 +139,19 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
             ),
             title: const Center(child: Text('')),
             actions: [
-              InkWell(
-                onTap: () {
-                  slideNavigationPush(const NotificationsPage(), context);
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SvgPicture.asset(
-                    'assets/ic_notifications.svg',
-                    width: 34.0,
-                    height: 34.0,
-                  ),
-                ),
-              ),
+              // InkWell(
+              //   onTap: () {
+              //     slideNavigationPush(const NotificationsPage(), context);
+              //   },
+              //   child: Padding(
+              //     padding: const EdgeInsets.all(8.0),
+              //     child: SvgPicture.asset(
+              //       'assets/ic_notifications.svg',
+              //       width: 34.0,
+              //       height: 34.0,
+              //     ),
+              //   ),
+              // ),
               const Gap(15)
             ],
           ),

@@ -56,7 +56,8 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                customText("Payment of ৳${widget.price.toStringAsFixed(2)}", TextType.subtitle,
+                customText("Payment of ৳${widget.price.toStringAsFixed(2)}",
+                    TextType.subtitle,
                     fontSize: 14,
                     color: AppColor.navyBlue,
                     fontWeight: FontWeight.bold),
@@ -104,9 +105,21 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
             // showPaymentDialog();
           },
           reversePosition: false,
-          child: const Text(
-            "Proceed to payment",
-            style: TextStyle(color: AppColor.white, fontSize: 20),
+          child: Row(
+            children: [
+              const Text(
+                "Pay With Bkash",
+                style: TextStyle(color: AppColor.white, fontSize: 20),
+              ),
+              Gap(10),
+              SizedBox(
+                  height: 40,
+                  width: 40,
+                  child: Image.asset(
+                    'assets/BKash-Icon2-Logo.wine.png',
+                    fit: BoxFit.cover,
+                  ))
+            ],
           ),
         ),
         // const SSLCommerzPage(),
@@ -135,7 +148,7 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
           ),
         ),
         const Gap(15),
-        Image.asset('assets/pixelcut-export.png', fit: BoxFit.cover),
+        // Image.asset('assets/pixelcut-export.png', fit: BoxFit.cover),
       ],
     );
   }
