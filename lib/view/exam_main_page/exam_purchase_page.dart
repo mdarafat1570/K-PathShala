@@ -1,5 +1,9 @@
+import 'dart:async';
+
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
+import 'package:kpathshala/common_error_all_layout/connection_lost.dart';
 import 'package:kpathshala/model/package_model/package_model.dart';
 import 'package:kpathshala/repository/package_service_repository.dart';
 import 'package:kpathshala/view/exam_main_page/widgets/exam_purchase_page_shimmer.dart';
@@ -16,12 +20,38 @@ class ExamPurchasePage extends StatefulWidget {
 class _ExamPurchasePageState extends State<ExamPurchasePage> {
   final PackageRepository _packageRepository = PackageRepository();
   Future<List<PackageList>>? _packagesFuture;
+  bool isConectdToInternet = false;
+
+  StreamSubscription? _internetConectionStreamSubscription;
 
   // bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    _internetConectionStreamSubscription =
+        InternetConnection().onStatusChange.listen((event) {
+      print(event);
+      switch (event) {
+        case InternetStatus.connected:
+          setState(() {
+            isConectdToInternet = true;
+          });
+          break;
+        case InternetStatus.disconnected:
+          setState(() {
+            isConectdToInternet = false;
+            // _showDisconnectionDialog();
+            slideNavigationPush(ConnectionLost(), context);
+          });
+          break;
+        default:
+          setState(() {
+            isConectdToInternet = false;
+          });
+          break;
+      }
+    });
     _fetchPackages();
   }
 
@@ -29,6 +59,12 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
     _packagesFuture = _packageRepository
         .fetchPackages(context)
         .then((packageModel) => packageModel.data ?? []);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _internetConectionStreamSubscription?.cancel();
   }
 
   @override

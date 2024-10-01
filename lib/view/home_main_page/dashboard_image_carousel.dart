@@ -1,6 +1,6 @@
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/model/dashboard_page_model/dashboard_page_model.dart';
 import 'package:shimmer/shimmer.dart';
@@ -71,27 +71,11 @@ class BannerCarouselState extends State<BannerCarousel> {
                       errorBuilder: (context, error, stackTrace) {
                         // Custom fallback when an error occurs
                         return Container(
-                          color: Colors.grey[200],
-                          width: double.infinity,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.error_outline,
-                                color: Colors.redAccent,
-                                size: 40,
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Image not available',
-                                style: TextStyle(
-                                  color: Colors.grey[700],
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
+                            color: Colors.grey[200],
+                            width: double.infinity,
+                            child: SvgPicture.asset(
+                              'assets/Group_26.svg',
+                            ));
                       },
                     ),
                   ),
@@ -111,9 +95,7 @@ class BannerCarouselState extends State<BannerCarousel> {
               margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 2),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: _currentIndex == index
-                    ? AppColor.navyBlue
-                    : Colors.grey,
+                color: _currentIndex == index ? AppColor.navyBlue : Colors.grey,
               ),
             );
           }),

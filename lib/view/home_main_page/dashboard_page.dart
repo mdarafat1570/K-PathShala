@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
+import 'package:kpathshala/common_error_all_layout/connection_lost.dart';
 import 'package:kpathshala/model/dashboard_page_model/dashboard_page_model.dart';
 import 'package:kpathshala/repository/dashboard_repository/dashboard_page_repository.dart';
 import 'dart:async';
@@ -64,7 +65,7 @@ class _DashboardPageState extends State<DashboardPage> {
         case InternetStatus.disconnected:
           setState(() {
             isConectdToInternet = false;
-            _showDisconnectionDialog();
+            slideNavigationPush(ConnectionLost(), context);
           });
           break;
         default:
@@ -84,6 +85,7 @@ class _DashboardPageState extends State<DashboardPage> {
       _internetConectionStreamSubscription?.cancel();
       _timer!.cancel();
     }
+    _internetConectionStreamSubscription?.cancel();
     super.dispose();
   }
 

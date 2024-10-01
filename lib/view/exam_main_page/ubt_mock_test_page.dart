@@ -26,6 +26,7 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
   QuestionSetResults? questionSetResults;
   bool dataFound = false;
   Map<String, int> testStartCounts = {};
+  int lastCompletedSetIndex = 0;
 
   @override
   void initState() {
@@ -52,6 +53,12 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
               rankPercentage: 0,
               totalQuestionSet: 0,
             );
+
+        // Find the index of the last completed question set based on its 'status'
+        lastCompletedSetIndex = questionSet.lastIndexWhere(
+          (qs) => qs.status == 'completed' || qs.status == 'flawless',
+        );
+
         dataFound = true;
       });
     } catch (e) {
@@ -532,10 +539,19 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
               ),
             ),
             onPressed: () {
-              // Button press logic here
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => RetakeTestPage(
+                    questionSetId: lastCompletedSetIndex + 1,
+                    title: "",
+                    description: "",
+                  ),
+                ),
+              );
             },
-            child: const Text(
-              'Continue to Set 11',
+            child: Text(
+              'Continue to Set ${lastCompletedSetIndex + 1}',
               style: TextStyle(fontSize: 12),
             ),
           ),
