@@ -7,7 +7,6 @@ import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/view/login_signup_page/registration_and_login_page.dart';
 import 'package:kpathshala/view/navigation_bar_page/navigation_bar.dart';
 
-
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -24,28 +23,31 @@ class _SplashScreenState extends State<SplashScreen> {
     checkCredentials();
   }
 
-  void checkCredentials () async {
+  void checkCredentials() async {
     bool signedIn = false;
 
-    final LogInCredentials? credentials = await _authService.getLogInCredentials();
-    if (credentials?.token != null && credentials?.token != "" &&
-        credentials?.name != null && credentials?.name != "" &&
-        credentials?.mobile != null && credentials?.mobile != "") {
-
+    final LogInCredentials? credentials =
+        await _authService.getLogInCredentials();
+    if (credentials?.token != null &&
+        credentials?.token != "" &&
+        credentials?.name != null &&
+        credentials?.name != "" &&
+        credentials?.mobile != null &&
+        credentials?.mobile != "") {
       // (JwtDecoder.isExpired(credentials?.token ?? '') == false) ? signedIn = true : signedIn = false;
 
       signedIn = true;
-
     } else {
       signedIn = false;
     }
 
     Timer(
       const Duration(seconds: 3),
-          () => Navigator.of(context).pushReplacement(
+      () => Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (BuildContext context) => signedIn ? const Navigation() :
-          const RegistrationPage(title: "Registration Page"),
+          builder: (BuildContext context) => signedIn
+              ? const Navigation()
+              : const RegistrationPage(title: "Registration Page"),
         ),
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:flutter_svg/svg.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/view/exam_main_page/widgets/payment_example.dart';
 
@@ -107,18 +108,16 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
           reversePosition: false,
           child: Row(
             children: [
+              SvgPicture.asset(
+                'assets/BKashwine.svg',
+                width: 40,
+                height: 40,
+              ),
+              const Gap(10),
               const Text(
                 "Pay With Bkash",
                 style: TextStyle(color: AppColor.white, fontSize: 20),
               ),
-              Gap(10),
-              SizedBox(
-                  height: 40,
-                  width: 40,
-                  child: Image.asset(
-                    'assets/BKash-Icon2-Logo.wine.png',
-                    fit: BoxFit.cover,
-                  ))
             ],
           ),
         ),

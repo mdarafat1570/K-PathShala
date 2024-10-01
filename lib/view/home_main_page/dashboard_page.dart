@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/model/dashboard_page_model/dashboard_page_model.dart';
@@ -41,13 +42,38 @@ class _DashboardPageState extends State<DashboardPage> {
   String vidCount = "0";
   int _currentTimer = 1;
   bool dataFound = false;
+  bool isConectdToInternet = false;
   Timer? _timer;
 
   DashboardPageModel? dashboardPageModel;
 
+  StreamSubscription? _internetConectionStreamSubscription;
+
   @override
   void initState() {
     super.initState();
+    _internetConectionStreamSubscription =
+        InternetConnection().onStatusChange.listen((event) {
+      print(event);
+      switch (event) {
+        case InternetStatus.connected:
+          setState(() {
+            isConectdToInternet = true;
+          });
+          break;
+        case InternetStatus.disconnected:
+          setState(() {
+            isConectdToInternet = false;
+            _showDisconnectionDialog();
+          });
+          break;
+        default:
+          setState(() {
+            isConectdToInternet = false;
+          });
+          break;
+      }
+    });
     _startCountdown();
     fetchData();
   }
@@ -55,6 +81,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void dispose() {
     if (_timer != null) {
+      _internetConectionStreamSubscription?.cancel();
       _timer!.cancel();
     }
     super.dispose();
@@ -64,7 +91,8 @@ class _DashboardPageState extends State<DashboardPage> {
     try {
       DashboardRepository repository = DashboardRepository();
 
-      DashboardPageModel? dashModel = await repository.fetchDashboardData(context);
+      DashboardPageModel? dashModel =
+          await repository.fetchDashboardData(context);
 
       setState(() {
         dashboardPageModel = dashModel;
@@ -111,6 +139,27 @@ class _DashboardPageState extends State<DashboardPage> {
         });
       });
     }
+  }
+
+  void _showDisconnectionDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('No Internet Connection'),
+          content:
+              const Text('You are currently not connected to the internet.'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -160,9 +209,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         ),
                         // if (dashboardPageModel?.syllabus != null) // Example of another null check
                         InkWell(
-                          onTap: () {
-
-                          },
+                          onTap: () {},
                           child: _buildGridItem(
                             icon: Icons.book,
                             title: "Syllabus",

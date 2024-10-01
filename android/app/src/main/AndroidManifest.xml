@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.BIND_TTS_SERVICE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <queries>
         <provider android:authorities="com.facebook.katana.provider.PlatformProvider" />
