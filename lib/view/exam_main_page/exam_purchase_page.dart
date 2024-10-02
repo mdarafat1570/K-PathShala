@@ -29,29 +29,29 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
   @override
   void initState() {
     super.initState();
-    _internetConectionStreamSubscription =
-        InternetConnection().onStatusChange.listen((event) {
-      print(event);
-      switch (event) {
-        case InternetStatus.connected:
-          setState(() {
-            isConectdToInternet = true;
-          });
-          break;
-        case InternetStatus.disconnected:
-          setState(() {
-            isConectdToInternet = false;
-            // _showDisconnectionDialog();
-            slideNavigationPush(ConnectionLost(), context);
-          });
-          break;
-        default:
-          setState(() {
-            isConectdToInternet = false;
-          });
-          break;
-      }
-    });
+    // _internetConectionStreamSubscription =
+    //     InternetConnection().onStatusChange.listen((event) {
+    //   print(event);
+    //   switch (event) {
+    //     case InternetStatus.connected:
+    //       setState(() {
+    //         isConectdToInternet = true;
+    //       });
+    //       break;
+    //     case InternetStatus.disconnected:
+    //       setState(() {
+    //         isConectdToInternet = false;
+    //         // _showDisconnectionDialog();
+    //         slideNavigationPush(ConnectionLost(), context);
+    //       });
+    //       break;
+    //     default:
+    //       setState(() {
+    //         isConectdToInternet = false;
+    //       });
+    //       break;
+    //   }
+    // });
     _fetchPackages();
   }
 
