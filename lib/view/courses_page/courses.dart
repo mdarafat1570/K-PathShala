@@ -33,7 +33,7 @@ class _CoursesState extends State<Courses> {
                   );
                 },
                 child: const Text(
-                  "Stay tuned premium\ncourses are coming soon (UNTHORIG)",
+                  "Stay tuned premium\ncourses are coming soon.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: AppColor.navyBlue,
@@ -41,40 +41,40 @@ class _CoursesState extends State<Courses> {
                   ),
                 ),
               ),
-              Gap(30),
-              InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ConnectionLost()),
-                  );
-                },
-                child: const Text(
-                  "Stay tuned premium\ncourses are coming soon (INTERNET)",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: AppColor.navyBlue,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-              Gap(30),
-              InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => PageNotFound()),
-                  );
-                },
-                child: const Text(
-                  "Stay tuned premium\ncourses are coming soon (Page Not)",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: AppColor.navyBlue,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
+              // Gap(30),
+              // InkWell(
+              //   onTap: () {
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(builder: (context) => ConnectionLost()),
+              //     );
+              //   },
+              //   child: const Text(
+              //     "Stay tuned premium\ncourses are coming soon (INTERNET)",
+              //     textAlign: TextAlign.center,
+              //     style: TextStyle(
+              //       color: AppColor.navyBlue,
+              //       fontSize: 12,
+              //     ),
+              //   ),
+              // ),
+              // Gap(30),
+              // InkWell(
+              //   onTap: () {
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(builder: (context) => PageNotFound()),
+              //     );
+              //   },
+              //   child: const Text(
+              //     "Stay tuned premium\ncourses are coming soon (Page Not)",
+              //     textAlign: TextAlign.center,
+              //     style: TextStyle(
+              //       color: AppColor.navyBlue,
+              //       fontSize: 12,
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),

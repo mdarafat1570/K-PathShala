@@ -137,8 +137,7 @@ class _ProfileState extends State<Profile> {
 
 // Function to reduce image resolution
   Future<File> reduceImageResolution(
-      File imageFile, int targetWidth, int targetHeight) async
-  {
+      File imageFile, int targetWidth, int targetHeight) async {
     // Read the image file as bytes
     final bytes = await imageFile.readAsBytes();
 
@@ -198,8 +197,9 @@ class _ProfileState extends State<Profile> {
                         backgroundImage: _imageFile != null
                             ? FileImage(_imageFile!)
                             : (_networkImageUrl != null
-                            ? NetworkImage(_networkImageUrl!)
-                            : AssetImage('assets/new_App_icon.png')) as ImageProvider,
+                                    ? NetworkImage(_networkImageUrl!)
+                                    : AssetImage('assets/new_App_icon.png'))
+                                as ImageProvider,
                         onBackgroundImageError: (_, __) {
                           // Fallback to asset image if the network image is invalid
                           setState(() {
@@ -362,14 +362,14 @@ class _ProfileState extends State<Profile> {
 
       if (_mobileController.text.isEmpty) {
         _phoneError = "Phone Number is required";
-      }else {
+      } else {
         _phoneError = null;
       }
 
       final email = _emailController.text;
-      if (email.isEmpty){
+      if (email.isEmpty) {
         _emailError = null;
-      }else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+      } else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
           .hasMatch(email)) {
         _emailError = "Please enter a valid email address";
       } else {
@@ -387,16 +387,16 @@ class _ProfileState extends State<Profile> {
 
       if (_mobileController.text.isEmpty) {
         _phoneError = "Phone Number is required";
-      } else if (widget.isMobileVerified == false){
+      } else if (widget.isMobileVerified == false) {
         _phoneError = "Please verify your phone number to continue";
       } else {
         _phoneError = null;
       }
 
       final email = _emailController.text;
-      if (email.isEmpty){
+      if (email.isEmpty) {
         _emailError = null;
-      }else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+      } else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
           .hasMatch(email)) {
         _emailError = "Please enter a valid email address";
       } else {

@@ -126,7 +126,6 @@ class _OtpPageState extends State<OtpPage> {
                             ? null
                             : () {
                                 sendOtp(mobileNumber: widget.mobileNumber);
-
                               },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _isResendButtonDisabled
@@ -250,7 +249,7 @@ class _OtpPageState extends State<OtpPage> {
     }
   }
 
-  void sendOtp({required String mobileNumber}) async   {
+  void sendOtp({required String mobileNumber}) async {
     showLoadingIndicator(context: context, showLoader: true);
     if (mobileNumber.isEmpty) {
       showLoadingIndicator(context: context, showLoader: false);

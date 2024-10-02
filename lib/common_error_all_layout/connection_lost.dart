@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:connectivity_plus/connectivity_plus.dart'; // To check internet connection
 
@@ -39,9 +40,10 @@ class ConnectionLost extends StatelessWidget {
               SizedBox(height: 40),
               ElevatedButton(
                 onPressed: () async {
-                  var connectivityResult =
-                      await Connectivity().checkConnectivity();
-                  if (connectivityResult != ConnectivityResult.none) {
+                  bool isConnected =
+                      await InternetConnection().hasInternetAccess;
+
+                  if (isConnected) {
                     Navigator.of(context).pop();
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(

@@ -1,3 +1,4 @@
+import 'package:flutter_svg/svg.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/view/exam_main_page/widgets/payment_example.dart';
 
@@ -64,7 +65,7 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
                 const Gap(5),
                 RichText(
                   text: TextSpan(
-                    text: "You’ll have access to ${widget.packageName} ",
+                    text: "You’ll have access to ${widget.packageName} Till",
                     style: const TextStyle(
                       color: Colors.grey,
                       fontSize: 12,
@@ -105,9 +106,19 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
             // showPaymentDialog();
           },
           reversePosition: false,
-          child: const Text(
-            "Proceed to payment",
-            style: TextStyle(color: AppColor.white, fontSize: 20),
+          child: Row(
+            children: [
+              SvgPicture.asset(
+                'assets/BKashwine.svg',
+                width: 40,
+                height: 40,
+              ),
+              const Gap(10),
+              const Text(
+                "Pay With Bkash",
+                style: TextStyle(color: AppColor.white, fontSize: 20),
+              ),
+            ],
           ),
         ),
         // const SSLCommerzPage(),
@@ -136,7 +147,7 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
           ),
         ),
         const Gap(15),
-        Image.asset('assets/pixelcut-export.png', fit: BoxFit.cover),
+        // Image.asset('assets/pixelcut-export.png', fit: BoxFit.cover),
       ],
     );
   }
