@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
@@ -70,8 +71,6 @@ class RetakeTestPageState extends State<RetakeTestPage>
   String? selectedVoice;
   String? _newVoiceText;
 
-
-
   @override
   void initState() {
     super.initState();
@@ -135,7 +134,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
     });
   }
 
-  Future<void> _speak(String? model, String voiceScript) async {
+  Future<void> _speak(String? model, String voiceScript,
+      {bool? isDialogue = false}) async {
     _newVoiceText = voiceScript;
 
     if (_newVoiceText == null || _newVoiceText!.isEmpty) {
@@ -183,16 +183,17 @@ class RetakeTestPageState extends State<RetakeTestPage>
     await Future.delayed(const Duration(seconds: 3));
 
     // Only play the second speech if the first one has completed and wasn't interrupted
-    if (firstSpeechCompleted) {
+    if (firstSpeechCompleted && !isDialogue!) {
       log("Speaking second: $_newVoiceText");
       await flutterTts.speak(_newVoiceText!);
     } else {
       log("First speech was interrupted, second speech will not be played.");
     }
 
-    setState(() {
-      isInDelay = false;
-    });
+
+      setState(() {
+        isInDelay = false;
+      });
   }
 
   Future<void> _stopSpeaking() async {
@@ -246,12 +247,12 @@ class RetakeTestPageState extends State<RetakeTestPage>
       if (questionsModel != null && questionsModel.data != null) {
         _readingQuestions = questionsModel.data?.readingQuestions ?? [];
         _listeningQuestions = questionsModel.data?.listeningQuestions ?? [];
-        totalQuestion = questionsModel.data?.totalQuestion ?? 0;
 
         await _preloadImages();
 
-        // _remainingTime = (questionsModel.data?.duration ?? 60) * 60; // Set your initial remaining time
-        _remainingTime = 3600; // Set your initial remaining time
+        totalQuestion = questionsModel.data?.totalQuestion ?? 0;
+        _remainingTime = (questionsModel.data?.duration ?? 60) *
+            60; // Set your initial remaining time
         _examTime = (questionsModel.data?.duration ?? 60) * 60;
 
         // Now that the widget is still mounted, safely update the state
@@ -283,60 +284,53 @@ class RetakeTestPageState extends State<RetakeTestPage>
 
   Future<void> _preloadImages() async {
     log("Loading Image");
-    List<Future> preloadFutures = [];
-    int index = 1;
+    List<Future<void>> preloadFutures = [];
 
     for (ReadingQuestions question in _readingQuestions) {
-      log("Reading question ${index++}");
       if (question.imageUrl != null && question.imageUrl!.isNotEmpty) {
-        log("Question Image loading...");
-        // Add each image preloading task to the list
-        preloadFutures.add(
-          precacheImage(NetworkImage(question.imageUrl!), context),
-        );
-        log("Successful...");
+        preloadFutures.add(_cacheImage(question.imageUrl!));
       }
-      int optionIndex = 1;
+
       for (var option in question.options) {
-        log("Option ${optionIndex++}");
         if (option.imageUrl != null && option.imageUrl!.isNotEmpty) {
-          log("Option Image loading...");
-          // Add each image preloading task to the list
-          preloadFutures.add(
-            precacheImage(NetworkImage(option.imageUrl!), context),
-          );
-          log("Successful...");
+          preloadFutures.add(_cacheImage(option.imageUrl!));
         }
       }
     }
 
     for (ListeningQuestions question in _listeningQuestions) {
-      log("Listening question ${index++}");
       if (question.imageUrl != null && question.imageUrl!.isNotEmpty) {
-        log("Image loading...");
-        // Add each image preloading task to the list
-        preloadFutures.add(
-          precacheImage(NetworkImage(question.imageUrl!), context),
-        );
-        log("Successful...");
+        preloadFutures.add(_cacheImage(question.imageUrl!));
       }
-      int optionIndex = 1;
+
       for (var option in question.options) {
-        log("Option ${optionIndex++}");
         if (option.imageUrl != null && option.imageUrl!.isNotEmpty) {
-          log("Option Image loading...");
-          // Add each image preloading task to the list
-          preloadFutures.add(
-            precacheImage(NetworkImage(option.imageUrl!), context),
-          );
-          log("Successful...");
+          preloadFutures.add(_cacheImage(option.imageUrl!));
         }
       }
     }
 
-    // Wait for all images to be preloaded
+    // Wait for all images to be cached
     await Future.wait(preloadFutures);
   }
+
+  Future<void> _cacheImage(String imageUrl) async {
+    try {
+      final response = await http.get(Uri.parse(imageUrl));
+      if (response.statusCode == 200) {
+        // Cache image bytes
+        _cachedImages[imageUrl] = response.bodyBytes;
+        log("Cached image: $imageUrl");
+      } else {
+        log("Failed to load image: $imageUrl");
+      }
+    } catch (e) {
+      log("Error caching image: $e");
+    }
+  }
+
+  Map<String, Uint8List> _cachedImages = {}; // Map to store cached images
+
 
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -729,7 +723,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
         : _selectedReadingQuestionData?.imageUrl ?? "";
     final voiceScript = _selectedListeningQuestionData?.voiceScript ?? "";
     dialogue = _selectedListeningQuestionData?.dialogues ?? [];
-    final listeningQuestionType = _selectedListeningQuestionData?.questionType ?? "";
+    final listeningQuestionType =
+        _selectedListeningQuestionData?.questionType ?? "";
     final options = isListening
         ? _selectedListeningQuestionData?.options ?? []
         : _selectedReadingQuestionData?.options ?? [];
@@ -855,7 +850,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                           ),
                         if (question.isNotEmpty ||
                             imageUrl.isNotEmpty ||
-                            voiceScript.isNotEmpty) // Check for null or empty
+                            voiceScript.isNotEmpty || dialogue.isNotEmpty) // Check for null or empty
                           Container(
                             padding: const EdgeInsets.all(12),
                             margin: const EdgeInsets.symmetric(vertical: 10),
@@ -880,38 +875,12 @@ class RetakeTestPageState extends State<RetakeTestPage>
                                       onTap: () {
                                         showZoomedImage(imageUrl);
                                       },
-                                      child: Image.network(
-                                        imageUrl,
-                                        errorBuilder:
-                                            (context, error, stackTrace) {
-                                          // Show something when the image fails to load
-                                          return const Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Icon(Icons.broken_image,
-                                                  color: AppColor.navyBlue,
-                                                  size: 50), // Error icon
-                                              SizedBox(height: 10),
-                                              Text(
-                                                "Image failed to load",
-                                                style: TextStyle(
-                                                    color: AppColor.navyBlue,
-                                                    fontSize: 16),
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                        loadingBuilder:
-                                            (context, child, loadingProgress) {
-                                          if (loadingProgress == null) {
-                                            return child; // Image loaded successfully
-                                          } else {
-                                            // Show a loading indicator while the image is being loaded
-                                            return const CircularProgressIndicator();
-                                          }
-                                        },
-                                      ),
+                                      child: _cachedImages.containsKey(imageUrl)
+                                          ? Image.memory(
+                                        _cachedImages[imageUrl]!,
+                                        fit: BoxFit.cover, // Ensure the image fits well in its container
+                                      )
+                                          : const CircularProgressIndicator(), // Show loading if image is not yet cached
                                     ),
                                   if ((imageUrl.isNotEmpty &&
                                           voiceScript.isNotEmpty) ||
@@ -924,21 +893,37 @@ class RetakeTestPageState extends State<RetakeTestPage>
                                       width: double.maxFinite,
                                       color: Colors.black54,
                                     ),
-                                  if (voiceScript.isNotEmpty)
+                                  if (listeningQuestionType != 'dialogues' ? voiceScript.isNotEmpty : dialogue.isNotEmpty)
                                     InkWell(
                                       onTap: exists
                                           ? null
-                                          : () {
-                                              if (!isSpeaking && !isInDelay) {
-                                                playedAudiosList.add(PlayedAudios(
-                                                    audioId: questionId,
-                                                    audioType: "question"));
-                                                _speak(
-                                                    _selectedListeningQuestionData
-                                                        ?.voiceGender,
-                                                    voiceScript);
-                                              }
-                                            },
+                                          : ()async {
+
+                                        if (!isSpeaking && !isInDelay) {
+                                          // playedAudiosList.add(
+                                          //     PlayedAudios(
+                                          //         audioId: questionId,
+                                          //         audioType: "question"));
+                                          if(listeningQuestionType != "dialogues") {
+                                            _speak(
+                                                _selectedListeningQuestionData
+                                                    ?.voiceGender,
+                                                voiceScript);
+                                          } else {
+                                            int i = 1;
+                                            dialogue.sort((a, b) => (a.sequence ?? 0).compareTo(b.sequence ?? 0));
+                                            for (var voice in dialogue) {
+                                              log ("play sequence ${i++}______________");
+                                              await _speak(voice.voiceGender, voice.voiceScript ?? '', isDialogue: true);
+                                            }
+                                            await Future.delayed(const Duration(seconds: 3));
+                                            for (var voice in dialogue) {
+                                              log ("play sequence ${i++}______________");
+                                              await _speak(voice.voiceGender, voice.voiceScript ?? '', isDialogue: true);
+                                            }
+                                          }
+                                        }
+                                      },
                                       child: Image.asset(
                                         "assets/speaker.png",
                                         height: 40,
@@ -1033,7 +1018,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                                                           PlayedAudios(
                                                               audioId: answerId,
                                                               audioType:
-                                                              "option"));
+                                                                  "option"));
                                                       _speak(
                                                           _selectedListeningQuestionData
                                                               ?.voiceGender,
@@ -1110,26 +1095,15 @@ class RetakeTestPageState extends State<RetakeTestPage>
                                             onTap: () {
                                               showZoomedImage(answerImage);
                                             },
-                                            child: Image.network(
-                                              answerImage,
-                                              errorBuilder:
-                                                  (context, error, stackTrace) {
-                                                // Show something when the image fails to load
-                                                return const Icon(
-                                                    Icons.broken_image,
-                                                    color: AppColor.navyBlue,
-                                                    size: 20);
-                                              },
-                                              loadingBuilder: (context, child,
-                                                  loadingProgress) {
-                                                if (loadingProgress == null) {
-                                                  return child; // Image loaded successfully
-                                                } else {
-                                                  // Show a loading indicator while the image is being loaded
-                                                  return const CircularProgressIndicator();
-                                                }
-                                              },
-                                            ),
+                                            child: _cachedImages.containsKey(answerImage)
+                                                ? Image.memory(
+                                              _cachedImages[answerImage]!,
+                                              fit: BoxFit.cover, // Ensure the image fits well in its container
+                                            )
+                                                : const Padding(
+                                                  padding:  EdgeInsets.all(1.0),
+                                                  child: CircularProgressIndicator(),
+                                                ), // Show loading if image is not yet cached
                                           ),
                                         ),
                                     ],
@@ -1395,37 +1369,29 @@ class RetakeTestPageState extends State<RetakeTestPage>
           backgroundColor: Colors.transparent,
           child: SizedBox(
             height: MediaQuery.of(context).size.height * 0.9,
-            child: Image.network(
-              imageUrl,
-              errorBuilder: (context, error, stackTrace) {
-                // Show something when the image fails to load
-                return const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.broken_image,
-                        color: AppColor.navyBlue, size: 80),
-                  ],
-                );
+            child: InkWell(
+              onTap: () {
+                showZoomedImage(imageUrl);
               },
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) {
-                  return child; // Image loaded successfully
-                } else {
-                  // Show a loading indicator while the image is being loaded
-                  return const CircularProgressIndicator();
-                }
-              },
-            ),
+              child: _cachedImages.containsKey(imageUrl)
+                  ? Image.memory(
+                _cachedImages[imageUrl]!,
+                fit: BoxFit.cover, // Ensure the image fits well in its container
+              )
+                  : const CircularProgressIndicator(), // Show loading if image is not yet cached
+            )
+            ,
           ),
         );
       },
     );
   }
 
-  void checkAnswerLength () {
+  void checkAnswerLength() {
     _stopSpeaking();
-    int answerLength = solvedReadingQuestions.length + solvedListeningQuestions.length;
-    if(answerLength < totalQuestion){
+    int answerLength =
+        solvedReadingQuestions.length + solvedListeningQuestions.length;
+    if (answerLength < totalQuestion) {
       showWarningDialog(context, totalQuestion - answerLength);
     } else {
       submitAnswer();
@@ -1433,7 +1399,6 @@ class RetakeTestPageState extends State<RetakeTestPage>
   }
 
   void submitAnswer() async {
-
     int duration = (_examTime - _remainingTime) ~/ 60;
     final List<Answers> combinedList = [];
     combinedList.addAll(solvedReadingQuestions);
@@ -1456,7 +1421,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
     try {
       showLoadingIndicator(context: context, showLoader: true);
 
-      final response = await AnswerSubmissionRepository().submitAnswers(answers: finalAnswer, context: context);
+      final response = await AnswerSubmissionRepository()
+          .submitAnswers(answers: finalAnswer, context: context);
 
       log(jsonEncode(response));
 
@@ -1490,7 +1456,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
       context: context,
       builder: (context) {
         return PopScope(
-          canPop: false ,
+          canPop: false,
           onPopInvoked: (bool didPop) async {
             Navigator.pop(context);
             Navigator.pop(context);
@@ -1520,13 +1486,14 @@ class RetakeTestPageState extends State<RetakeTestPage>
     );
   }
 
-  void showWarningDialog (BuildContext context, int missedQuestions){
+  void showWarningDialog(BuildContext context, int missedQuestions) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Warning'),
-          content: Text('You have $missedQuestions missed questions. Do you want to submit anyway?'),
+          content: Text(
+              'You have $missedQuestions missed questions. Do you want to submit anyway?'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -1552,7 +1519,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
       context: context,
       builder: (context) {
         return PopScope(
-          canPop: false ,
+          canPop: false,
           onPopInvoked: (bool didPop) async {
             Navigator.pop(context);
             Navigator.pop(context);
@@ -1609,7 +1576,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
       context: context,
       builder: (context) {
         return PopScope(
-          canPop: false ,
+          canPop: false,
           onPopInvoked: (bool didPop) async {
             Navigator.pop(context);
             Navigator.pop(context);
