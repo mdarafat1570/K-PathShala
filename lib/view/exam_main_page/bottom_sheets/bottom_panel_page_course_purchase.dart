@@ -65,7 +65,7 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
                 const Gap(5),
                 RichText(
                   text: TextSpan(
-                    text: "You’ll have access to ${widget.packageName} ",
+                    text: "You’ll have access to ${widget.packageName} Till",
                     style: const TextStyle(
                       color: Colors.grey,
                       fontSize: 12,
