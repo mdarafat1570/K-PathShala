@@ -56,7 +56,8 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                customText("Payment of ৳${widget.price.toStringAsFixed(2)}", TextType.subtitle,
+                customText("Payment of ৳${widget.price.toStringAsFixed(2)}",
+                    TextType.subtitle,
                     fontSize: 14,
                     color: AppColor.navyBlue,
                     fontWeight: FontWeight.bold),
