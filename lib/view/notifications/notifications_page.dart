@@ -5,6 +5,7 @@ import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/view/common_widget/common_app_bar.dart';
 import 'package:kpathshala/view/common_widget/custom_background.dart';
 import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
+import 'package:lottie/lottie.dart';
 
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});
@@ -22,40 +23,24 @@ class _NotificationsPageState extends State<NotificationsPage> {
         title: "Notifications",
       ),
       body: GradientBackground(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              SvgPicture.asset(
-                'assets/Notifications_Empty.svg',
-                height: 300,
-                width: 300,
-              ),
-              customText(
-                  "There are no notifications for now", TextType.subtitle),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _openNotificationSettings,
-                child: const Text('Open Notification Settings'),
-              ),
-            ],
-          ),
-        ),
-      ),
-      // Snackbar
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          final snackBar = SnackBar(
-            content: const Text('This is a Snake notification!'),
-            action: SnackBarAction(
-              label: 'Undo',
-              onPressed: () {},
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Lottie.asset(
+              'assets/notification_icon_empty.json',
+              height: 400,
+              width: 400,
+              repeat: true,
+              animate: true,
             ),
-          );
-
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        },
-        child: const Icon(Icons.add),
+            customText("There are no notifications for now", TextType.normal),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _openNotificationSettings,
+              child: const Text('Open Notification Settings'),
+            ),
+          ],
+        ),
       ),
     );
   }
