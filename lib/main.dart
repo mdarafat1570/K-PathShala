@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:kpathshala/NetworkManager.dart';
 import 'package:kpathshala/app_theme/theme_data.dart';
 import 'package:kpathshala/view/splash_screen.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
@@ -20,6 +23,8 @@ void main() async {
 
 // The promptForPushNotificationsWithUserResponse function will show the iOS or Android push notification prompt. We recommend removing the following code and instead using an In-App Message to prompt for notification permission
   OneSignal.Notifications.requestPermission(true);
+
+  Get.put(ConectivityController());
   runApp(
     DevicePreview(
       enabled: false,

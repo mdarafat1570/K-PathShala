@@ -17,29 +17,17 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -54,9 +42,52 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCwDfqKQYRM2r4eXwAwSmcxT_wm0HJxIIk',
-    appId: '1:12864215087:android:d513340d290ae0ff434eda',
+    appId: '1:12864215087:android:18708e5511844e38434eda',
     messagingSenderId: '12864215087',
     projectId: 'k-pathshala',
     storageBucket: 'k-pathshala.appspot.com',
   );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyCqRVZ25dD6Mwb0V1YXjPSZcl3cj5Sf84o',
+    appId: '1:12864215087:web:3d0009f719f32fd8434eda',
+    messagingSenderId: '12864215087',
+    projectId: 'k-pathshala',
+    authDomain: 'k-pathshala.firebaseapp.com',
+    storageBucket: 'k-pathshala.appspot.com',
+    measurementId: 'G-LCE4BN216Y',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyAsjHua1xbUaUF6wc16zQ2LK3zoq2tgMs0',
+    appId: '1:12864215087:ios:ac35858af127897b434eda',
+    messagingSenderId: '12864215087',
+    projectId: 'k-pathshala',
+    storageBucket: 'k-pathshala.appspot.com',
+    androidClientId: '12864215087-1uucr076lkm59uoa24k7nq52enidjpvo.apps.googleusercontent.com',
+    iosClientId: '12864215087-6cn1f6fpgqo2nhagj1b3639499r7b4h7.apps.googleusercontent.com',
+    iosBundleId: 'com.designdebugger.kpathshala',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyAsjHua1xbUaUF6wc16zQ2LK3zoq2tgMs0',
+    appId: '1:12864215087:ios:ac35858af127897b434eda',
+    messagingSenderId: '12864215087',
+    projectId: 'k-pathshala',
+    storageBucket: 'k-pathshala.appspot.com',
+    androidClientId: '12864215087-1uucr076lkm59uoa24k7nq52enidjpvo.apps.googleusercontent.com',
+    iosClientId: '12864215087-6cn1f6fpgqo2nhagj1b3639499r7b4h7.apps.googleusercontent.com',
+    iosBundleId: 'com.designdebugger.kpathshala',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyCqRVZ25dD6Mwb0V1YXjPSZcl3cj5Sf84o',
+    appId: '1:12864215087:web:b949c2de5bb2b763434eda',
+    messagingSenderId: '12864215087',
+    projectId: 'k-pathshala',
+    authDomain: 'k-pathshala.firebaseapp.com',
+    storageBucket: 'k-pathshala.appspot.com',
+    measurementId: 'G-ZGHRLBX0R4',
+  );
+
 }

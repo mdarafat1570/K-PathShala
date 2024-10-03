@@ -53,8 +53,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   Widget _customButton(String text, Future<UserCredential> Function() onPressed,
       String assetPath,
-      {double iconHeight = 35})
-  {
+      {double iconHeight = 35}) {
     return commonCustomButton(
       width: double.infinity,
       height: 55,
@@ -135,11 +134,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       ],
                     ),
                     errorMessage: errorMessage,
-                    onChanged: (_){
-                      if (mobileNumberController.text.isNotEmpty){
+                    onChanged: (_) {
+                      if (mobileNumberController.text.isNotEmpty) {
                         errorMessage = null;
                         setState(() {});
-                      } else if(mobileNumberController.text.isEmpty){
+                      } else if (mobileNumberController.text.isEmpty) {
                         setState(() {
                           errorMessage = "Please provide a valid phone number";
                         });
@@ -154,11 +153,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       onPressed: () {
                         String rawNumber = mobileNumberController.text;
                         if (rawNumber.isNotEmpty && rawNumber.length == 11) {
-
                           sendOtp(mobileNumber: rawNumber);
-                        } else if (rawNumber.length <11){
+                        } else if (rawNumber.length < 11) {
                           setState(() {
-                            errorMessage = "Please provide a valid phone number";
+                            errorMessage =
+                                "Please provide a valid phone number";
                           });
                         } else {
                           setState(() {
@@ -359,5 +358,4 @@ class _RegistrationPageState extends State<RegistrationPage> {
       );
     }
   }
-
 }
