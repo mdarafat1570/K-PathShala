@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
+import 'package:kpathshala/authentication/base_repository.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/repository/sign_in_methods.dart';
 import 'package:kpathshala/view/login_signup_page/registration_and_login_page.dart';
@@ -37,64 +38,100 @@ class AuthService {
     return prefs.containsKey(_tokenKey);
   }
 
-  // Send OTP
-  Future<Map<String, dynamic>> sendOtp(String mobile, {String? email}) async {
-    final url = Uri.parse(AuthorizationEndpoints.sendOTP);
-    final headers = {'Content-Type': 'application/json'};
+  // // Send OTP
+  // Future<Map<String, dynamic>> sendOtp(String mobile, {String? email}) async {
+  //   final url = Uri.parse(AuthorizationEndpoints.sendOTP);
+  //   final headers = {'Content-Type': 'application/json'};
+  //   final body = {
+  //     'mobile': mobile,
+  //   };
+  //   if (email != null) {
+  //     body['email'] = email;
+  //   }
+
+  //   final response =
+  //       await http.post(url, headers: headers, body: json.encode(body));
+  //   if (response.statusCode == 200) {
+  //     return json.decode(response.body);
+  //   } else {
+  //     return {
+  //       'error': true,
+  //       'message': 'Failed to send OTP',
+  //       'details': json.decode(response.body)
+  //     };
+  //   }
+  // }
+
+  Future<Map<String, dynamic>> sendOtp(
+    String mobile, {
+    String? email,
+    required BuildContext context,
+  }) async {
     final body = {
       'mobile': mobile,
+      if (email != null) 'email': email,
     };
-    if (email != null) {
-      body['email'] = email;
-    }
-
-    final response =
-        await http.post(url, headers: headers, body: json.encode(body));
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      return {
-        'error': true,
-        'message': 'Failed to send OTP',
-        'details': json.decode(response.body)
-      };
-    }
-  }
-
-  // Verify OTP
-  Future<Map<String, dynamic>> verifyOtp(
-      String mobile, int otp, String deviceId,
-      {String? deviceName}) async {
-    final url = Uri.parse(AuthorizationEndpoints.verifyOTP);
-    final headers = {'Content-Type': 'application/json'};
-    final body = {
-      'mobile': mobile,
-      'otp': otp,
-      'device_id': deviceId,
-    };
-
-    if (deviceName != null) {
-      body['device_name'] = deviceName;
-    }
-
-    final response =
-        await http.post(url, headers: headers, body: json.encode(body));
-    if (response.statusCode == 200) {
-      var data = json.decode(response.body);
-      // Save the token if verification is successful
-      if (data['status'] == 'success' && data['data']['token'] != null) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('authToken', data['data']['token']);
+    try {
+      final response = await BaseRepository().postRequest(
+        AuthorizationEndpoints.sendOTP,
+        body,
+        context: context,
+      );
+      if (response['error'] == null || !response['error']) {
+        return response;
+      } else {
+        return {
+          'error': true,
+          'message': 'Failed to send OTP',
+          'details': response
+        };
       }
-      return data;
-    } else {
+    } catch (e) {
       return {
         'error': true,
-        'message': 'OTP verification failed',
-        'details': json.decode(response.body)
+        'message': 'An error occurred',
+        'details': e.toString(),
       };
     }
   }
+
+  // // Verify OTP
+  // Future<Map<String, dynamic>> verifyOtp(
+  //     String mobile, int otp, String deviceId,
+  //     {String? deviceName}) async {
+  //   final url = Uri.parse(AuthorizationEndpoints.verifyOTP);
+  //   final headers = {'Content-Type': 'application/json'};
+  //   final body = {
+  //     'mobile': mobile,
+  //     'otp': otp,
+  //     'device_id': deviceId,
+  //   };
+
+  //   if (deviceName != null) {
+  //     body['device_name'] = deviceName;
+  //   }
+
+  //   final response =
+  //       await http.post(url, headers: headers, body: json.encode(body));
+  //   if (response.statusCode == 200) {
+  //     var data = json.decode(response.body);
+  //     // Save the token if verification is successful
+  //     if (data['status'] == 'success' && data['data']['token'] != null) {
+  //       SharedPreferences prefs = await SharedPreferences.getInstance();
+  //       await prefs.setString('authToken', data['data']['token']);
+  //     }
+  //     return data;
+  //   } else {
+  //     return {
+  //       'error': true,
+  //       'message': 'OTP verification failed',
+  //       'details': json.decode(response.body)
+  //     };
+  //   }
+  // }
+
+
+  
 
   // Register User
   Future<Map<String, dynamic>> registerUser({
@@ -266,15 +303,15 @@ class AuthService {
     }
   }
 
-  Future<Map<String, dynamic>> logoutIfInvalidToken(BuildContext context) async {
+  Future<Map<String, dynamic>> logoutIfInvalidToken(
+      BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     final LogInCredentials? loginCredentials = await getLogInCredentials();
 
-
-
-    if (loginCredentials != null && (loginCredentials.token == null || loginCredentials.token == "")) {
+    if (loginCredentials != null &&
+        (loginCredentials.token == null || loginCredentials.token == "")) {
       // No token found, perhaps already logged out
-      if (context.mounted){
+      if (context.mounted) {
         _showSnackbar(context, 'No active session found.');
       }
       return {'status': 'error', 'message': 'No active session.'};
@@ -282,16 +319,15 @@ class AuthService {
 
     await prefs.remove('authToken');
     await clearLogInCredentials();
-    if (SignInMethods.isUserSignedIn()){
+    if (SignInMethods.isUserSignedIn()) {
       await SignInMethods.logout();
     }
 
-    if(context.mounted){
-      slideNavigationPushAndRemoveUntil(const RegistrationPage(title: "Registration Page"), context);
+    if (context.mounted) {
+      slideNavigationPushAndRemoveUntil(
+          const RegistrationPage(title: "Registration Page"), context);
     }
     return {'status': 'error', 'message': 'Log Out..'};
-
-
   }
 
   void _showSnackbar(BuildContext context, String message) {
