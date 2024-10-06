@@ -33,7 +33,7 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace = "com.inferloom.kpathshala"
+    namespace = "com.designdebugger.kpathshala"
     compileSdk = 34
     ndkVersion = flutter.ndkVersion
     compileOptions {
@@ -42,8 +42,8 @@ android {
     }
 
        defaultConfig {
-        applicationId = "com.inferloom.kpathshala"
-        minSdk = 21
+        applicationId = "com.designdebugger.kpathshala"
+        minSdk = 23
         targetSdk = 33
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName

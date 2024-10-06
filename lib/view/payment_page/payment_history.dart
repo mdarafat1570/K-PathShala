@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart'; // Import flutter_svg package
 import 'package:kpathshala/view/payment_page/payment_row.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../app_theme/app_color.dart';
 import '../../model/payment_model/payment_history_model.dart';
 import '../../repository/payment/payment_history_repository.dart';
@@ -20,7 +21,8 @@ class _PaymentHistoryState extends State<PaymentHistory> {
   @override
   void initState() {
     super.initState();
-    _paymentHistoryFuture = PaymentHistoryRepository().fetchPaymentHistory(context);
+    _paymentHistoryFuture =
+        PaymentHistoryRepository().fetchPaymentHistory(context);
   }
 
   @override
@@ -37,13 +39,7 @@ class _PaymentHistoryState extends State<PaymentHistory> {
           future: _paymentHistoryFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: SizedBox(
-                  width: 30,
-                  height: 30,
-                  child: CircularProgressIndicator(),
-                ),
-              );
+              return isResultBuildShimmerLoadingEffect();
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (!snapshot.hasData ||
@@ -115,6 +111,57 @@ class _PaymentHistoryState extends State<PaymentHistory> {
                     ),
                   );
                 },
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget isResultBuildShimmerLoadingEffect() {
+    return Expanded(
+      child: Shimmer.fromColors(
+        baseColor: Colors.grey[300]!,
+        highlightColor: Colors.grey[100]!,
+        child: ListView.builder(
+          shrinkWrap: true,
+          itemCount: 10,
+          itemBuilder: (context, index) {
+            return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0), // Rounded corners
+              ),
+              elevation: 2, // Adds a slight shadow for the card
+              margin:
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 5.0), // Adds spacing between items
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        const CircleAvatar(
+                          radius: 40.0,
+                          backgroundColor: Colors.black12,
+                        ),
+                        Column(
+                          children: [
+                            Container(
+                              height: 12,
+                              width: 60,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             );
           },

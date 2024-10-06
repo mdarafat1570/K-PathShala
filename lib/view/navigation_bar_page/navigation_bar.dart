@@ -1,16 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/common_error_all_layout/connection_lost.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
-import 'package:kpathshala/view/exam_main_page/exam_purchase_page.dart';
 import 'package:kpathshala/view/courses_page/courses.dart';
+import 'package:kpathshala/view/exam_main_page/exam_purchase_page.dart';
 import 'package:kpathshala/view/home_main_page/dashboard_page.dart';
-import 'package:kpathshala/view/Notifications/notifications_page.dart';
+import 'package:kpathshala/view/notifications/notifications_page.dart';
 import 'package:kpathshala/view/profile_page/profile_screen_main.dart';
 
 class Navigation extends StatefulWidget {
@@ -102,14 +102,8 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
     }
   }
 
-  // void didChangeAppLifecycleState(AppLifecycleState state) {
-  //   if (state == AppLifecycleState.paused ||
-  //       state == AppLifecycleState.inactive) {
-  //     showExitConfirmation(context);
-  //   }
-  // }
-
   LogInCredentials? credentials;
+
   final AuthService _authService = AuthService();
 
   Future<void> readCredentials() async {
@@ -156,32 +150,64 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
             backgroundColor: AppColor.gradientStart,
             elevation: 0,
             leading: Padding(
-              padding: const EdgeInsets.all(12),
+              padding:
+                  const EdgeInsets.all(8.0), // Reduce padding to minimize space
               child: GestureDetector(
                 onTap: () {
                   slideNavigationPush(const ProfileScreenInMainPage(), context);
                 },
                 child: CircleAvatar(
                   backgroundImage: imageProvider,
+                  radius: 18, // Reduce radius to make the avatar smaller
                 ),
               ),
             ),
-            title: const Center(child: Text('')),
+            title: Row(
+              children: [
+                Column(
+                  mainAxisAlignment:
+                      MainAxisAlignment.center, // Center the text vertically
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start, // Align text to start
+                  children: [
+                    if (credentials?.name != null &&
+                        credentials!.name!.isNotEmpty)
+                      Text(
+                        credentials?.name ?? 'User',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: AppColor.navyBlue,
+                        ),
+                      ),
+                    if (credentials?.mobile != null &&
+                        credentials!.mobile!.isNotEmpty)
+                      Text(
+                        credentials?.mobile ?? '+88018xxxxxxxx',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ),
             actions: [
-              // InkWell(
-              //   onTap: () {
-              //     slideNavigationPush(const NotificationsPage(), context);
-              //   },
-              //   child: Padding(
-              //     padding: const EdgeInsets.all(8.0),
-              //     child: SvgPicture.asset(
-              //       'assets/ic_notifications.svg',
-              //       width: 34.0,
-              //       height: 34.0,
-              //     ),
-              //   ),
-              // ),
-              const Gap(15)
+              InkWell(
+                onTap: () {
+                  slideNavigationPush(const NotificationsPage(), context);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SvgPicture.asset(
+                    'assets/ic_notifications.svg',
+                    width: 34.0,
+                    height: 34.0,
+                  ),
+                ),
+              ),
+              const Gap(20)
             ],
           ),
           body: Center(

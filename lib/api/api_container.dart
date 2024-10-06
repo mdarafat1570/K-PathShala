@@ -44,6 +44,6 @@ class KpatshalaQuestionPage {
 }
 
 class KpatshalaAnswerSubmission {
-  static String answerSubmission = '${AuthorizationEndpoints.baseUrl}/answer_submission';
+  static String answerSubmission =
+      '${AuthorizationEndpoints.baseUrl}/answer_submission';
 }
-

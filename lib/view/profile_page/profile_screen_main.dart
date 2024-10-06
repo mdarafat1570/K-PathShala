@@ -10,7 +10,10 @@ import 'package:kpathshala/repository/payment/profile_get_data_repository.dart';
 
 import 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
 import 'package:kpathshala/view/login_signup_page/registration_and_login_page.dart';
+import 'package:kpathshala/view/login_signup_page/social_login.dart';
+import 'package:kpathshala/view/notifications/notifications_page.dart';
 import 'package:kpathshala/view/payment_page/payment_history.dart';
+import 'package:kpathshala/view/profile_page/connect_social_page.dart';
 import 'package:kpathshala/view/profile_page/profile_edit.dart';
 
 import '../common_widget/common_app_bar.dart';
@@ -286,7 +289,7 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
                           color: AppColor.navyBlue,
                           fontWeight: FontWeight.bold),
                       onTap: () {
-                        // slideNavigationPush(HomeScreen(), context);
+                        slideNavigationPush(const NotificationsPage(), context);
                       },
                     ),
                     ListTile(
@@ -309,7 +312,9 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
                       title: customText('Connect Social Login', TextType.normal,
                           color: AppColor.navyBlue,
                           fontWeight: FontWeight.bold),
-                      onTap: () {},
+                      onTap: () {
+                        slideNavigationPush(const SocialLoginPage(), context);
+                      },
                     ),
                     ListTile(
                       leading: const Icon(
