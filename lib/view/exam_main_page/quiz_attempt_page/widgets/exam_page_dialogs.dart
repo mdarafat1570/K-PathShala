@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
-import 'package:velocity_x/velocity_x.dart';
 
 void showCustomDialog({
   required BuildContext context,
@@ -20,35 +19,19 @@ void showCustomDialog({
     barrierDismissible: barrierDismissible,
     context: context,
     builder: (context) {
-      return isPopScope
-          ? PopScope(
-              canPop: false,
-              onPopInvoked: (bool didPop) async {
-                Navigator.pop(context);
-                Navigator.pop(context);
-              },
-              child: _buildDialogContent(
-                  context,
-                  showErrorDialog,
-                  showSuccessDialog,
-                  showWarningDialog,
-                  showTimeUpDialog,
-                  showNoAnswerSelectedDialog,
-                  onPrimaryAction,
-                  onSecondaryAction,
-                  missedQuestions,
-              ),
-            )
-          : _buildDialogContent(
-              context,
-              showErrorDialog,
-              showSuccessDialog,
-              showWarningDialog,
-              showTimeUpDialog,
-              showNoAnswerSelectedDialog,
-              onPrimaryAction,
-              onSecondaryAction,
-              missedQuestions,
+      return PopScope(
+        canPop: !isPopScope,
+        child: _buildDialogContent(
+          context,
+          showErrorDialog,
+          showSuccessDialog,
+          showWarningDialog,
+          showTimeUpDialog,
+          showNoAnswerSelectedDialog,
+          onPrimaryAction,
+          onSecondaryAction,
+          missedQuestions,
+        ),
       );
     },
   );
@@ -63,7 +46,7 @@ Widget _buildDialogContent(
   bool showNoQuestionSelectedDialog,
   VoidCallback onPrimaryAction,
   VoidCallback? onSecondaryAction,
-    int? missedQuestions,
+  int? missedQuestions,
 ) {
   // Determine content based on flags
   String title = '';
@@ -101,7 +84,8 @@ Widget _buildDialogContent(
     secondaryButtonLabel = 'Cancel';
   } else if (showNoQuestionSelectedDialog) {
     title = 'Exam Not Attempted';
-    message = "You haven't answered any questions yet.\nPlease attempt the exam to submit your answers.";
+    message =
+        "You haven't answered any questions yet.\nPlease attempt the exam to submit your answers.";
     icon = Icons.error;
     iconBackgroundColor = AppColor.navyBlue;
     secondaryButtonLabel = 'Close';
@@ -145,16 +129,17 @@ Widget _buildDialogContent(
                 ElevatedButton(
                   onPressed: onSecondaryAction,
                   style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
                       backgroundColor: Colors.grey),
                   child: Text(secondaryButtonLabel),
                 ),
-              if (onSecondaryAction != null)
-                const Gap(10),
+              if (onSecondaryAction != null) const Gap(10),
               ElevatedButton(
                 onPressed: onPrimaryAction,
                 style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
                     backgroundColor: iconBackgroundColor),
                 child: Text(primaryButtonLabel),
               ),

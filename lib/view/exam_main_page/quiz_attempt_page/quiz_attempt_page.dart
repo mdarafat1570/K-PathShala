@@ -54,6 +54,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
   bool isInDelay = false;
   bool isSpeaking = false;
   bool _isTimeUp = false;
+  bool isSubmitted = false;
 
   String? selectedLanguage;
   String? selectedEngine;
@@ -169,14 +170,12 @@ class RetakeTestPageState extends State<RetakeTestPage>
     log("Speaking first: $_newVoiceText");
     await flutterTts.speak(_newVoiceText!);
 
-    // Wait for a 3-second delay before deciding if the second speech should start
     await Future.delayed(const Duration(seconds: 3));
 
-    // Only play the second speech if the first one has completed and wasn't interrupted
     if (firstSpeechCompleted && !isDialogue!) {
       log("Speaking second: $_newVoiceText");
       await flutterTts.speak(_newVoiceText!);
-    } else {
+    } else if(!isDialogue!){
       log("First speech was interrupted, second speech will not be played.");
     }
 
@@ -240,8 +239,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
         await _preloadImages();
 
         totalQuestion = questionsModel.data?.totalQuestion ?? 0;
-        _remainingTime = (questionsModel.data?.duration ?? 60) *
-            60; // Set your initial remaining time
+        _remainingTime = (questionsModel.data?.duration ?? 60) * 60;
+        // _remainingTime = 5;
         _examTime = (questionsModel.data?.duration ?? 60) * 60;
 
         // Now that the widget is still mounted, safely update the state
@@ -330,10 +329,11 @@ class RetakeTestPageState extends State<RetakeTestPage>
           _isTimeUp = true;
           showCustomDialog(
             context: context,
+            isPopScope: true,
             showTimeUpDialog: true,
             onPrimaryAction: () {
-              submitAnswer(isTimeUp: true);
               Navigator.pop(context);
+              submitAnswer(isTimeUp: true);
             },
             onSecondaryAction: () {
               Navigator.pop(context); // Close dialog
@@ -396,9 +396,9 @@ class RetakeTestPageState extends State<RetakeTestPage>
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: false,
+      canPop: (isSubmitted || _isTimeUp),
       onPopInvoked: (bool didPop) async {
-        if (didPop || _isTimeUp) {
+        if (didPop || _isTimeUp || isSubmitted) {
           return;
         }
         if (!isListViewVisible) {
@@ -588,6 +588,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
                     cachedImages: cachedImages,
                     playedAudiosList: playedAudiosList,
                     speak: speak,
+                    changeInDelayStatus: changeInDelayStatus,
+                    isSpeechCompleted: firstSpeechCompleted
                   ),
                   SizedBox(
                       width: MediaQuery.sizeOf(context).width * 0.45,
@@ -755,6 +757,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
         showWarningDialog: true,
         missedQuestions: totalQuestion - answerLength,
         onPrimaryAction: () {
+          Navigator.pop(context);
           submitAnswer();
         },
         onSecondaryAction: () {
@@ -778,6 +781,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
     if (combinedList.isEmpty) {
       showCustomDialog(
         context: context,
+        isPopScope: isTimeUp,
         showNoAnswerSelectedDialog: true,
         onPrimaryAction: () {
           if (isTimeUp) Navigator.pop(context);
@@ -812,6 +816,10 @@ class RetakeTestPageState extends State<RetakeTestPage>
             showSuccessDialog: true,
             isPopScope: true,
             onPrimaryAction: () {
+              if(_remainingTime >0){
+                _timer?.cancel();
+              }
+              isSubmitted = true;
               Navigator.pop(context);
               Navigator.pop(context);
             },
@@ -836,5 +844,11 @@ class RetakeTestPageState extends State<RetakeTestPage>
         log("An error occurred: $e");
       }
     }
+  }
+
+  void changeInDelayStatus(){
+    setState(() {
+      isInDelay = !isInDelay;
+    });
   }
 }

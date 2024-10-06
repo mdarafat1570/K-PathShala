@@ -19,11 +19,13 @@ Widget buildQuestionSection({
   required int questionId,
   required bool isSpeaking,
   required bool isInDelay,
+  required bool isSpeechCompleted,
   required bool exists,
   required Function showZoomedImage,
   required Map<String, Uint8List> cachedImages,
   required List<PlayedAudios> playedAudiosList,
   required Function(String?, String, {bool isDialogue}) speak,
+  required VoidCallback changeInDelayStatus,
   Function? onImageTap,
 }) {
   return SizedBox(
@@ -55,6 +57,8 @@ Widget buildQuestionSection({
             playedAudiosList: playedAudiosList,
             speak: speak,
             onImageTap: onImageTap,
+            changeInDelayStatus: changeInDelayStatus,
+            isSpeechCompleted: isSpeechCompleted
           ),
       ],
     ),
@@ -82,11 +86,13 @@ Widget _buildQuestionSection(
       required int questionId,
       required bool isSpeaking,
       required bool isInDelay,
+      required bool isSpeechCompleted,
       required bool exists,
       required Map<String, Uint8List> cachedImages,
       required Function showZoomedImage,
       required List<PlayedAudios> playedAudiosList,
       required Function(String?, String, {bool isDialogue}) speak,
+      required VoidCallback changeInDelayStatus,
       Function? onImageTap,
     }) {
   return Container(
@@ -135,7 +141,7 @@ Widget _buildQuestionSection(
                   if (listeningQuestionType != "dialogues") {
                     speak(null, voiceScript);
                   } else {
-                    await _playDialogue(dialogue, speak);
+                    await _playDialogue(dialogue, speak, changeInDelayStatus, isSpeechCompleted);
                   }
                 }
               },
@@ -154,13 +160,18 @@ Widget _buildQuestionSection(
 Future<void> _playDialogue(
     List<Dialogue> dialogue,
     Function(String?, String, {bool isDialogue}) speak,
+    VoidCallback changeInDelayStatus, bool isSpeechCompleted
     ) async {
-  for (var voice in dialogue) {
-    await speak(voice.voiceGender, voice.voiceScript ?? '', isDialogue: true);
-  }
-  await Future.delayed(const Duration(seconds: 3));
-  for (var voice in dialogue) {
-    await speak(voice.voiceGender, voice.voiceScript ?? '', isDialogue: true);
+  for (int i = 0; i < 2; i++) {
+    for (var voice in dialogue) {
+      await speak(voice.voiceGender, voice.voiceScript ?? '', isDialogue: true);
+      if(isSpeechCompleted == false){
+        return;
+      }
+    }
+    changeInDelayStatus();
+    await Future.delayed(const Duration(seconds: 3));
+    changeInDelayStatus();
   }
 }
 
