@@ -416,7 +416,8 @@ class _ProfileState extends State<Profile> {
       );
       return;
     }
-    final response = await _authService.sendOtp(mobileNumber, email: email);
+    final response = await _authService.sendOtp(mobileNumber,
+        email: email, context: context);
     log(jsonEncode(response));
     if (response['error'] == null || !response['error']) {
       if (mounted) {

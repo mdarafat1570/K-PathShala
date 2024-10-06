@@ -253,7 +253,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       return;
     }
 
-    final response = await _authService.sendOtp(mobileNumber);
+    final response = await _authService.sendOtp(mobileNumber,context: context);
     log(jsonEncode(response));
     if (response['error'] == null || !response['error']) {
       if (mounted) {
