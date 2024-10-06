@@ -41,15 +41,16 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
-       defaultConfig {
+    defaultConfig {
         applicationId = "com.designdebugger.kpathshala"
         minSdk = 23
         targetSdk = 33
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
+        multiDexEnabled true
     }
 
-     signingConfigs {
+    signingConfigs {
         release {
             keyAlias keystoreProperties['keyAlias']
             keyPassword keystoreProperties['keyPassword']
@@ -65,7 +66,7 @@ android {
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-    
+
     }
 }
 

@@ -15,6 +15,7 @@ class CourseRow extends StatelessWidget {
   final int listingTestScore;
   final String timeTaken;
   final String status;
+  final bool? isInPreviewMode;
 
   const CourseRow({
     required this.title,
@@ -26,6 +27,7 @@ class CourseRow extends StatelessWidget {
     required this.listingTestScore,
     required this.timeTaken,
     required this.status,
+    this.isInPreviewMode = false,
     super.key,
   });
 
@@ -48,165 +50,177 @@ class CourseRow extends StatelessWidget {
         : (score == null ? Colors.white : Colors.white);
 
 
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 5),
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: rowColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: borderColor,
-          width: 0.5
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 2,
-            blurRadius: 5,
+    return Stack(
+      alignment: Alignment.centerRight,
+      children: [
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 5),
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: rowColor,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: borderColor,
+              width: 0.5
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                spreadRadius: 2,
+                blurRadius: 5,
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
+          child: Column(
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Title row
-                    if (title.isNotEmpty)
-                      Column(
-                        children: [
-                          Row(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Title row
+                        if (title.isNotEmpty)
+                          Column(
                             children: [
-                              customText(title, TextType.normal, fontWeight: FontWeight.w600, fontSize: 14),
-                              const Gap(5),
-                              if (completionText.isNotEmpty)
-                                Container(
-                                  padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(25),
-                                    color: containerColor,
+                              Row(
+                                children: [
+                                  customText(title, TextType.normal, fontWeight: FontWeight.w600, fontSize: 14, color: isInPreviewMode! ? Colors.black54 : null),
+                                  const Gap(5),
+                                  if (completionText.isNotEmpty)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(25),
+                                        color: containerColor,
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          completionText,
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            color: scoreTextColor,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              const Gap(3),
+                            ],
+                          ),
+
+                        // Description
+                        if (description.isNotEmpty)
+                          Column(
+                            children: [
+                              Text(
+                                description,
+                                style: TextStyle(
+                                  color: isInPreviewMode! ? Colors.black45 : const Color.fromRGBO(102, 102, 102, 1),
+                                  fontSize: 10,
+                                ),
+                              ),
+                              const Gap(3),
+                            ],
+                          ),
+
+                        // Score Row
+                        if (score != null)
+                          Column(
+                            children: [
+                              Row(
+                                children: [
+                                  customText('Your Score:', TextType.normal,
+                                      fontSize: 10, fontWeight: FontWeight.w600, color: AppColor.navyBlue),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    '$score',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: scoreTextColor,
+                                    ),
                                   ),
-                                  child: Center(
-                                    child: Text(
-                                      completionText,
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: scoreTextColor,
+                                ],
+                              ),
+                            ],
+                          ),
+
+                        // Button Row
+                        Column(
+                          children: [
+                            const Gap(5),
+                            Row(
+                              children: [
+                                // Retake Test Button
+                                if (buttonLabel.isNotEmpty)
+                                  SizedBox(
+                                    width: 100,
+                                    height: 30,
+                                    child: ElevatedButton(
+                                      onPressed: onRetakeTestClick,
+                                      style: ElevatedButton.styleFrom(
+                                        foregroundColor: Colors.white,
+                                        backgroundColor: isInPreviewMode! ? Colors.grey[500] : AppColor.navyBlue,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(36),
+                                        ),
+                                        textStyle: const TextStyle(fontSize: 13),
+                                        padding: EdgeInsets.zero,
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          buttonLabel,
+                                          style: const TextStyle(color: AppColor.white, fontSize: 12),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                const SizedBox(width: 5),
+
+                                // Details Button
+                                InkWell(
+                                  borderRadius: BorderRadius.circular(36),
+                                  onTap: onDetailsClick,
+                                  child: Container(
+                                    width: 40,
+                                    height: 30,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(36),
+                                      color: isInPreviewMode! ? Colors.grey[200] : const Color.fromRGBO(26, 35, 126, 0.2),
+                                    ),
+                                    child:  Center(
+                                      child: FaIcon(
+                                        FontAwesomeIcons.angleDown,
+                                        size: 14,
+                                        color: isInPreviewMode! ? Colors.grey[500] : AppColor.navyBlue,
                                       ),
                                     ),
                                   ),
                                 ),
-                            ],
-                          ),
-                          const Gap(3),
-                        ],
-                      ),
-
-                    // Description
-                    if (description.isNotEmpty)
-                      Column(
-                        children: [
-                          Text(
-                            description,
-                            style: const TextStyle(
-                              color: Color.fromRGBO(102, 102, 102, 1),
-                              fontSize: 10,
-                            ),
-                          ),
-                          const Gap(3),
-                        ],
-                      ),
-
-                    // Score Row
-                    if (score != null)
-                      Column(
-                        children: [
-                          Row(
-                            children: [
-                              customText('Your Score:', TextType.normal,
-                                  fontSize: 10, fontWeight: FontWeight.w600, color: AppColor.navyBlue),
-                              const SizedBox(width: 5),
-                              Text(
-                                '$score',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: scoreTextColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-
-                    // Button Row
-                    Column(
-                      children: [
-                        const Gap(5),
-                        Row(
-                          children: [
-                            // Retake Test Button
-                            if (buttonLabel.isNotEmpty)
-                              SizedBox(
-                                width: 100,
-                                height: 30,
-                                child: ElevatedButton(
-                                  onPressed: onRetakeTestClick,
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.white,
-                                    backgroundColor: AppColor.navyBlue,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(36),
-                                    ),
-                                    textStyle: const TextStyle(fontSize: 13),
-                                    padding: EdgeInsets.zero,
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      buttonLabel,
-                                      style: const TextStyle(color: AppColor.white, fontSize: 12),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            const SizedBox(width: 5),
-
-                            // Details Button
-                            InkWell(
-                              borderRadius: BorderRadius.circular(36),
-                              onTap: onDetailsClick,
-                              child: Container(
-                                width: 40,
-                                height: 30,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(36),
-                                  color: const Color.fromRGBO(26, 35, 126, 0.2),
-                                ),
-                                child: const Center(
-                                  child: FaIcon(
-                                    FontAwesomeIcons.angleDown,
-                                    size: 14,
-                                    color: AppColor.navyBlue,
-                                  ),
-                                ),
-                              ),
+                              ],
                             ),
                           ],
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
+        ),
+        if (isInPreviewMode!)
+        const Positioned(
+          right: 15,
+          child: CircleAvatar(
+            child: Icon(Icons.lock_rounded, color: AppColor.navyBlue,size: 18,),
+          ),
+        )
+      ],
     );
   }
 }

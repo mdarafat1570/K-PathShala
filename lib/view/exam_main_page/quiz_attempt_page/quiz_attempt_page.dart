@@ -1,18 +1,7 @@
-import 'dart:async';
-import 'dart:convert';
 import 'dart:developer';
 import 'package:http/http.dart' as http;
-import 'package:flutter/services.dart';
-import 'package:flutter_tts/flutter_tts.dart';
-import 'package:kpathshala/app_base/common_imports.dart';
-import 'package:kpathshala/model/log_in_credentials.dart';
-import 'package:kpathshala/model/question_model/answer_model.dart';
-import 'package:kpathshala/model/question_model/reading_question_page_model.dart';
-import 'package:kpathshala/repository/authentication_repository.dart';
-import 'package:kpathshala/repository/question/answer_submission_repository.dart';
-import 'package:kpathshala/repository/question/reading_questions_repository.dart';
-import 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
-import 'package:lottie/lottie.dart';
+
+import 'package:kpathshala/view/exam_main_page/quiz_attempt_page//quiz_attempt_page_imports.dart';
 
 class RetakeTestPage extends StatefulWidget {
   final int questionSetId;
@@ -47,12 +36,12 @@ class RetakeTestPageState extends State<RetakeTestPage>
   final QuestionsRepository _repository = QuestionsRepository();
   final AuthService _authService = AuthService();
 
-  ReadingQuestions? _selectedReadingQuestionData;
-  ListeningQuestions? _selectedListeningQuestionData;
+  ReadingQuestions? selectedReadingQuestionData;
+  ListeningQuestions? selectedListeningQuestionData;
   LogInCredentials? credentials;
 
-  List<ReadingQuestions> _readingQuestions = [];
-  List<ListeningQuestions> _listeningQuestions = [];
+  List<ReadingQuestions> readingQuestions = [];
+  List<ListeningQuestions> listeningQuestions = [];
   List<Dialogue> dialogue = [];
   List<Answers> solvedReadingQuestions = [];
   List<Answers> solvedListeningQuestions = [];
@@ -134,8 +123,9 @@ class RetakeTestPageState extends State<RetakeTestPage>
     });
   }
 
-  Future<void> _speak(String? model, String voiceScript,
-      {bool? isDialogue = false}) async {
+  Future<void> speak(String? model, String voiceScript,
+      {bool? isDialogue = false}) async
+  {
     _newVoiceText = voiceScript;
 
     if (_newVoiceText == null || _newVoiceText!.isEmpty) {
@@ -190,10 +180,9 @@ class RetakeTestPageState extends State<RetakeTestPage>
       log("First speech was interrupted, second speech will not be played.");
     }
 
-
-      setState(() {
-        isInDelay = false;
-      });
+    setState(() {
+      isInDelay = false;
+    });
   }
 
   Future<void> _stopSpeaking() async {
@@ -245,8 +234,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
       if (!mounted) return;
 
       if (questionsModel != null && questionsModel.data != null) {
-        _readingQuestions = questionsModel.data?.readingQuestions ?? [];
-        _listeningQuestions = questionsModel.data?.listeningQuestions ?? [];
+        readingQuestions = questionsModel.data?.readingQuestions ?? [];
+        listeningQuestions = questionsModel.data?.listeningQuestions ?? [];
 
         await _preloadImages();
 
@@ -286,7 +275,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
     log("Loading Image");
     List<Future<void>> preloadFutures = [];
 
-    for (ReadingQuestions question in _readingQuestions) {
+    for (ReadingQuestions question in readingQuestions) {
       if (question.imageUrl != null && question.imageUrl!.isNotEmpty) {
         preloadFutures.add(_cacheImage(question.imageUrl!));
       }
@@ -298,7 +287,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
       }
     }
 
-    for (ListeningQuestions question in _listeningQuestions) {
+    for (ListeningQuestions question in listeningQuestions) {
       if (question.imageUrl != null && question.imageUrl!.isNotEmpty) {
         preloadFutures.add(_cacheImage(question.imageUrl!));
       }
@@ -319,7 +308,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
       final response = await http.get(Uri.parse(imageUrl));
       if (response.statusCode == 200) {
         // Cache image bytes
-        _cachedImages[imageUrl] = response.bodyBytes;
+        cachedImages[imageUrl] = response.bodyBytes;
         log("Cached image: $imageUrl");
       } else {
         log("Failed to load image: $imageUrl");
@@ -329,8 +318,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
     }
   }
 
-  Map<String, Uint8List> _cachedImages = {}; // Map to store cached images
-
+  Map<String, Uint8List> cachedImages = {};
 
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -340,7 +328,18 @@ class RetakeTestPageState extends State<RetakeTestPage>
         } else {
           _timer?.cancel();
           _isTimeUp = true;
-          _showTimeUpDialog();
+          showCustomDialog(
+            context: context,
+            showTimeUpDialog: true,
+            onPrimaryAction: () {
+              submitAnswer(isTimeUp: true);
+              Navigator.pop(context);
+            },
+            onSecondaryAction: () {
+              Navigator.pop(context); // Close dialog
+              Navigator.pop(context); // Perform extra navigation if needed
+            },
+          );
         }
       });
     });
@@ -380,10 +379,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
     if (_timer != null && _timer!.isActive) {
       _timer?.cancel();
     }
-    log("Disposed");
     super.dispose();
     flutterTts.stop();
-    // WidgetsBinding.instance.removeObserver(this);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -401,16 +398,13 @@ class RetakeTestPageState extends State<RetakeTestPage>
     return PopScope(
       canPop: false,
       onPopInvoked: (bool didPop) async {
-        if (didPop) {
-          return;
-        }
-        if (_isTimeUp) {
+        if (didPop || _isTimeUp) {
           return;
         }
         if (!isListViewVisible) {
           setState(() {
-            _selectedReadingQuestionData = null;
-            _selectedListeningQuestionData = null;
+            selectedReadingQuestionData = null;
+            selectedListeningQuestionData = null;
             isListViewVisible = true;
           });
         } else {
@@ -422,378 +416,138 @@ class RetakeTestPageState extends State<RetakeTestPage>
         }
       },
       child: Scaffold(
-          backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
-          body: SafeArea(
-            child: !dataFound
-                ? loadingScreen()
-                : Column(
-                    children: [
-                      pageHeader(),
-                      //  Content for the selected tab
-                      Expanded(
-                        child: ListView(children: [
-                          Visibility(
-                            visible: isListViewVisible,
-                            replacement: buildQuestionDetailContent(),
-                            child: buildGridContent(
-                              isSolved: false,
-                            ),
-                          ),
-                        ]),
-                      ),
-                    ],
-                  ),
-          ),
-          bottomNavigationBar: !dataFound
-              ? null
-              : Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    // Distribute space between items
-                    children: [
-                      if (!isListViewVisible)
-                        SizedBox(
-                          width: MediaQuery.sizeOf(context).width * 0.2,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              isListViewVisible = true;
-                              _selectedReadingQuestionData = null;
-                              _selectedListeningQuestionData = null;
-                              _stopSpeaking();
-                              setState(() {});
-                            },
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0,
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 12.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                side: const BorderSide(
-                                    color: AppColor.grey400, width: 1),
-                              ),
-                              backgroundColor:
-                                  AppColor.grey200, // Change color as needed
-                            ),
-                            child: const Text(
-                              'Total Questions',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: AppColor.navyBlue,
-                              ),
-                            ),
-                          ),
-                        ),
-                      const Spacer(), // Spacing between buttons
-                      if (isPreviousButtonVisible())
-                        SizedBox(
-                          width: MediaQuery.sizeOf(context).width * 0.2,
-                          child: ElevatedButton(
-                            onPressed: moveToPrevious,
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0,
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 12.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              backgroundColor:
-                                  AppColor.grey300, // Change color as needed
-                            ),
-                            child: const Text(
-                              'Previous',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: AppColor.navyBlue,
-                              ),
-                            ),
-                          ),
-                        ),
-                      const SizedBox(width: 10),
-                      if (isSubmitAnswerButtonVisible())
-                        SizedBox(
-                          width: MediaQuery.sizeOf(context).width * 0.2,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              checkAnswerLength();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 12.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              backgroundColor:
-                                  AppColor.navyBlue, // Change color as needed
-                            ),
-                            child: const Text(
-                              'Submit Answer',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      if (isNextButtonVisible())
-                        SizedBox(
-                          width: MediaQuery.sizeOf(context).width * 0.2,
-                          child: ElevatedButton(
-                            onPressed: moveToNext,
-                            style: ElevatedButton.styleFrom(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 12.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              backgroundColor:
-                                  AppColor.navyBlue, // Change color as needed
-                            ),
-                            child: const Text(
-                              'Next',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                )),
-    );
-  }
-
-  Stack pageHeader() {
-    ImageProvider<Object> imageProvider;
-
-    if (credentials?.imagesAddress != null &&
-        credentials?.imagesAddress != "") {
-      imageProvider = NetworkImage(credentials!.imagesAddress ?? '');
-    } else {
-      imageProvider = const AssetImage('assets/new_App_icon.png');
-    }
-    return Stack(
-      alignment: Alignment.bottomCenter,
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Flexible(
-                flex: 1,
-                fit: FlexFit.loose,
-                child: Row(
+        backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
+        body: SafeArea(
+          child: !dataFound
+              ? loadingScreen(context)
+              : Column(
                   children: [
-                    CircleAvatar(radius: 20, backgroundImage: imageProvider),
-                    const Gap(10),
-                    if (credentials?.name != null &&
-                        credentials!.name!.isNotEmpty)
-                      Expanded(
-                        child: Text(
-                          credentials?.name ?? 'User',
-                          style: const TextStyle(
-                              fontSize: 12, color: AppColor.grey700),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              Flexible(
-                flex: 3,
-                fit: FlexFit.tight,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12.0),
-                      decoration: isListViewVisible
-                          ? const BoxDecoration(
-                              border: Border(
-                                right: BorderSide(
-                                  width: 3,
-                                  color: AppColor.navyBlue,
-                                ),
-                              ),
-                              color: AppColor.navyBlue,
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10),
-                                topRight: Radius.circular(10),
-                              ))
-                          : null,
-                      child: Text(
-                        isListViewVisible
-                            ? "Total Questions"
-                            : "Total Questions - ${_readingQuestions.length + _listeningQuestions.length}",
-                        style: TextStyle(
-                          color: isListViewVisible
-                              ? Colors.white
-                              : AppColor.grey700,
-                          fontSize: 12,
-                        ),
-                      ),
+                    PageHeader(
+                      isListViewVisible: isListViewVisible,
+                      formattedTime: _formattedTime,
+                      totalQuestions: totalQuestion,
+                      solvedQuestions: calculateSolved(),
+                      unsolvedQuestions: calculateUnsolved(),
+                      userImageUrl: credentials?.imagesAddress ?? '',
+                      userName: credentials?.name ?? '',
                     ),
-                    if (!isListViewVisible)
-                      Container(
-                        height: 20,
-                        width: 2,
-                        color: AppColor.grey400,
-                      ),
-                    Container(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Text(
-                        'Solved Questions-${calculateSolved()}',
-                        style: const TextStyle(
-                            color: AppColor.grey700, fontSize: 12),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Container(
-                      height: 20,
-                      width: 2,
-                      color: AppColor.grey400,
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Text(
-                        'Unsolved Questions-${calculateUnsolved()}',
-                        style: const TextStyle(
-                            color: AppColor.grey700, fontSize: 12),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      padding: const EdgeInsets.all(11.0),
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          top: BorderSide(width: 1, color: AppColor.navyBlue),
-                          right: BorderSide(width: 1, color: AppColor.navyBlue),
-                          left: BorderSide(width: 1, color: AppColor.navyBlue),
+                    //  Content for the selected tab
+                    Expanded(
+                      child: ListView(children: [
+                        Visibility(
+                          visible: isListViewVisible,
+                          replacement: buildQuestionDetailContent(),
+                          child: QuestionGrid(
+                            dataFound: dataFound,
+                            readingQuestionsLength: readingQuestions.length,
+                            listeningQuestionsLength: listeningQuestions.length,
+                            isQuestionSolved: isQuestionSolved,
+                            updateSelectedQuestion: updateSelectedQuestion,
+                          ),
                         ),
-                        color: Color.fromRGBO(26, 35, 126, 0.2),
-                        borderRadius:
-                            BorderRadius.only(topRight: Radius.circular(15)),
-                      ),
-                      child: Text(
-                        _formattedTime,
-                        style: const TextStyle(
-                          color: AppColor.navyBlue,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      ]),
                     ),
                   ],
                 ),
+        ),
+        bottomNavigationBar: !dataFound
+            ? null
+            : BottomNavBar(
+                isListViewVisible: isListViewVisible,
+                isPreviousButtonVisible: isPreviousButtonVisible(),
+                isSubmitAnswerButtonVisible: isSubmitAnswerButtonVisible(),
+                isNextButtonVisible: isNextButtonVisible(),
+                moveToPrevious: moveToPrevious,
+                checkAnswerLength: checkAnswerLength,
+                moveToNext: moveToNext,
+                onTotalQuestionsPress: onTotalQuestionsPress,
               ),
-            ],
-          ),
-        ),
-        Container(
-          color: AppColor.navyBlue,
-          width: double.maxFinite,
-          height: 1,
-        ),
-      ],
+      ),
     );
   }
 
   Widget buildQuestionDetailContent() {
-    if (_selectedReadingQuestionData == null &&
-        _selectedListeningQuestionData == null) return const SizedBox.shrink();
-    bool isListening = _selectedReadingQuestionData == null;
-    int index = isListening
-        ? _listeningQuestions.indexOf(_selectedListeningQuestionData!)
-        : _readingQuestions.indexOf(_selectedReadingQuestionData!);
+    if (selectedReadingQuestionData == null &&
+        selectedListeningQuestionData == null) return const SizedBox.shrink();
+    bool isListening = selectedReadingQuestionData == null;
+    // int index = isListening
+    //     ? _listeningQuestions.indexOf(_selectedListeningQuestionData!)
+    //     : _readingQuestions.indexOf(_selectedReadingQuestionData!);
     final title = isListening
-        ? _selectedListeningQuestionData?.title ?? ""
-        : _selectedReadingQuestionData?.title ?? "";
+        ? selectedListeningQuestionData?.title ?? ""
+        : selectedReadingQuestionData?.title ?? "";
     final subTitle = isListening
-        ? _selectedListeningQuestionData?.subtitle ?? ""
-        : _selectedReadingQuestionData?.subtitle ?? "";
+        ? selectedListeningQuestionData?.subtitle ?? ""
+        : selectedReadingQuestionData?.subtitle ?? "";
     final imageCaption = isListening
-        ? _selectedListeningQuestionData?.imageCaption ?? ""
-        : _selectedReadingQuestionData?.imageCaption ?? "";
-    final question = _selectedReadingQuestionData?.question ?? "";
+        ? selectedListeningQuestionData?.imageCaption ?? ""
+        : selectedReadingQuestionData?.imageCaption ?? "";
+    final question = selectedReadingQuestionData?.question ?? "";
     final imageUrl = isListening
-        ? _selectedListeningQuestionData?.imageUrl ?? ""
-        : _selectedReadingQuestionData?.imageUrl ?? "";
-    final voiceScript = _selectedListeningQuestionData?.voiceScript ?? "";
-    dialogue = _selectedListeningQuestionData?.dialogues ?? [];
+        ? selectedListeningQuestionData?.imageUrl ?? ""
+        : selectedReadingQuestionData?.imageUrl ?? "";
+    final voiceScript = selectedListeningQuestionData?.voiceScript ?? "";
+    dialogue = selectedListeningQuestionData?.dialogues ?? [];
     final listeningQuestionType =
-        _selectedListeningQuestionData?.questionType ?? "";
+        selectedListeningQuestionData?.questionType ?? "";
     final options = isListening
-        ? _selectedListeningQuestionData?.options ?? []
-        : _selectedReadingQuestionData?.options ?? [];
+        ? selectedListeningQuestionData?.options ?? []
+        : selectedReadingQuestionData?.options ?? [];
     bool isTextType = options.isNotEmpty && options.first.optionType == 'text';
     bool isVoiceType =
         options.isNotEmpty && options.first.optionType == 'voice';
     int questionId = isListening
-        ? _selectedListeningQuestionData?.id ?? -1
-        : _selectedReadingQuestionData?.id ?? -1;
+        ? selectedListeningQuestionData?.id ?? -1
+        : selectedReadingQuestionData?.id ?? -1;
     int selectedSolvedIndex = -1;
     if (!isListening &&
         (solvedReadingQuestions.any((answer) =>
-            answer.questionId == _selectedReadingQuestionData?.id))) {
+            answer.questionId == selectedReadingQuestionData?.id))) {
       // Find the solved question's matching index in options
       selectedSolvedIndex = options.indexWhere((option) =>
           option.id ==
           solvedReadingQuestions
               .firstWhere((answer) =>
-                  answer.questionId == _selectedReadingQuestionData?.id)
+                  answer.questionId == selectedReadingQuestionData?.id)
               .questionOptionId);
     } else if ((solvedListeningQuestions.any(
-        (answer) => answer.questionId == _selectedListeningQuestionData?.id))) {
+        (answer) => answer.questionId == selectedListeningQuestionData?.id))) {
       selectedSolvedIndex = options.indexWhere((option) =>
           option.id ==
           solvedListeningQuestions
               .firstWhere((answer) =>
-                  answer.questionId == _selectedListeningQuestionData?.id)
+                  answer.questionId == selectedListeningQuestionData?.id)
               .questionOptionId);
     }
 
-    void selectionHandling(index, answerId) {
+    void selectionHandling(int index, int answerId) {
       setState(() {
         selectedSolvedIndex = index;
 
-        // Create a new Answers object based on the selected option
         Answers selectedAnswer = Answers(
           questionId: questionId,
           questionOptionId: answerId,
         );
 
-        // Check if the answer already exists in solvedReadingQuestions
-        int existingAnswerIndex = -1;
-        if (isListening) {
-          existingAnswerIndex = solvedListeningQuestions.indexWhere(
-              (answer) => answer.questionId == selectedAnswer.questionId);
-        } else {
-          existingAnswerIndex = solvedReadingQuestions.indexWhere(
-              (answer) => answer.questionId == selectedAnswer.questionId);
-        }
+        List<Answers> currentSolvedQuestions =
+        isListening ? solvedListeningQuestions : solvedReadingQuestions;
+
+        int existingAnswerIndex = currentSolvedQuestions.indexWhere(
+              (answer) => answer.questionId == selectedAnswer.questionId,
+        );
 
         if (existingAnswerIndex != -1) {
-          // Update the existing answer with the new selected option ID
-          isListening
-              ? solvedListeningQuestions[existingAnswerIndex].questionOptionId =
-                  answerId
-              : solvedReadingQuestions[existingAnswerIndex].questionOptionId =
-                  answerId;
+          currentSolvedQuestions[existingAnswerIndex].questionOptionId = answerId;
         } else {
-          // Add the new answer to the list if it doesn't exist
-          isListening
-              ? solvedListeningQuestions.add(selectedAnswer)
-              : solvedReadingQuestions.add(selectedAnswer);
+          currentSolvedQuestions.add(selectedAnswer);
         }
       });
     }
 
-    bool exists = playedAudiosList.any((audio) =>
-        audio.audioId == _selectedListeningQuestionData?.id &&
-        audio.audioType == 'question');
+    bool exists = selectedListeningQuestionData != null && playedAudiosList.any(
+          (audio) => audio.audioId == selectedListeningQuestionData!.id &&
+          audio.audioType == 'question',
+    );
 
     return Stack(
       alignment: Alignment.center,
@@ -816,303 +570,48 @@ class RetakeTestPageState extends State<RetakeTestPage>
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(
-                    width: MediaQuery.sizeOf(context).width * 0.45,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (title.isNotEmpty) // Check for null or empty
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: customText(
-                              title,
-                              TextType.paragraphTitle,
-                              fontSize: 20,
-                            ),
-                          ),
-                        if (subTitle.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: customText(
-                              subTitle,
-                              TextType.subtitle,
-                              fontSize: 20,
-                            ),
-                          ),
-                        if (imageCaption.isNotEmpty) // Check for null or empty
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: customText(
-                              imageCaption,
-                              TextType.subtitle,
-                              fontSize: 20,
-                            ),
-                          ),
-                        if (question.isNotEmpty ||
-                            imageUrl.isNotEmpty ||
-                            voiceScript.isNotEmpty || dialogue.isNotEmpty) // Check for null or empty
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            margin: const EdgeInsets.symmetric(vertical: 10),
-                            width: double.maxFinite,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: const Color.fromRGBO(100, 100, 100, 1),
-                                width: 1,
-                              ),
-                              color: const Color.fromRGBO(26, 35, 126, 0.2),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Center(
-                              child: Column(
-                                children: [
-                                  if (question.isNotEmpty)
-                                    customText(
-                                        question, TextType.paragraphTitle,
-                                        textAlign: TextAlign.center),
-                                  if (imageUrl.isNotEmpty)
-                                    InkWell(
-                                      onTap: () {
-                                        showZoomedImage(imageUrl);
-                                      },
-                                      child: _cachedImages.containsKey(imageUrl)
-                                          ? Image.memory(
-                                        _cachedImages[imageUrl]!,
-                                        fit: BoxFit.cover, // Ensure the image fits well in its container
-                                      )
-                                          : const CircularProgressIndicator(), // Show loading if image is not yet cached
-                                    ),
-                                  if ((imageUrl.isNotEmpty &&
-                                          voiceScript.isNotEmpty) ||
-                                      (question.isNotEmpty &&
-                                          voiceScript.isNotEmpty))
-                                    Container(
-                                      margin: const EdgeInsets.symmetric(
-                                          vertical: 4),
-                                      height: 1,
-                                      width: double.maxFinite,
-                                      color: Colors.black54,
-                                    ),
-                                  if (listeningQuestionType != 'dialogues' ? voiceScript.isNotEmpty : dialogue.isNotEmpty)
-                                    InkWell(
-                                      onTap: exists
-                                          ? null
-                                          : ()async {
-
-                                        if (!isSpeaking && !isInDelay) {
-                                          // playedAudiosList.add(
-                                          //     PlayedAudios(
-                                          //         audioId: questionId,
-                                          //         audioType: "question"));
-                                          if(listeningQuestionType != "dialogues") {
-                                            _speak(
-                                                _selectedListeningQuestionData
-                                                    ?.voiceGender,
-                                                voiceScript);
-                                          } else {
-                                            int i = 1;
-                                            dialogue.sort((a, b) => (a.sequence ?? 0).compareTo(b.sequence ?? 0));
-                                            for (var voice in dialogue) {
-                                              log ("play sequence ${i++}______________");
-                                              await _speak(voice.voiceGender, voice.voiceScript ?? '', isDialogue: true);
-                                            }
-                                            await Future.delayed(const Duration(seconds: 3));
-                                            for (var voice in dialogue) {
-                                              log ("play sequence ${i++}______________");
-                                              await _speak(voice.voiceGender, voice.voiceScript ?? '', isDialogue: true);
-                                            }
-                                          }
-                                        }
-                                      },
-                                      child: Image.asset(
-                                        "assets/speaker.png",
-                                        height: 40,
-                                        color: exists
-                                            ? Colors.black54
-                                            : AppColor.navyBlue,
-                                      ),
-                                    )
-                                ],
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
+                  buildQuestionSection(
+                    context: context,
+                    title: title,
+                    subTitle: subTitle,
+                    imageCaption: imageCaption,
+                    question: question,
+                    imageUrl: imageUrl,
+                    voiceScript: voiceScript,
+                    listeningQuestionType: listeningQuestionType,
+                    dialogue: dialogue,
+                    questionId: questionId,
+                    isSpeaking: isSpeaking,
+                    isInDelay: isInDelay,
+                    exists: exists,
+                    showZoomedImage: showZoomedImage,
+                    cachedImages: cachedImages,
+                    playedAudiosList: playedAudiosList,
+                    speak: speak,
                   ),
                   SizedBox(
-                    width: MediaQuery.sizeOf(context).width * 0.45,
-                    child: isTextType || isVoiceType
-                        ? ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: options.length,
-                            itemBuilder: (context, index) {
-                              // if (shuffleOptions) {
-                              //   options.shuffle();
-                              //   shuffleOptions = false;
-                              // }
-                              String answer = options[index].title ?? '';
-                              int answerId = options[index].id ?? -1;
-                              String voiceScript =
-                                  options[index].voiceScript ?? "";
-                              bool optionExists = playedAudiosList.any(
-                                  (audio) =>
-                                      audio.audioId == answerId &&
-                                      audio.audioType == 'option');
-
-                              return Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: InkWell(
-                                  onTap: () {
-                                    selectionHandling(index, answerId);
-                                  },
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        width: 35,
-                                        height: 35,
-                                        decoration: BoxDecoration(
-                                          color: (selectedSolvedIndex == index)
-                                              ? AppColor.black
-                                              : const Color.fromRGBO(
-                                                  255, 255, 255, 1),
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                              width: 2, color: AppColor.black),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            '${index + 1}',
-                                            style: TextStyle(
-                                              color:
-                                                  (selectedSolvedIndex == index)
-                                                      ? const Color.fromRGBO(
-                                                          255, 255, 255, 1)
-                                                      : AppColor.black,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      if (answer.isNotEmpty && isTextType)
-                                        Expanded(
-                                          child: Text(
-                                            answer,
-                                            style:
-                                                const TextStyle(fontSize: 18),
-                                          ),
-                                        ),
-                                      if (voiceScript.isNotEmpty && isVoiceType)
-                                        Container(
-                                          margin:
-                                              const EdgeInsets.only(left: 20),
-                                          child: InkWell(
-                                            onTap: optionExists
-                                                ? null
-                                                : () {
-                                                    if (!isSpeaking &&
-                                                        !isInDelay) {
-                                                      playedAudiosList.add(
-                                                          PlayedAudios(
-                                                              audioId: answerId,
-                                                              audioType:
-                                                                  "option"));
-                                                      _speak(
-                                                          _selectedListeningQuestionData
-                                                              ?.voiceGender,
-                                                          voiceScript);
-                                                    }
-                                                  },
-                                            child: Image.asset(
-                                              "assets/speaker.png",
-                                              height: 40,
-                                              color: optionExists
-                                                  ? Colors.black54
-                                                  : AppColor.navyBlue,
-                                            ),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          )
-                        : GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              childAspectRatio: 2,
-                            ),
-                            itemCount: options.length,
-                            itemBuilder: (context, index) {
-                              String answerImage =
-                                  options[index].imageUrl ?? "";
-                              int answerId = options[index].id ?? -1;
-                              return Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: InkWell(
-                                  onTap: () {
-                                    selectionHandling(index, answerId);
-                                  },
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        width: 35,
-                                        height: 35,
-                                        decoration: BoxDecoration(
-                                            color:
-                                                (selectedSolvedIndex == index)
-                                                    ? AppColor.black
-                                                    : const Color.fromRGBO(
-                                                        255, 255, 255, 1),
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                                width: 2,
-                                                color: AppColor.black)),
-                                        child: Center(
-                                            child: Text(
-                                          '${index + 1}',
-                                          style: TextStyle(
-                                            color:
-                                                (selectedSolvedIndex == index)
-                                                    ? const Color.fromRGBO(
-                                                        255, 255, 255, 1)
-                                                    : AppColor.black,
-                                          ),
-                                        )),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      // Spacing between circle and text
-                                      if (answerImage.isNotEmpty)
-                                        Expanded(
-                                          child: InkWell(
-                                            onTap: () {
-                                              showZoomedImage(answerImage);
-                                            },
-                                            child: _cachedImages.containsKey(answerImage)
-                                                ? Image.memory(
-                                              _cachedImages[answerImage]!,
-                                              fit: BoxFit.cover, // Ensure the image fits well in its container
-                                            )
-                                                : const Padding(
-                                                  padding:  EdgeInsets.all(1.0),
-                                                  child: CircularProgressIndicator(),
-                                                ), // Show loading if image is not yet cached
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                  ),
+                      width: MediaQuery.sizeOf(context).width * 0.45,
+                      child: isTextType || isVoiceType
+                          ? buildOptionsList(
+                              context: context,
+                              options: options,
+                              selectedSolvedIndex: selectedSolvedIndex,
+                              isTextType: isTextType,
+                              isVoiceType: isVoiceType,
+                              isSpeaking: isSpeaking,
+                              isInDelay: isInDelay,
+                              playedAudiosList: playedAudiosList,
+                              selectionHandling: selectionHandling,
+                              speak: speak,
+                              selectedListeningQuestionData:
+                                  selectedListeningQuestionData)
+                          : buildOptionsGrid(
+                              context: context,
+                              options: options,
+                              selectedSolvedIndex: selectedSolvedIndex,
+                              selectionHandling: selectionHandling,
+                              showZoomedImage: showZoomedImage,
+                              cachedImages: cachedImages)),
                 ],
               ),
             ),
@@ -1122,232 +621,90 @@ class RetakeTestPageState extends State<RetakeTestPage>
     );
   }
 
-  Widget buildGridContent({
-    required bool isSolved, // Add the required questionSetId parameter
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 10, right: 10, top: 5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: MediaQuery.sizeOf(context).width * 0.45,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      "assets/book-open.png",
-                      height: 16,
-                    ),
-                    Text(
-                      " 읽기 (${_readingQuestions.length}Question)",
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 5.0, bottom: 10),
-                  child: dataFound == false
-                      ? const Center(child: CircularProgressIndicator())
-                      : _readingQuestions.isEmpty
-                          ? const Center(child: Text("No Questions Available"))
-                          : questionsGrid(_readingQuestions.length, false),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            width: MediaQuery.sizeOf(context).width * 0.45,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      "assets/headphones.png",
-                      height: 16,
-                    ),
-                    Text(
-                      " 듣기 (${_listeningQuestions.length}Question)",
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 5.0, bottom: 10),
-                  child: dataFound == false
-                      ? const Center(child: CircularProgressIndicator())
-                      : _listeningQuestions.isEmpty
-                          ? const Center(child: Text("No Questions Available"))
-                          : questionsGrid(_listeningQuestions.length, true),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  GridView questionsGrid(int questionCount, bool isListening) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 5,
-        childAspectRatio: 1,
-        mainAxisSpacing: 8.0,
-        crossAxisSpacing: 8.0,
-      ),
-      itemCount: questionCount,
-      itemBuilder: (context, index) {
-        bool isSelected = isListening
-            ? solvedListeningQuestions.any(
-                (answer) => answer.questionId == _listeningQuestions[index].id)
-            : solvedReadingQuestions.any(
-                (answer) => answer.questionId == _readingQuestions[index].id);
-
-        return GestureDetector(
-          onTap: () {
-            setState(() {
-              if (isListening) {
-                _selectedListeningQuestionData = _listeningQuestions[index];
-                _selectedReadingQuestionData = null;
-                isListViewVisible = false;
-              } else {
-                _selectedReadingQuestionData = _readingQuestions[index];
-                _selectedListeningQuestionData = null;
-                isListViewVisible = false;
-                // shuffleOptions = true;
-              }
-            });
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? AppColor.skyBlue
-                  : const Color.fromRGBO(245, 247, 250, 1),
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: Center(
-              child: Text(
-                isListening
-                    ? '${_readingQuestions.length + index + 1}'
-                    : '${index + 1}',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: isSelected
-                      ? const Color.fromRGBO(245, 247, 250, 1)
-                      : AppColor.navyBlue,
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   bool isPreviousButtonVisible() {
-    if (!isListViewVisible &&
-        _selectedReadingQuestionData != null &&
-        _selectedListeningQuestionData == null) {
-      return (_readingQuestions.indexOf(_selectedReadingQuestionData!) > 0);
-    } else if (!isListViewVisible && _selectedListeningQuestionData != null) {
-      return true;
-    } else {
-      return false;
-    }
+    if (isListViewVisible) return false;
+
+    if (selectedListeningQuestionData != null) return true;
+
+    return selectedReadingQuestionData != null &&
+        readingQuestions.indexOf(selectedReadingQuestionData!) > 0;
   }
 
   bool isNextButtonVisible() {
-    if (!isListViewVisible &&
-        _selectedReadingQuestionData == null &&
-        _selectedListeningQuestionData != null) {
-      return (_listeningQuestions.indexOf(_selectedListeningQuestionData!) <
-          _listeningQuestions.length - 1);
-    } else if (!isListViewVisible && _selectedReadingQuestionData != null) {
-      return true;
-    } else {
-      return false;
-    }
+    if (isListViewVisible) return false;
+
+    if (selectedReadingQuestionData != null) return true;
+
+    return selectedListeningQuestionData != null &&
+        listeningQuestions.indexOf(selectedListeningQuestionData!) <
+            listeningQuestions.length - 1;
   }
 
   bool isSubmitAnswerButtonVisible() {
     return isListViewVisible ||
-        (_selectedListeningQuestionData != null &&
-            _listeningQuestions.indexOf(_selectedListeningQuestionData!) ==
-                _listeningQuestions.length - 1);
+        (selectedListeningQuestionData != null &&
+            listeningQuestions.indexOf(selectedListeningQuestionData!) ==
+                listeningQuestions.length - 1);
+  }
+
+  void onTotalQuestionsPress() {
+    isListViewVisible = true;
+    selectedReadingQuestionData = null;
+    selectedListeningQuestionData = null;
+    _stopSpeaking();
+    setState(() {});
   }
 
   void moveToPrevious() {
     _stopSpeaking();
+
     void updateSelectedData<T>(
         List<T> questions, T? selectedData, Function(T?) setSelectedData) {
       int index = questions.indexOf(selectedData as T);
-      if (index > 0) {
-        // Ensure it's not the first item
-        setSelectedData(questions[index - 1]);
-      } else {
-        setSelectedData(null);
-      }
+      setSelectedData((index > 0) ? questions[index - 1] : null);
       setState(() {});
     }
 
-    if (_selectedListeningQuestionData != null) {
-      updateSelectedData(_listeningQuestions, _selectedListeningQuestionData,
+    if (selectedListeningQuestionData != null) {
+      updateSelectedData(listeningQuestions, selectedListeningQuestionData,
           (data) {
-        _selectedListeningQuestionData = data;
-        if (data == null && _readingQuestions.isNotEmpty) {
-          _selectedReadingQuestionData =
-              _readingQuestions[_readingQuestions.length - 1];
+        selectedListeningQuestionData = data;
+        if (data == null && readingQuestions.isNotEmpty) {
+          selectedReadingQuestionData = readingQuestions.last;
         }
       });
-    } else if (_selectedReadingQuestionData != null) {
-      updateSelectedData(_readingQuestions, _selectedReadingQuestionData,
-          (data) {
-        _selectedReadingQuestionData = data;
+    } else if (selectedReadingQuestionData != null) {
+      updateSelectedData(readingQuestions, selectedReadingQuestionData, (data) {
+        selectedReadingQuestionData = data;
       });
     }
   }
 
   void moveToNext() {
     _stopSpeaking();
+
     void updateSelectedData<T>(
-        List<T> questions, T? selectedData, Function(T?) setSelectedData) {
+        List<T> questions, T? selectedData, Function(T?) setSelectedData)
+    {
       int index = questions.indexOf(selectedData as T);
-      if (index != -1 && index < questions.length - 1) {
-        setSelectedData(questions[index + 1]);
-      } else {
-        setSelectedData(null);
-      }
+      setSelectedData((index != -1 && index < questions.length - 1)
+          ? questions[index + 1]
+          : null);
       setState(() {});
     }
 
-    if (_selectedReadingQuestionData != null) {
-      updateSelectedData(_readingQuestions, _selectedReadingQuestionData,
-          (data) {
-        _selectedReadingQuestionData = data;
+    if (selectedReadingQuestionData != null) {
+      updateSelectedData(readingQuestions, selectedReadingQuestionData, (data) {
+        selectedReadingQuestionData = data;
         if (data == null) {
-          _selectedListeningQuestionData =
-              _listeningQuestions.isNotEmpty ? _listeningQuestions[0] : null;
+          selectedListeningQuestionData =
+              listeningQuestions.isNotEmpty ? listeningQuestions[0] : null;
         }
       });
-    } else if (_selectedListeningQuestionData != null) {
-      updateSelectedData(_listeningQuestions, _selectedListeningQuestionData,
+    } else if (selectedListeningQuestionData != null) {
+      updateSelectedData(listeningQuestions, selectedListeningQuestionData,
           (data) {
-        _selectedListeningQuestionData = data;
+        selectedListeningQuestionData = data;
       });
     }
   }
@@ -1357,368 +714,127 @@ class RetakeTestPageState extends State<RetakeTestPage>
   }
 
   int calculateUnsolved() {
-    return (_readingQuestions.length + _listeningQuestions.length) -
+    return (readingQuestions.length + listeningQuestions.length) -
         calculateSolved();
   }
 
-  void showZoomedImage(imageUrl) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height * 0.9,
-            child: InkWell(
-              onTap: () {
-                showZoomedImage(imageUrl);
-              },
-              child: _cachedImages.containsKey(imageUrl)
-                  ? Image.memory(
-                _cachedImages[imageUrl]!,
-                fit: BoxFit.cover, // Ensure the image fits well in its container
-              )
-                  : const CircularProgressIndicator(), // Show loading if image is not yet cached
-            )
-            ,
-          ),
-        );
-      },
-    );
+  void updateSelectedQuestion(int index, bool isListening) {
+    setState(() {
+      selectedListeningQuestionData =
+          isListening ? listeningQuestions[index] : null;
+      selectedReadingQuestionData =
+          isListening ? null : readingQuestions[index];
+      isListViewVisible = false;
+    });
+  }
+
+  bool isQuestionSolved(int index, bool isListening) {
+    return isListening
+        ? solvedListeningQuestions
+            .any((answer) => answer.questionId == listeningQuestions[index].id)
+        : solvedReadingQuestions
+            .any((answer) => answer.questionId == readingQuestions[index].id);
   }
 
   void checkAnswerLength() {
     _stopSpeaking();
     int answerLength =
         solvedReadingQuestions.length + solvedListeningQuestions.length;
-    if (answerLength < totalQuestion) {
-      showWarningDialog(context, totalQuestion - answerLength);
+    if (answerLength == 0) {
+      showCustomDialog(
+        context: context,
+        showNoAnswerSelectedDialog: true,
+        onPrimaryAction: () {
+          Navigator.pop(context);
+        },
+      );
+      return;
+    } else if (answerLength < totalQuestion) {
+      showCustomDialog(
+        context: context,
+        showWarningDialog: true,
+        missedQuestions: totalQuestion - answerLength,
+        onPrimaryAction: () {
+          submitAnswer();
+        },
+        onSecondaryAction: () {
+          Navigator.pop(context);
+        },
+      );
     } else {
       submitAnswer();
     }
   }
 
-  void submitAnswer() async {
+  void submitAnswer({bool isTimeUp = false}) async {
     int duration = (_examTime - _remainingTime) ~/ 60;
-    final List<Answers> combinedList = [];
-    combinedList.addAll(solvedReadingQuestions);
-    combinedList.addAll(solvedListeningQuestions);
+    duration = duration < 1 ? 1 : duration;
+
+    final combinedList = [
+      ...solvedReadingQuestions,
+      ...solvedListeningQuestions
+    ];
+
+    if (combinedList.isEmpty) {
+      showCustomDialog(
+        context: context,
+        showNoAnswerSelectedDialog: true,
+        onPrimaryAction: () {
+          if (isTimeUp) Navigator.pop(context);
+          Navigator.pop(context);
+        },
+      );
+      return;
+    }
+
     AnswerModel finalAnswer = AnswerModel(
       answers: combinedList,
-      duration: duration < 1 ? 1 : duration,
+      duration: duration,
       questionSetId: widget.questionSetId,
     );
 
     log("------------");
-    log((duration.toString()));
+    log(duration.toString());
     log(jsonEncode(finalAnswer));
-
-    if (combinedList.isEmpty) {
-      _showNoAnswerSubmissionDialog(context);
-      return;
-    }
 
     try {
       showLoadingIndicator(context: context, showLoader: true);
+      final response = await AnswerSubmissionRepository().submitAnswers(
+        answers: finalAnswer,
+        context: context,
+      );
 
-      final response = await AnswerSubmissionRepository()
-          .submitAnswers(answers: finalAnswer, context: context);
-
-      log(jsonEncode(response));
-
-      // Process the response
-      if ((response['error'] == null || !response['error']) && mounted) {
-        // Hide loading indicator
+      if (mounted) {
         showLoadingIndicator(context: context, showLoader: false);
-
-        _showSuccessDialog(context);
-
-        log("Submission Successful");
-      } else {
-        if (mounted) {
-          showLoadingIndicator(context: context, showLoader: false);
+        if (response['error'] == null || !response['error']) {
+          showCustomDialog(
+            context: context,
+            showSuccessDialog: true,
+            isPopScope: true,
+            onPrimaryAction: () {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
+          );
+          log("Submission Successful");
+        } else {
           log("Submission Failed: ${response['message']}");
         }
       }
     } catch (e) {
       if (mounted) {
         showLoadingIndicator(context: context, showLoader: false);
-        _showErrorDialog(context);
+        showCustomDialog(
+          context: context,
+          showErrorDialog: true,
+          isPopScope: true,
+          onPrimaryAction: () {
+            Navigator.pop(context);
+            Navigator.pop(context);
+          },
+        );
         log("An error occurred: $e");
       }
     }
-  }
-
-  void _showTimeUpDialog() {
-    _stopSpeaking();
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) {
-        return PopScope(
-          canPop: false,
-          onPopInvoked: (bool didPop) async {
-            Navigator.pop(context);
-            Navigator.pop(context);
-          },
-          child: AlertDialog(
-            title: const Text('Time Up'),
-            content: const Text(
-                'Your time for the test has ended.You have to submit the answer'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                },
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () {
-                  submitAnswer();
-                },
-                child: const Text('Submit Answer'),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  void showWarningDialog(BuildContext context, int missedQuestions) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Warning'),
-          content: Text(
-              'You have $missedQuestions missed questions. Do you want to submit anyway?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                submitAnswer();
-              },
-              child: const Text('Submit Anyway'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showSuccessDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return PopScope(
-          canPop: false,
-          onPopInvoked: (bool didPop) async {
-            Navigator.pop(context);
-            Navigator.pop(context);
-          },
-          child: Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Container(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircleAvatar(
-                    radius: 20,
-                    backgroundColor: Colors.green,
-                    child: Icon(Icons.check, color: Colors.white, size: 40),
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    "Success!",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    "Answer Submitted Successfully",
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green, // Background color
-                    ),
-                    child: const Text("See Result!"),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _showErrorDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return PopScope(
-          canPop: false,
-          onPopInvoked: (bool didPop) async {
-            Navigator.pop(context);
-            Navigator.pop(context);
-          },
-          child: Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Container(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircleAvatar(
-                    radius: 20,
-                    backgroundColor: Colors.red,
-                    child: Icon(Icons.close, color: Colors.white, size: 40),
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    "Error!",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    "Something went wrong while submitting!",
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red, // Background color
-                    ),
-                    child: const Text("TRY AGAIN"),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _showNoAnswerSubmissionDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const CircleAvatar(
-                  radius: 20,
-                  backgroundColor: Colors.red,
-                  child: Icon(Icons.close, color: Colors.white, size: 40),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  "No Answer Select",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                const Text(
-                  "Please select an answer",
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red, // Background color
-                  ),
-                  child: const Text("Ok"),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget loadingScreen() {
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Lottie.asset("assets/exam_loading_2.json", height: 150),
-            const Gap(5),
-            const Text(
-              "Hang tight! We’re getting your exam ready for you.",
-              style: TextStyle(fontSize: 16),
-            ),
-            const Gap(10),
-            SizedBox(
-              width: MediaQuery.sizeOf(context).width * 0.5,
-              child: const LinearProgressIndicator(),
-            ),
-            const Gap(20)
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class PlayedAudios {
-  // Properties
-  final String audioType;
-  final int audioId;
-
-  // Constructor
-  PlayedAudios({
-    required this.audioType,
-    required this.audioId,
-  });
-
-  // Override toString for easier debugging
-  @override
-  String toString() {
-    return 'PlayedAudios(audioType: $audioType, audioId: $audioId)';
   }
 }
