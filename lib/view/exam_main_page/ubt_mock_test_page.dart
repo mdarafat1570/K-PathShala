@@ -8,6 +8,7 @@ import 'package:kpathshala/view/common_widget/common_app_bar.dart';
 import 'package:kpathshala/view/common_widget/format_date_with_ordinal.dart';
 import 'package:kpathshala/view/exam_main_page/bottom_sheets/bottom_panel_page_course_purchase.dart';
 import 'package:kpathshala/view/exam_main_page/bottom_sheets/main_bottom_sheet.dart';
+import 'package:kpathshala/view/exam_main_page/note/notev2.dart';
 import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/quiz_attempt_page.dart';
 import 'package:kpathshala/view/exam_main_page/widgets/test_sets_page_shimmer.dart';
 import 'package:kpathshala/view/exam_main_page/widgets/ubt_exam_row.dart';
@@ -217,7 +218,7 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
           ),
           const SizedBox(height: 12),
           _buildButton("Solve video", AppColor.skyBlue.withOpacity(0.3), () {
-            slideNavigationPush(Note(), context);
+            slideNavigationPush(Note(questionId, title), context);
           }),
           const SizedBox(height: 12),
           _buildButton("Review performance", AppColor.skyBlue.withOpacity(0.3),

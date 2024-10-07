@@ -4,7 +4,7 @@ import 'package:kpathshala/view/common_widget/common_app_bar.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class Note extends StatefulWidget {
-  const Note({super.key});
+  const Note(int questionId, String title, {super.key});
 
   @override
   State<Note> createState() => _NoteState();
@@ -306,6 +306,8 @@ class _NoteState extends State<Note> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.87,
+                  height: 39,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromRGBO(135, 206, 235, 0.3)

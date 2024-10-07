@@ -47,3 +47,10 @@ class KpatshalaAnswerSubmission {
   static String answerSubmission =
       '${AuthorizationEndpoints.baseUrl}/answer_submission';
 }
+
+
+class KpatshalaRetrieveNotesQuestion {
+  static String RetrieveNotesQuestion =
+      '${AuthorizationEndpoints.baseUrl}/notes';
+}
+
