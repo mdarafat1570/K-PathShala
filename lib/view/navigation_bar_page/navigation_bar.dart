@@ -162,6 +162,7 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
             //     ),
             //   ),
             // ),
+            automaticallyImplyLeading: false,
             title: GestureDetector(
               onTap: () {
                 slideNavigationPush(const ProfileScreenInMainPage(), context);
