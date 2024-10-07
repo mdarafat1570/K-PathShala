@@ -149,49 +149,59 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
           appBar: AppBar(
             backgroundColor: AppColor.gradientStart,
             elevation: 0,
-            leading: Padding(
-              padding:
-                  const EdgeInsets.all(8.0), // Reduce padding to minimize space
-              child: GestureDetector(
-                onTap: () {
-                  slideNavigationPush(const ProfileScreenInMainPage(), context);
-                },
-                child: CircleAvatar(
-                  backgroundImage: imageProvider,
-                  radius: 18, // Reduce radius to make the avatar smaller
-                ),
+            // leading: Padding(
+            //   padding:
+            //       const EdgeInsets.only(left: 8.0, top: 8.0), // Reduce padding to minimize space
+            //   child: GestureDetector(
+            //     onTap: () {
+            //       slideNavigationPush(const ProfileScreenInMainPage(), context);
+            //     },
+            //     child: CircleAvatar(
+            //       backgroundImage: imageProvider,
+            //       radius: 18, // Reduce radius to make the avatar smaller
+            //     ),
+            //   ),
+            // ),
+            title: GestureDetector(
+              onTap: () {
+                slideNavigationPush(const ProfileScreenInMainPage(), context);
+              },
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    backgroundImage: imageProvider,
+                    radius: 18, // Reduce radius to make the avatar smaller
+                  ),
+                  const Gap(5),
+                  Column(
+                    mainAxisAlignment:
+                        MainAxisAlignment.center, // Center the text vertically
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start, // Align text to start
+                    children: [
+                      if (credentials?.name != null &&
+                          credentials!.name!.isNotEmpty)
+                        Text(
+                          credentials?.name ?? 'User',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: AppColor.navyBlue,
+                          ),
+                        ),
+                      if (credentials?.mobile != null &&
+                          credentials!.mobile!.isNotEmpty)
+                        Text(
+                          credentials?.mobile ?? '+88018xxxxxxxx',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
               ),
-            ),
-            title: Row(
-              children: [
-                Column(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center, // Center the text vertically
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start, // Align text to start
-                  children: [
-                    if (credentials?.name != null &&
-                        credentials!.name!.isNotEmpty)
-                      Text(
-                        credentials?.name ?? 'User',
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          color: AppColor.navyBlue,
-                        ),
-                      ),
-                    if (credentials?.mobile != null &&
-                        credentials!.mobile!.isNotEmpty)
-                      Text(
-                        credentials?.mobile ?? '+88018xxxxxxxx',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
-                      ),
-                  ],
-                ),
-              ],
             ),
             actions: [
               InkWell(
