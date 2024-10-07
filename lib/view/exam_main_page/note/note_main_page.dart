@@ -306,8 +306,6 @@ class _NoteState extends State<Note> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.87,
-                  height: 39,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromRGBO(135, 206, 235, 0.3)
