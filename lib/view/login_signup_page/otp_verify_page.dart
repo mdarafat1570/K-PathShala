@@ -9,6 +9,7 @@ import 'package:kpathshala/base/get_device_id.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/model/otp_response_model.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
+import 'package:kpathshala/repository/verifyOtp_repository.dart';
 import 'package:kpathshala/view/navigation_bar_page/navigation_bar.dart';
 import 'package:kpathshala/view/profile_page/profile_edit.dart';
 import 'package:kpathshala/view/common_widget/common_slide_navigation_push.dart';
@@ -34,6 +35,7 @@ class _OtpPageState extends State<OtpPage> {
   int _remainingSeconds = 0;
   final AuthService _authService = AuthService();
   TextEditingController pinController = TextEditingController();
+  AuthenticationService authenticationService = AuthenticationService();
 
   @override
   void initState() {
@@ -125,7 +127,9 @@ class _OtpPageState extends State<OtpPage> {
                         onPressed: _isResendButtonDisabled
                             ? null
                             : () {
-                                sendOtp(mobileNumber: widget.mobileNumber);
+                                sendOtp(
+                                    mobileNumber: widget.mobileNumber,
+                                    context: context);
                               },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _isResendButtonDisabled
@@ -192,7 +196,8 @@ class _OtpPageState extends State<OtpPage> {
       log("Device ID: $deviceId");
 
       // Make the API call
-      final response = await _authService.verifyOtp(mobile, otp, deviceId);
+      final response =
+          await authenticationService.verifyOtp(mobile, otp, deviceId, context: context);
       final apiResponse = OTPApiResponse.fromJson(response);
       log("API Response: ${jsonEncode(response)}");
 
@@ -249,8 +254,37 @@ class _OtpPageState extends State<OtpPage> {
     }
   }
 
-  void sendOtp({required String mobileNumber}) async {
+  // void sendOtp({required String mobileNumber}) async {
+  //   showLoadingIndicator(context: context, showLoader: true);
+  //   if (mobileNumber.isEmpty) {
+  //     showLoadingIndicator(context: context, showLoader: false);
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text("Please enter your mobile number.")),
+  //     );
+  //     return;
+  //   }
+
+  //   final response = await _authService.sendOtp(mobileNumber);
+  //   log(jsonEncode(response));
+  //   if (response['error'] == null || !response['error']) {
+  //     if (mounted) {
+  //       showLoadingIndicator(context: context, showLoader: false);
+  //       _startResendCountdown();
+  //     }
+  //   } else {
+  //     if (mounted) {
+  //       showLoadingIndicator(context: context, showLoader: false);
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text("Failed to send OTP: ${response['message']}")),
+  //       );
+  //     }
+  //   }
+  // }
+
+  void sendOtp(
+      {required String mobileNumber, required BuildContext context}) async {
     showLoadingIndicator(context: context, showLoader: true);
+
     if (mobileNumber.isEmpty) {
       showLoadingIndicator(context: context, showLoader: false);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -259,19 +293,12 @@ class _OtpPageState extends State<OtpPage> {
       return;
     }
 
-    final response = await _authService.sendOtp(mobileNumber);
+    final response = await _authService.sendOtp(mobileNumber, context: context);
     log(jsonEncode(response));
+
     if (response['error'] == null || !response['error']) {
       if (mounted) {
         showLoadingIndicator(context: context, showLoader: false);
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(content: Text("OTP sent to $mobileNumber.")),
-        // );
-        // slideNavigationPush(
-        //     OtpPage(
-        //       mobileNumber: mobileNumber,
-        //     ),
-        //     context);
         _startResendCountdown();
       }
     } else {

@@ -1,9 +1,12 @@
 import 'dart:developer';
 
 import 'package:kpathshala/app_base/common_imports.dart';
+import 'package:kpathshala/model/package_model/package_model.dart';
 import 'package:kpathshala/model/question_model/question_set_model.dart';
 import 'package:kpathshala/repository/question/question_set_repo.dart';
 import 'package:kpathshala/view/common_widget/common_app_bar.dart';
+import 'package:kpathshala/view/common_widget/format_date_with_ordinal.dart';
+import 'package:kpathshala/view/exam_main_page/bottom_sheets/bottom_panel_page_course_purchase.dart';
 import 'package:kpathshala/view/exam_main_page/bottom_sheets/main_bottom_sheet.dart';
 import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/quiz_attempt_page.dart';
 import 'package:kpathshala/view/exam_main_page/widgets/test_sets_page_shimmer.dart';
@@ -13,8 +16,11 @@ import 'package:kpathshala/model/item_list.dart';
 
 class UBTMockTestPage extends StatefulWidget {
   final int packageId;
+  final PackageList? package;
+  bool? isInPreviewMode;
 
-  const UBTMockTestPage({super.key, required this.packageId});
+  UBTMockTestPage(
+      {super.key, this.package, this.isInPreviewMode = false, required this.packageId});
 
   @override
   State<UBTMockTestPage> createState() => _UBTMockTestPageState();
@@ -56,7 +62,7 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
 
         // Find the index of the last completed question set based on its 'status'
         lastCompletedSetIndex = questionSet.lastIndexWhere(
-          (qs) => qs.status == 'completed' || qs.status == 'flawless',
+              (qs) => qs.status == 'completed' || qs.status == 'flawless',
         );
 
         dataFound = true;
@@ -106,41 +112,39 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
   //   _saveStartCounts();
   // }
 
-  void _showBottomSheet(
-    BuildContext context,
-    String courseTitle,
-    String courseDescription,
-    int score,
-    int readingTestScore,
-    int listingTestScore,
-    String timeTaken,
-    int bottomSheetType,
-    int questionId,
-    String status,
-  ) {
+  void _showBottomSheet(BuildContext context,
+      String courseTitle,
+      String courseDescription,
+      int score,
+      int readingTestScore,
+      int listingTestScore,
+      String timeTaken,
+      int bottomSheetType,
+      int questionId,
+      String status,) {
     LinearGradient? gradient = bottomSheetType == 1
         ? const LinearGradient(
-            colors: [
-              Color.fromRGBO(238, 240, 255, 1),
-              Color.fromRGBO(145, 209, 236, 1),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          )
+      colors: [
+        Color.fromRGBO(238, 240, 255, 1),
+        Color.fromRGBO(145, 209, 236, 1),
+      ],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    )
         : null;
 
     Color? backgroundColor = bottomSheetType == 1 ? null : Colors.white;
 
     Widget additionalContent = bottomSheetType == 1
         ? _bottomSheetType1(
-            context,
-            score,
-            listingTestScore,
-            readingTestScore,
-            timeTaken,
-          )
+      context,
+      score,
+      listingTestScore,
+      readingTestScore,
+      timeTaken,
+    )
         : _bottomSheetType2(
-            context, courseTitle, courseDescription, questionId, status);
+        context, courseTitle, courseDescription, questionId, status);
 
     showCommonBottomSheet(
       context: context,
@@ -152,20 +156,24 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
       actions: [],
       gradient: gradient,
       color: backgroundColor,
-      height: MediaQuery.of(context).size.height * 0.45,
+      height: MediaQuery
+          .of(context)
+          .size
+          .height * 0.45,
     );
   }
 
-  void _navigateToRetakeTest(
-      String title, String description, int questionSetId) {
+  void _navigateToRetakeTest(String title, String description,
+      int questionSetId) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => RetakeTestPage(
-          questionSetId: questionSetId,
-          title: title,
-          description: description,
-        ),
+        builder: (context) =>
+            RetakeTestPage(
+              questionSetId: questionSetId,
+              title: title,
+              description: description,
+            ),
       ),
     ).then((_) {
       dataFound = false;
@@ -206,10 +214,19 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
           _buildButton("Solve video", AppColor.skyBlue.withOpacity(0.3), () {}),
           const SizedBox(height: 12),
           _buildButton("Review performance", AppColor.skyBlue.withOpacity(0.3),
-              () {
-            _showBottomSheet(context, title, description, 40, 20, 20, "10 min",
-                1, 1, status);
-          }),
+                  () {
+                _showBottomSheet(
+                    context,
+                    title,
+                    description,
+                    40,
+                    20,
+                    20,
+                    "10 min",
+                    1,
+                    1,
+                    status);
+              }),
           const SizedBox(height: 12),
           if (buttonLabel.isNotEmpty)
             SizedBox(
@@ -385,151 +402,217 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
         body: !dataFound
             ? TestSetsPageShimmer()
             : Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: ListView(
-                  children: [
-                    Stack(
-                      alignment: Alignment.bottomCenter,
+          padding: const EdgeInsets.all(12.0),
+          child: ListView(
+            children: [
+              Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  const SizedBox(
+                    height: 180,
+                    width: double.infinity,
+                  ),
+                  Container(
+                    width: double.infinity,
+                    height: 170,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      border:
+                      Border.all(color: AppColor.examCardGradientEnd),
+                      gradient: const LinearGradient(
+                        colors: [
+                          AppColor.examCardGradientStart,
+                          AppColor.examCardGradientEnd,
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  Image.asset(
+                    'assets/exploding-ribbon-and-confetti-9UErHOE0bL.png',
+                    height: 80,
+                    fit: BoxFit.cover,
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(8.0),
+                    width: double.infinity,
+                    height: 180,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const SizedBox(
-                          height: 180,
-                          width: double.infinity,
-                        ),
-                        Container(
-                          width: double.infinity,
-                          height: 170,
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            border:
-                                Border.all(color: AppColor.examCardGradientEnd),
-                            gradient: const LinearGradient(
-                              colors: [
-                                AppColor.examCardGradientStart,
-                                AppColor.examCardGradientEnd,
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(15),
+                        Text(
+                          "${questionSetResults?.completedQuestionSet ??
+                              0} out of ${questionSetResults
+                              ?.totalQuestionSet ?? 0} sets completed",
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
                           ),
                         ),
-                        Image.asset(
-                          'assets/exploding-ribbon-and-confetti-9UErHOE0bL.png',
-                          height: 80,
-                          fit: BoxFit.cover,
-                        ),
-                        Container(
-                          padding: const EdgeInsets.all(8.0),
-                          width: double.infinity,
-                          height: 180,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "${questionSetResults?.completedQuestionSet ?? 0} out of ${questionSetResults?.totalQuestionSet ?? 0} sets completed",
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              // Text(
-                              //   "You’re among the top ${questionSetResults?.rankPercentage ?? 0}% of the students in this session.",
-                              //   textAlign: TextAlign.center,
-                              //   style: const TextStyle(
-                              //       color: AppColor.grey600, fontSize: 12),
-                              // ),
-                              // const Gap(30)
-                            ],
-                          ),
-                        ),
-                        Positioned(
-                          top: 0,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 2, horizontal: 12),
-                            decoration: BoxDecoration(
-                              color: AppColor.brightCoral,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              'Batch ${questionSetResults?.batch ?? 0}',
-                              style: const TextStyle(
-                                  fontSize: 12, color: Colors.white),
-                            ),
-                          ),
-                        ),
+                        const SizedBox(height: 5),
+                        // Text(
+                        //   "You’re among the top ${questionSetResults?.rankPercentage ?? 0}% of the students in this session.",
+                        //   textAlign: TextAlign.center,
+                        //   style: const TextStyle(
+                        //       color: AppColor.grey600, fontSize: 12),
+                        // ),
+                        // const Gap(30)
                       ],
                     ),
-                    const SizedBox(height: 10),
-                    ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: questionSet.length,
-                      itemBuilder: (context, index) {
-                        final question = questionSet[index];
-                        final status = question.status.toString();
-                        final title = question.title ?? 'No Title';
-                        final description = question.subtitle ?? '';
-                        final score =
-                            (status == 'flawless' || status == 'completed')
-                                ? question.score
-                                : null;
-                        const readingTestScore = 0;
-                        const listingTestScore = 0;
-                        const timeTaken = 'Unknown';
+                  ),
+                  Positioned(
+                    top: 0,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 2, horizontal: 12),
+                      decoration: BoxDecoration(
+                        color: AppColor.brightCoral,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        'Batch ${questionSetResults?.batch ?? 0}',
+                        style: const TextStyle(
+                            fontSize: 12, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: questionSet.length,
+                itemBuilder: (context, index) {
+                  final question = questionSet[index];
+                  final status = question.status.toString();
+                  final title = question.title ?? 'No Title';
+                  final description = question.subtitle ?? '';
+                  final score =
+                  (status == 'flawless' || status == 'completed')
+                      ? question.score
+                      : null;
+                  const readingTestScore = 0;
+                  const listingTestScore = 0;
+                  const timeTaken = 'Unknown';
 
-                        return GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onTap: () {
-                            _showBottomSheet(
-                                context,
-                                title,
-                                description,
-                                score ?? 0,
-                                listingTestScore,
-                                readingTestScore,
-                                timeTaken,
-                                2,
-                                question.id,
-                                status);
-                          },
-                          child: CourseRow(
-                            title: title,
-                            description: description,
-                            readingTestScore: readingTestScore,
-                            listingTestScore: listingTestScore,
-                            timeTaken: timeTaken,
-                            score: score,
-                            status: status,
-                            onDetailsClick: () {
-                              _showBottomSheet(
-                                  context,
-                                  title,
-                                  description,
-                                  score ?? 0,
-                                  listingTestScore,
-                                  readingTestScore,
-                                  timeTaken,
-                                  2,
-                                  question.id,
-                                  status);
-                            },
-                            onRetakeTestClick: () {
-                              _navigateToRetakeTest(
-                                  title, description, question.id);
-                            },
-                          ),
-                        );
+                  return GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      (widget.isInPreviewMode! && index > 2) ? null :
+                      _showBottomSheet(
+                          context,
+                          title,
+                          description,
+                          score ?? 0,
+                          listingTestScore,
+                          readingTestScore,
+                          timeTaken,
+                          2,
+                          question.id,
+                          status);
+                    },
+                    child: CourseRow(
+                      title: title,
+                      description: description,
+                      readingTestScore: readingTestScore,
+                      listingTestScore: listingTestScore,
+                      timeTaken: timeTaken,
+                      score: score,
+                      status: status,
+                      isInPreviewMode: (widget.isInPreviewMode! && index > 2),
+                      onDetailsClick: () {
+                        (widget.isInPreviewMode! && index > 2)
+                            ? null
+                            : _showBottomSheet(
+                            context,
+                            title,
+                            description,
+                            score ?? 0,
+                            listingTestScore,
+                            readingTestScore,
+                            timeTaken,
+                            2,
+                            question.id,
+                            status);
+                      },
+                      onRetakeTestClick: () {
+                        (widget.isInPreviewMode! && index > 2)
+                            ? null
+                            : _navigateToRetakeTest(
+                            title, description, question.id);
                       },
                     ),
-                  ],
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+        bottomNavigationBar: questionSet.isEmpty ? null : widget
+            .isInPreviewMode! ? BottomAppBar(
+          height: 130,
+          color: Colors.white,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Row(
+                children: [
+                  CircleAvatar(
+                    child: Icon(Icons.lock_rounded, color: AppColor.navyBlue,size: 14,),
+                  ),
+                  Gap(5),
+                  Expanded(child: Text('You’re currently previewing this exam. Buy this package to access all the exams.', style: TextStyle(fontSize: 10, color: AppColor.navyBlue),)),
+                ],
+              ),
+              SizedBox(
+                width: double.maxFinite,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () {
+                    showCommonBottomSheet(
+                      context: context,
+                      height: MediaQuery.sizeOf(context).height * 0.5,
+                      content: BottomSheetPage(
+                        context: context,
+                        packageId: widget.packageId,
+                        packageName:
+                        widget.package?.title ?? '',
+                        price:
+                        widget.package?.price!.toDouble(),
+                        validityDate: formatDateWithOrdinal(
+                            DateTime.now().add(const Duration(days: 5))),
+                        refreshPage: () {
+                          widget.isInPreviewMode = false;
+                          dataFound = false;
+                          questionSet.clear();
+                          questionSetResults = null;
+                          setState(() {});
+                          fetchData();
+                        },
+                      ),
+                      actions: [],
+                      color: Colors.white,
+                    );
+                  },
+                  child: const Text(
+                    'Buy Now',
+                    style: TextStyle(fontSize: 12),
+                  ),
                 ),
               ),
-        bottomNavigationBar: BottomAppBar(
+            ],
+          ),
+        ) : BottomAppBar(
           height: 65,
           color: Colors.white,
           child: ElevatedButton(
@@ -542,17 +625,20 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => RetakeTestPage(
-                    questionSetId: lastCompletedSetIndex + 1,
-                    title: "",
-                    description: "",
-                  ),
+                  builder: (context) =>
+                      RetakeTestPage(
+                        questionSetId: questionSet[lastCompletedSetIndex + 1]
+                            .id,
+                        title: "",
+                        description: "",
+                      ),
                 ),
               );
             },
             child: Text(
-              'Continue to Set ${lastCompletedSetIndex + 1}',
-              style: TextStyle(fontSize: 12),
+              'Continue to ${questionSet[lastCompletedSetIndex + 1].title ??
+                  ''}',
+              style: const TextStyle(fontSize: 12),
             ),
           ),
         ),
