@@ -125,8 +125,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
   }
 
   Future<void> speak(String? model, String voiceScript,
-      {bool? isDialogue = false}) async
-  {
+      {bool? isDialogue = false}) async {
     _newVoiceText = voiceScript;
 
     if (_newVoiceText == null || _newVoiceText!.isEmpty) {
@@ -175,7 +174,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
     if (firstSpeechCompleted && !isDialogue!) {
       log("Speaking second: $_newVoiceText");
       await flutterTts.speak(_newVoiceText!);
-    } else if(!isDialogue!){
+    } else if (!isDialogue!) {
       log("First speech was interrupted, second speech will not be played.");
     }
 
@@ -530,24 +529,27 @@ class RetakeTestPageState extends State<RetakeTestPage>
         );
 
         List<Answers> currentSolvedQuestions =
-        isListening ? solvedListeningQuestions : solvedReadingQuestions;
+            isListening ? solvedListeningQuestions : solvedReadingQuestions;
 
         int existingAnswerIndex = currentSolvedQuestions.indexWhere(
-              (answer) => answer.questionId == selectedAnswer.questionId,
+          (answer) => answer.questionId == selectedAnswer.questionId,
         );
 
         if (existingAnswerIndex != -1) {
-          currentSolvedQuestions[existingAnswerIndex].questionOptionId = answerId;
+          currentSolvedQuestions[existingAnswerIndex].questionOptionId =
+              answerId;
         } else {
           currentSolvedQuestions.add(selectedAnswer);
         }
       });
     }
 
-    bool exists = selectedListeningQuestionData != null && playedAudiosList.any(
-          (audio) => audio.audioId == selectedListeningQuestionData!.id &&
-          audio.audioType == 'question',
-    );
+    bool exists = selectedListeningQuestionData != null &&
+        playedAudiosList.any(
+          (audio) =>
+              audio.audioId == selectedListeningQuestionData!.id &&
+              audio.audioType == 'question',
+        );
 
     return Stack(
       alignment: Alignment.center,
@@ -571,26 +573,25 @@ class RetakeTestPageState extends State<RetakeTestPage>
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   buildQuestionSection(
-                    context: context,
-                    title: title,
-                    subTitle: subTitle,
-                    imageCaption: imageCaption,
-                    question: question,
-                    imageUrl: imageUrl,
-                    voiceScript: voiceScript,
-                    listeningQuestionType: listeningQuestionType,
-                    dialogue: dialogue,
-                    questionId: questionId,
-                    isSpeaking: isSpeaking,
-                    isInDelay: isInDelay,
-                    exists: exists,
-                    showZoomedImage: showZoomedImage,
-                    cachedImages: cachedImages,
-                    playedAudiosList: playedAudiosList,
-                    speak: speak,
-                    changeInDelayStatus: changeInDelayStatus,
-                    isSpeechCompleted: firstSpeechCompleted
-                  ),
+                      context: context,
+                      title: title,
+                      subTitle: subTitle,
+                      imageCaption: imageCaption,
+                      question: question,
+                      imageUrl: imageUrl,
+                      voiceScript: voiceScript,
+                      listeningQuestionType: listeningQuestionType,
+                      dialogue: dialogue,
+                      questionId: questionId,
+                      isSpeaking: isSpeaking,
+                      isInDelay: isInDelay,
+                      exists: exists,
+                      showZoomedImage: showZoomedImage,
+                      cachedImages: cachedImages,
+                      playedAudiosList: playedAudiosList,
+                      speak: speak,
+                      changeInDelayStatus: changeInDelayStatus,
+                      isSpeechCompleted: firstSpeechCompleted),
                   SizedBox(
                       width: MediaQuery.sizeOf(context).width * 0.45,
                       child: isTextType || isVoiceType
@@ -686,8 +687,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
     _stopSpeaking();
 
     void updateSelectedData<T>(
-        List<T> questions, T? selectedData, Function(T?) setSelectedData)
-    {
+        List<T> questions, T? selectedData, Function(T?) setSelectedData) {
       int index = questions.indexOf(selectedData as T);
       setSelectedData((index != -1 && index < questions.length - 1)
           ? questions[index + 1]
@@ -816,7 +816,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
             showSuccessDialog: true,
             isPopScope: true,
             onPrimaryAction: () {
-              if(_remainingTime >0){
+              if (_remainingTime > 0) {
                 _timer?.cancel();
               }
               isSubmitted = true;
@@ -846,7 +846,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
     }
   }
 
-  void changeInDelayStatus(){
+  void changeInDelayStatus() {
     setState(() {
       isInDelay = !isInDelay;
     });
