@@ -17,12 +17,6 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
-
-  OneSignal.initialize("<e701d691-d45f-4a70-b430-f9e7037085af>");
-
-// The promptForPushNotificationsWithUserResponse function will show the iOS or Android push notification prompt. We recommend removing the following code and instead using an In-App Message to prompt for notification permission
-  OneSignal.Notifications.requestPermission(true);
 
   Get.put(ConectivityController());
   runApp(
@@ -31,6 +25,9 @@ void main() async {
       builder: (context) => const MyApp(),
     ),
   );
+  OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
+  OneSignal.initialize("e701d691-d45f-4a70-b430-f9e7037085af");
+  OneSignal.Notifications.requestPermission(true);
 }
 
 class MyApp extends StatelessWidget {
