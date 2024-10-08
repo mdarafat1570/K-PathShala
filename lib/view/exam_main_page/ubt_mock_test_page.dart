@@ -45,7 +45,6 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
   @override
   void initState() {
     super.initState();
-    _loadStartCounts();
     fetchData();
   }
 
@@ -73,52 +72,17 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
           (qs) => qs.status == 'completed' || qs.status == 'flawless',
         );
 
+        if (lastCompletedSetIndex < questionSet.length-1){
+          log("Increasing index");
+          lastCompletedSetIndex++;
+        }
+
         dataFound = true;
       });
     } catch (e) {
       log(e.toString()); // Handle the exception
     }
   }
-
-  Future<void> _loadStartCounts() async {
-    final prefs = await SharedPreferences.getInstance();
-    final loadedCounts = <String, int>{};
-    for (var key in prefs.getKeys()) {
-      final value = prefs.getInt(key);
-      if (value != null) {
-        loadedCounts[key] = value;
-      }
-    }
-    setState(() {
-      testStartCounts = loadedCounts;
-    });
-  }
-
-  // Future<void> _saveStartCounts() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   for (var entry in testStartCounts.entries) {
-  //     await prefs.setInt(entry.key, entry.value);
-  //   }
-  // }
-
-  // void _incrementTestStartCount(String courseTitle) {
-  //   setState(() {
-  //     testStartCounts[courseTitle] = (testStartCounts[courseTitle] ?? 0) + 1;
-  //   });
-  //   _saveStartCounts();
-  // }
-
-  // void _decrementTestStartCount(String courseTitle) {
-  //   setState(() {
-  //     if (testStartCounts.containsKey(courseTitle)) {
-  //       testStartCounts[courseTitle] = (testStartCounts[courseTitle] ?? 0) - 1;
-  //       if (testStartCounts[courseTitle]! < 0) {
-  //         testStartCounts[courseTitle] = 0;
-  //       }
-  //     }
-  //   });
-  //   _saveStartCounts();
-  // }
 
   void _showBottomSheet(
     BuildContext context,
@@ -182,6 +146,7 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
         ),
       ),
     ).then((_) {
+      questionSet.clear();
       dataFound = false;
       setState(() {});
       fetchData();
@@ -225,7 +190,7 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
               () {
             // _showBottomSheet(context, title, description, 40, 20, 20, "10 min",
             //     1, 1, status);
-            slideNavigationPush(ReviewPage(), context);
+            slideNavigationPush(ReviewPage(appBarTitle: title, questionSetId: questionId), context);
           }),
           const SizedBox(height: 12),
           if (buttonLabel.isNotEmpty)
@@ -638,15 +603,20 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
                           MaterialPageRoute(
                             builder: (context) => RetakeTestPage(
                               questionSetId:
-                                  questionSet[lastCompletedSetIndex + 1].id,
+                                  questionSet[lastCompletedSetIndex].id,
                               title: "",
                               description: "",
                             ),
                           ),
-                        );
+                        ).then((_) {
+                          questionSet.clear();
+                          dataFound = false;
+                          setState(() {});
+                          fetchData();
+                        });
                       },
                       child: Text(
-                        'Continue to ${questionSet[lastCompletedSetIndex + 1].title ?? ''}',
+                        'Continue to ${questionSet[lastCompletedSetIndex].title ?? ''}',
                         style: const TextStyle(fontSize: 12),
                       ),
                     ),

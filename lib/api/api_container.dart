@@ -35,6 +35,10 @@ class KpatshalaquestionSet {
   static String questionSet = '${AuthorizationEndpoints.baseUrl}/question-sets';
 }
 
+class KpatshalaAnswerReview {
+  static String result = '${AuthorizationEndpoints.baseUrl}/result_question_set';
+}
+
 class KpatshalaDashboardPage {
   static String dashboard = '${AuthorizationEndpoints.baseUrl}/dashboard';
 }
