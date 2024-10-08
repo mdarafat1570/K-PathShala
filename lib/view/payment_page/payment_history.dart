@@ -120,52 +120,49 @@ class _PaymentHistoryState extends State<PaymentHistory> {
   }
 
   Widget isResultBuildShimmerLoadingEffect() {
-    return Expanded(
-      child: Shimmer.fromColors(
-        baseColor: Colors.grey[300]!,
-        highlightColor: Colors.grey[100]!,
-        child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: 10,
-          itemBuilder: (context, index) {
-            return Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0), // Rounded corners
-              ),
-              elevation: 2, // Adds a slight shadow for the card
-              margin:
-                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 5.0), // Adds spacing between items
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        const CircleAvatar(
-                          radius: 40.0,
-                          backgroundColor: Colors.black12,
-                        ),
-                        Column(
-                          children: [
-                            Container(
-                              height: 12,
-                              width: 60,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[300],
-                                borderRadius: BorderRadius.circular(10),
-                              ),
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemCount: 10,
+        itemBuilder: (context, index) {
+          return Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0), // Rounded corners
+            ),
+            elevation: 2, // Adds a slight shadow for the card
+            margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                  vertical: 5.0), // Adds spacing between items
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      const CircleAvatar(
+                        radius: 40.0,
+                        backgroundColor: Colors.black12,
+                      ),
+                      Column(
+                        children: [
+                          Container(
+                            height: 12,
+                            width: 60,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
