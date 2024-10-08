@@ -449,7 +449,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                   ],
                 ),
         ),
-        bottomNavigationBar: !dataFound
+        bottomNavigationBar: !dataFound || totalQuestion == 0
             ? null
             : BottomNavBar(
                 isListViewVisible: isListViewVisible,
@@ -493,8 +493,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
         ? selectedListeningQuestionData?.options ?? []
         : selectedReadingQuestionData?.options ?? [];
     bool isTextType = options.isNotEmpty && options.first.optionType == 'text';
-    bool isVoiceType =
-        options.isNotEmpty && options.first.optionType == 'voice';
+    bool isVoiceType = options.isNotEmpty && options.first.optionType == 'voice';
+    bool isTextWithVoice = options.isNotEmpty && options.first.optionType == 'text_with_voice';
     int questionId = isListening
         ? selectedListeningQuestionData?.id ?? -1
         : selectedReadingQuestionData?.id ?? -1;
@@ -592,29 +592,22 @@ class RetakeTestPageState extends State<RetakeTestPage>
                       speak: speak,
                       changeInDelayStatus: changeInDelayStatus,
                       isSpeechCompleted: firstSpeechCompleted),
-                  SizedBox(
-                      width: MediaQuery.sizeOf(context).width * 0.45,
-                      child: isTextType || isVoiceType
-                          ? buildOptionsList(
-                              context: context,
-                              options: options,
-                              selectedSolvedIndex: selectedSolvedIndex,
-                              isTextType: isTextType,
-                              isVoiceType: isVoiceType,
-                              isSpeaking: isSpeaking,
-                              isInDelay: isInDelay,
-                              playedAudiosList: playedAudiosList,
-                              selectionHandling: selectionHandling,
-                              speak: speak,
-                              selectedListeningQuestionData:
-                                  selectedListeningQuestionData)
-                          : buildOptionsGrid(
-                              context: context,
-                              options: options,
-                              selectedSolvedIndex: selectedSolvedIndex,
-                              selectionHandling: selectionHandling,
-                              showZoomedImage: showZoomedImage,
-                              cachedImages: cachedImages)),
+                  buildOptionSection(
+                    context: context,
+                    options: options,
+                    selectedSolvedIndex: selectedSolvedIndex,
+                    isTextType: isTextType,
+                    isVoiceType: isVoiceType,
+                    isTextWithVoice: isTextWithVoice,
+                    isSpeaking: isSpeaking,
+                    isInDelay: isInDelay,
+                    playedAudiosList: playedAudiosList,
+                    selectionHandling: selectionHandling,
+                    speak: speak,
+                    selectedListeningQuestionData: selectedListeningQuestionData,
+                    showZoomedImage: showZoomedImage,
+                    cachedImages: cachedImages,
+                  ),
                 ],
               ),
             ),

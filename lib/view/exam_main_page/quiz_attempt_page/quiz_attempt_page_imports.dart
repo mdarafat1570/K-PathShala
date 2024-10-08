@@ -19,7 +19,6 @@ export 'package:kpathshala/repository/authentication_repository.dart';
 export 'package:kpathshala/repository/question/answer_submission_repository.dart';
 export 'package:kpathshala/repository/question/reading_questions_repository.dart';
 export 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
-export 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/question_detail/build_options_grid.dart';
 export 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/question_detail/build_options_list.dart';
 export 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/question_detail/build_question_section.dart';
 export 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/question_grid.dart';
@@ -29,3 +28,4 @@ export 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/exam_pa
 export 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/played_audio_object.dart';
 export 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/question_page_header.dart';
 export 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/show_zoom_image.dart';
+export 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/question_detail/build_option_section.dart';

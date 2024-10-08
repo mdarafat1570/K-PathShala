@@ -73,6 +73,8 @@ class ReadingQuestions {
   String? imageUrl;
   String? imageCaption;
   List<Options> options;
+  AnswerOption? answerOption;
+  Submission? submission;
 
   ReadingQuestions({
     required this.id,
@@ -83,6 +85,8 @@ class ReadingQuestions {
     required this.imageUrl,
     required this.imageCaption,
     required this.options,
+    required this.answerOption,
+    required this.submission,
   });
 
   factory ReadingQuestions.fromJson(Map<String, dynamic> json) => ReadingQuestions(
@@ -94,6 +98,8 @@ class ReadingQuestions {
     imageUrl: json["image_url"],
     imageCaption: json["image_caption"],
     options: List<Options>.from(json["options"].map((x) => Options.fromJson(x))),
+    answerOption: json["answer_option"] != null ? AnswerOption.fromJson(json["answer_option"]) : null,
+    submission: json["submission"] != null ? Submission.fromJson(json["submission"]) : null,
   );
 
   Map<String, dynamic> toJson() => {
@@ -105,6 +111,8 @@ class ReadingQuestions {
     "image_url": imageUrl,
     "image_caption": imageCaption,
     "options": List<dynamic>.from(options.map((x) => x.toJson())),
+    "answer_option": answerOption?.toJson(),
+    "submission": submission?.toJson(),
   };
 }
 
@@ -120,6 +128,8 @@ class ListeningQuestions {
   String? voiceGender;
   List<Dialogue> dialogues;
   List<Options> options;
+  AnswerOption? answerOption;
+  Submission? submission;
 
   ListeningQuestions({
     required this.id,
@@ -132,7 +142,7 @@ class ListeningQuestions {
     required this.voiceScript,
     required this.voiceGender,
     required this.dialogues,
-    required this.options,
+    required this.options, required this.answerOption, required this.submission
   });
 
   factory ListeningQuestions.fromJson(Map<String, dynamic> json) => ListeningQuestions(
@@ -147,6 +157,8 @@ class ListeningQuestions {
     voiceGender: json["voice_gender"],
     dialogues: List<Dialogue>.from(json["dialogues"].map((x) => Dialogue.fromJson(x))),
     options: List<Options>.from(json["options"].map((x) => Options.fromJson(x))),
+    answerOption: json["answer_option"] != null ? AnswerOption.fromJson(json["answer_option"]) : null,
+    submission: json["submission"] != null ? Submission.fromJson(json["submission"]) : null,
   );
 
   Map<String, dynamic> toJson() => {
@@ -161,6 +173,8 @@ class ListeningQuestions {
     "voice_gender": voiceGender,
     "dialogues": List<dynamic>.from(dialogues.map((x) => x.toJson())),
     "options": List<dynamic>.from(options.map((x) => x.toJson())),
+    "answer_option": answerOption?.toJson(),
+    "submission": submission?.toJson(),
   };
 }
 
@@ -225,4 +239,89 @@ class Options {
     "voice_script": voiceScript,
     "voice_gender": voiceGender,
   };
+}
+
+class AnswerOption {
+  int? id;
+  int? questionId;
+  int? questionOptionId;
+  String? description;
+  String? createdAt;
+  String? updatedAt;
+
+  AnswerOption(
+      {this.id,
+        this.questionId,
+        this.questionOptionId,
+        this.description,
+        this.createdAt,
+        this.updatedAt});
+
+  AnswerOption.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    questionId = json['question_id'];
+    questionOptionId = json['question_option_id'];
+    description = json['description'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['question_id'] = questionId;
+    data['question_option_id'] = questionOptionId;
+    data['description'] = description;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
+    return data;
+  }
+}
+
+class Submission {
+  int? id;
+  int? questionSetSubmissionsId;
+  int? questionId;
+  int? questionOptionId;
+  String? userResponse;
+  String? createdAt;
+  String? updatedAt;
+  Options? option;
+
+  Submission(
+      {this.id,
+        this.questionSetSubmissionsId,
+        this.questionId,
+        this.questionOptionId,
+        this.userResponse,
+        this.createdAt,
+        this.updatedAt,
+        this.option});
+
+  Submission.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    questionSetSubmissionsId = json['question_set_submissions_id'];
+    questionId = json['question_id'];
+    questionOptionId = json['question_option_id'];
+    userResponse = json['user_response'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+    option =
+    json['option'] != null ? Options.fromJson(json['option']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['question_set_submissions_id'] = questionSetSubmissionsId;
+    data['question_id'] = questionId;
+    data['question_option_id'] = questionOptionId;
+    data['user_response'] = userResponse;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
+    if (option != null) {
+      data['option'] = option!.toJson();
+    }
+    return data;
+  }
 }

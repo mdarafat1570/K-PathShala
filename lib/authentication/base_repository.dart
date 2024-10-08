@@ -208,6 +208,7 @@ Future<void> showSessionExpiredDialog(BuildContext context) async {
           TextButton(
             child: const Text('OK'),
             onPressed: () {
+              log("pressed ok--------");
               Navigator.of(context).pop();
               userSignOut(context); 
             },
