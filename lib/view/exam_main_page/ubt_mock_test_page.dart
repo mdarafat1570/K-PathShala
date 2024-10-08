@@ -8,6 +8,7 @@ import 'package:kpathshala/view/common_widget/common_app_bar.dart';
 import 'package:kpathshala/view/common_widget/format_date_with_ordinal.dart';
 import 'package:kpathshala/view/exam_main_page/bottom_sheets/bottom_panel_page_course_purchase.dart';
 import 'package:kpathshala/view/exam_main_page/bottom_sheets/main_bottom_sheet.dart';
+import 'package:kpathshala/view/exam_main_page/note/add_Note_Page.dart';
 import 'package:kpathshala/view/exam_main_page/note/notev2.dart';
 import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/quiz_attempt_page.dart';
 import 'package:kpathshala/view/exam_main_page/widgets/test_sets_page_shimmer.dart';
@@ -72,7 +73,7 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
           (qs) => qs.status == 'completed' || qs.status == 'flawless',
         );
 
-        if (lastCompletedSetIndex < questionSet.length-1){
+        if (lastCompletedSetIndex < questionSet.length - 1) {
           log("Increasing index");
           lastCompletedSetIndex++;
         }
@@ -183,14 +184,20 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
           ),
           const SizedBox(height: 12),
           _buildButton("Solve video", AppColor.skyBlue.withOpacity(0.3), () {
-            slideNavigationPush(Note(questionId, title), context);
+            slideNavigationPush(
+
+                // NoteMainPage(questionId, title)
+                AddNotePage(),
+                context);
           }),
           const SizedBox(height: 12),
           _buildButton("Review performance", AppColor.skyBlue.withOpacity(0.3),
               () {
             // _showBottomSheet(context, title, description, 40, 20, 20, "10 min",
             //     1, 1, status);
-            slideNavigationPush(ReviewPage(appBarTitle: title, questionSetId: questionId), context);
+            slideNavigationPush(
+                ReviewPage(appBarTitle: title, questionSetId: questionId),
+                context);
           }),
           const SizedBox(height: 12),
           if (buttonLabel.isNotEmpty)
