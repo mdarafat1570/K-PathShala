@@ -37,6 +37,7 @@ class KpatshalaquestionSet {
 
 class KpatshalaAnswerReview {
   static String result = '${AuthorizationEndpoints.baseUrl}/result_question_set';
+  static String answerReview = '${AuthorizationEndpoints.baseUrl}/answer_review';
 }
 
 class KpatshalaDashboardPage {

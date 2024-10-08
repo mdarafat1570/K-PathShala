@@ -8,12 +8,9 @@ import 'package:kpathshala/view/common_widget/common_app_bar.dart';
 import 'package:kpathshala/view/common_widget/format_date_with_ordinal.dart';
 import 'package:kpathshala/view/exam_main_page/bottom_sheets/bottom_panel_page_course_purchase.dart';
 import 'package:kpathshala/view/exam_main_page/bottom_sheets/main_bottom_sheet.dart';
-import 'package:kpathshala/view/exam_main_page/note/notev2.dart';
 import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/quiz_attempt_page.dart';
 import 'package:kpathshala/view/exam_main_page/widgets/test_sets_page_shimmer.dart';
 import 'package:kpathshala/view/exam_main_page/widgets/ubt_exam_row.dart';
-import 'package:kpathshala/view/notifications/notifications_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kpathshala/model/item_list.dart';
 
 import 'note/note_main_page.dart';
@@ -84,52 +81,24 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
     }
   }
 
-  void _showBottomSheet(
-    BuildContext context,
-    String courseTitle,
-    String courseDescription,
-    int score,
-    int readingTestScore,
-    int listingTestScore,
-    String timeTaken,
-    int bottomSheetType,
-    int questionId,
-    String status,
+  void _showBottomSheet({required BuildContext context,
+    required String courseTitle,
+    required String courseDescription,
+    required int score,
+    required int questionId,
+    required String status}
   ) {
-    LinearGradient? gradient = bottomSheetType == 1
-        ? const LinearGradient(
-            colors: [
-              Color.fromRGBO(238, 240, 255, 1),
-              Color.fromRGBO(145, 209, 236, 1),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          )
-        : null;
-
-    Color? backgroundColor = bottomSheetType == 1 ? null : Colors.white;
-
-    Widget additionalContent = bottomSheetType == 1
-        ? _bottomSheetType1(
-            context,
-            score,
-            listingTestScore,
-            readingTestScore,
-            timeTaken,
-          )
-        : _bottomSheetType2(
-            context, courseTitle, courseDescription, questionId, status);
+    Widget additionalContent = _bottomSheetType2(context, courseTitle, courseDescription, questionId, status);
 
     showCommonBottomSheet(
       context: context,
+      color: Colors.white,
       content: BottomSheetContent(
         courseTitle: courseTitle,
         score: score,
         additionalContent: additionalContent,
       ),
       actions: [],
-      gradient: gradient,
-      color: backgroundColor,
       height: MediaQuery.of(context).size.height * 0.45,
     );
   }
@@ -153,17 +122,6 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
     });
   }
 
-  // String _getButtonLabel(String title) {
-  //   return testStartCounts[title] != null && testStartCounts[title]! > 0
-  //       ? 'Retake Test'
-  //       : 'Start';
-  // }
-
-  // void _handleRetakeTestClick(String title, String description) {
-  //   _incrementTestStartCount(title);
-  //
-  // }
-
   Widget _bottomSheetType2(BuildContext context, String title,
       String description, int questionId, String status) {
     final String buttonLabel = (status == 'flawless' || status == 'completed')
@@ -185,11 +143,11 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
           _buildButton("Solve video", AppColor.skyBlue.withOpacity(0.3), () {
             slideNavigationPush(Note(questionId, title), context);
           }),
+          if (status == 'flawless' || status == 'completed')
           const SizedBox(height: 12),
+          if (status == 'flawless' || status == 'completed')
           _buildButton("Review performance", AppColor.skyBlue.withOpacity(0.3),
               () {
-            // _showBottomSheet(context, title, description, 40, 20, 20, "10 min",
-            //     1, 1, status);
             slideNavigationPush(ReviewPage(appBarTitle: title, questionSetId: questionId), context);
           }),
           const SizedBox(height: 12),
@@ -209,105 +167,6 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
     );
   }
 
-  Widget _bottomSheetType1(BuildContext context, int score,
-      int listingTestScore, int readingTestScore, String timeTaken) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          // crossAxisAlignment: CrossAxisAlignment.end,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '$score',
-              style: const TextStyle(
-                fontSize: 48,
-                color: AppColor.navyBlue,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const Column(
-              children: [
-                Gap(20),
-                Text(
-                  "/40",
-                  style: TextStyle(fontSize: 10),
-                ),
-              ],
-            )
-          ],
-        ),
-        const Text(
-          "Final score",
-          style: TextStyle(color: AppColor.navyBlue, fontSize: 12),
-        ),
-        const Gap(10),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: Colors.white,
-          ),
-          padding: const EdgeInsets.all(1),
-          child: Row(
-            children: [
-              // First card: only left border radius
-              Expanded(
-                child: _buildScoreContainer(
-                    '$listingTestScore of 20', "Reading Test",
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      bottomLeft: Radius.circular(10),
-                    )),
-              ),
-              const SizedBox(width: 1),
-
-              // Middle card: no border radius
-              Expanded(
-                child: _buildScoreContainer(
-                    '$readingTestScore of 20', "Listening Test",
-                    borderRadius: BorderRadius.zero),
-              ),
-              const SizedBox(width: 1),
-
-              // Last card: only right border radius
-              Expanded(
-                child: _buildScoreContainer(timeTaken, "Time taken",
-                    borderRadius: const BorderRadius.only(
-                      topRight: Radius.circular(10),
-                      bottomRight: Radius.circular(10),
-                    )),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 10),
-        customText("2 Retakes taken", TextType.normal,
-            color: AppColor.navyBlue, fontSize: 10),
-        customText("3h 21m spent in total", TextType.normal,
-            color: AppColor.navyBlue, fontSize: 10),
-        const SizedBox(height: 15),
-        SizedBox(
-          width: double.infinity,
-          height: 40,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text(
-              "Close",
-              style: TextStyle(fontSize: 12),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildButton(String text, Color color, VoidCallback onPressed) {
     return SizedBox(
       width: double.infinity,
@@ -323,35 +182,6 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
         child: Text(
           text,
           style: const TextStyle(color: AppColor.navyBlue),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildScoreContainer(String score, String label,
-      {required BorderRadius borderRadius}) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: borderRadius,
-        color: const Color.fromRGBO(135, 206, 235, 0.2),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Column(
-          children: [
-            Text(
-              score,
-              style: const TextStyle(
-                color: AppColor.navyBlue,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              label,
-              style: const TextStyle(color: AppColor.black, fontSize: 10),
-            ),
-          ],
         ),
       ),
     );
@@ -469,17 +299,7 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
                           onTap: () {
                             (widget.isInPreviewMode! && index > 2)
                                 ? null
-                                : _showBottomSheet(
-                                    context,
-                                    title,
-                                    description,
-                                    score ?? 0,
-                                    listingTestScore,
-                                    readingTestScore,
-                                    timeTaken,
-                                    2,
-                                    question.id,
-                                    status);
+                                : _showBottomSheet(context: context, courseTitle: title, courseDescription: description, score: score ?? 0, questionId: question.id, status: status);
                           },
                           child: CourseRow(
                             title: title,
@@ -494,17 +314,7 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
                             onDetailsClick: () {
                               (widget.isInPreviewMode! && index > 2)
                                   ? null
-                                  : _showBottomSheet(
-                                      context,
-                                      title,
-                                      description,
-                                      score ?? 0,
-                                      listingTestScore,
-                                      readingTestScore,
-                                      timeTaken,
-                                      2,
-                                      question.id,
-                                      status);
+                                  : _showBottomSheet(context: context, courseTitle: title, courseDescription: description, score: score, questionId: question.id, status: status);
                             },
                             onRetakeTestClick: () {
                               (widget.isInPreviewMode! && index > 2)
