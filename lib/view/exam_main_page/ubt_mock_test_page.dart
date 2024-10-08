@@ -184,11 +184,7 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
           ),
           const SizedBox(height: 12),
           _buildButton("Solve video", AppColor.skyBlue.withOpacity(0.3), () {
-            slideNavigationPush(
-
-                // NoteMainPage(questionId, title)
-                AddNotePage(),
-                context);
+            slideNavigationPush(NoteMainPage(questionId, title), context);
           }),
           const SizedBox(height: 12),
           _buildButton("Review performance", AppColor.skyBlue.withOpacity(0.3),

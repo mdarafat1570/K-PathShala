@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:kpathshala/repository/notes_repository.dart';
-
-
+import 'package:kpathshala/app_base/common_imports.dart';
+import 'package:kpathshala/repository/notes_Repository/notes_repository.dart';
+import 'package:kpathshala/model/notes_model/retrieve_noteby_ID_model.dart';
 
 class AddNotePage extends StatefulWidget {
-  const AddNotePage({Key? key}) : super(key: key);
+  const AddNotePage(int questionId, {Key? key}) : super(key: key);
 
   @override
   _AddNotePageState createState() => _AddNotePageState();
@@ -12,12 +12,12 @@ class AddNotePage extends StatefulWidget {
 
 class _AddNotePageState extends State<AddNotePage> {
   final _formKey = GlobalKey<FormState>();
-   NotesRepository _notesRepository = NotesRepository();
+  final NoteRepository _notesRepository = NoteRepository();
 
   // Controllers for form fields
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  int _questionSetId = 1; // Hardcoded for example. Adjust as per need.
+  int _questionSetId = 2; // Hardcoded for example. Adjust as per need.
 
   bool _isLoading = false;
 
@@ -28,13 +28,19 @@ class _AddNotePageState extends State<AddNotePage> {
       });
 
       try {
-        // Call the createNote function to submit the note
-        await _notesRepository.createNote(
-          context: context,
+        // Create a note object
+        final note = RetrieveNotebyIDModel(
+          id: null,
           questionSetId: _questionSetId,
+          userId: null,
           title: _titleController.text,
           description: _descriptionController.text,
+          createdAt: DateTime.now().toIso8601String(), // Set createdAt to now
+          updatedAt: DateTime.now().toIso8601String(), // Set updatedAt to now
         );
+
+        // Call the addNote function to submit the note
+        await _notesRepository.addNote(note, context);
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Note created successfully!')),
@@ -58,6 +64,7 @@ class _AddNotePageState extends State<AddNotePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColor.white,
       appBar: AppBar(
         title: const Text('Add Note'),
       ),
