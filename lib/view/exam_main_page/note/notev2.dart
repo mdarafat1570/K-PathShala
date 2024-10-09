@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/authentication/base_repository.dart';
@@ -18,9 +20,9 @@ class NoteMainPage extends StatefulWidget {
 }
 
 class _NoteMainPageState extends State<NoteMainPage> {
-  final NoteRepository noteRepository = NoteRepository();
   late YoutubePlayerController _youtubeController;
-  RetrieveNotesModel? _notesModel;
+  NoteResultData? noteResultData;
+  NoteGetModel? noteGet;
   List<QuestionNotes>? questionNotes;
   bool _isLoading = true;
 
@@ -30,11 +32,45 @@ class _NoteMainPageState extends State<NoteMainPage> {
     _fetchNotes();
   }
 
- void _fetchNotes() async {
-    await noteRepository.fetchNotes(widget.questionId, context);
-    setState(() {
-      _isLoading = false; 
-    });
+  void _fetchNotes() async {
+    try {
+      NoteRepository noteRepository = NoteRepository();
+      NoteGetModel? noteData = await noteRepository.fetchNotes(
+        questionSetId: widget.questionId!,
+        context: context,
+      );
+
+      // Assuming that 'noteData.data?.videoUrl' contains the video URL.
+      if (noteData != null) {
+        noteGet = noteData;
+        questionNotes = noteData.data?.questionNotes ?? [];
+
+        // Initialize the YouTube controller if a video URL is available.
+        if (noteData.data?.questionSetSolutions?.videoLink != null) {
+          _youtubeController = YoutubePlayerController(
+            initialVideoId: YoutubePlayer.convertUrlToId(
+                noteData.data!.questionSetSolutions!.videoLink!)!,
+            flags: const YoutubePlayerFlags(
+              autoPlay: false,
+              loop: false,
+            ),
+          );
+        }
+
+        setState(() {
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      log("Error fetching notes: ${e.toString()}"); // Handle the exception
+      setState(() {
+        _isLoading = false; // Ensure loading state is updated even on error
+      });
+    }
   }
 
   @override
@@ -64,10 +100,14 @@ class _NoteMainPageState extends State<NoteMainPage> {
                                 color: const Color.fromRGBO(217, 217, 217, 1),
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: YoutubePlayer(
-                                controller: _youtubeController,
-                                showVideoProgressIndicator: true,
-                              ),
+                              // ignore: unnecessary_null_comparison
+                              child: _youtubeController != null
+                                  ? YoutubePlayer(
+                                      controller: _youtubeController,
+                                      showVideoProgressIndicator: true,
+                                    )
+                                  : const Center(
+                                      child: Text("No Video Available")),
                             ),
                           )
                         : const Center(child: Text("No Video Available")),
@@ -103,22 +143,130 @@ class _NoteMainPageState extends State<NoteMainPage> {
                           : ListView.builder(
                               itemCount: questionNotes!.length,
                               itemBuilder: (context, index) {
-                                final note = questionNotes![
-                                    index]; // Get the note object
-                                return Card(
-                                  margin: EdgeInsets.all(8.0),
-                                  child: ListTile(
-                                    title: Text(
-                                        note.title ?? ''), // Access note.title
-                                    subtitle: Text(note.description ??
-                                        ''), // Access note.description
-                                    trailing: Text(
-                                      note.createdAt != null
-                                          ? DateTime.parse(note.createdAt!)
-                                              .toLocal()
-                                              .toString()
-                                          : 'No date', // Format the date as needed
-                                    ),
+                                final note = questionNotes![index];
+                                return Container(
+                                  margin:
+                                      const EdgeInsets.symmetric(vertical: 5),
+                                  padding: const EdgeInsets.all(
+                                      10), // Add padding for better layout
+                                  decoration: BoxDecoration(
+                                    color: AppColor.naturalGrey2,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          customText(
+                                            note.title ?? '',
+                                            TextType.paragraphTitleNormal,
+                                            fontSize: 12,
+                                          ),
+                                          Spacer(),
+                                          Row(
+                                            children: [
+                                              GestureDetector(
+                                                onTap: () {
+                                                  // _showNoteBottomSheet(
+                                                  //   initialTitle: notes[index]
+                                                  //       ['title'],
+                                                  //   initialDescription: notes[index]
+                                                  //       ['description'],
+                                                  //   index: index,
+                                                  // );
+                                                },
+                                                child: Container(
+                                                    width: 53,
+                                                    height: 20,
+                                                    decoration: BoxDecoration(
+                                                      color:
+                                                          const Color.fromRGBO(
+                                                                  26,
+                                                                  35,
+                                                                  126,
+                                                                  0.2)
+                                                              .withOpacity(0.1),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              36),
+                                                    ),
+                                                    child: const Padding(
+                                                      padding: EdgeInsets.only(
+                                                          left: 8, right: 8),
+                                                      child: Row(
+                                                        children: [
+                                                          Icon(
+                                                            Icons.edit,
+                                                            color:
+                                                                Color.fromRGBO(
+                                                                    100,
+                                                                    100,
+                                                                    100,
+                                                                    1),
+                                                            size: 8,
+                                                          ),
+                                                          Gap(5),
+                                                          Text(
+                                                            "Edit",
+                                                            style: TextStyle(
+                                                                color: Color
+                                                                    .fromRGBO(
+                                                                        100,
+                                                                        100,
+                                                                        100,
+                                                                        1),
+                                                                fontSize: 10),
+                                                          )
+                                                        ],
+                                                      ),
+                                                    )),
+                                              ),
+                                              const SizedBox(width: 10),
+                                              // Delete Container with Icon
+                                              GestureDetector(
+                                                onTap: () {
+                                                  // _deleteNote(index);
+                                                },
+                                                child: Container(
+                                                  width: 24,
+                                                  height: 20,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.red
+                                                        .withOpacity(0.1),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            36),
+                                                  ),
+                                                  child: const Icon(
+                                                    Icons.delete,
+                                                    color: Colors.red,
+                                                    size: 16,
+                                                  ),
+                                                ),
+                                              ),
+                                              // ListTile(
+                                              //   title: Text(note.title ?? ''),
+                                              //   subtitle: Text(note.description ?? ''),
+                                              //   trailing: Text(
+                                              //     note.createdAt != null
+                                              //         ? DateTime.parse(note.createdAt!)
+                                              //             .toLocal()
+                                              //             .toString()
+                                              //         : 'No date',
+                                              //   ),
+                                              // ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      customText(
+                                        note.description ?? '',
+                                        TextType.paragraphTitleNormal,
+                                        fontSize: 10,
+                                      ),
+                                    ],
                                   ),
                                 );
                               },

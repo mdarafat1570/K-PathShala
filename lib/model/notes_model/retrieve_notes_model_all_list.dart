@@ -1,16 +1,37 @@
-class RetrieveNotesModel {
-  List<QuestionSetSolutions>? questionSetSolutions;
+class NoteGetModel {
+  String? status;
+  NoteResultData? data;
+  String? message;
+
+  NoteGetModel({this.status, this.data, this.message});
+
+  NoteGetModel.fromJson(Map<String, dynamic> json) {
+    status = json['status'];
+    data = json['data'] != null ? new NoteResultData.fromJson(json['data']) : null;
+    message = json['message'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['status'] = this.status;
+    if (this.data != null) {
+      data['data'] = this.data!.toJson();
+    }
+    data['message'] = this.message;
+    return data;
+  }
+}
+
+class NoteResultData {
+  QuestionSetSolutions? questionSetSolutions;
   List<QuestionNotes>? questionNotes;
 
-  RetrieveNotesModel({this.questionSetSolutions, this.questionNotes});
+  NoteResultData({this.questionSetSolutions, this.questionNotes});
 
-  RetrieveNotesModel.fromJson(Map<String, dynamic> json) {
-    if (json['question_set_solutions'] != null) {
-      questionSetSolutions = <QuestionSetSolutions>[];
-      json['question_set_solutions'].forEach((v) {
-        questionSetSolutions!.add(new QuestionSetSolutions.fromJson(v));
-      });
-    }
+  NoteResultData.fromJson(Map<String, dynamic> json) {
+    questionSetSolutions = json['question_set_solutions'] != null
+        ? new QuestionSetSolutions.fromJson(json['question_set_solutions'])
+        : null;
     if (json['question_notes'] != null) {
       questionNotes = <QuestionNotes>[];
       json['question_notes'].forEach((v) {
@@ -22,8 +43,7 @@ class RetrieveNotesModel {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     if (this.questionSetSolutions != null) {
-      data['question_set_solutions'] =
-          this.questionSetSolutions!.map((v) => v.toJson()).toList();
+      data['question_set_solutions'] = this.questionSetSolutions!.toJson();
     }
     if (this.questionNotes != null) {
       data['question_notes'] =
