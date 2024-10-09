@@ -2,6 +2,7 @@ import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/authentication/base_repository.dart';
 import 'package:kpathshala/model/notes_model/retrieve_notes_model_all_list.dart';
+import 'package:kpathshala/repository/notes_Repository/notes_repository.dart';
 import 'package:kpathshala/view/common_widget/common_app_bar.dart';
 import 'package:kpathshala/view/exam_main_page/note/add_note_page.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -17,6 +18,7 @@ class NoteMainPage extends StatefulWidget {
 }
 
 class _NoteMainPageState extends State<NoteMainPage> {
+  final NoteRepository noteRepository = NoteRepository();
   late YoutubePlayerController _youtubeController;
   RetrieveNotesModel? _notesModel;
   List<QuestionNotes>? questionNotes;
@@ -25,39 +27,14 @@ class _NoteMainPageState extends State<NoteMainPage> {
   @override
   void initState() {
     super.initState();
-    fetchNotes(); // Fetch notes data on initialization
+    _fetchNotes();
   }
 
-  Future<void> fetchNotes() async {
-    try {
-      final response = await BaseRepository().getRequest(
-        '${KpatshalaRetrieveNotesQuestion.RetrieveNotesQuestion}?questionSetId=${widget.questionId}',
-        context: context,
-      );
-
-      List<dynamic> notesJson = response['question_notes'];
-      questionNotes =
-          notesJson.map((note) => QuestionNotes.fromJson(note)).toList();
-
-      if (response['question_notes'].isNotEmpty) {
-        final videoLink = response['question_notes'][0]['videoLink'];
-        String? videoId = YoutubePlayer.convertUrlToId(videoLink);
-        if (videoId != null) {
-          _youtubeController = YoutubePlayerController(
-            initialVideoId: videoId,
-            flags: const YoutubePlayerFlags(autoPlay: false, mute: false),
-          );
-        }
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error fetching notes: $e")),
-      );
-    } finally {
-      setState(() {
-        _isLoading = false; // Update loading state
-      });
-    }
+ void _fetchNotes() async {
+    await noteRepository.fetchNotes(widget.questionId, context);
+    setState(() {
+      _isLoading = false; 
+    });
   }
 
   @override
