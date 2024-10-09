@@ -29,3 +29,4 @@ export 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/played_
 export 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/question_page_header.dart';
 export 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/show_zoom_image.dart';
 export 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/question_detail/build_option_section.dart';
+export 'package:kpathshala/service/tts_service.dart';
