@@ -126,7 +126,7 @@ class _ReviewPageState extends State<ReviewPage> {
                 children: [
                   buildIconWaterMark(context),
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: ListView(
                       children: [
                         buildScoreContainer(),
@@ -166,6 +166,8 @@ class _ReviewPageState extends State<ReviewPage> {
           itemCount: readingQuestions.length,
           itemBuilder: (context, index) {
             final optionType = readingQuestions[index].options.first.optionType;
+            final selectedSolvedIndex = readingQuestions[index].options.indexWhere((option) =>
+            option.id == (readingQuestions[index].submission?.questionOptionId ?? -1));
             return Column(
               children: [
                 buildQuestionSection(
@@ -188,7 +190,7 @@ class _ReviewPageState extends State<ReviewPage> {
                 buildOptionSection(
                   context: context,
                   options: readingQuestions[index].options,
-                  selectedSolvedIndex: readingQuestions[index].submission?.questionOptionId ?? -1,
+                  selectedSolvedIndex: selectedSolvedIndex,
                   correctAnswerId: readingQuestions[index].answerOption?.questionOptionId ?? -1,
                   submissionId: readingQuestions[index].submission?.questionOptionId ?? -1,
                   isTextType: optionType == 'text',
@@ -238,8 +240,9 @@ class _ReviewPageState extends State<ReviewPage> {
           shrinkWrap: true,
           itemCount: listeningQuestions.length,
           itemBuilder: (context, index) {
-            final optionType =
-                listeningQuestions[index].options.first.optionType;
+            final optionType = listeningQuestions[index].options.first.optionType;
+            final selectedSolvedIndex = listeningQuestions[index].options.indexWhere((option) =>
+            option.id == (listeningQuestions[index].submission?.questionOptionId ?? -1));
             return Column(
               children: [
                 buildQuestionSection(
@@ -262,7 +265,7 @@ class _ReviewPageState extends State<ReviewPage> {
                 buildOptionSection(
                   context: context,
                   options: listeningQuestions[index].options,
-                  selectedSolvedIndex: readingQuestions[index].submission?.questionOptionId ?? -1,
+                  selectedSolvedIndex: selectedSolvedIndex,
                   correctAnswerId: listeningQuestions[index].answerOption?.questionOptionId ?? -1,
                   submissionId: listeningQuestions[index].submission?.questionOptionId ?? -1,
                   isTextType: optionType == 'text',
