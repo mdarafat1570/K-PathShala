@@ -3,6 +3,7 @@ import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/authentication/base_repository.dart';
 import 'package:kpathshala/model/notes_model/retrieve_notes_model_all_list.dart';
 import 'package:kpathshala/view/common_widget/common_app_bar.dart';
+import 'package:kpathshala/view/exam_main_page/note/add_note_page.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class NoteMainPage extends StatefulWidget {
@@ -17,165 +18,46 @@ class NoteMainPage extends StatefulWidget {
 
 class _NoteMainPageState extends State<NoteMainPage> {
   late YoutubePlayerController _youtubeController;
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
   RetrieveNotesModel? _notesModel;
+  List<QuestionNotes>? questionNotes;
   bool _isLoading = true;
-  List<Map<String, String>> notes = [];
 
   @override
   void initState() {
     super.initState();
-    _fetchNotesData();
+    fetchNotes(); // Fetch notes data on initialization
   }
 
-  void _fetchNotesData() async {
+  Future<void> fetchNotes() async {
     try {
-      final baseRepo = BaseRepository();
-
-      String url =
-          '${KpatshalaRetrieveNotesQuestion.RetrieveNotesQuestion}?questionSetId=${widget.questionId}';
-
-      final response = await baseRepo.getRequest(
-        url,
-        headers: null,
+      final response = await BaseRepository().getRequest(
+        '${KpatshalaRetrieveNotesQuestion.RetrieveNotesQuestion}?questionSetId=${widget.questionId}',
         context: context,
       );
 
-      setState(() {
-        _notesModel = RetrieveNotesModel.fromJson(response);
+      List<dynamic> notesJson = response['question_notes'];
+      questionNotes =
+          notesJson.map((note) => QuestionNotes.fromJson(note)).toList();
 
-        if (_notesModel?.questionSetSolutions != null &&
-            _notesModel!.questionSetSolutions!.isNotEmpty) {
-          final videoLink =
-              _notesModel!.questionSetSolutions!.first.videoLink ?? '';
-          String? videoId = YoutubePlayer.convertUrlToId(videoLink);
-
-          if (videoId != null) {
-            _youtubeController = YoutubePlayerController(
-              initialVideoId: videoId,
-              flags: const YoutubePlayerFlags(autoPlay: false, mute: false),
-            );
-          }
+      if (response['question_notes'].isNotEmpty) {
+        final videoLink = response['question_notes'][0]['videoLink'];
+        String? videoId = YoutubePlayer.convertUrlToId(videoLink);
+        if (videoId != null) {
+          _youtubeController = YoutubePlayerController(
+            initialVideoId: videoId,
+            flags: const YoutubePlayerFlags(autoPlay: false, mute: false),
+          );
         }
-
-        _isLoading = false;
-      });
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load data: $e')),
+        SnackBar(content: Text("Error fetching notes: $e")),
       );
+    } finally {
+      setState(() {
+        _isLoading = false; // Update loading state
+      });
     }
-  }
-
-  void _showNoteBottomSheet(
-      {String? initialTitle, String? initialDescription, int? index}) {
-    _titleController.text = initialTitle ?? '';
-    _descriptionController.text = initialDescription ?? '';
-
-    showCommonBottomSheet(
-      context: context,
-      height: MediaQuery.of(context).size.height * 0.6,
-      content: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 60,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 217, 217, 217),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              const SizedBox(height: 15),
-              customText("Create note", TextType.paragraphTitle, fontSize: 18),
-              const SizedBox(height: 10),
-              // Title TextField
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.87,
-                child: TextField(
-                  controller: _titleController,
-                  decoration: InputDecoration(
-                    labelText: 'Note Title',
-                    filled: true,
-                    fillColor: const Color.fromRGBO(245, 247, 250, 1),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide:
-                          const BorderSide(color: Colors.grey, width: 1.0),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              // Description TextField
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.87,
-                child: TextField(
-                  controller: _descriptionController,
-                  maxLines: null,
-                  minLines: 6,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: const Color.fromRGBO(245, 247, 250, 1),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide:
-                          const BorderSide(color: Colors.grey, width: 1.0),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 10),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-            ],
-          ),
-        ),
-      ),
-      actions: [
-        SizedBox(
-          width: MediaQuery.of(context).size.width * 0.87,
-          child: ElevatedButton(
-            child: Text(index == null ? 'Add Note' : 'Edit Note'),
-            onPressed: () {
-              setState(() {
-                if (index == null) {
-                  // Adding a new note
-                  notes.add({
-                    'title': _titleController.text,
-                    'description': _descriptionController.text,
-                  });
-                } else {
-                  // Editing an existing note
-                  notes[index] = {
-                    'title': _titleController.text,
-                    'description': _descriptionController.text,
-                  };
-                }
-              });
-              Navigator.pop(context);
-              _titleController.clear();
-              _descriptionController.clear();
-            },
-          ),
-        ),
-      ],
-      gradient: null,
-      color: Colors.white,
-    );
-  }
-
-  void _deleteNote(int index) {
-    setState(() {
-      notes.removeAt(index);
-    });
   }
 
   @override
@@ -190,15 +72,13 @@ class _NoteMainPageState extends State<NoteMainPage> {
       child: Scaffold(
         appBar: CommonAppBar(title: widget.title ?? ""),
         body: _isLoading
-            ? const Center(
-                child: CircularProgressIndicator()) // Loading Indicator
+            ? const Center(child: CircularProgressIndicator())
             : Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _notesModel?.questionSetSolutions != null &&
-                            _notesModel!.questionSetSolutions!.isNotEmpty
+                    questionNotes != null && questionNotes!.isNotEmpty
                         ? Center(
                             child: Container(
                               width: MediaQuery.of(context).size.width * 0.9,
@@ -218,8 +98,7 @@ class _NoteMainPageState extends State<NoteMainPage> {
                     customText("Lesson Notes", TextType.subtitle, fontSize: 10),
                     const SizedBox(height: 10),
                     Expanded(
-                      child: _notesModel?.questionNotes == null ||
-                              _notesModel!.questionNotes!.isEmpty
+                      child: questionNotes == null || questionNotes!.isEmpty
                           ? const Center(
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
@@ -245,80 +124,62 @@ class _NoteMainPageState extends State<NoteMainPage> {
                               ),
                             )
                           : ListView.builder(
-                              itemCount: _notesModel!.questionNotes!.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                final note = _notesModel!.questionNotes![index];
-                                return Container(
-                                  margin:
-                                      const EdgeInsets.symmetric(vertical: 5),
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color: AppColor.naturalGrey2,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      customText(
-                                        note.title ?? '',
-                                        TextType.paragraphTitleNormal,
-                                        fontSize: 12,
-                                      ),
-                                      const SizedBox(height: 5),
-                                      Text(
-                                        note.description ?? '',
-                                        style: const TextStyle(
-                                          fontSize: 10,
-                                          color: Colors.grey,
-                                        ),
-                                        maxLines: null,
-                                        overflow: TextOverflow.visible,
-                                      ),
-                                    ],
+                              itemCount: questionNotes!.length,
+                              itemBuilder: (context, index) {
+                                final note = questionNotes![
+                                    index]; // Get the note object
+                                return Card(
+                                  margin: EdgeInsets.all(8.0),
+                                  child: ListTile(
+                                    title: Text(
+                                        note.title ?? ''), // Access note.title
+                                    subtitle: Text(note.description ??
+                                        ''), // Access note.description
+                                    trailing: Text(
+                                      note.createdAt != null
+                                          ? DateTime.parse(note.createdAt!)
+                                              .toLocal()
+                                              .toString()
+                                          : 'No date', // Format the date as needed
+                                    ),
                                   ),
                                 );
                               },
                             ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SizedBox(
-                        width: double
-                            .infinity, // Makes the button fill the available width
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                const Color.fromRGBO(135, 206, 235, 0.3)
-                                    .withOpacity(0.3),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton(
+                        onPressed: () {
+                          showAddNoteBottomSheet(context);
+                        },
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor:
+                              Colors.lightBlueAccent.withOpacity(0.3),
+                          side: const BorderSide(color: Colors.blueAccent),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          onPressed: () {
-                            _showNoteBottomSheet();
-                          },
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.add,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 24),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.add, color: AppColor.navyBlue),
+                            SizedBox(width: 8),
+                            Text(
+                              'Create a note',
+                              style: TextStyle(
                                 color: AppColor.navyBlue,
+                                fontWeight: FontWeight.w500,
                               ),
-                              SizedBox(width: 8),
-                              Flexible(
-                                child: Text(
-                                  "Create a note",
-                                  style: TextStyle(color: AppColor.navyBlue),
-                                  overflow: TextOverflow
-                                      .ellipsis, // Handle overflow gracefully
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
-                    )
+                    ),
+                    const SizedBox(height: 10),
                   ],
                 ),
               ),

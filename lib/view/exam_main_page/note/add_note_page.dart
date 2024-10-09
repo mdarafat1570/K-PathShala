@@ -1,52 +1,81 @@
 import 'package:flutter/material.dart';
-import 'package:kpathshala/app_base/common_imports.dart';
+import 'package:flutter/services.dart';
+import 'package:gap/gap.dart';
+import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/repository/notes_Repository/notes_repository.dart';
 import 'package:kpathshala/model/notes_model/retrieve_noteby_ID_model.dart';
+import 'package:kpathshala/view/common_widget/custom_textfield.dart';
 
-class AddNotePage extends StatefulWidget {
-  const AddNotePage(int questionId, {Key? key}) : super(key: key);
-
-  @override
-  _AddNotePageState createState() => _AddNotePageState();
+void showAddNoteBottomSheet(BuildContext context, ) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true, // Makes the bottom sheet scrollable if necessary
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(25.0),
+      ),
+    ),
+    builder: (BuildContext context) {
+      return AddNoteBottomSheetContent();
+    },
+  );
 }
 
-class _AddNotePageState extends State<AddNotePage> {
+class AddNoteBottomSheetContent extends StatefulWidget {
+  @override
+  _AddNoteBottomSheetContentState createState() =>
+      _AddNoteBottomSheetContentState();
+}
+
+class _AddNoteBottomSheetContentState extends State<AddNoteBottomSheetContent> {
   final _formKey = GlobalKey<FormState>();
   final NoteRepository _notesRepository = NoteRepository();
 
-  // Controllers for form fields
+  // Controllers for title and description fields
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  int _questionSetId = 2; // Hardcoded for example. Adjust as per need.
+
+  String? _titleError;
+  String? _descriptionError;
 
   bool _isLoading = false;
 
   Future<void> _submitForm() async {
-    if (_formKey.currentState?.validate() ?? false) {
-      setState(() {
-        _isLoading = true;
-      });
+    setState(() {
+      _titleError = _titleController.text.isEmpty
+          ? "Title is required"
+          : _titleController.text.length > 255
+              ? "Title must be less than 255 characters"
+              : null;
 
+      _descriptionError = _descriptionController.text.isEmpty
+          ? "Description is required"
+          : null;
+
+      if (_titleError == null && _descriptionError == null) {
+        _isLoading = true;
+      }
+    });
+
+    if (_titleError == null && _descriptionError == null) {
       try {
-        // Create a note object
         final note = RetrieveNotebyIDModel(
           id: null,
-          questionSetId: _questionSetId,
+          questionSetId: 2, // Update with appropriate questionSetId
           userId: null,
           title: _titleController.text,
           description: _descriptionController.text,
-          createdAt: DateTime.now().toIso8601String(), // Set createdAt to now
-          updatedAt: DateTime.now().toIso8601String(), // Set updatedAt to now
+          createdAt: DateTime.now().toIso8601String(),
+          updatedAt: DateTime.now().toIso8601String(),
         );
 
-        // Call the addNote function to submit the note
         await _notesRepository.addNote(note, context);
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Note created successfully!')),
+          const SnackBar(content: Text('Note added successfully!')),
         );
 
-        // Clear the form or navigate to another page if required
+        // Clear fields after submission
         _titleController.clear();
         _descriptionController.clear();
       } catch (e) {
@@ -63,50 +92,67 @@ class _AddNotePageState extends State<AddNotePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColor.white,
-      appBar: AppBar(
-        title: const Text('Add Note'),
-      ),
-      body: Padding(
+    return Padding(
+      padding: MediaQuery.of(context).viewInsets, // To handle keyboard overflow
+      child: Container(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextFormField(
+              Center(
+                child: Container(
+                  height: 5,
+                  width: 80,
+                  color: AppColor.grey100,
+                ),
+              ),
+              Gap(10),
+              const Center(
+                child: Text(
+                  'Add Note',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+              const Gap(16),
+              CustomTextField(
+                label: "Note Title",
                 controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Title',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a title';
-                  }
-                  return null;
+                errorMessage: _titleError,
+                maxLength: 100,
+                onChanged: (value) {
+                  setState(() {
+                    _titleError = null; // Clear error message on input
+                  });
                 },
               ),
-              const SizedBox(height: 16),
-              TextFormField(
+              const Gap(16),
+              CustomTextField(
+                label: "Description",
                 controller: _descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Description',
-                ),
                 maxLines: 4,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a description';
-                  }
-                  return null;
+                errorMessage: _descriptionError,
+                onChanged: (value) {
+                  setState(() {
+                    _descriptionError = null; // Clear error message on input
+                  });
                 },
               ),
-              const SizedBox(height: 24),
+              const Gap(24),
               _isLoading
-                  ? const CircularProgressIndicator()
-                  : ElevatedButton(
-                      onPressed: _submitForm,
-                      child: const Text('Create Note'),
-                    ),
+                  ? const Center(child: CircularProgressIndicator())
+                  : Center(
+                      child: SizedBox(
+                      width: 400, // Set your desired width
+                      height: 40, // Set your desired height
+                      child: ElevatedButton(
+                        onPressed: _submitForm,
+                        child: const Text('Save Note'),
+                      ),
+                    )),
+              const Gap(24),
             ],
           ),
         ),

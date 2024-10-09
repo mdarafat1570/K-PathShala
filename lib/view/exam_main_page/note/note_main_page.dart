@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/view/common_widget/common_app_bar.dart';
+import 'package:kpathshala/view/exam_main_page/note/add_note_page.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class Note extends StatefulWidget {
@@ -47,107 +48,107 @@ class _NoteState extends State<Note> {
     super.dispose();
   }
 
-  // Function to show bottom sheet for adding or editing a note
-  void _showNoteBottomSheet(
-      {String? initialTitle, String? initialDescription, int? index}) {
-    _titleController.text = initialTitle ?? '';
-    _descriptionController.text = initialDescription ?? '';
+  // // Function to show bottom sheet for adding or editing a note
+  // void _showNoteBottomSheet(
+  //     {String? initialTitle, String? initialDescription, int? index}) {
+  //   _titleController.text = initialTitle ?? '';
+  //   _descriptionController.text = initialDescription ?? '';
 
-    showCommonBottomSheet(
-      context: context,
-      height: MediaQuery.of(context).size.height * 0.6,
-      content: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 60,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 217, 217, 217),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              const SizedBox(height: 15),
-              customText("Create note", TextType.paragraphTitle, fontSize: 18),
-              const SizedBox(height: 10),
-              // Title TextField
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.87,
-                child: TextField(
-                  controller: _titleController,
-                  decoration: InputDecoration(
-                    labelText: 'Note Title',
-                    filled: true,
-                    fillColor: const Color.fromRGBO(245, 247, 250, 1),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide:
-                          const BorderSide(color: Colors.grey, width: 1.0),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              // Description TextField
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.87,
-                child: TextField(
-                  controller: _descriptionController,
-                  maxLines: null,
-                  minLines: 6,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: const Color.fromRGBO(245, 247, 250, 1),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide:
-                          const BorderSide(color: Colors.grey, width: 1.0),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 10),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-            ],
-          ),
-        ),
-      ),
-      actions: [
-        SizedBox(
-          width: MediaQuery.of(context).size.width * 0.87,
-          child: ElevatedButton(
-            child: Text(index == null ? 'Add Note' : 'Edit Note'),
-            onPressed: () {
-              setState(() {
-                if (index == null) {
-                  // Adding a new note
-                  notes.add({
-                    'title': _titleController.text,
-                    'description': _descriptionController.text,
-                  });
-                } else {
-                  // Editing an existing note
-                  notes[index] = {
-                    'title': _titleController.text,
-                    'description': _descriptionController.text,
-                  };
-                }
-              });
-              Navigator.pop(context);
-              _titleController.clear();
-              _descriptionController.clear();
-            },
-          ),
-        ),
-      ],
-      gradient: null,
-      color: Colors.white,
-    );
-  }
+  //   showCommonBottomSheet(
+  //     context: context,
+  //     height: MediaQuery.of(context).size.height * 0.6,
+  //     content: Padding(
+  //       padding: const EdgeInsets.all(10.0),
+  //       child: Center(
+  //         child: Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             Container(
+  //               width: 60,
+  //               height: 4,
+  //               decoration: BoxDecoration(
+  //                 color: const Color.fromARGB(255, 217, 217, 217),
+  //                 borderRadius: BorderRadius.circular(8),
+  //               ),
+  //             ),
+  //             const SizedBox(height: 15),
+  //             customText("Create note", TextType.paragraphTitle, fontSize: 18),
+  //             const SizedBox(height: 10),
+  //             // Title TextField
+  //             SizedBox(
+  //               width: MediaQuery.of(context).size.width * 0.87,
+  //               child: TextField(
+  //                 controller: _titleController,
+  //                 decoration: InputDecoration(
+  //                   labelText: 'Note Title',
+  //                   filled: true,
+  //                   fillColor: const Color.fromRGBO(245, 247, 250, 1),
+  //                   enabledBorder: OutlineInputBorder(
+  //                     borderSide:
+  //                         const BorderSide(color: Colors.grey, width: 1.0),
+  //                     borderRadius: BorderRadius.circular(10),
+  //                   ),
+  //                 ),
+  //               ),
+  //             ),
+  //             const SizedBox(height: 10),
+  //             // Description TextField
+  //             SizedBox(
+  //               width: MediaQuery.of(context).size.width * 0.87,
+  //               child: TextField(
+  //                 controller: _descriptionController,
+  //                 maxLines: null,
+  //                 minLines: 6,
+  //                 decoration: InputDecoration(
+  //                   filled: true,
+  //                   fillColor: const Color.fromRGBO(245, 247, 250, 1),
+  //                   enabledBorder: OutlineInputBorder(
+  //                     borderSide:
+  //                         const BorderSide(color: Colors.grey, width: 1.0),
+  //                     borderRadius: BorderRadius.circular(10),
+  //                   ),
+  //                   contentPadding: const EdgeInsets.symmetric(
+  //                       vertical: 10, horizontal: 10),
+  //                 ),
+  //               ),
+  //             ),
+  //             const SizedBox(height: 10),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //     actions: [
+  //       SizedBox(
+  //         width: MediaQuery.of(context).size.width * 0.87,
+  //         child: ElevatedButton(
+  //           child: Text(index == null ? 'Add Note' : 'Edit Note'),
+  //           onPressed: () {
+  //             setState(() {
+  //               if (index == null) {
+  //                 // Adding a new note
+  //                 notes.add({
+  //                   'title': _titleController.text,
+  //                   'description': _descriptionController.text,
+  //                 });
+  //               } else {
+  //                 // Editing an existing note
+  //                 notes[index] = {
+  //                   'title': _titleController.text,
+  //                   'description': _descriptionController.text,
+  //                 };
+  //               }
+  //             });
+  //             Navigator.pop(context);
+  //             _titleController.clear();
+  //             _descriptionController.clear();
+  //           },
+  //         ),
+  //       ),
+  //     ],
+  //     gradient: null,
+  //     color: Colors.white,
+  //   );
+  // }
 
   // Function to delete a note
   void _deleteNote(int index) {
@@ -218,13 +219,13 @@ class _NoteState extends State<Note> {
                                       children: [
                                         GestureDetector(
                                           onTap: () {
-                                            _showNoteBottomSheet(
-                                              initialTitle: notes[index]
-                                                  ['title'],
-                                              initialDescription: notes[index]
-                                                  ['description'],
-                                              index: index,
-                                            );
+                                            // _showNoteBottomSheet(
+                                            //   initialTitle: notes[index]
+                                            //       ['title'],
+                                            //   initialDescription: notes[index]
+                                            //       ['description'],
+                                            //   index: index,
+                                            // );
                                           },
                                           child: Container(
                                               width: 53,
@@ -317,7 +318,7 @@ class _NoteState extends State<Note> {
                       ),
                     ),
                     onPressed: () {
-                      _showNoteBottomSheet();
+                      showAddNoteBottomSheet(context);
                     },
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,

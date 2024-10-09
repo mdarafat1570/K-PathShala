@@ -145,9 +145,8 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
           const SizedBox(height: 12),
           _buildButton("Solve video", AppColor.skyBlue.withOpacity(0.3), () {
             slideNavigationPush(
-
-                // NoteMainPage(questionId, title),
-                AddNotePage(questionId),
+                NoteMainPage(questionId, title),
+                
                 context);
           }),
           if (status == 'flawless' || status == 'completed')
