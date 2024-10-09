@@ -67,9 +67,9 @@ class _ReviewPageState extends State<ReviewPage> {
     if (totalMinutes > 59) {
       int hours = totalMinutes ~/ 60;
       int minutes = totalMinutes % 60;
-      return '${hours}h ${minutes}min';
+      return '${hours}h-${minutes}m';
     } else {
-      return '${totalMinutes}min';
+      return '${totalMinutes}m';
     }
   }
 
@@ -414,7 +414,7 @@ class _ReviewPageState extends State<ReviewPage> {
                   child: _buildScoreContainer(
                       //H _Mint
 
-                      "${formatTime(result?.takenTime ?? 0)}",
+                      formatTime(result?.takenTime ?? 0),
                       "Time taken",
                       borderRadius: const BorderRadius.only(
                         topRight: Radius.circular(10),
