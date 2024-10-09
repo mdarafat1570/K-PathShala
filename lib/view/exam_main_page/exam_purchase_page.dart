@@ -1,9 +1,6 @@
 import 'dart:async';
 
-import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
-import 'package:intl/intl.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
-import 'package:kpathshala/common_error_all_layout/connection_lost.dart';
 import 'package:kpathshala/model/package_model/package_model.dart';
 import 'package:kpathshala/repository/package_service_repository.dart';
 import 'package:kpathshala/view/common_widget/format_date_with_ordinal.dart';
@@ -21,34 +18,34 @@ class ExamPurchasePage extends StatefulWidget {
 class _ExamPurchasePageState extends State<ExamPurchasePage> {
   final PackageRepository _packageRepository = PackageRepository();
   Future<List<PackageList>>? _packagesFuture;
-  bool isConectdToInternet = false;
+  bool isConnectedToInternet = false;
 
-  StreamSubscription? _internetConectionStreamSubscription;
+  StreamSubscription? _internetConnectionStreamSubscription;
 
   // bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    // _internetConectionStreamSubscription =
+    // _internetConnectionStreamSubscription =
     //     InternetConnection().onStatusChange.listen((event) {
     //   print(event);
     //   switch (event) {
     //     case InternetStatus.connected:
     //       setState(() {
-    //         isConectdToInternet = true;
+    //         isConnectedToInternet = true;
     //       });
     //       break;
     //     case InternetStatus.disconnected:
     //       setState(() {
-    //         isConectdToInternet = false;
+    //         isConnectedToInternet = false;
     //         // _showDisconnectionDialog();
     //         slideNavigationPush(ConnectionLost(), context);
     //       });
     //       break;
     //     default:
     //       setState(() {
-    //         isConectdToInternet = false;
+    //         isConnectedToInternet = false;
     //       });
     //       break;
     //   }
@@ -65,7 +62,7 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
   @override
   void dispose() {
     super.dispose();
-    _internetConectionStreamSubscription?.cancel();
+    _internetConnectionStreamSubscription?.cancel();
   }
 
   @override
@@ -228,7 +225,7 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                   //       horizontal: 12, vertical: 4),
                                   //   decoration: BoxDecoration(
                                   //     color: package.status == true
-                                  //         ? AppColor.lightred
+                                  //         ? AppColor.lightRed
                                   //         : Colors.grey,
                                   //     borderRadius: BorderRadius.circular(12),
                                   //   ),

@@ -86,6 +86,55 @@ class BaseRepository {
     }
   }
 
+
+  // Perform HTTP PUT request
+Future<Map<String, dynamic>> putRequest(String url, Map<String, dynamic> body,
+    {Map<String, String>? headers, required BuildContext context}) async {
+  if (!await _hasInternetConnection()) {
+    throw Exception('No Internet Connection');
+  }
+
+  final uri = Uri.parse(url);
+  final defaultHeaders = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ${await getToken()}',
+  };
+  headers = headers != null ? {...defaultHeaders, ...headers} : defaultHeaders;
+
+  try {
+    final response = await http.put(uri, headers: headers, body: jsonEncode(body));
+    return _processResponse(response, context); // Pass context to _processResponse
+  } catch (e) {
+    log('Error in PUT request: $e');
+    rethrow;
+  }
+}
+
+// Perform HTTP DELETE request
+Future<Map<String, dynamic>> deleteRequest(String url,
+    {Map<String, String>? headers, required BuildContext context}) async {
+  if (!await _hasInternetConnection()) {
+    throw Exception('No Internet Connection');
+  }
+
+  final uri = Uri.parse(url);
+  final defaultHeaders = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ${await getToken()}',
+  };
+  headers = headers != null ? {...defaultHeaders, ...headers} : defaultHeaders;
+
+  try {
+    final response = await http.delete(uri, headers: headers);
+    return _processResponse(response, context); // Pass context to _processResponse
+  } catch (e) {
+    log('Error in DELETE request: $e');
+    rethrow;
+  }
+}
+
+
+
   bool _isJson(String str) {
     try {
       jsonDecode(str);
@@ -159,6 +208,7 @@ Future<void> showSessionExpiredDialog(BuildContext context) async {
           TextButton(
             child: const Text('OK'),
             onPressed: () {
+              log("pressed ok--------");
               Navigator.of(context).pop();
               userSignOut(context); 
             },

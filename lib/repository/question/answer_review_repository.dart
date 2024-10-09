@@ -8,7 +8,8 @@ import 'package:kpathshala/model/question_model/result_model.dart';
 class AnswerReviewRepository {
   final BaseRepository _baseRepository = BaseRepository();
   Future<ResultData> fetchResults(
-      {required int questionSetId, required BuildContext context}) async {
+      {required int questionSetId, required BuildContext context}) async
+  {
     try {
       final url = '${KpatshalaAnswerReview.result}?questionSetId=$questionSetId';
       final response = await _baseRepository.getRequest(url, context: context);

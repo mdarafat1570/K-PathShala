@@ -1,8 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/model/question_model/reading_question_page_model.dart';
 import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/played_audio_object.dart';
+import 'dart:typed_data';
 
 Widget buildOptionsList({
   required BuildContext context,
@@ -10,6 +10,7 @@ Widget buildOptionsList({
   required int selectedSolvedIndex,
   required bool isTextType,
   required bool isVoiceType,
+  required bool isTextWithVoice,
   required bool isSpeaking,
   required bool isInDelay,
   required List<PlayedAudios> playedAudiosList,
@@ -59,6 +60,35 @@ Widget buildOptionsList({
                   speak,
                   selectedListeningQuestionData,
                 ),
+              if (isTextWithVoice)
+                Expanded( // Use Expanded to ensure the text and icons are properly wrapped
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (answer.isNotEmpty)
+                        _buildVoiceIcon(
+                          context,
+                          optionExists,
+                          isSpeaking,
+                          isInDelay,
+                          answer,
+                          answerId,
+                          playedAudiosList,
+                          speak,
+                          selectedListeningQuestionData,
+                        ),
+                      if (answer.isNotEmpty)
+                        Text(
+                          answer,
+                          style: const TextStyle(fontSize: 18),
+                          softWrap: true, // Allow text to wrap to the next line
+                          overflow: TextOverflow.visible, // Prevent text from getting cut off
+                        ),
+                    ],
+                  ),
+                ),
             ],
           ),
         ),
@@ -66,6 +96,88 @@ Widget buildOptionsList({
     },
   );
 }
+
+Widget buildOptionsGrid({
+  required BuildContext context,
+  required List<Options> options,
+  required int selectedSolvedIndex,
+  required Function(int, int) selectionHandling,
+  required Function(BuildContext, String, Map<String, Uint8List>) showZoomedImage,
+  required Map<String, Uint8List> cachedImages,
+}) {
+  return GridView.builder(
+    shrinkWrap: true,
+    physics: const NeverScrollableScrollPhysics(),
+    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: 2,
+      childAspectRatio: 2,
+    ),
+    itemCount: options.length,
+    itemBuilder: (context, index) {
+      return _buildGridItem(
+        context,
+        options[index],
+        index,
+        selectedSolvedIndex,
+        selectionHandling,
+        showZoomedImage,
+        cachedImages,
+      );
+    },
+  );
+}
+
+Widget _buildGridItem(
+    BuildContext context,
+    Options option,
+    int index,
+    int selectedSolvedIndex,
+    Function(int, int) selectionHandling,
+    Function(BuildContext, String, Map<String, Uint8List>) showZoomedImage,
+    Map<String, Uint8List> cachedImages,
+    ) {
+  String answerImage = option.imageUrl ?? "";
+  int answerId = option.id ?? -1;
+
+  return Padding(
+    padding: const EdgeInsets.all(8),
+    child: InkWell(
+      onTap: () {
+        selectionHandling(index, answerId);
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildOptionCircle(index, selectedSolvedIndex),
+          const SizedBox(width: 8), // Spacing between circle and image
+          if (answerImage.isNotEmpty)
+            Expanded(
+              child: InkWell(
+                onTap: () {
+                  showZoomedImage(context, answerImage, cachedImages);
+                },
+                child: _buildImage(answerImage, cachedImages),
+              ),
+            ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget _buildImage(String imageUrl, Map<String, Uint8List> cachedImages) {
+  return cachedImages.containsKey(imageUrl)
+      ? Image.memory(
+    cachedImages[imageUrl]!,
+    fit: BoxFit.cover, // Ensure the image fits well in its container
+  )
+      : const Padding(
+    padding: EdgeInsets.all(1.0),
+    child: CircularProgressIndicator(),
+  ); // Show loading if image is not yet cached
+}
+
 
 Widget _buildOptionCircle(int index, int selectedSolvedIndex) {
   return Container(
