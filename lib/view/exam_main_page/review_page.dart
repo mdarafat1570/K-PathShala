@@ -5,6 +5,7 @@ import 'package:kpathshala/model/question_model/reading_question_page_model.dart
 import 'package:kpathshala/model/question_model/result_model.dart';
 import 'package:kpathshala/repository/question/answer_review_repository.dart';
 import 'package:kpathshala/repository/question/reading_questions_repository.dart';
+import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/quiz_attempt_page_imports.dart';
 
 import '../common_widget/common_app_bar.dart';
 
@@ -37,9 +38,10 @@ class _ReviewPageState extends State<ReviewPage> {
       AnswerReviewRepository repository = AnswerReviewRepository();
       QuestionsRepository questionRepository = QuestionsRepository();
 
-      ResultData? resultData = await repository.fetchResults(questionSetId: widget.questionSetId, context: context);
-      QuestionsModel? questionsModel = await questionRepository.fetchReadingQuestions(
-          widget.questionSetId, context);
+      ResultData? resultData = await repository.fetchResults(
+          questionSetId: widget.questionSetId, context: context);
+      QuestionsModel? questionsModel = await questionRepository
+          .fetchReadingQuestions(widget.questionSetId, context);
 
       setState(() {
         readingQuestions = questionsModel?.data?.readingQuestions ?? [];
@@ -68,6 +70,7 @@ class _ReviewPageState extends State<ReviewPage> {
                     children: [
                       buildIconWaterMark(context),
                       buildReadingQuestionListView(),
+                      buildListeningQuestionListView(),
                     ],
                   ),
                 ],
@@ -84,9 +87,9 @@ class _ReviewPageState extends State<ReviewPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset("assets/book-open.png", height: 16),
-            const Text(
-              "읽기 (20 Questions)",
-              style: TextStyle(
+            Text(
+              "읽기 (${readingQuestions.length} Questions)",
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
               ),
@@ -97,6 +100,54 @@ class _ReviewPageState extends State<ReviewPage> {
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemCount: readingQuestions.length,
+          itemBuilder: (context, index) {
+            return Column(
+              children: [
+                // buildQuestionSection(
+                //   context: context,
+                //   title: readingQuestions[index].title ?? '',
+                //   subTitle: readingQuestions[index].subtitle ?? '',
+                //   imageCaption: readingQuestions[index].imageCaption ?? '',
+                //   question: readingQuestions[index].question ?? '',
+                //   imageUrl: readingQuestions[index].imageUrl ?? '',
+                //   voiceScript: '',
+                //   listeningQuestionType: '',
+                //   dialogue: [],
+                //   questionId: readingQuestions[index].id ?? -1,
+                //   showZoomedImage: showZoomedImage,
+                //   cachedImages: {},
+                //   speak: v,
+                // ),
+                Text("Answer"),
+              ],
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget buildListeningQuestionListView() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset("assets/headphones.png", height: 16),
+            Text(
+              "듣기 (${listeningQuestions.length} Questions)",
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        ListView.builder(
+          physics: const NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: listeningQuestions.length,
           itemBuilder: (context, index) {
             return Column(
               children: [

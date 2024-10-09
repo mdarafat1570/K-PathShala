@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'package:http/http.dart' as http;
-
-import 'package:kpathshala/view/exam_main_page/quiz_attempt_page//quiz_attempt_page_imports.dart';
+import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/quiz_attempt_page_imports.dart';
 
 class RetakeTestPage extends StatefulWidget {
   final int questionSetId;
@@ -24,9 +23,6 @@ class RetakeTestPageState extends State<RetakeTestPage>
   int _remainingTime = 3600;
   int _examTime = 3600;
   int totalQuestion = 0;
-  double volume = 0.5;
-  double pitch = 1.0;
-  double rate = 0.5;
 
   Timer? _timer;
   late FlutterTts flutterTts;
@@ -35,6 +31,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
 
   final QuestionsRepository _repository = QuestionsRepository();
   final AuthService _authService = AuthService();
+  late TtsService ttsService;
 
   ReadingQuestions? selectedReadingQuestionData;
   ListeningQuestions? selectedListeningQuestionData;
@@ -50,16 +47,12 @@ class RetakeTestPageState extends State<RetakeTestPage>
 
   bool dataFound = false, shuffleOptions = false;
   bool isListViewVisible = true;
-  bool firstSpeechCompleted = false;
-  bool isInDelay = false;
-  bool isSpeaking = false;
   bool _isTimeUp = false;
   bool isSubmitted = false;
 
   String? selectedLanguage;
   String? selectedEngine;
   String? selectedVoice;
-  String? _newVoiceText;
 
   @override
   void initState() {
@@ -69,8 +62,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
       DeviceOrientation.landscapeLeft,
     ]);
     readCredentials();
-    initTts();
-    _initializeTtsHandlers();
+    ttsService = TtsService();
+    ttsService.initializeTtsHandlers();
     _fetchReadingQuestions();
   }
 
@@ -85,150 +78,21 @@ class RetakeTestPageState extends State<RetakeTestPage>
     setState(() {});
   }
 
-  Future<void> initTts() async {
-    flutterTts = FlutterTts();
-
-    // Set defaults (Korean language, Google TTS engine)
-    await flutterTts.setLanguage("ko-KR");
-    await flutterTts.setEngine("com.google.android.tts");
-    _getVoices();
-    await flutterTts.setVolume(volume);
-    await flutterTts.setPitch(pitch);
-    await flutterTts.setSpeechRate(rate);
-  }
-
-  Future<void> _getVoices() async {
-    List<dynamic> voices = await flutterTts.getVoices as List<dynamic>;
-
-    // Filter only Korean voices
-    setState(() {
-      availableVoices = voices.where((voice) {
-        // Check if the voice is a Map and has the correct keys
-        if (voice is Map &&
-            voice.containsKey('locale') &&
-            voice.containsKey('name')) {
-          return voice['locale'] == 'ko-KR';
-        }
-        return false;
-      }).map((voice) {
-        // Ensure the map is correctly typed
-        return {
-          'name': voice['name'] as String,
-          'locale': voice['locale'] as String,
-        };
-      }).toList();
-
-      // Set default voice if available
-      selectedVoice =
-          availableVoices.isNotEmpty ? availableVoices[0]['name'] : null;
-    });
-  }
-
   Future<void> speak(String? model, String voiceScript,
-      {bool? isDialogue = false}) async {
-    _newVoiceText = voiceScript;
-
-    if (_newVoiceText == null || _newVoiceText!.isEmpty) {
-      log("No text provided for speech.");
-      return;
-    }
-
-    if (model == "female" || model == null) {
-      selectedVoice = "ko-kr-x-ism-local";
-    } else {
-      selectedVoice = "ko-kr-x-kod-local";
-    }
-
-    if (selectedVoice != null) {
-      // Safely retrieve the voice map
-      Map<String, String>? voice = availableVoices.firstWhere(
-        (v) => v['name'] == selectedVoice,
-        orElse: () =>
-            {'name': '', 'locale': ''}, // Return a default map instead of null
-      ) as Map<String, String>?; // Ensure the correct type
-
-      if (voice != null && voice['name']!.isNotEmpty) {
-        await flutterTts.setVoice(voice);
-        log("Using voice: ${voice['name']}");
-      } else {
-        log("Selected voice not found.");
-        return;
-      }
-    }
-    if (isSpeaking || isInDelay) {
-      log("Audio is already playing or in delay. Ignoring click.");
-      return; // Prevent playing if already speaking or in delay
-    }
-
-    // Mark the speaking state as true
-    setState(() {
-      isInDelay = true; // Start delay period
-    });
-
-    // Start the first speech
-    log("Speaking first: $_newVoiceText");
-    await flutterTts.speak(_newVoiceText!);
-
-    await Future.delayed(const Duration(seconds: 3));
-
-    if (firstSpeechCompleted && !isDialogue!) {
-      log("Speaking second: $_newVoiceText");
-      await flutterTts.speak(_newVoiceText!);
-    } else if (!isDialogue!) {
-      log("First speech was interrupted, second speech will not be played.");
-    }
-
-    setState(() {
-      isInDelay = false;
-    });
+      {bool? isDialogue = false}) async
+  {
+    ttsService.speak(model, voiceScript);
   }
 
   Future<void> _stopSpeaking() async {
-    if (isSpeaking || isInDelay) {
-      await flutterTts.stop();
-      firstSpeechCompleted = false;
-      log("Speech stopped");
+    ttsService.stopSpeaking();
     }
-  }
-
-  void _initializeTtsHandlers() {
-    flutterTts.setStartHandler(() {
-      log("Speech started");
-      setState(() {
-        isSpeaking = true;
-      });
-    });
-
-    flutterTts.setCompletionHandler(() {
-      log("Speech completed");
-      setState(() {
-        isSpeaking = false;
-        firstSpeechCompleted = true;
-      });
-    });
-
-    flutterTts.setCancelHandler(() {
-      log("Speech canceled");
-      setState(() {
-        isSpeaking = false;
-      });
-    });
-
-    flutterTts.setErrorHandler((msg) {
-      log("An error occurred: $msg");
-      setState(() {
-        isSpeaking = false;
-      });
-    });
-  }
 
   Future<void> _fetchReadingQuestions() async {
     try {
-      // Fetch the questions asynchronously
       QuestionsModel? questionsModel = await _repository.fetchReadingQuestions(
           widget.questionSetId, context);
 
-      // After fetching the questions, check if the widget is still mounted
       if (!mounted) return;
 
       if (questionsModel != null && questionsModel.data != null) {
@@ -239,10 +103,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
 
         totalQuestion = questionsModel.data?.totalQuestion ?? 0;
         _remainingTime = (questionsModel.data?.duration ?? 60) * 60;
-        // _remainingTime = 5;
         _examTime = (questionsModel.data?.duration ?? 60) * 60;
 
-        // Now that the widget is still mounted, safely update the state
         setState(() {
           dataFound = true;
           _startTimer();
@@ -297,7 +159,6 @@ class RetakeTestPageState extends State<RetakeTestPage>
       }
     }
 
-    // Wait for all images to be cached
     await Future.wait(preloadFutures);
   }
 
@@ -305,7 +166,6 @@ class RetakeTestPageState extends State<RetakeTestPage>
     try {
       final response = await http.get(Uri.parse(imageUrl));
       if (response.statusCode == 200) {
-        // Cache image bytes
         cachedImages[imageUrl] = response.bodyBytes;
         log("Cached image: $imageUrl");
       } else {
@@ -335,8 +195,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
               submitAnswer(isTimeUp: true);
             },
             onSecondaryAction: () {
-              Navigator.pop(context); // Close dialog
-              Navigator.pop(context); // Perform extra navigation if needed
+              Navigator.pop(context);
+              Navigator.pop(context);
             },
           );
         }
@@ -357,12 +217,10 @@ class RetakeTestPageState extends State<RetakeTestPage>
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            // Stay on the page
             child: const Text("Cancel"),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            // Exit the page
             child: const Text(
               "Exit",
               style: TextStyle(color: Colors.red),
@@ -379,7 +237,6 @@ class RetakeTestPageState extends State<RetakeTestPage>
       _timer?.cancel();
     }
     super.dispose();
-    flutterTts.stop();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -430,7 +287,6 @@ class RetakeTestPageState extends State<RetakeTestPage>
                       userImageUrl: credentials?.imagesAddress ?? '',
                       userName: credentials?.name ?? '',
                     ),
-                    //  Content for the selected tab
                     Expanded(
                       child: ListView(children: [
                         Visibility(
@@ -469,9 +325,6 @@ class RetakeTestPageState extends State<RetakeTestPage>
     if (selectedReadingQuestionData == null &&
         selectedListeningQuestionData == null) return const SizedBox.shrink();
     bool isListening = selectedReadingQuestionData == null;
-    // int index = isListening
-    //     ? _listeningQuestions.indexOf(_selectedListeningQuestionData!)
-    //     : _readingQuestions.indexOf(_selectedReadingQuestionData!);
     final title = isListening
         ? selectedListeningQuestionData?.title ?? ""
         : selectedReadingQuestionData?.title ?? "";
@@ -502,7 +355,6 @@ class RetakeTestPageState extends State<RetakeTestPage>
     if (!isListening &&
         (solvedReadingQuestions.any((answer) =>
             answer.questionId == selectedReadingQuestionData?.id))) {
-      // Find the solved question's matching index in options
       selectedSolvedIndex = options.indexWhere((option) =>
           option.id ==
           solvedReadingQuestions
@@ -554,10 +406,9 @@ class RetakeTestPageState extends State<RetakeTestPage>
     return Stack(
       alignment: Alignment.center,
       children: [
-        // Watermark Image
         Positioned(
           child: Opacity(
-            opacity: 0.1, // Adjust opacity for the watermark effect
+            opacity: 0.1,
             child: Image.asset(
               'assets/new_App_icon.png',
               height: MediaQuery.sizeOf(context).height * 0.7,
@@ -583,15 +434,15 @@ class RetakeTestPageState extends State<RetakeTestPage>
                       listeningQuestionType: listeningQuestionType,
                       dialogue: dialogue,
                       questionId: questionId,
-                      isSpeaking: isSpeaking,
-                      isInDelay: isInDelay,
+                      isSpeaking: ttsService.isSpeaking,
+                      isInDelay: ttsService.isInDelay,
                       exists: exists,
                       showZoomedImage: showZoomedImage,
                       cachedImages: cachedImages,
                       playedAudiosList: playedAudiosList,
                       speak: speak,
                       changeInDelayStatus: changeInDelayStatus,
-                      isSpeechCompleted: firstSpeechCompleted),
+                      isSpeechCompleted: ttsService.firstSpeechCompleted),
                   buildOptionSection(
                     context: context,
                     options: options,
@@ -599,8 +450,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
                     isTextType: isTextType,
                     isVoiceType: isVoiceType,
                     isTextWithVoice: isTextWithVoice,
-                    isSpeaking: isSpeaking,
-                    isInDelay: isInDelay,
+                    isSpeaking: ttsService.isSpeaking,
+                    isInDelay: ttsService.isInDelay,
                     playedAudiosList: playedAudiosList,
                     selectionHandling: selectionHandling,
                     speak: speak,
@@ -841,7 +692,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
 
   void changeInDelayStatus() {
     setState(() {
-      isInDelay = !isInDelay;
+      ttsService.isInDelay = !ttsService.isInDelay;
     });
   }
 }
