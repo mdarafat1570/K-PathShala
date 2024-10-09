@@ -42,6 +42,10 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
           setState(() {
             isConectdToInternet = true;
           });
+          if (Navigator.canPop(context)) {
+            Navigator.pop(
+                context); // Close ConnectionLost page when internet is back
+          }
           break;
         case InternetStatus.disconnected:
           setState(() {
