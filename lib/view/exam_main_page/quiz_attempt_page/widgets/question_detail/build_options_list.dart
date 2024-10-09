@@ -8,15 +8,18 @@ Widget buildOptionsList({
   required BuildContext context,
   required List<Options> options,
   required int selectedSolvedIndex,
+  int? correctAnswerId,
+  int? submissionId,
   required bool isTextType,
   required bool isVoiceType,
   required bool isTextWithVoice,
   required bool isSpeaking,
   required bool isInDelay,
+  required bool isInReviewMode,
   required List<PlayedAudios> playedAudiosList,
   required Function(int, int) selectionHandling,
   required Function(String?, String) speak,
-  required ListeningQuestions? selectedListeningQuestionData,
+  ListeningQuestions? selectedListeningQuestionData,
 }) {
   return ListView.builder(
     shrinkWrap: true,
@@ -27,15 +30,33 @@ Widget buildOptionsList({
       int answerId = options[index].id ?? -1;
       String voiceScript = options[index].voiceScript ?? '';
       bool optionExists = playedAudiosList.any(
-            (audio) => audio.audioId == answerId && audio.audioType == 'option',
+        (audio) => audio.audioId == answerId && audio.audioType == 'option',
       );
 
-      return Padding(
-        padding: const EdgeInsets.all(8),
+      Color containerColor = isInReviewMode
+          ? (correctAnswerId == answerId && submissionId == answerId
+          ? Colors.green.withOpacity(0.5)
+          : correctAnswerId == answerId
+          ? Colors.green.withOpacity(0.5)
+          : submissionId == answerId
+          ? Colors.red.withOpacity(0.5)
+          : Colors.white.withOpacity(0.5))
+          : Colors.transparent;
+
+
+      return Container(
+        padding: const EdgeInsets.all(6),
+        margin: const EdgeInsets.all(2),
+        decoration: BoxDecoration(
+            color: containerColor,
+            borderRadius: BorderRadius.circular(8)
+        ),
         child: InkWell(
-          onTap: () {
-            selectionHandling(index, answerId);
-          },
+          onTap: isInReviewMode
+              ? null
+              : () {
+                  selectionHandling(index, answerId);
+                },
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -61,7 +82,7 @@ Widget buildOptionsList({
                   selectedListeningQuestionData,
                 ),
               if (isTextWithVoice)
-                Expanded( // Use Expanded to ensure the text and icons are properly wrapped
+                Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -83,8 +104,9 @@ Widget buildOptionsList({
                         Text(
                           answer,
                           style: const TextStyle(fontSize: 18),
-                          softWrap: true, // Allow text to wrap to the next line
-                          overflow: TextOverflow.visible, // Prevent text from getting cut off
+                          softWrap: true,
+                          overflow: TextOverflow
+                              .visible,
                         ),
                     ],
                   ),
@@ -101,8 +123,12 @@ Widget buildOptionsGrid({
   required BuildContext context,
   required List<Options> options,
   required int selectedSolvedIndex,
+  int? correctAnswerId,
+  int? submissionId,
+  required bool isInReviewMode,
   required Function(int, int) selectionHandling,
-  required Function(BuildContext, String, Map<String, Uint8List>) showZoomedImage,
+  required Function(BuildContext, String, Map<String, Uint8List>)
+      showZoomedImage,
   required Map<String, Uint8List> cachedImages,
 }) {
   return GridView.builder(
@@ -119,6 +145,9 @@ Widget buildOptionsGrid({
         options[index],
         index,
         selectedSolvedIndex,
+        correctAnswerId,
+        submissionId,
+        isInReviewMode,
         selectionHandling,
         showZoomedImage,
         cachedImages,
@@ -128,29 +157,50 @@ Widget buildOptionsGrid({
 }
 
 Widget _buildGridItem(
-    BuildContext context,
-    Options option,
-    int index,
-    int selectedSolvedIndex,
-    Function(int, int) selectionHandling,
-    Function(BuildContext, String, Map<String, Uint8List>) showZoomedImage,
-    Map<String, Uint8List> cachedImages,
-    ) {
+  BuildContext context,
+  Options option,
+  int index,
+  int selectedSolvedIndex,
+    int? correctAnswerId,
+    int? submissionId,
+  bool isInReviewMode,
+  Function(int, int) selectionHandling,
+  Function(BuildContext, String, Map<String, Uint8List>) showZoomedImage,
+  Map<String, Uint8List> cachedImages,
+) {
   String answerImage = option.imageUrl ?? "";
   int answerId = option.id ?? -1;
+  Color containerColor = isInReviewMode
+      ? (correctAnswerId == answerId && submissionId == answerId
+      ? Colors.green.withOpacity(0.5)
+      : correctAnswerId == answerId
+      ? Colors.green.withOpacity(0.5)
+      : submissionId == answerId
+      ? Colors.red.withOpacity(0.5)
+      : Colors.white.withOpacity(0.5))
+      : Colors.transparent;
 
-  return Padding(
-    padding: const EdgeInsets.all(8),
+
+
+  return Container(
+    padding: const EdgeInsets.all(6),
+    margin: const EdgeInsets.all(2),
+    decoration: BoxDecoration(
+      color: containerColor,
+      borderRadius: BorderRadius.circular(8)
+    ),
     child: InkWell(
-      onTap: () {
-        selectionHandling(index, answerId);
-      },
+      onTap: isInReviewMode
+          ? null
+          : () {
+              selectionHandling(index, answerId);
+            },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildOptionCircle(index, selectedSolvedIndex),
-          const SizedBox(width: 8), // Spacing between circle and image
+          const SizedBox(width: 8),
           if (answerImage.isNotEmpty)
             Expanded(
               child: InkWell(
@@ -169,15 +219,14 @@ Widget _buildGridItem(
 Widget _buildImage(String imageUrl, Map<String, Uint8List> cachedImages) {
   return cachedImages.containsKey(imageUrl)
       ? Image.memory(
-    cachedImages[imageUrl]!,
-    fit: BoxFit.cover, // Ensure the image fits well in its container
-  )
+          cachedImages[imageUrl]!,
+          fit: BoxFit.cover,
+        )
       : const Padding(
-    padding: EdgeInsets.all(1.0),
-    child: CircularProgressIndicator(),
-  ); // Show loading if image is not yet cached
+          padding: EdgeInsets.all(1.0),
+          child: CircularProgressIndicator(),
+        );
 }
-
 
 Widget _buildOptionCircle(int index, int selectedSolvedIndex) {
   return Container(
@@ -200,32 +249,32 @@ Widget _buildOptionCircle(int index, int selectedSolvedIndex) {
 }
 
 Widget _buildVoiceIcon(
-    BuildContext context,
-    bool optionExists,
-    bool isSpeaking,
-    bool isInDelay,
-    String voiceScript,
-    int answerId,
-    List<PlayedAudios> playedAudiosList,
-    Function(String?, String) speak,
-    ListeningQuestions? selectedListeningQuestionData,
-    ) {
+  BuildContext context,
+  bool optionExists,
+  bool isSpeaking,
+  bool isInDelay,
+  String voiceScript,
+  int answerId,
+  List<PlayedAudios> playedAudiosList,
+  Function(String?, String) speak,
+  ListeningQuestions? selectedListeningQuestionData,
+) {
   return Container(
     margin: const EdgeInsets.only(left: 20),
     child: InkWell(
       onTap: optionExists
           ? null
           : () {
-        if (!isSpeaking && !isInDelay) {
-          playedAudiosList.add(
-            PlayedAudios(audioId: answerId, audioType: 'option'),
-          );
-          speak(
-            selectedListeningQuestionData?.voiceGender,
-            voiceScript,
-          );
-        }
-      },
+              if (!isSpeaking && !isInDelay) {
+                playedAudiosList.add(
+                  PlayedAudios(audioId: answerId, audioType: 'option'),
+                );
+                speak(
+                  selectedListeningQuestionData?.voiceGender,
+                  voiceScript,
+                );
+              }
+            },
       child: Image.asset(
         'assets/speaker.png',
         height: 40,

@@ -1,7 +1,6 @@
 export 'dart:async';
 export 'dart:convert';
 export 'package:flutter/services.dart';
-export 'package:flutter_tts/flutter_tts.dart';
 export 'package:flutter/material.dart';
 export 'package:gap/gap.dart';
 export 'package:kpathshala/app_base/image_strings.dart';

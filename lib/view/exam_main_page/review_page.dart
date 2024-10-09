@@ -1,10 +1,8 @@
 import 'dart:developer';
+import 'package:http/http.dart' as http;
 
-import 'package:kpathshala/app_base/common_imports.dart';
-import 'package:kpathshala/model/question_model/reading_question_page_model.dart';
 import 'package:kpathshala/model/question_model/result_model.dart';
 import 'package:kpathshala/repository/question/answer_review_repository.dart';
-import 'package:kpathshala/repository/question/reading_questions_repository.dart';
 import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/quiz_attempt_page_imports.dart';
 
 import '../common_widget/common_app_bar.dart';
@@ -23,6 +21,7 @@ class ReviewPage extends StatefulWidget {
 class _ReviewPageState extends State<ReviewPage> {
   bool dataFound = false;
   ResultData? result;
+  late TtsService ttsService;
 
   List<ReadingQuestions> readingQuestions = [];
   List<ListeningQuestions> listeningQuestions = [];
@@ -30,29 +29,89 @@ class _ReviewPageState extends State<ReviewPage> {
   @override
   void initState() {
     super.initState();
+    ttsService = TtsService();
+    ttsService.initializeTtsHandlers();
     fetchData();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    ttsService.dispose();
   }
 
   void fetchData() async {
     try {
       AnswerReviewRepository repository = AnswerReviewRepository();
-      QuestionsRepository questionRepository = QuestionsRepository();
 
       ResultData? resultData = await repository.fetchResults(
           questionSetId: widget.questionSetId, context: context);
-      QuestionsModel? questionsModel = await questionRepository
-          .fetchReadingQuestions(widget.questionSetId, context);
+      QuestionsModel? questionsModel = await repository.fetchAnswer(questionSetId: widget.questionSetId, context: context);
+
+      result = resultData;
+      readingQuestions = questionsModel?.data?.readingQuestions ?? [];
+      listeningQuestions = questionsModel?.data?.listeningQuestions ?? [];
+      await _preloadImages();
 
       setState(() {
-        readingQuestions = questionsModel?.data?.readingQuestions ?? [];
-        listeningQuestions = questionsModel?.data?.listeningQuestions ?? [];
-        result = resultData;
         dataFound = true;
       });
       log("----------");
     } catch (e) {
       log(e.toString()); // Handle the exception
     }
+  }
+
+  Future<void> _preloadImages() async {
+    log("Loading Image");
+    List<Future<void>> preloadFutures = [];
+
+    for (ReadingQuestions question in readingQuestions) {
+      if (question.imageUrl != null && question.imageUrl!.isNotEmpty) {
+        preloadFutures.add(_cacheImage(question.imageUrl!));
+      }
+
+      for (var option in question.options) {
+        if (option.imageUrl != null && option.imageUrl!.isNotEmpty) {
+          preloadFutures.add(_cacheImage(option.imageUrl!));
+        }
+      }
+    }
+
+    for (ListeningQuestions question in listeningQuestions) {
+      if (question.imageUrl != null && question.imageUrl!.isNotEmpty) {
+        preloadFutures.add(_cacheImage(question.imageUrl!));
+      }
+
+      for (var option in question.options) {
+        if (option.imageUrl != null && option.imageUrl!.isNotEmpty) {
+          preloadFutures.add(_cacheImage(option.imageUrl!));
+        }
+      }
+    }
+
+    await Future.wait(preloadFutures);
+  }
+
+  Future<void> _cacheImage(String imageUrl) async {
+    try {
+      final response = await http.get(Uri.parse(imageUrl));
+      if (response.statusCode == 200) {
+        cachedImages[imageUrl] = response.bodyBytes;
+        log("Cached image: $imageUrl");
+      } else {
+        log("Failed to load image: $imageUrl");
+      }
+    } catch (e) {
+      log("Error caching image: $e");
+    }
+  }
+
+  Map<String, Uint8List> cachedImages = {};
+
+  Future<void> speak(String? model, String voiceScript,
+      {bool? isDialogue = false}) async {
+    ttsService.speak(model, voiceScript);
   }
 
   @override
@@ -63,15 +122,20 @@ class _ReviewPageState extends State<ReviewPage> {
       body: SafeArea(
         child: !dataFound
             ? const Center(child: CircularProgressIndicator())
-            : ListView(
+            : Stack(
                 children: [
-                  buildScoreContainer(),
-                  Stack(
-                    children: [
-                      buildIconWaterMark(context),
-                      buildReadingQuestionListView(),
-                      buildListeningQuestionListView(),
-                    ],
+                  buildIconWaterMark(context),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ListView(
+                      children: [
+                        buildScoreContainer(),
+                        const Divider(),
+                        buildReadingQuestionListView(),
+                        const Divider(),
+                        buildListeningQuestionListView(),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -96,30 +160,55 @@ class _ReviewPageState extends State<ReviewPage> {
             ),
           ],
         ),
-        ListView.builder(
+        ListView.separated(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemCount: readingQuestions.length,
           itemBuilder: (context, index) {
+            final optionType = readingQuestions[index].options.first.optionType;
             return Column(
               children: [
-                // buildQuestionSection(
-                //   context: context,
-                //   title: readingQuestions[index].title ?? '',
-                //   subTitle: readingQuestions[index].subtitle ?? '',
-                //   imageCaption: readingQuestions[index].imageCaption ?? '',
-                //   question: readingQuestions[index].question ?? '',
-                //   imageUrl: readingQuestions[index].imageUrl ?? '',
-                //   voiceScript: '',
-                //   listeningQuestionType: '',
-                //   dialogue: [],
-                //   questionId: readingQuestions[index].id ?? -1,
-                //   showZoomedImage: showZoomedImage,
-                //   cachedImages: {},
-                //   speak: v,
-                // ),
-                Text("Answer"),
+                buildQuestionSection(
+                  context: context,
+                  title: readingQuestions[index].title ?? '',
+                  subTitle: readingQuestions[index].subtitle ?? '',
+                  imageCaption: readingQuestions[index].imageCaption ?? '',
+                  question: readingQuestions[index].question ?? '',
+                  imageUrl: readingQuestions[index].imageUrl ?? '',
+                  voiceScript: '',
+                  voiceModel: '',
+                  listeningQuestionType: '',
+                  dialogue: [],
+                  questionId: readingQuestions[index].id ?? -1,
+                  showZoomedImage: showZoomedImage,
+                  cachedImages: cachedImages,
+                  speak: speak,
+                  isInReviewMode: true,
+                ),
+                buildOptionSection(
+                  context: context,
+                  options: readingQuestions[index].options,
+                  selectedSolvedIndex: readingQuestions[index].submission?.questionOptionId ?? -1,
+                  correctAnswerId: readingQuestions[index].answerOption?.questionOptionId ?? -1,
+                  submissionId: readingQuestions[index].submission?.questionOptionId ?? -1,
+                  isTextType: optionType == 'text',
+                  isVoiceType: optionType == 'voice',
+                  isTextWithVoice: optionType == 'text_with_voice',
+                  isInReviewMode: true,
+                  isSpeaking: ttsService.isInDelay,
+                  isInDelay: ttsService.isInDelay,
+                  playedAudiosList: [],
+                  selectionHandling: (v,c){},
+                  speak: speak,
+                  showZoomedImage: showZoomedImage,
+                  cachedImages: cachedImages,
+                ),
               ],
+            );
+          },
+          separatorBuilder: (context, index){
+            return Divider(
+              color: Colors.grey[200],
             );
           },
         ),
@@ -144,16 +233,56 @@ class _ReviewPageState extends State<ReviewPage> {
             ),
           ],
         ),
-        ListView.builder(
+        ListView.separated(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemCount: listeningQuestions.length,
           itemBuilder: (context, index) {
+            final optionType =
+                listeningQuestions[index].options.first.optionType;
             return Column(
               children: [
-                Text("Question"),
-                Text("Answer"),
+                buildQuestionSection(
+                  context: context,
+                  title: listeningQuestions[index].title ?? '',
+                  subTitle: listeningQuestions[index].subtitle ?? '',
+                  imageCaption: listeningQuestions[index].imageCaption ?? '',
+                  question: '',
+                  imageUrl: listeningQuestions[index].imageUrl ?? '',
+                  voiceScript: listeningQuestions[index].voiceScript ?? '',
+                  voiceModel: listeningQuestions[index].voiceGender ?? '',
+                  listeningQuestionType: listeningQuestions[index].questionType ?? '',
+                  dialogue: listeningQuestions[index].dialogues,
+                  questionId: listeningQuestions[index].id ?? -1,
+                  showZoomedImage: showZoomedImage,
+                  cachedImages: cachedImages,
+                  speak: speak,
+                  isInReviewMode: true,
+                ),
+                buildOptionSection(
+                  context: context,
+                  options: listeningQuestions[index].options,
+                  selectedSolvedIndex: readingQuestions[index].submission?.questionOptionId ?? -1,
+                  correctAnswerId: listeningQuestions[index].answerOption?.questionOptionId ?? -1,
+                  submissionId: listeningQuestions[index].submission?.questionOptionId ?? -1,
+                  isTextType: optionType == 'text',
+                  isVoiceType: optionType == 'voice',
+                  isTextWithVoice: optionType == 'text_with_voice',
+                  isInReviewMode: true,
+                  isSpeaking: ttsService.isInDelay,
+                  isInDelay: ttsService.isInDelay,
+                  playedAudiosList: [],
+                  selectionHandling: (v,c){},
+                  speak: speak,
+                  showZoomedImage: showZoomedImage,
+                  cachedImages: cachedImages,
+                ),
               ],
+            );
+          },
+          separatorBuilder: (context, index){
+            return Divider(
+              color: Colors.grey[200],
             );
           },
         ),

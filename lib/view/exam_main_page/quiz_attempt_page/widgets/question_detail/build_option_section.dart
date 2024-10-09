@@ -10,21 +10,23 @@ Widget buildOptionSection({
   required BuildContext context,
   required List<Options> options,
   required int selectedSolvedIndex,
+  int? correctAnswerId,
+  int? submissionId,
   required bool isTextType,
   required bool isVoiceType,
   required bool isTextWithVoice,
+  bool? isInReviewMode = false,
   required bool isSpeaking,
   required bool isInDelay,
   required List<PlayedAudios> playedAudiosList,
   required Function(int, int) selectionHandling,
   required Function(String?, String) speak,
-  required ListeningQuestions? selectedListeningQuestionData,
-  required Function(BuildContext, String, Map<String, Uint8List>)
-      showZoomedImage,
+  ListeningQuestions? selectedListeningQuestionData,
+  required Function(BuildContext, String, Map<String, Uint8List>) showZoomedImage,
   required Map<String, Uint8List> cachedImages,
 }) {
   return SizedBox(
-      width: MediaQuery.sizeOf(context).width * 0.45,
+      width: isInReviewMode! ? null : MediaQuery.sizeOf(context).width * 0.45,
       child: isTextType || isVoiceType || isTextWithVoice
           ? buildOptionsList(
               context: context,
@@ -34,7 +36,10 @@ Widget buildOptionSection({
               isVoiceType: isVoiceType,
               isSpeaking: isSpeaking,
               isInDelay: isInDelay,
+              isInReviewMode: isInReviewMode,
               isTextWithVoice: isTextWithVoice,
+              correctAnswerId: correctAnswerId,
+              submissionId: submissionId,
               playedAudiosList: playedAudiosList,
               selectionHandling: selectionHandling,
               speak: speak,
@@ -43,6 +48,9 @@ Widget buildOptionSection({
               context: context,
               options: options,
               selectedSolvedIndex: selectedSolvedIndex,
+              correctAnswerId: correctAnswerId,
+              submissionId: submissionId,
+              isInReviewMode: isInReviewMode,
               selectionHandling: selectionHandling,
               showZoomedImage: showZoomedImage,
               cachedImages: cachedImages));

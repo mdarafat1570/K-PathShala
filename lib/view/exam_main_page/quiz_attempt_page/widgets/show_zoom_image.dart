@@ -14,7 +14,7 @@ void showZoomedImage(BuildContext context, String imageUrl, Map<String, Uint8Lis
             child: cachedImages.containsKey(imageUrl)
                 ? Image.memory(
               cachedImages[imageUrl]!,
-              fit: BoxFit.cover,
+              fit: BoxFit.fitWidth,
             )
                 : const Center(child: CircularProgressIndicator()),
           ),
