@@ -21,6 +21,18 @@ class BannerCarouselState extends State<BannerCarousel> {
 
   @override
   Widget build(BuildContext context) {
+    // Check if the banners list is empty
+    if (widget.banners.isEmpty) {
+      return Container(
+        color: Colors.grey[200],
+        height: 211, // Specify a height for the empty state
+        width: double.infinity,
+        child: Center(
+          child: SvgPicture.asset('assets/Group_26.svg'),
+        ),
+      );
+    }
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
