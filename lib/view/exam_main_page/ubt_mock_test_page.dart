@@ -8,6 +8,7 @@ import 'package:kpathshala/view/common_widget/common_app_bar.dart';
 import 'package:kpathshala/view/common_widget/format_date_with_ordinal.dart';
 import 'package:kpathshala/view/exam_main_page/bottom_sheets/bottom_panel_page_course_purchase.dart';
 import 'package:kpathshala/view/exam_main_page/bottom_sheets/main_bottom_sheet.dart';
+import 'package:kpathshala/view/exam_main_page/note/notev2.dart';
 import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/quiz_attempt_page.dart';
 import 'package:kpathshala/view/exam_main_page/widgets/test_sets_page_shimmer.dart';
 import 'package:kpathshala/view/exam_main_page/widgets/ubt_exam_row.dart';
@@ -69,7 +70,7 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
           (qs) => qs.status == 'completed' || qs.status == 'flawless',
         );
 
-        if (lastCompletedSetIndex < questionSet.length-1){
+        if (lastCompletedSetIndex < questionSet.length - 1) {
           log("Increasing index");
           lastCompletedSetIndex++;
         }
@@ -81,14 +82,15 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
     }
   }
 
-  void _showBottomSheet({required BuildContext context,
-    required String courseTitle,
-    required String courseDescription,
-    required int score,
-    required int questionId,
-    required String status}
-  ) {
-    Widget additionalContent = _bottomSheetType2(context, courseTitle, courseDescription, questionId, status);
+  void _showBottomSheet(
+      {required BuildContext context,
+      required String courseTitle,
+      required String courseDescription,
+      required int score,
+      required int questionId,
+      required String status}) {
+    Widget additionalContent = _bottomSheetType2(
+        context, courseTitle, courseDescription, questionId, status);
 
     showCommonBottomSheet(
       context: context,
@@ -141,15 +143,17 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
           ),
           const SizedBox(height: 12),
           _buildButton("Solve video", AppColor.skyBlue.withOpacity(0.3), () {
-            slideNavigationPush(Note(questionId, title), context);
+            slideNavigationPush(NoteMainPage(questionId, title), context);
           }),
           if (status == 'flawless' || status == 'completed')
-          const SizedBox(height: 12),
+            const SizedBox(height: 12),
           if (status == 'flawless' || status == 'completed')
-          _buildButton("Review performance", AppColor.skyBlue.withOpacity(0.3),
-              () {
-            slideNavigationPush(ReviewPage(appBarTitle: title, questionSetId: questionId), context);
-          }),
+            _buildButton(
+                "Review performance", AppColor.skyBlue.withOpacity(0.3), () {
+              slideNavigationPush(
+                  ReviewPage(appBarTitle: title, questionSetId: questionId),
+                  context);
+            }),
           const SizedBox(height: 12),
           if (buttonLabel.isNotEmpty)
             SizedBox(
@@ -299,7 +303,13 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
                           onTap: () {
                             (widget.isInPreviewMode! && index > 2)
                                 ? null
-                                : _showBottomSheet(context: context, courseTitle: title, courseDescription: description, score: score ?? 0, questionId: question.id, status: status);
+                                : _showBottomSheet(
+                                    context: context,
+                                    courseTitle: title,
+                                    courseDescription: description,
+                                    score: score ?? 0,
+                                    questionId: question.id,
+                                    status: status);
                           },
                           child: CourseRow(
                             title: title,
@@ -314,7 +324,13 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
                             onDetailsClick: () {
                               (widget.isInPreviewMode! && index > 2)
                                   ? null
-                                  : _showBottomSheet(context: context, courseTitle: title, courseDescription: description, score: score, questionId: question.id, status: status);
+                                  : _showBottomSheet(
+                                      context: context,
+                                      courseTitle: title,
+                                      courseDescription: description,
+                                      score: score,
+                                      questionId: question.id,
+                                      status: status);
                             },
                             onRetakeTestClick: () {
                               (widget.isInPreviewMode! && index > 2)
