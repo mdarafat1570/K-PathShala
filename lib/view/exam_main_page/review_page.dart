@@ -46,7 +46,8 @@ class _ReviewPageState extends State<ReviewPage> {
 
       ResultData? resultData = await repository.fetchResults(
           questionSetId: widget.questionSetId, context: context);
-      QuestionsModel? questionsModel = await repository.fetchAnswer(questionSetId: widget.questionSetId, context: context);
+      QuestionsModel? questionsModel = await repository.fetchAnswer(
+          questionSetId: widget.questionSetId, context: context);
 
       result = resultData;
       readingQuestions = questionsModel?.data?.readingQuestions ?? [];
@@ -59,6 +60,16 @@ class _ReviewPageState extends State<ReviewPage> {
       log("----------");
     } catch (e) {
       log(e.toString()); // Handle the exception
+    }
+  }
+
+  String formatTime(int totalMinutes) {
+    if (totalMinutes > 59) {
+      int hours = totalMinutes ~/ 60;
+      int minutes = totalMinutes % 60;
+      return '${hours}h ${minutes}min';
+    } else {
+      return '${totalMinutes}min';
     }
   }
 
@@ -126,7 +137,7 @@ class _ReviewPageState extends State<ReviewPage> {
                 children: [
                   buildIconWaterMark(context),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
                     child: ListView(
                       children: [
                         buildScoreContainer(),
@@ -166,8 +177,12 @@ class _ReviewPageState extends State<ReviewPage> {
           itemCount: readingQuestions.length,
           itemBuilder: (context, index) {
             final optionType = readingQuestions[index].options.first.optionType;
-            final selectedSolvedIndex = readingQuestions[index].options.indexWhere((option) =>
-            option.id == (readingQuestions[index].submission?.questionOptionId ?? -1));
+            final selectedSolvedIndex = readingQuestions[index]
+                .options
+                .indexWhere((option) =>
+                    option.id ==
+                    (readingQuestions[index].submission?.questionOptionId ??
+                        -1));
             return Column(
               children: [
                 buildQuestionSection(
@@ -191,8 +206,12 @@ class _ReviewPageState extends State<ReviewPage> {
                   context: context,
                   options: readingQuestions[index].options,
                   selectedSolvedIndex: selectedSolvedIndex,
-                  correctAnswerId: readingQuestions[index].answerOption?.questionOptionId ?? -1,
-                  submissionId: readingQuestions[index].submission?.questionOptionId ?? -1,
+                  correctAnswerId:
+                      readingQuestions[index].answerOption?.questionOptionId ??
+                          -1,
+                  submissionId:
+                      readingQuestions[index].submission?.questionOptionId ??
+                          -1,
                   isTextType: optionType == 'text',
                   isVoiceType: optionType == 'voice',
                   isTextWithVoice: optionType == 'text_with_voice',
@@ -200,7 +219,7 @@ class _ReviewPageState extends State<ReviewPage> {
                   isSpeaking: ttsService.isInDelay,
                   isInDelay: ttsService.isInDelay,
                   playedAudiosList: [],
-                  selectionHandling: (v,c){},
+                  selectionHandling: (v, c) {},
                   speak: speak,
                   showZoomedImage: showZoomedImage,
                   cachedImages: cachedImages,
@@ -208,7 +227,7 @@ class _ReviewPageState extends State<ReviewPage> {
               ],
             );
           },
-          separatorBuilder: (context, index){
+          separatorBuilder: (context, index) {
             return Divider(
               color: Colors.grey[200],
             );
@@ -240,9 +259,14 @@ class _ReviewPageState extends State<ReviewPage> {
           shrinkWrap: true,
           itemCount: listeningQuestions.length,
           itemBuilder: (context, index) {
-            final optionType = listeningQuestions[index].options.first.optionType;
-            final selectedSolvedIndex = listeningQuestions[index].options.indexWhere((option) =>
-            option.id == (listeningQuestions[index].submission?.questionOptionId ?? -1));
+            final optionType =
+                listeningQuestions[index].options.first.optionType;
+            final selectedSolvedIndex = listeningQuestions[index]
+                .options
+                .indexWhere((option) =>
+                    option.id ==
+                    (listeningQuestions[index].submission?.questionOptionId ??
+                        -1));
             return Column(
               children: [
                 buildQuestionSection(
@@ -254,7 +278,8 @@ class _ReviewPageState extends State<ReviewPage> {
                   imageUrl: listeningQuestions[index].imageUrl ?? '',
                   voiceScript: listeningQuestions[index].voiceScript ?? '',
                   voiceModel: listeningQuestions[index].voiceGender ?? '',
-                  listeningQuestionType: listeningQuestions[index].questionType ?? '',
+                  listeningQuestionType:
+                      listeningQuestions[index].questionType ?? '',
                   dialogue: listeningQuestions[index].dialogues,
                   questionId: listeningQuestions[index].id ?? -1,
                   showZoomedImage: showZoomedImage,
@@ -266,8 +291,13 @@ class _ReviewPageState extends State<ReviewPage> {
                   context: context,
                   options: listeningQuestions[index].options,
                   selectedSolvedIndex: selectedSolvedIndex,
-                  correctAnswerId: listeningQuestions[index].answerOption?.questionOptionId ?? -1,
-                  submissionId: listeningQuestions[index].submission?.questionOptionId ?? -1,
+                  correctAnswerId: listeningQuestions[index]
+                          .answerOption
+                          ?.questionOptionId ??
+                      -1,
+                  submissionId:
+                      listeningQuestions[index].submission?.questionOptionId ??
+                          -1,
                   isTextType: optionType == 'text',
                   isVoiceType: optionType == 'voice',
                   isTextWithVoice: optionType == 'text_with_voice',
@@ -275,7 +305,7 @@ class _ReviewPageState extends State<ReviewPage> {
                   isSpeaking: ttsService.isInDelay,
                   isInDelay: ttsService.isInDelay,
                   playedAudiosList: [],
-                  selectionHandling: (v,c){},
+                  selectionHandling: (v, c) {},
                   speak: speak,
                   showZoomedImage: showZoomedImage,
                   cachedImages: cachedImages,
@@ -283,7 +313,7 @@ class _ReviewPageState extends State<ReviewPage> {
               ],
             );
           },
-          separatorBuilder: (context, index){
+          separatorBuilder: (context, index) {
             return Divider(
               color: Colors.grey[200],
             );
@@ -382,7 +412,10 @@ class _ReviewPageState extends State<ReviewPage> {
                 // Last card: only right border radius
                 Expanded(
                   child: _buildScoreContainer(
-                      "${result?.takenTime ?? 0} min", "Time taken",
+                      //H _Mint
+
+                      "${formatTime(result?.takenTime ?? 0)}",
+                      "Time taken",
                       borderRadius: const BorderRadius.only(
                         topRight: Radius.circular(10),
                         bottomRight: Radius.circular(10),
@@ -396,8 +429,10 @@ class _ReviewPageState extends State<ReviewPage> {
               "${result?.totalRetake ?? 0} Retakes taken", TextType.normal,
               color: AppColor.navyBlue, fontSize: 10),
           customText(
-              "${result?.totalSpendTime ?? 0} spent in total", TextType.normal,
-              color: AppColor.navyBlue, fontSize: 10),
+              "${formatTime(result?.totalSpendTime ?? 0)} spent in total",
+              TextType.normal,
+              color: AppColor.navyBlue,
+              fontSize: 10),
           const Gap(10),
         ],
       ),
