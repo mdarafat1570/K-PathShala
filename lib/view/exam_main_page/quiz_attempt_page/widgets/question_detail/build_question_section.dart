@@ -14,6 +14,7 @@ Widget buildQuestionSection({
   required String question,
   required String imageUrl,
   required String voiceScript,
+  required String voiceModel,
   required String listeningQuestionType,
   required List<Dialogue> dialogue,
   required int questionId,
@@ -47,6 +48,7 @@ Widget buildQuestionSection({
             question: question,
             imageUrl: imageUrl,
             voiceScript: voiceScript,
+            voiceModel: voiceModel,
             dialogue: dialogue,
             listeningQuestionType: listeningQuestionType,
             questionId: questionId,
@@ -82,6 +84,7 @@ Widget _buildQuestionSection(
       required String question,
       required String imageUrl,
       required String voiceScript,
+      required String voiceModel,
       required List<Dialogue> dialogue,
       required String listeningQuestionType,
       required int questionId,
@@ -140,7 +143,7 @@ Widget _buildQuestionSection(
                   playedAudiosList.add(
                       PlayedAudios(audioId: questionId, audioType: "question"));
                   if (listeningQuestionType != "dialogues") {
-                    speak(null, voiceScript);
+                    speak(voiceModel, voiceScript);
                   } else {
                     await _playDialogue(dialogue, speak, changeInDelayStatus, isSpeechCompleted);
                   }

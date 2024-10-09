@@ -25,7 +25,6 @@ class RetakeTestPageState extends State<RetakeTestPage>
   int totalQuestion = 0;
 
   Timer? _timer;
-  late FlutterTts flutterTts;
 
   Map<int, Widget>? questionImages;
 
@@ -237,6 +236,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
       _timer?.cancel();
     }
     super.dispose();
+    ttsService.dispose();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -340,6 +340,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
         : selectedReadingQuestionData?.imageUrl ?? "";
     final voiceScript = selectedListeningQuestionData?.voiceScript ?? "";
     dialogue = selectedListeningQuestionData?.dialogues ?? [];
+    final voiceModel = selectedListeningQuestionData?.voiceGender ?? '';
     final listeningQuestionType =
         selectedListeningQuestionData?.questionType ?? "";
     final options = isListening
@@ -431,6 +432,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                       question: question,
                       imageUrl: imageUrl,
                       voiceScript: voiceScript,
+                      voiceModel: voiceModel,
                       listeningQuestionType: listeningQuestionType,
                       dialogue: dialogue,
                       questionId: questionId,
