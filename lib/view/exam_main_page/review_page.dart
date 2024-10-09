@@ -46,6 +46,9 @@ class _ReviewPageState extends State<ReviewPage> {
       setState(() {
         readingQuestions = questionsModel?.data?.readingQuestions ?? [];
         listeningQuestions = questionsModel?.data?.listeningQuestions ?? [];
+        log(jsonEncode(readingQuestions));
+        log(jsonEncode(listeningQuestions));
+
         result = resultData;
         dataFound = true;
       });
