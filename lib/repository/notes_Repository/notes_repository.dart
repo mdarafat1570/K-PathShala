@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/authentication/base_repository.dart';
+import 'package:kpathshala/model/notes_model/RetrieveNotebyIDModel.dart';
 import 'package:kpathshala/model/notes_model/retrieve_noteby_ID_model.dart';
 import 'package:kpathshala/model/notes_model/retrieve_notes_model_all_list.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -45,19 +46,52 @@ Future<NoteGetModel> fetchNotes({
     );
   }
 
-  Future<void> updateNote(
-      RetrieveNotebyIDModel note, BuildContext context) async {
-    await _baseRepository.putRequest(
-      '$baseUrl/${note.id}',
+Future<void> updateNote(RetrieveNotebyIDUpdateModel note, BuildContext context) async {
+  try {
+    final url = '$baseUrl/${note.id}'; 
+    final response = await _baseRepository.putRequest(
+      url,
       note.toJson(),
       context: context,
     );
-  }
 
-  Future<void> deleteNote(int noteId, BuildContext context) async {
-    await _baseRepository.deleteRequest(
-      '$baseUrl/$noteId',
-      context: context,
-    );
+ 
+    if (response['status'] == 'success') {
+      log('Note updated successfully: ${jsonEncode(response['data'])}');
+    } else {
+      throw Exception('Failed to update note');
+    }
+  } catch (e) {
+    if (e.toString().contains('401')) {
+      throw Exception('Unauthorized: Invalid or missing Bearer Token.');
+    } else if (e.toString().contains('404')) {
+      throw Exception('Note not found.');
+    } else {
+      throw Exception('Server Error: Unable to update the note.');
+    }
+  }
+}
+
+
+   Future<void> deleteNote(int noteId, BuildContext context) async {
+    try {
+      final response = await _baseRepository.deleteRequest(
+        '$baseUrl/$noteId',
+        context: context,
+      );
+      if (response['status'] == 'success') {
+        log('Note deleted successfully');
+      } else {
+        throw Exception('Failed to delete the note');
+      }
+    } catch (e) {
+      if (e.toString().contains('401')) {
+        throw Exception('Unauthorized: Invalid or missing Bearer Token.');
+      } else if (e.toString().contains('404')) {
+        throw Exception('Note not found.');
+      } else {
+        throw Exception('Server Error: Unable to delete the note.');
+      }
+    }
   }
 }
