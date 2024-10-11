@@ -79,14 +79,15 @@ class _AddNoteBottomSheetContentState extends State<AddNoteBottomSheetContent> {
 
         await _notesRepository.addNote(note, context);
 
+        // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Note added successfully!')),
         );
 
-        // Clear fields after submission
-        _titleController.clear();
-        _descriptionController.clear();
+
+        Navigator.of(context).pop();
       } catch (e) {
+        // Show error message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: $e')),
         );
