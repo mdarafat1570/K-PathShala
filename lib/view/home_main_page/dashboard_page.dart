@@ -1,6 +1,8 @@
 import 'dart:developer';
+import 'dart:ui';
 
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
@@ -93,8 +95,7 @@ class _DashboardPageState extends State<DashboardPage> {
     try {
       DashboardRepository repository = DashboardRepository();
 
-      DashboardPageModel? dashModel =
-          await repository.fetchDashboardData(context);
+      DashboardPageModel? dashModel = await repository.fetchDashboardData(context);
 
       setState(() {
         dashboardPageModel = dashModel;
@@ -175,9 +176,9 @@ class _DashboardPageState extends State<DashboardPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (dashboardPageModel?.banners != null &&
-                        dashboardPageModel!.banners!.isNotEmpty)
-                      BannerCarousel(banners: dashboardPageModel!.banners!),
+                    // if (dashboardPageModel?.banners != null &&
+                    //     dashboardPageModel!.banners!.isNotEmpty)
+                      BannerCarousel(banners: dashboardPageModel?.banners ?? []),
                     const SizedBox(height: 20),
                     GridView(
                       physics: const NeverScrollableScrollPhysics(),
@@ -272,21 +273,30 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ),
         Positioned(
+          right: 14,
+          bottom: 0,
+          child: Image.asset(
+            'assets/image 1.png',
+            width: 180,
+            height: 180,
+            fit: BoxFit.fitHeight,
+          ),
+        ),
+        Positioned(
           left: 0,
           bottom: 0,
           child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
             child: Image.asset(
-              'assets/profile.png',
-              width: 220,
+              'assets/dp.png',
               height: 220,
-              fit: BoxFit.cover,
+              fit: BoxFit.fitHeight,
             ),
           ),
         ),
-        // Subscribers and Videos Info
         Positioned(
           right: 14,
-          top: 60,
+          top: 80,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
@@ -296,6 +306,7 @@ class _DashboardPageState extends State<DashboardPage> {
             child: Row(
               children: [
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
@@ -317,6 +328,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
                 const Gap(8),
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     customText(vidCount, TextType.normal,
                         color: AppColor.white,
@@ -335,18 +347,37 @@ class _DashboardPageState extends State<DashboardPage> {
           left: 16,
           bottom: 16,
           right: 16,
-          child: ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.black.withOpacity(0.5),
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10), // Apply blur to the container
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.3), // Semi-transparent overlay
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: InkWell(
+                  onTap: _launchYouTubeChannel,
+                  borderRadius: BorderRadius.circular(8), // For ripple effect to match button shape
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Gap(12),
+                      const Icon(FontAwesomeIcons.youtube, color: Colors.white),
+                      const Gap(8),
+                      customText(
+                        'Free Korean lessons on YouTube',
+                        TextType.normal,
+                        color: Colors.white, // Adjust color for visibility
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
-            onPressed: _launchYouTubeChannel,
-            icon: const Icon(Icons.play_circle_fill, color: Colors.white),
-            label: customText('Free Korean lessons on YouTube', TextType.normal,
-                color: AppColor.white, fontSize: 16),
           ),
         ),
       ],
