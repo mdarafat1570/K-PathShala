@@ -93,7 +93,8 @@ class _DashboardPageState extends State<DashboardPage> {
     try {
       DashboardRepository repository = DashboardRepository();
 
-      DashboardPageModel? dashModel = await repository.fetchDashboardData(context);
+      DashboardPageModel? dashModel =
+          await repository.fetchDashboardData(context);
 
       setState(() {
         dashboardPageModel = dashModel;
@@ -176,7 +177,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   children: [
                     // if (dashboardPageModel?.banners != null &&
                     //     dashboardPageModel!.banners!.isNotEmpty)
-                      BannerCarousel(banners: dashboardPageModel?.banners ?? []),
+                    BannerCarousel(banners: dashboardPageModel?.banners ?? []),
                     const SizedBox(height: 20),
                     GridView(
                       physics: const NeverScrollableScrollPhysics(),
@@ -286,8 +287,8 @@ class _DashboardPageState extends State<DashboardPage> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(16),
             child: Image.asset(
-              'assets/dp.png',
-              height: 220,
+              'assets/DashboardImageOfYoutube.png',
+              height: 250,
               fit: BoxFit.fitHeight,
             ),
           ),
@@ -348,16 +349,19 @@ class _DashboardPageState extends State<DashboardPage> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10), // Apply blur to the container
+              filter: ImageFilter.blur(
+                  sigmaX: 10, sigmaY: 10), // Apply blur to the container
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.3), // Semi-transparent overlay
+                  color:
+                      Colors.grey.withOpacity(0.3), // Semi-transparent overlay
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: InkWell(
                   onTap: _launchYouTubeChannel,
-                  borderRadius: BorderRadius.circular(8), // For ripple effect to match button shape
+                  borderRadius: BorderRadius.circular(
+                      8), // For ripple effect to match button shape
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

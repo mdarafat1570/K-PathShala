@@ -7,6 +7,7 @@ import 'package:kpathshala/repository/notes_Repository/notes_repository.dart';
 import 'package:kpathshala/view/common_widget/common_app_bar.dart';
 import 'package:kpathshala/view/exam_main_page/note/add_note_page.dart';
 import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/quiz_attempt_page_imports.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class NoteMainPage extends StatefulWidget {
@@ -112,7 +113,7 @@ class _NoteMainPageState extends State<NoteMainPage> {
         child: Scaffold(
           appBar: CommonAppBar(title: widget.title ?? ""),
           body: _isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? buildShimmerLoadingEffect()
               : Padding(
                   padding: const EdgeInsets.all(15.0),
                   child: Column(
@@ -652,6 +653,53 @@ class _NoteMainPageState extends State<NoteMainPage> {
           ],
         );
       },
+    );
+  }
+
+  Widget buildShimmerLoadingEffect() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        children: [
+          _buildShimmerContainer(height: 230),
+          const SizedBox(height: 10),
+          _buildShimmerContainer(height: 45, width: 150),
+          _buildShimmerContainer(height: 85, width: 150),
+          _buildShimmerContainer(height: 45, width: 150),
+          _buildShimmerContainer(height: 45, width: 150),
+          _buildShimmerContainer(height: 85, width: 150),
+          const SizedBox(height: 5),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShimmerContainer({
+    required double height,
+    double? width,
+  }) {
+    return Container(
+      height: height,
+      width: width,
+      margin: const EdgeInsets.all(10.0),
+      decoration: BoxDecoration(
+        color: Colors.grey[300],
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+    );
+  }
+
+  List<Widget> _buildShimmerRows(int count) {
+    return List.generate(
+      count,
+      (index) => Row(
+        children: [
+          _buildShimmerContainer(height: 35, width: 35),
+          _buildShimmerContainer(height: 35, width: 200),
+        ],
+      ),
     );
   }
 }

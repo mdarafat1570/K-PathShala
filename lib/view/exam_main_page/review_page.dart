@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:kpathshala/model/question_model/result_model.dart';
 import 'package:kpathshala/repository/question/answer_review_repository.dart';
 import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/quiz_attempt_page_imports.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../common_widget/common_app_bar.dart';
 
@@ -132,7 +133,7 @@ class _ReviewPageState extends State<ReviewPage> {
       appBar: CommonAppBar(title: "Review ${widget.appBarTitle}"),
       body: SafeArea(
         child: !dataFound
-            ? const Center(child: CircularProgressIndicator())
+            ? buildShimmerLoadingEffect()
             : Stack(
                 children: [
                   buildIconWaterMark(context),
@@ -464,6 +465,57 @@ class _ReviewPageState extends State<ReviewPage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget buildShimmerLoadingEffect() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        children: [
+          _buildShimmerContainer(height: 230),
+          const SizedBox(height: 10),
+          _buildShimmerContainer(height: 35, width: 150),
+          _buildShimmerContainer(height: 35, width: 150),
+          const SizedBox(height: 10),
+          ..._buildShimmerRows(4),
+          const SizedBox(height: 5),
+          _buildShimmerContainer(height: 35, width: 150),
+          _buildShimmerContainer(height: 35, width: 150),
+          const SizedBox(height: 10),
+          ..._buildShimmerRows(4),
+          const SizedBox(height: 5),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShimmerContainer({
+    required double height,
+    double? width,
+  }) {
+    return Container(
+      height: height,
+      width: width,
+      margin: const EdgeInsets.all(10.0),
+      decoration: BoxDecoration(
+        color: Colors.grey[300],
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+    );
+  }
+
+  List<Widget> _buildShimmerRows(int count) {
+    return List.generate(
+      count,
+      (index) => Row(
+        children: [
+          _buildShimmerContainer(height: 35, width: 35),
+          _buildShimmerContainer(height: 35, width: 200),
+        ],
       ),
     );
   }
