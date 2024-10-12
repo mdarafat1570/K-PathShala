@@ -1,9 +1,6 @@
 import 'dart:developer';
 
-import 'package:get/get.dart';
-import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
-import 'package:kpathshala/authentication/base_repository.dart';
 import 'package:kpathshala/model/notes_model/RetrieveNotebyIDModel.dart';
 import 'package:kpathshala/model/notes_model/retrieve_notes_model_all_list.dart';
 import 'package:kpathshala/repository/notes_Repository/notes_repository.dart';
@@ -248,7 +245,7 @@ class _NoteMainPageState extends State<NoteMainPage> {
                                                               Icons
                                                                   .info_outline,
                                                               size: 50,
-                                                              color: const Color
+                                                              color:  Color
                                                                   .fromARGB(255,
                                                                   139, 53, 47),
                                                             ),
@@ -372,6 +369,7 @@ class _NoteMainPageState extends State<NoteMainPage> {
                                                       questionNotes = null;
                                                       questionSetSolutions =
                                                           null;
+                                                      _isLoading = false;
                                                       setState(() {});
                                                       _fetchNotes();
                                                       ScaffoldMessenger.of(
@@ -435,6 +433,7 @@ class _NoteMainPageState extends State<NoteMainPage> {
                               noteGet = null;
                               questionNotes = null;
                               questionSetSolutions = null;
+                              _isLoading = false;
                               setState(() {});
                               _fetchNotes();
                             }
@@ -586,6 +585,7 @@ class _NoteMainPageState extends State<NoteMainPage> {
                               noteGet = null;
                               questionNotes = null;
                               questionSetSolutions = null;
+                              _isLoading = false;
                               setState(() {});
                               _fetchNotes();
                             } catch (e) {
