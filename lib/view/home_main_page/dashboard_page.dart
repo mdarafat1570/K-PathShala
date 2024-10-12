@@ -3,10 +3,8 @@ import 'dart:ui';
 
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
-import 'package:kpathshala/common_error_all_layout/connection_lost.dart';
 import 'package:kpathshala/model/dashboard_page_model/dashboard_page_model.dart';
 import 'package:kpathshala/repository/dashboard_repository/dashboard_page_repository.dart';
 import 'dart:async';
@@ -45,34 +43,34 @@ class _DashboardPageState extends State<DashboardPage> {
   String vidCount = "0";
   int _currentTimer = 1;
   bool dataFound = false;
-  bool isConectdToInternet = false;
+  bool isConnectedToInternet = false;
   Timer? _timer;
 
   DashboardPageModel? dashboardPageModel;
 
-  StreamSubscription? _internetConectionStreamSubscription;
+  StreamSubscription? _internetConnectionStreamSubscription;
 
   @override
   void initState() {
     super.initState();
-    // _internetConectionStreamSubscription =
+    // _internetConnectionStreamSubscription =
     //     InternetConnection().onStatusChange.listen((event) {
     //   print(event);
     //   switch (event) {
     //     case InternetStatus.connected:
     //       setState(() {
-    //         isConectdToInternet = true;
+    //         isConnectedToInternet = true;
     //       });
     //       break;
     //     case InternetStatus.disconnected:
     //       setState(() {
-    //         isConectdToInternet = false;
+    //         isConnectedToInternet = false;
     //         slideNavigationPush(ConnectionLost(), context);
     //       });
     //       break;
     //     default:
     //       setState(() {
-    //         isConectdToInternet = false;
+    //         isConnectedToInternet = false;
     //       });
     //       break;
     //   }
@@ -84,10 +82,10 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void dispose() {
     if (_timer != null) {
-      _internetConectionStreamSubscription?.cancel();
+      _internetConnectionStreamSubscription?.cancel();
       _timer!.cancel();
     }
-    _internetConectionStreamSubscription?.cancel();
+    _internetConnectionStreamSubscription?.cancel();
     super.dispose();
   }
 
@@ -143,27 +141,27 @@ class _DashboardPageState extends State<DashboardPage> {
       });
     }
   }
-
-  void _showDisconnectionDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('No Internet Connection'),
-          content:
-              const Text('You are currently not connected to the internet.'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  //
+  // void _showDisconnectionDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: const Text('No Internet Connection'),
+  //         content:
+  //             const Text('You are currently not connected to the internet.'),
+  //         actions: <Widget>[
+  //           TextButton(
+  //             child: const Text('OK'),
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
