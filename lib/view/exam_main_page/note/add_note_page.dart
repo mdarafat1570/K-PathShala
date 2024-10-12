@@ -6,22 +6,30 @@ import 'package:kpathshala/repository/notes_Repository/notes_repository.dart';
 import 'package:kpathshala/model/notes_model/retrieve_noteby_ID_model.dart';
 import 'package:kpathshala/view/common_widget/custom_textfield.dart';
 
-void showAddNoteBottomSheet(BuildContext context, ) {
+void showAddNoteBottomSheet(
+  BuildContext context,
+  int questionSetId,
+) {
   showModalBottomSheet(
     context: context,
-    isScrollControlled: true, // Makes the bottom sheet scrollable if necessary
+    isScrollControlled: true,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(
         top: Radius.circular(25.0),
       ),
     ),
     builder: (BuildContext context) {
-      return AddNoteBottomSheetContent();
+      return AddNoteBottomSheetContent(questionSetId: questionSetId);
     },
   );
 }
 
 class AddNoteBottomSheetContent extends StatefulWidget {
+  final int questionSetId; // Add this line
+
+  const AddNoteBottomSheetContent({Key? key, required this.questionSetId})
+      : super(key: key);
+
   @override
   _AddNoteBottomSheetContentState createState() =>
       _AddNoteBottomSheetContentState();
@@ -61,7 +69,7 @@ class _AddNoteBottomSheetContentState extends State<AddNoteBottomSheetContent> {
       try {
         final note = RetrieveNotebyIDModel(
           id: null,
-          questionSetId: 2, // Update with appropriate questionSetId
+          questionSetId: widget.questionSetId,
           userId: null,
           title: _titleController.text,
           description: _descriptionController.text,
@@ -71,14 +79,15 @@ class _AddNoteBottomSheetContentState extends State<AddNoteBottomSheetContent> {
 
         await _notesRepository.addNote(note, context);
 
+        // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Note added successfully!')),
         );
 
-        // Clear fields after submission
-        _titleController.clear();
-        _descriptionController.clear();
+
+        Navigator.of(context).pop();
       } catch (e) {
+        // Show error message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: $e')),
         );
@@ -124,7 +133,7 @@ class _AddNoteBottomSheetContentState extends State<AddNoteBottomSheetContent> {
                 maxLength: 100,
                 onChanged: (value) {
                   setState(() {
-                    _titleError = null; // Clear error message on input
+                    _titleError = null;
                   });
                 },
               ),
@@ -136,7 +145,7 @@ class _AddNoteBottomSheetContentState extends State<AddNoteBottomSheetContent> {
                 errorMessage: _descriptionError,
                 onChanged: (value) {
                   setState(() {
-                    _descriptionError = null; // Clear error message on input
+                    _descriptionError = null;
                   });
                 },
               ),
@@ -145,8 +154,8 @@ class _AddNoteBottomSheetContentState extends State<AddNoteBottomSheetContent> {
                   ? const Center(child: CircularProgressIndicator())
                   : Center(
                       child: SizedBox(
-                      width: 400, // Set your desired width
-                      height: 40, // Set your desired height
+                      width: 400,
+                      height: 40,
                       child: ElevatedButton(
                         onPressed: _submitForm,
                         child: const Text('Save Note'),
