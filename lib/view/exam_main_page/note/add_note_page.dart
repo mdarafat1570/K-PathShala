@@ -6,11 +6,11 @@ import 'package:kpathshala/repository/notes_Repository/notes_repository.dart';
 import 'package:kpathshala/model/notes_model/retrieve_noteby_ID_model.dart';
 import 'package:kpathshala/view/common_widget/custom_textfield.dart';
 
-void showAddNoteBottomSheet(
-  BuildContext context,
-  int questionSetId,
-) {
-  showModalBottomSheet(
+Future<bool> showAddNoteBottomSheet(
+    BuildContext context,
+    int questionSetId,
+    ) async {
+  return await showModalBottomSheet<bool>(
     context: context,
     isScrollControlled: true,
     shape: const RoundedRectangleBorder(
@@ -21,21 +21,21 @@ void showAddNoteBottomSheet(
     builder: (BuildContext context) {
       return AddNoteBottomSheetContent(questionSetId: questionSetId);
     },
-  );
+  ) ?? false; // Return false if null
 }
+
 
 class AddNoteBottomSheetContent extends StatefulWidget {
   final int questionSetId; // Add this line
 
-  const AddNoteBottomSheetContent({Key? key, required this.questionSetId})
-      : super(key: key);
+  const AddNoteBottomSheetContent({super.key, required this.questionSetId});
 
   @override
-  _AddNoteBottomSheetContentState createState() =>
-      _AddNoteBottomSheetContentState();
+  AddNoteBottomSheetContentState createState() =>
+      AddNoteBottomSheetContentState();
 }
 
-class _AddNoteBottomSheetContentState extends State<AddNoteBottomSheetContent> {
+class AddNoteBottomSheetContentState extends State<AddNoteBottomSheetContent> {
   final _formKey = GlobalKey<FormState>();
   final NoteRepository _notesRepository = NoteRepository();
 
@@ -84,8 +84,7 @@ class _AddNoteBottomSheetContentState extends State<AddNoteBottomSheetContent> {
           const SnackBar(content: Text('Note added successfully!')),
         );
 
-
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(true);
       } catch (e) {
         // Show error message
         ScaffoldMessenger.of(context).showSnackBar(
@@ -118,7 +117,7 @@ class _AddNoteBottomSheetContentState extends State<AddNoteBottomSheetContent> {
                   color: AppColor.grey100,
                 ),
               ),
-              Gap(10),
+              const Gap(10),
               const Center(
                 child: Text(
                   'Add Note',
@@ -126,28 +125,48 @@ class _AddNoteBottomSheetContentState extends State<AddNoteBottomSheetContent> {
                 ),
               ),
               const Gap(16),
-              CustomTextField(
-                label: "Note Title",
-                controller: _titleController,
-                errorMessage: _titleError,
-                maxLength: 100,
-                onChanged: (value) {
-                  setState(() {
-                    _titleError = null;
-                  });
-                },
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(6.0),
+                  border: Border.all(
+                    color:  Colors.grey[300]!,
+                    width: 1.0,
+                  ),
+                ),
+                child: CustomTextField(
+                  label: "Note Title",
+                  controller: _titleController,
+                  errorMessage: _titleError,
+                  maxLength: 100,
+                  onChanged: (value) {
+                    setState(() {
+                      _titleError = null;
+                    });
+                  },
+                ),
               ),
               const Gap(16),
-              CustomTextField(
-                label: "Description",
-                controller: _descriptionController,
-                maxLines: 4,
-                errorMessage: _descriptionError,
-                onChanged: (value) {
-                  setState(() {
-                    _descriptionError = null;
-                  });
-                },
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(6.0),
+                  border: Border.all(
+                    color:  Colors.grey[300]!,
+                    width: 1.0,
+                  ),
+                ),
+                child: CustomTextField(
+                  label: "Description",
+                  controller: _descriptionController,
+                  maxLines: 4,
+                  errorMessage: _descriptionError,
+                  onChanged: (value) {
+                    setState(() {
+                      _descriptionError = null;
+                    });
+                  },
+                ),
               ),
               const Gap(24),
               _isLoading
