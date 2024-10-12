@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/quiz_attempt_page_imports.dart';
 
@@ -43,6 +44,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
   List<Answers> solvedListeningQuestions = [];
   List<dynamic> availableVoices = [];
   List<PlayedAudios> playedAudiosList = [];
+  List<Options> previousOptions = [];
 
   bool dataFound = false, shuffleOptions = false;
   bool isListViewVisible = true;
@@ -343,9 +345,11 @@ class RetakeTestPageState extends State<RetakeTestPage>
     final voiceModel = selectedListeningQuestionData?.voiceGender ?? '';
     final listeningQuestionType =
         selectedListeningQuestionData?.questionType ?? "";
-    final options = isListening
-        ? selectedListeningQuestionData?.options ?? []
-        : selectedReadingQuestionData?.options ?? [];
+    final options = isListening ? selectedListeningQuestionData?.options ?? [] : selectedReadingQuestionData?.options ?? [];
+    if (!listEquals(options, previousOptions)) {
+      options.shuffle();  // Shuffle only if options have changed
+      previousOptions = List.from(options);  // Update the previous options list
+    }
     bool isTextType = options.isNotEmpty && options.first.optionType == 'text';
     bool isVoiceType = options.isNotEmpty && options.first.optionType == 'voice';
     bool isTextWithVoice = options.isNotEmpty && options.first.optionType == 'text_with_voice';

@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:get/get.dart';
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/authentication/base_repository.dart';
@@ -25,6 +26,7 @@ class _NoteMainPageState extends State<NoteMainPage> {
   NoteResultData? noteResultData;
   NoteGetModel? noteGet;
   List<QuestionNotes>? questionNotes;
+  QuestionSetSolutions? questionSetSolutions;
   String? _titleError;
   String? _descriptionError;
   bool _isLoading = true;
@@ -46,11 +48,12 @@ class _NoteMainPageState extends State<NoteMainPage> {
       if (noteData != null) {
         noteGet = noteData;
         questionNotes = noteData.data?.questionNotes ?? [];
+        questionSetSolutions = noteData.data?.questionSetSolutions;
 
-        if (noteData.data?.questionSetSolutions?.videoLink != null) {
+        if (questionSetSolutions?.videoLink != null) {
           _youtubeController = YoutubePlayerController(
-            initialVideoId: YoutubePlayer.convertUrlToId(
-                noteData.data!.questionSetSolutions!.videoLink!)!,
+            initialVideoId:
+                YoutubePlayer.convertUrlToId(questionSetSolutions!.videoLink!)!,
             flags: const YoutubePlayerFlags(
               autoPlay: false,
               loop: false,
@@ -92,7 +95,7 @@ class _NoteMainPageState extends State<NoteMainPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    questionNotes != null && questionNotes!.isNotEmpty
+                    questionSetSolutions?.videoLink != null
                         ? Center(
                             child: Container(
                               width: MediaQuery.of(context).size.width * 0.9,
@@ -160,12 +163,13 @@ class _NoteMainPageState extends State<NoteMainPage> {
                                     children: [
                                       Row(
                                         children: [
-                                          customText(
-                                            note.title ?? '',
-                                            TextType.paragraphTitleNormal,
-                                            fontSize: 12,
+                                          Expanded(
+                                            child: customText(
+                                              note.title ?? '',
+                                              TextType.paragraphTitleNormal,
+                                              fontSize: 12,
+                                            ),
                                           ),
-                                          const Spacer(),
                                           Row(
                                             children: [
                                               GestureDetector(
@@ -280,7 +284,8 @@ class _NoteMainPageState extends State<NoteMainPage> {
                                                                     .styleFrom(
                                                                   backgroundColor:
                                                                       AppColor
-                                                                          .grey100, // Cancel button color
+                                                                          .grey100,
+                                                                  // Cancel button color
                                                                   shape:
                                                                       RoundedRectangleBorder(
                                                                     borderRadius:
@@ -320,7 +325,8 @@ class _NoteMainPageState extends State<NoteMainPage> {
                                                                           255,
                                                                           139,
                                                                           53,
-                                                                          47), // Ok button color
+                                                                          47),
+                                                                  // Ok button color
                                                                   shape:
                                                                       RoundedRectangleBorder(
                                                                     borderRadius:
@@ -362,9 +368,12 @@ class _NoteMainPageState extends State<NoteMainPage> {
                                                         questionNotes!.removeAt(
                                                             index); // Remove note from list
                                                       });
-                                                      setState(() {
-                                                        _fetchNotes(); // Refresh the note list
-                                                      });
+                                                      noteGet = null;
+                                                      questionNotes = null;
+                                                      questionSetSolutions =
+                                                          null;
+                                                      setState(() {});
+                                                      _fetchNotes();
                                                       ScaffoldMessenger.of(
                                                               context)
                                                           .showSnackBar(
@@ -418,10 +427,17 @@ class _NoteMainPageState extends State<NoteMainPage> {
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton(
-                        onPressed: () {
-                          showAddNoteBottomSheet(context, widget.questionId!);
-                          setState(() {
-                            _fetchNotes();
+                        onPressed: () async {
+                          await showAddNoteBottomSheet(
+                                  context, widget.questionId!)
+                              .then((value) {
+                            if (value) {
+                              noteGet = null;
+                              questionNotes = null;
+                              questionSetSolutions = null;
+                              setState(() {});
+                              _fetchNotes();
+                            }
                           });
                         },
                         style: OutlinedButton.styleFrom(
@@ -463,39 +479,62 @@ class _NoteMainPageState extends State<NoteMainPage> {
         TextEditingController(text: note.title);
     TextEditingController descriptionController =
         TextEditingController(text: note.description);
+    bool isUpdating = false;
 
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: const Text('Edit Note'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CustomTextField(
-                label: "Note Title",
-                controller: titleController,
-                errorMessage: _titleError,
-                maxLength: 100,
-                onChanged: (value) {
-                  setState(() {
-                    _titleError = null; // Clear error message on input
-                  });
-                },
-              ),
-              const SizedBox(height: 10),
-              CustomTextField(
-                label: "Description",
-                controller: descriptionController,
-                maxLines: 4,
-                errorMessage: _descriptionError,
-                onChanged: (value) {
-                  setState(() {
-                    _descriptionError = null; // Clear error message on input
-                  });
-                },
-              ),
-            ],
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(6.0),
+                    border: Border.all(
+                      color: Colors.grey[300]!,
+                      width: 1.0,
+                    ),
+                  ),
+                  child: CustomTextField(
+                    label: "Note Title",
+                    controller: titleController,
+                    errorMessage: _titleError,
+                    maxLength: 100,
+                    onChanged: (value) {
+                      setState(() {
+                        _titleError = null; // Clear error message on input
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(6.0),
+                    border: Border.all(
+                      color: Colors.grey[300]!,
+                      width: 1.0,
+                    ),
+                  ),
+                  child: CustomTextField(
+                    label: "Description",
+                    controller: descriptionController,
+                    maxLines: 4,
+                    errorMessage: _descriptionError,
+                    onChanged: (value) {
+                      setState(() {
+                        _descriptionError = null; // Clear error message on input
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
           actions: [
             Row(
@@ -519,51 +558,60 @@ class _NoteMainPageState extends State<NoteMainPage> {
                     ),
                   ),
                 ),
-                TextButton(
-                  onPressed: () async {
-                    if (titleController.text.isNotEmpty &&
-                        descriptionController.text.isNotEmpty) {
-                      final updatedNote = RetrieveNotebyIDUpdateModel(
-                        id: note.id!,
-                        title: titleController.text,
-                        description: descriptionController.text,
-                        questionSetId: widget.questionId!,
-                      );
+                isUpdating
+                    ? const CircularProgressIndicator()
+                    : TextButton(
+                        onPressed: () async {
+                          if (titleController.text.isNotEmpty &&
+                              descriptionController.text.isNotEmpty) {
+                            final updatedNote = RetrieveNotebyIDUpdateModel(
+                              id: note.id!,
+                              title: titleController.text,
+                              description: descriptionController.text,
+                              questionSetId: widget.questionId!,
+                            );
 
-                      try {
-                        await NoteRepository().updateNote(updatedNote, context);
+                            try {
+                              isUpdating = true;
+                              setState(() {});
+                              await NoteRepository()
+                                  .updateNote(updatedNote, context);
 
-                        Navigator.pop(context); // Close the dialog.
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Note updated successfully!')),
-                        );
-                        setState(() {
-                          _fetchNotes();
-                        });
-                      } catch (e) {
-                        log('Error updating note: $e');
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Failed to update note')),
-                        );
-                      }
-                    }
-                  },
-                  style: TextButton.styleFrom(
-                    backgroundColor: AppColor.navyBlue, // Ok button color
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    child: Text(
-                      'Update',
-                      style: TextStyle(color: Colors.white, fontSize: 12),
-                    ),
-                  ),
-                ),
+                              Navigator.pop(context); // Close the dialog.
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text('Note updated successfully!')),
+                              );
+                              noteGet = null;
+                              questionNotes = null;
+                              questionSetSolutions = null;
+                              setState(() {});
+                              _fetchNotes();
+                            } catch (e) {
+                              log('Error updating note: $e');
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('Failed to update note')),
+                              );
+                            }
+                          }
+                        },
+                        style: TextButton.styleFrom(
+                          backgroundColor: AppColor.navyBlue, // Ok button color
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 10),
+                          child: Text(
+                            'Update',
+                            style: TextStyle(color: Colors.white, fontSize: 12),
+                          ),
+                        ),
+                      ),
               ],
             ),
           ],
