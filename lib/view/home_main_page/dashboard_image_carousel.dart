@@ -27,7 +27,7 @@ class BannerCarouselState extends State<BannerCarousel> {
         if (widget.banners != null && widget.banners!.isEmpty)
           Container(
             color: Colors.grey[200],
-            height: 211, // Specify a height for the empty state
+            height: double.infinity,
             width: double.infinity,
             child: Center(
               child: SvgPicture.asset('assets/mockup_dashboard_banner.svg'),
@@ -42,7 +42,7 @@ class BannerCarouselState extends State<BannerCarousel> {
               viewportFraction: 1,
               onPageChanged: (index, reason) {
                 setState(() {
-                  _currentIndex = index; // Update the current index
+                  _currentIndex = index;
                 });
               },
             ),

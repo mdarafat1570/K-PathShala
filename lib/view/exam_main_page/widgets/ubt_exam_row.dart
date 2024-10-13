@@ -85,28 +85,44 @@ class CourseRow extends StatelessWidget {
                         if (title.isNotEmpty)
                           Column(
                             children: [
-                              Row(
-                                children: [
-                                  customText(title, TextType.normal, fontWeight: FontWeight.w600, fontSize: 14, color: isInPreviewMode! ? Colors.black54 : null),
-                                  const Gap(5),
-                                  if (completionText.isNotEmpty)
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(25),
-                                        color: containerColor,
+                              LayoutBuilder(
+                                builder: (context, constraints) {
+                                  return RichText(
+                                    text: TextSpan(
+                                      style: DefaultTextStyle.of(context).style.copyWith(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: isInPreviewMode! ? Colors.black54 : null,
                                       ),
-                                      child: Center(
-                                        child: Text(
-                                          completionText,
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            color: scoreTextColor,
-                                          ),
+                                      children: [
+                                        TextSpan(
+                                          text: title,
                                         ),
-                                      ),
+                                        if (completionText.isNotEmpty)
+                                          const WidgetSpan(child: SizedBox(width: 3)),
+                                        if (completionText.isNotEmpty)
+                                          WidgetSpan(
+                                            alignment: PlaceholderAlignment.middle,
+                                            child: Container(
+                                              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(25),
+                                                color: containerColor,
+                                              ),
+                                              child: Text(
+                                                completionText,
+                                                style: TextStyle(
+                                                  fontSize: 10,
+                                                  color: scoreTextColor,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                      ],
                                     ),
-                                ],
+                                    maxLines: null, textScaler: MediaQuery.textScalerOf(context), // Allows wrapping
+                                  );
+                                },
                               ),
                               const Gap(3),
                             ],

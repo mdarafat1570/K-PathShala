@@ -7,6 +7,7 @@ import 'package:kpathshala/repository/notes_Repository/notes_repository.dart';
 import 'package:kpathshala/view/common_widget/common_app_bar.dart';
 import 'package:kpathshala/view/exam_main_page/note/add_note_page.dart';
 import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/quiz_attempt_page_imports.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class NoteMainPage extends StatefulWidget {
@@ -391,6 +392,280 @@ class _NoteMainPageState extends State<NoteMainPage> {
                                                                 );
                                                               },
                                                             );
+              ? buildShimmerLoadingEffect()
+              : Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      questionSetSolutions?.videoLink != null
+                          ? Center(
+                              child: Container(
+                                width: MediaQuery.of(context).size.width * 0.9,
+                                height: 180,
+                                decoration: BoxDecoration(
+                                  color: const Color.fromRGBO(217, 217, 217, 1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                // ignore: unnecessary_null_comparison
+                                child: _youtubeController != null
+                                    ? YoutubePlayer(
+                                        controller: _youtubeController,
+                                        showVideoProgressIndicator: true,
+                                      )
+                                    : const Center(
+                                        child: Text("No Video Available")),
+                              ),
+                            )
+                          : const Center(child: Text("No Video Available")),
+                      const SizedBox(height: 15),
+                      customText("Lesson Notes", TextType.subtitle,
+                          fontSize: 10),
+                      const SizedBox(height: 10),
+                      Expanded(
+                        child: questionNotes == null || questionNotes!.isEmpty
+                            ? const Center(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      'No Notes Created',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.indigo,
+                                      ),
+                                    ),
+                                    SizedBox(height: 10),
+                                    Text(
+                                      'Create notes for effective study and easier revisions',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : ListView.builder(
+                                itemCount: questionNotes!.length,
+                                itemBuilder: (context, index) {
+                                  final note = questionNotes![index];
+                                  return Container(
+                                    margin:
+                                        const EdgeInsets.symmetric(vertical: 5),
+                                    padding: const EdgeInsets.all(
+                                        10), // Add padding for better layout
+                                    decoration: BoxDecoration(
+                                      color: AppColor.naturalGrey2,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: customText(
+                                                note.title ?? '',
+                                                TextType.paragraphTitleNormal,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                            Row(
+                                              children: [
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    _updateNoteDialog(
+                                                        context,
+                                                        note,
+                                                        index); // Call update dialog
+                                                  },
+                                                  child: Container(
+                                                      width: 53,
+                                                      height: 20,
+                                                      decoration: BoxDecoration(
+                                                        color: const Color
+                                                                .fromRGBO(26,
+                                                                35, 126, 0.2)
+                                                            .withOpacity(0.1),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(36),
+                                                      ),
+                                                      child: const Padding(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                left: 8,
+                                                                right: 8),
+                                                        child: Row(
+                                                          children: [
+                                                            Icon(
+                                                              Icons.edit,
+                                                              color: Color
+                                                                  .fromRGBO(
+                                                                      100,
+                                                                      100,
+                                                                      100,
+                                                                      1),
+                                                              size: 8,
+                                                            ),
+                                                            Gap(5),
+                                                            Text(
+                                                              "Edit",
+                                                              style: TextStyle(
+                                                                  color: Color
+                                                                      .fromRGBO(
+                                                                          100,
+                                                                          100,
+                                                                          100,
+                                                                          1),
+                                                                  fontSize: 10),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      )),
+                                                ),
+                                                const SizedBox(width: 10),
+                                                GestureDetector(
+                                                  onTap: () async {
+                                                    final confirm =
+                                                        await showDialog<bool>(
+                                                      context: context,
+                                                      builder: (BuildContext
+                                                          context) {
+                                                        return AlertDialog(
+                                                          shape:
+                                                              const RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            20)),
+                                                          ),
+                                                          title: const Column(
+                                                            children: [
+                                                              Icon(
+                                                                Icons
+                                                                    .info_outline,
+                                                                size: 50,
+                                                                color: Color
+                                                                    .fromARGB(
+                                                                        255,
+                                                                        139,
+                                                                        53,
+                                                                        47),
+                                                              ),
+                                                              SizedBox(
+                                                                  height: 10),
+                                                              Text(
+                                                                'Confirmation',
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontSize: 20,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          content: const Text(
+                                                              'Are you sure you want to delete this note?'),
+                                                          actions: [
+                                                            Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceEvenly,
+                                                              children: [
+                                                                TextButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop(
+                                                                            false); // Do not delete
+                                                                  },
+                                                                  style: TextButton
+                                                                      .styleFrom(
+                                                                    backgroundColor:
+                                                                        AppColor
+                                                                            .grey100,
+                                                                    // Cancel button color
+                                                                    shape:
+                                                                        RoundedRectangleBorder(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              10),
+                                                                    ),
+                                                                  ),
+                                                                  child:
+                                                                      const Padding(
+                                                                    padding: EdgeInsets.symmetric(
+                                                                        horizontal:
+                                                                            20,
+                                                                        vertical:
+                                                                            10),
+                                                                    child: Text(
+                                                                      'Cancel',
+                                                                      style: TextStyle(
+                                                                          color: Colors
+                                                                              .black,
+                                                                          fontSize:
+                                                                              12),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                TextButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop(
+                                                                            true); // Confirm delete
+                                                                  },
+                                                                  style: TextButton
+                                                                      .styleFrom(
+                                                                    backgroundColor:
+                                                                        const Color
+                                                                            .fromARGB(
+                                                                            255,
+                                                                            139,
+                                                                            53,
+                                                                            47),
+                                                                    // Ok button color
+                                                                    shape:
+                                                                        RoundedRectangleBorder(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              10),
+                                                                    ),
+                                                                  ),
+                                                                  child:
+                                                                      const Padding(
+                                                                    padding: EdgeInsets.symmetric(
+                                                                        horizontal:
+                                                                            20,
+                                                                        vertical:
+                                                                            10),
+                                                                    child: Text(
+                                                                      'Delete',
+                                                                      style: TextStyle(
+                                                                          color: Colors
+                                                                              .white,
+                                                                          fontSize:
+                                                                              12),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ],
+                                                        );
+                                                      },
+                                                    );
 
                                                             // Check the confirmation result and handle note deletion
                                                             if (confirm ==
@@ -667,6 +942,53 @@ class _NoteMainPageState extends State<NoteMainPage> {
           ],
         );
       },
+    );
+  }
+
+  Widget buildShimmerLoadingEffect() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        children: [
+          _buildShimmerContainer(height: 230),
+          const SizedBox(height: 10),
+          _buildShimmerContainer(height: 45, width: 150),
+          _buildShimmerContainer(height: 85, width: 150),
+          _buildShimmerContainer(height: 45, width: 150),
+          _buildShimmerContainer(height: 45, width: 150),
+          _buildShimmerContainer(height: 85, width: 150),
+          const SizedBox(height: 5),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShimmerContainer({
+    required double height,
+    double? width,
+  }) {
+    return Container(
+      height: height,
+      width: width,
+      margin: const EdgeInsets.all(10.0),
+      decoration: BoxDecoration(
+        color: Colors.grey[300],
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+    );
+  }
+
+  List<Widget> _buildShimmerRows(int count) {
+    return List.generate(
+      count,
+      (index) => Row(
+        children: [
+          _buildShimmerContainer(height: 35, width: 35),
+          _buildShimmerContainer(height: 35, width: 200),
+        ],
+      ),
     );
   }
 }
