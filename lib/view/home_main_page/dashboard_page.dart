@@ -287,8 +287,8 @@ class _DashboardPageState extends State<DashboardPage> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(16),
             child: Image.asset(
-              'assets/DashboardImageOfYoutube.png',
-              height: 250,
+              'assets/dp.png',
+              height: 220,
               fit: BoxFit.fitHeight,
             ),
           ),

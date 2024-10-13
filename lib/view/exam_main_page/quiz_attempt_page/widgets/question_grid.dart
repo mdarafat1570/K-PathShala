@@ -111,7 +111,7 @@ class QuestionGrid extends StatelessWidget {
               child: Text( isListening ? '${readingQuestionsLength + index + 1}' :
                 '${index + 1}',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 14,
                   color: isSelected
                       ? const Color.fromRGBO(245, 247, 250, 1)
                       : AppColor.navyBlue,

@@ -7,15 +7,12 @@ import 'package:kpathshala/repository/question/question_set_repo.dart';
 import 'package:kpathshala/view/common_widget/common_app_bar.dart';
 import 'package:kpathshala/view/common_widget/format_date_with_ordinal.dart';
 import 'package:kpathshala/view/exam_main_page/bottom_sheets/bottom_panel_page_course_purchase.dart';
-import 'package:kpathshala/view/exam_main_page/bottom_sheets/main_bottom_sheet.dart';
-import 'package:kpathshala/view/exam_main_page/note/add_note_page.dart';
 import 'package:kpathshala/view/exam_main_page/note/note_main_page.dart';
 import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/quiz_attempt_page.dart';
 import 'package:kpathshala/view/exam_main_page/widgets/test_sets_page_shimmer.dart';
 import 'package:kpathshala/view/exam_main_page/widgets/ubt_exam_row.dart';
 import 'package:kpathshala/model/item_list.dart';
 
-import 'note/note_main_page.dart';
 import 'review_page.dart';
 
 class UBTMockTestPage extends StatefulWidget {
@@ -92,17 +89,34 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
       required String status}) {
     Widget additionalContent = _bottomSheetType2(
         context, courseTitle, courseDescription, questionId, status);
-
-    showCommonBottomSheet(
+    showModalBottomSheet(
       context: context,
-      color: Colors.white,
-      content: BottomSheetContent(
-        courseTitle: courseTitle,
-        score: score,
-        additionalContent: additionalContent,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
-      actions: [],
-      height: MediaQuery.of(context).size.height * 0.45,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 60,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 217, 217, 217),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                additionalContent,
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
