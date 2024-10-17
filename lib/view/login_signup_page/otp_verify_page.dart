@@ -6,6 +6,7 @@ import 'package:gap/gap.dart';
 import 'dart:async';
 import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/base/get_device_id.dart';
+import 'package:kpathshala/main.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/model/otp_response_model.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
@@ -17,6 +18,7 @@ import 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
 import 'package:kpathshala/view/common_widget/custom_background.dart';
 import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
 import 'package:pinput/pinput.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OtpPage extends StatefulWidget {
   final String mobileNumber;
@@ -151,7 +153,7 @@ class _OtpPageState extends State<OtpPage> {
   }
 
   void _startResendCountdown() {
-    // Start the countdown
+
     setState(() {
       _isResendButtonDisabled = true;
       _remainingSeconds = 60;
@@ -165,7 +167,7 @@ class _OtpPageState extends State<OtpPage> {
           _updateResendButtonText();
         });
       } else {
-        // Countdown finished
+
         timer.cancel();
         setState(() {
           _isResendButtonDisabled = false;
@@ -181,105 +183,88 @@ class _OtpPageState extends State<OtpPage> {
     });
   }
 
-  void _verifyOtp() async {
-    try {
-      // Show loading indicator
-      showLoadingIndicator(context: context, showLoader: true);
+    // Method to get OneSignal Player ID from SharedPreferences
+  Future<String?> getOneSignalPlayerId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(Preferences.oneSignalUserId);
+  }
 
-      // Prepare data for OTP verification
-      String mobile = widget.mobileNumber;
-      String deviceId = await getDeviceId() ?? "";
-      int otp = int.tryParse(pinController.text.trim()) ?? 0;
+void _verifyOtp() async {
+  try {
+    // Show loading indicator
+    showLoadingIndicator(context: context, showLoader: true);
 
-      log("Mobile: $mobile");
-      log("OTP: ${pinController.text}");
-      log("Device ID: $deviceId");
+    // Prepare data for OTP verification
+    String mobile = widget.mobileNumber;
+    String deviceId = await getDeviceId() ?? "";
+    int otp = int.tryParse(pinController.text.trim()) ?? 0;
 
-      // Make the API call
-      final response =
-          await authenticationService.verifyOtp(mobile, otp, deviceId, context: context);
-      final apiResponse = OTPApiResponse.fromJson(response);
-      log("API Response: ${jsonEncode(response)}");
+    // Retrieve OneSignal Player ID (ensure this method is implemented)
+    String oneSignalPlayerId = await getOneSignalPlayerId() ?? "";
 
-      if (mounted) {
-        // Hide loading indicator
-        showLoadingIndicator(context: context, showLoader: false);
+    log("Mobile: $mobile");
+    log("OTP: ${pinController.text}");
+    log("Device ID: $deviceId");
+    log("OneSignal Player ID: $oneSignalPlayerId");
 
-        if (apiResponse.successResponse != null) {
-          // Store token in shared preferences
-          final token = apiResponse.successResponse!.data.token;
-          final name = apiResponse.successResponse!.data.user.name;
-          final email = apiResponse.successResponse!.data.user.email;
-          final mobile = apiResponse.successResponse!.data.user.mobile;
-          final imageUrl = apiResponse.successResponse!.data.user.image;
-          await _authService.saveLogInCredentials(LogInCredentials(
-            email: email,
-            name: name,
-            imagesAddress: imageUrl,
-            mobile: mobile,
-            token: token,
-          ));
+    // Make the API call
+    final response = await authenticationService.verifyOtp(
+      mobile,
+      otp,
+      deviceId,
+      oneSignalPlayerId: oneSignalPlayerId, 
+      context: context,
+    );
 
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("OTP verified successfully.")),
-            );
-          }
+    final apiResponse = OTPApiResponse.fromJson(response);
+    log("API Response: ${jsonEncode(response)}");
 
-          // Navigate based on profile requirement
-          if (apiResponse.successResponse?.data.isProfileRequired == true &&
-              mounted) {
-            slideNavigationPushAndRemoveUntil(
-                Profile(deviceId: deviceId), context);
-          } else if (mounted) {
-            slideNavigationPushAndRemoveUntil(const Navigation(), context);
-          }
-        } else {
-          // Handle OTP verification failure
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text("Failed to verify OTP: ${response['message']}")),
-          );
-        }
-      }
-    } catch (e) {
-      log("Error verifying OTP: $e");
-      if (mounted) {
-        showLoadingIndicator(context: context, showLoader: false);
+    if (mounted) {
+      // Hide loading indicator
+      showLoadingIndicator(context: context, showLoader: false);
+
+      if (apiResponse.successResponse != null) { 
+        final token = apiResponse.successResponse!.data.token;
+        final name = apiResponse.successResponse!.data.user.name;
+        final email = apiResponse.successResponse!.data.user.email;
+        final mobile = apiResponse.successResponse!.data.user.mobile;
+        final imageUrl = apiResponse.successResponse!.data.user.image;
+
+        await _authService.saveLogInCredentials(LogInCredentials(
+          email: email,
+          name: name,
+          imagesAddress: imageUrl,
+          mobile: mobile,
+          token: token,
+        ));
+
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text("An error occurred during OTP verification.")),
+          const SnackBar(content: Text("OTP verified successfully.")),
+        );
+
+        // Navigate based on profile requirement
+        if (apiResponse.successResponse?.data.isProfileRequired == true) {
+          slideNavigationPushAndRemoveUntil(Profile(deviceId: deviceId), context);
+        } else {
+          slideNavigationPushAndRemoveUntil(const Navigation(), context);
+        }
+      } else {
+        // Handle OTP verification failure
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to verify OTP: ${response['message']}")),
         );
       }
     }
+  } catch (e) {
+    log("Error verifying OTP: $e");
+    if (mounted) {
+      showLoadingIndicator(context: context, showLoader: false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("An error occurred during OTP verification.")),
+      );
+    }
   }
-
-  // void sendOtp({required String mobileNumber}) async {
-  //   showLoadingIndicator(context: context, showLoader: true);
-  //   if (mobileNumber.isEmpty) {
-  //     showLoadingIndicator(context: context, showLoader: false);
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(content: Text("Please enter your mobile number.")),
-  //     );
-  //     return;
-  //   }
-
-  //   final response = await _authService.sendOtp(mobileNumber);
-  //   log(jsonEncode(response));
-  //   if (response['error'] == null || !response['error']) {
-  //     if (mounted) {
-  //       showLoadingIndicator(context: context, showLoader: false);
-  //       _startResendCountdown();
-  //     }
-  //   } else {
-  //     if (mounted) {
-  //       showLoadingIndicator(context: context, showLoader: false);
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text("Failed to send OTP: ${response['message']}")),
-  //       );
-  //     }
-  //   }
-  // }
+}
 
   void sendOtp(
       {required String mobileNumber, required BuildContext context}) async {
