@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kpathshala/NetworkManager.dart';
 import 'package:kpathshala/app_theme/theme_data.dart';
+import 'package:kpathshala/view/courses_page/courses.dart';
+import 'package:kpathshala/view/exam_main_page/exam_purchase_page.dart';
+import 'package:kpathshala/view/exam_main_page/note/note_main_page.dart';
+import 'package:kpathshala/view/payment_page/payment_history.dart';
+import 'package:kpathshala/view/profile_page/profile_screen_main.dart';
 import 'package:kpathshala/view/splash_screen.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'firebase_options.dart';
@@ -68,13 +73,31 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+  static final navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
+    String? screen;
+    OneSignal.Notifications.addClickListener((event) {
+      final data = event.notification.additionalData;
+      screen = data?['screen'];
+      if (screen != null) {
+        navigatorKey.currentState?.pushNamed(screen!);
+      }
+    });
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      navigatorKey: navigatorKey,
       title: 'K-PathShala',
       theme: customTheme(),
+      initialRoute: '/',
+      routes: {
+        '/courses': (context) => const Courses(),
+        '/ExamPurchasePage': (context) => const ExamPurchasePage(),
+        '/ProfileScreenInMainPage': (context) =>
+            const ProfileScreenInMainPage(),
+        '/PaymentHistory': (context) => const PaymentHistory(),
+      },
       home: const SplashScreen(),
       builder: DevicePreview.appBuilder,
       locale: DevicePreview.locale(context),
