@@ -240,11 +240,9 @@ class AuthService {
     final prefs = await SharedPreferences.getInstance();
     String? jsonString = prefs.getString('login_credentials');
 
-    if (jsonString != null) {
-      Map<String, dynamic> jsonMap = jsonDecode(jsonString);
-      return LogInCredentials.fromJson(jsonMap);
-    }
-
+    Map<String, dynamic> jsonMap = jsonDecode(jsonString!);
+    return LogInCredentials.fromJson(jsonMap);
+  
     return null;
   }
 

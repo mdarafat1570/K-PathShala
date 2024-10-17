@@ -19,7 +19,7 @@ void main() async {
   Get.put(ConectivityController());
   runApp(
     DevicePreview(
-      enabled: true,
+      enabled: false,
       builder: (context) => const MyApp(),
     ),
   );
