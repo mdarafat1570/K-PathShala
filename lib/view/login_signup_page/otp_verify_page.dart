@@ -254,33 +254,6 @@ class _OtpPageState extends State<OtpPage> {
     }
   }
 
-  // void sendOtp({required String mobileNumber}) async {
-  //   showLoadingIndicator(context: context, showLoader: true);
-  //   if (mobileNumber.isEmpty) {
-  //     showLoadingIndicator(context: context, showLoader: false);
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(content: Text("Please enter your mobile number.")),
-  //     );
-  //     return;
-  //   }
-
-  //   final response = await _authService.sendOtp(mobileNumber);
-  //   log(jsonEncode(response));
-  //   if (response['error'] == null || !response['error']) {
-  //     if (mounted) {
-  //       showLoadingIndicator(context: context, showLoader: false);
-  //       _startResendCountdown();
-  //     }
-  //   } else {
-  //     if (mounted) {
-  //       showLoadingIndicator(context: context, showLoader: false);
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text("Failed to send OTP: ${response['message']}")),
-  //       );
-  //     }
-  //   }
-  // }
-
   void sendOtp(
       {required String mobileNumber, required BuildContext context}) async {
     showLoadingIndicator(context: context, showLoader: true);
