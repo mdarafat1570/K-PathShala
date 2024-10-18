@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/model/notes_model/RetrieveNotebyIDModel.dart';
+import 'package:kpathshala/model/notes_model/note_video_model.dart';
 import 'package:kpathshala/model/notes_model/retrieve_notes_model_all_list.dart';
 import 'package:kpathshala/repository/notes_Repository/notes_repository.dart';
 import 'package:kpathshala/view/common_widget/common_app_bar.dart';
@@ -24,8 +25,9 @@ class _NoteMainPageState extends State<NoteMainPage> {
   late YoutubePlayerController _youtubeController;
   NoteResultData? noteResultData;
   NoteGetModel? noteGet;
+  NoteVideoModel ? noteVideoGet;
+  NoteVideoData? noteVideoData;
   List<QuestionNotes>? questionNotes;
-  QuestionSetSolutions? questionSetSolutions;
   String? _titleError;
   String? _descriptionError;
   bool _isLoading = true;
@@ -34,63 +36,85 @@ class _NoteMainPageState extends State<NoteMainPage> {
   @override
   void initState() {
     super.initState();
+    _fetchVideoNotes();
     _fetchNotes();
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   }
 
-  void _fetchNotes() async {
-    try {
-      NoteRepository noteRepository = NoteRepository();
-      NoteGetModel? noteData = await noteRepository.fetchNotes(
-        questionSetId: widget.questionId!,
-        context: context,
-      );
+void _fetchNotes() async {
+  try {
+    NoteRepository noteRepository = NoteRepository();    
+    NoteGetModel? noteData = await noteRepository.fetchNotes(
+      questionSetId: widget.questionId!,
+      context: context,
+    );
 
-      if (noteData != null) {
-        noteGet = noteData;
-        questionNotes = noteData.data?.questionNotes ?? [];
-        questionSetSolutions = noteData.data?.questionSetSolutions;
+    if (noteData != null) {
+      noteGet = noteData;
+      questionNotes = noteData.data?.questionNotes ?? [];
+      setState(() {
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  } catch (e) {
+    log("Error fetching notes: ${e.toString()}");    
+    setState(() {
+      _isLoading = false;
+    });
+  }
+}
 
-        if (questionSetSolutions?.videoLink != null) {
-          _youtubeController = YoutubePlayerController(
-            initialVideoId:
-                YoutubePlayer.convertUrlToId(questionSetSolutions!.videoLink!)!,
-            flags: const YoutubePlayerFlags(
-              autoPlay: false,
-              loop: false,
-            ),
-          );
-        }
-
+void _fetchVideoNotes() async {
+  try {
+    NoteRepository noteRepository = NoteRepository();
+    NoteVideoModel? fetchedNoteVideo = await noteRepository.fetchNotesVideo(
+      questionSetId: widget.questionId!,
+      context: context,
+    );
+    if (fetchedNoteVideo != null) {
+      noteVideoGet = fetchedNoteVideo;
+      noteVideoData = fetchedNoteVideo.data;
+      if (noteVideoData?.videoLink != null) {
+        _youtubeController = YoutubePlayerController(
+          initialVideoId: YoutubePlayer.convertUrlToId(
+            noteVideoData!.videoLink!,
+          )!,
+          flags: const YoutubePlayerFlags(
+            autoPlay: false,
+            loop: false,
+          ),
+        );
         _youtubeController.addListener(() {
-          // Check if the player is in full-screen mode
           if (_youtubeController.value.isFullScreen && !_isFullScreen) {
             setState(() {
-              _isFullScreen = true; // Set full-screen state
+              _isFullScreen = true;
             });
           } else if (!_youtubeController.value.isFullScreen && _isFullScreen) {
             setState(() {
-              _isFullScreen = false; // Reset full-screen state
+              _isFullScreen = false;
             });
           }
         });
-
-        setState(() {
-          _isLoading = false;
-        });
-      } else {
-        setState(() {
-          _isLoading = false;
-        });
       }
-    } catch (e) {
-      log("Error fetching notes: ${e.toString()}"); // Handle the exception
       setState(() {
-        _isLoading = false; // Ensure loading state is updated even on error
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
       });
     }
+  } catch (e) {
+    log("Error fetching notes: ${e.toString()}");
+    setState(() {
+      _isLoading = false;
+    });
   }
-
+}
   @override
   void dispose() {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -122,7 +146,7 @@ class _NoteMainPageState extends State<NoteMainPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        questionSetSolutions?.videoLink != null
+                        noteVideoData?.videoLink != null
                             ? Center(
                                 child: Container(
                                   width: _isFullScreen
@@ -409,8 +433,7 @@ class _NoteMainPageState extends State<NoteMainPage> {
                                                                 noteGet = null;
                                                                 questionNotes =
                                                                     null;
-                                                                questionSetSolutions =
-                                                                    null;
+                                                              
                                                                 _isLoading =
                                                                     false;
                                                                 setState(() {});
@@ -478,7 +501,7 @@ class _NoteMainPageState extends State<NoteMainPage> {
                                   if (value) {
                                     noteGet = null;
                                     questionNotes = null;
-                                    questionSetSolutions = null;
+                                
                                     _isLoading = false;
                                     setState(() {});
                                     _fetchNotes();
@@ -635,7 +658,6 @@ class _NoteMainPageState extends State<NoteMainPage> {
                               );
                               noteGet = null;
                               questionNotes = null;
-                              questionSetSolutions = null;
                               _isLoading = false;
                               setState(() {});
                               _fetchNotes();

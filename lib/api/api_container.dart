@@ -55,7 +55,10 @@ class KpatshalaAnswerSubmission {
 
 
 class KpatshalaRetrieveNotesQuestion {
-  static String RetrieveNotesQuestion =
+  static String retrieveNotesQuestion =
       '${AuthorizationEndpoints.baseUrl}/notes';
+       static String retrieveNotesVideo =
+      '${AuthorizationEndpoints.baseUrl}/setExplanationVideo';
+      
 }
 
