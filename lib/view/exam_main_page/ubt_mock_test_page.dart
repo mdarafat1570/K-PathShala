@@ -313,19 +313,21 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
                         const listingTestScore = 0;
                         const timeTaken = 'Unknown';
 
+                        void rowDetailsClick () {
+                          (widget.isInPreviewMode! && index > 2)
+                              ? null
+                              : _showBottomSheet(
+                              context: context,
+                              courseTitle: title,
+                              courseDescription: description,
+                              score: score ?? 0,
+                              questionId: question.id,
+                              status: status);
+                        }
+
                         return GestureDetector(
                           behavior: HitTestBehavior.opaque,
-                          onTap: () {
-                            (widget.isInPreviewMode! && index > 2)
-                                ? null
-                                : _showBottomSheet(
-                                    context: context,
-                                    courseTitle: title,
-                                    courseDescription: description,
-                                    score: score ?? 0,
-                                    questionId: question.id,
-                                    status: status);
-                          },
+                          onTap: rowDetailsClick,
                           child: CourseRow(
                             title: title,
                             description: description,
@@ -336,17 +338,7 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
                             status: status,
                             isInPreviewMode:
                                 (widget.isInPreviewMode! && index > 2),
-                            onDetailsClick: () {
-                              (widget.isInPreviewMode! && index > 2)
-                                  ? null
-                                  : _showBottomSheet(
-                                      context: context,
-                                      courseTitle: title,
-                                      courseDescription: description,
-                                      score: score,
-                                      questionId: question.id,
-                                      status: status);
-                            },
+                            onDetailsClick: rowDetailsClick,
                             onRetakeTestClick: () {
                               (widget.isInPreviewMode! && index > 2)
                                   ? null
