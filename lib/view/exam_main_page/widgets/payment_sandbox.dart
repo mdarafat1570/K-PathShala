@@ -33,8 +33,8 @@ class SSLCommerzPageState extends State<SSLCommerzPage> {
   @override
   void initState() {
     super.initState();
-    formData['store_id'] = "demotest";
-    formData['store_password'] = "qwerty";
+    formData['store_id'] = "kpathshala0live";
+    formData['store_password'] = "670CFD3A7D0E727025";
     formData['phone'] = "";
     formData['amount'] = 10.0;
     formData['multicard'] = '';

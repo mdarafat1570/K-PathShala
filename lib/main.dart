@@ -4,7 +4,7 @@ import 'package:kpathshala/NetworkManager.dart';
 import 'package:kpathshala/app_theme/theme_data.dart';
 import 'package:kpathshala/view/courses_page/courses.dart';
 import 'package:kpathshala/view/exam_main_page/exam_purchase_page.dart';
-import 'package:kpathshala/view/exam_main_page/note/note_main_page.dart';
+import 'package:kpathshala/view/note_video_page/note_main_page.dart';
 import 'package:kpathshala/view/payment_page/payment_history.dart';
 import 'package:kpathshala/view/profile_page/profile_screen_main.dart';
 import 'package:kpathshala/view/splash_screen.dart';

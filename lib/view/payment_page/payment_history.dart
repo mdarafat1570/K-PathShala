@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart'; // Import flutter_svg package
-import 'package:kpathshala/view/payment_page/payment_row.dart';
+import 'package:kpathshala/view/payment_page/payment_history_row.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../app_theme/app_color.dart';
 import '../../model/payment_model/payment_history_model.dart';
@@ -83,7 +83,7 @@ class _PaymentHistoryState extends State<PaymentHistory> {
                       payment.paymentAmount?.toStringAsFixed(2) ?? 'No Amount';
                   final date = payment.paymentDate ?? 'Unknown Date';
                   const imageUrl =
-                      'https://freelogopng.com/images/all_img/1656235223bkash-logo.png';
+                      'https://static-00.iconduck.com/assets.00/success-icon-1957x2048-6skyzvbc.png';
 
                   return GestureDetector(
                     behavior: HitTestBehavior.opaque,

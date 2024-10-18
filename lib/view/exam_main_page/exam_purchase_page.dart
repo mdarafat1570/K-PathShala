@@ -360,8 +360,8 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                                   packageId: package.id!,
                                                   packageName:
                                                       package.title ?? '',
-                                                  price:
-                                                      packagePrice!.toDouble(),
+                                                  price:10,
+                                                      // packagePrice!.toDouble(),
                                                   validityDate:
                                                       validityDate.toString(),
                                                   refreshPage: () {

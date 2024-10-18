@@ -6,7 +6,7 @@ import 'package:kpathshala/model/notes_model/note_video_model.dart';
 import 'package:kpathshala/model/notes_model/retrieve_notes_model_all_list.dart';
 import 'package:kpathshala/repository/notes_Repository/notes_repository.dart';
 import 'package:kpathshala/view/common_widget/common_app_bar.dart';
-import 'package:kpathshala/view/exam_main_page/note/add_note_page.dart';
+import 'package:kpathshala/view/note_video_page/add_note_page.dart';
 import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/quiz_attempt_page_imports.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -27,7 +27,7 @@ class _NoteMainPageState extends State<NoteMainPage> {
   NoteGetModel? noteGet;
   NoteVideoModel ? noteVideoGet;
   NoteVideoData? noteVideoData;
-  List<QuestionNotes>? questionNotes;
+  List<NoteResultData>? questionNotes;
   String? _titleError;
   String? _descriptionError;
   bool _isLoading = true;
@@ -51,7 +51,7 @@ void _fetchNotes() async {
 
     if (noteData != null) {
       noteGet = noteData;
-      questionNotes = noteData.data?.questionNotes ?? [];
+      questionNotes = noteData.data ?? [];
       setState(() {
         _isLoading = false;
       });
@@ -184,8 +184,10 @@ void _fetchVideoNotes() async {
                           const SizedBox(height: 10),
                           Expanded(
                             child:
-                                questionNotes == null || questionNotes!.isEmpty
-                                    ? const Center(
+                                _isLoading
+          ? buildNotesShimmerLoadingEffect()
+          : questionNotes == null || questionNotes!.isEmpty
+              ?  const Center(
                                         child: Column(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
@@ -546,7 +548,7 @@ void _fetchVideoNotes() async {
     );
   }
 
-  void _updateNoteDialog(BuildContext context, QuestionNotes note, int index) {
+  void _updateNoteDialog(BuildContext context, NoteResultData note, int index) {
     TextEditingController titleController =
         TextEditingController(text: note.title);
     TextEditingController descriptionController =
@@ -702,6 +704,25 @@ void _fetchVideoNotes() async {
         children: [
           _buildShimmerContainer(height: 230),
           const SizedBox(height: 10),
+          _buildShimmerContainer(height: 45, width: 150),
+          _buildShimmerContainer(height: 85, width: 150),
+          _buildShimmerContainer(height: 45, width: 150),
+          _buildShimmerContainer(height: 45, width: 150),
+          _buildShimmerContainer(height: 85, width: 150),
+          const SizedBox(height: 5),
+        ],
+      ),
+    );
+  }
+
+
+    Widget buildNotesShimmerLoadingEffect() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        children: [
           _buildShimmerContainer(height: 45, width: 150),
           _buildShimmerContainer(height: 85, width: 150),
           _buildShimmerContainer(height: 45, width: 150),
