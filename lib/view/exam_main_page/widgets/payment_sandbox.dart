@@ -69,7 +69,7 @@ class SSLCommerzPageState extends State<SSLCommerzPage> {
         ipn_url: "k-pathshala",
         multi_card_name: formData['multicard'],
         currency: SSLCurrencyType.BDT,
-        product_category: "Food",
+        product_category: "Course",
         // sdkType: _radioSelected == SdkType.TESTBOX
         //     ? SSLCSdkType.TESTBOX
         //     : SSLCSdkType.LIVE,
@@ -208,44 +208,53 @@ class SSLCommerzPageState extends State<SSLCommerzPage> {
     SSLCTransactionInfoModel result = await sslcommerz.payNow();
     paymentStatusCheck(result);
   }
+void paymentStatusCheck(SSLCTransactionInfoModel result) async {
+  try {
+    log("Transaction status: ${result.status ?? ""}");
 
-  void paymentStatusCheck(SSLCTransactionInfoModel result) async {
-    try {
-      log("result status ::${result.status ?? ""}");
-
-      if (result.status!.toLowerCase() == "failed") {
-        Fluttertoast.showToast(
-          msg: "Transaction is Failed....",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
-      } else if (result.status!.toLowerCase() == "closed") {
-        Fluttertoast.showToast(
-          msg: "SDK Closed by User",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
-      } else {
-        Fluttertoast.showToast(
-            msg:
-                "Transaction is ${result.status} and Amount is ${result.amount ?? 0}",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
-      }
-    } catch (e) {
-      debugPrint(e.toString());
+    if (result.status!.toLowerCase() == "failed") {
+      Fluttertoast.showToast(
+        msg: "Transaction failed. Please try again.",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 2,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    } else if (result.status!.toLowerCase() == "closed") {
+      Fluttertoast.showToast(
+        msg: "Transaction canceled by the user.",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 2,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    } else {
+      Fluttertoast.showToast(
+        msg: "Transaction ${result.status}. Amount: ${result.amount ?? 0} BDT",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 2,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
     }
+  } catch (e) {
+    debugPrint("Error: ${e.toString()}");
+    Fluttertoast.showToast(
+      msg: "An error occurred. Please try again later.",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIosWeb: 2,
+      backgroundColor: Colors.orange,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
   }
+}
+
 }
