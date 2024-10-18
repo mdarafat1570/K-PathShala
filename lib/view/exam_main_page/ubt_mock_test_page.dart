@@ -7,7 +7,7 @@ import 'package:kpathshala/repository/question/question_set_repo.dart';
 import 'package:kpathshala/view/common_widget/common_app_bar.dart';
 import 'package:kpathshala/view/common_widget/format_date_with_ordinal.dart';
 import 'package:kpathshala/view/exam_main_page/bottom_sheets/bottom_panel_page_course_purchase.dart';
-import 'package:kpathshala/view/exam_main_page/note/note_main_page.dart';
+import 'package:kpathshala/view/note_video_page/note_main_page.dart';
 import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/quiz_attempt_page.dart';
 import 'package:kpathshala/view/exam_main_page/widgets/test_sets_page_shimmer.dart';
 import 'package:kpathshala/view/exam_main_page/widgets/ubt_exam_row.dart';
