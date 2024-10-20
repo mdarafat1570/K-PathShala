@@ -20,7 +20,10 @@ class ReviewPage extends StatefulWidget {
 }
 
 class _ReviewPageState extends State<ReviewPage> {
+  AnswerReviewRepository repository = AnswerReviewRepository();
+
   bool dataFound = false;
+  bool resultDataFound = false;
   ResultData? result;
   late TtsService ttsService;
 
@@ -33,6 +36,7 @@ class _ReviewPageState extends State<ReviewPage> {
     ttsService = TtsService();
     ttsService.initializeTtsHandlers();
     fetchData();
+    fetchResultData();
   }
 
   @override
@@ -43,14 +47,9 @@ class _ReviewPageState extends State<ReviewPage> {
 
   void fetchData() async {
     try {
-      AnswerReviewRepository repository = AnswerReviewRepository();
-
-      ResultData? resultData = await repository.fetchResults(
-          questionSetId: widget.questionSetId, context: context);
       QuestionsModel? questionsModel = await repository.fetchAnswer(
           questionSetId: widget.questionSetId, context: context);
 
-      result = resultData;
       readingQuestions = questionsModel?.data?.readingQuestions ?? [];
       listeningQuestions = questionsModel?.data?.listeningQuestions ?? [];
       await _preloadImages();
@@ -58,7 +57,21 @@ class _ReviewPageState extends State<ReviewPage> {
       setState(() {
         dataFound = true;
       });
-      log("----------");
+    } catch (e) {
+      log(e.toString()); // Handle the exception
+    }
+  }
+
+  void fetchResultData() async {
+    try {
+      ResultData? resultData = await repository.fetchResults(
+          questionSetId: widget.questionSetId, context: context);
+
+      result = resultData;
+
+      setState(() {
+        resultDataFound = true;
+      });
     } catch (e) {
       log(e.toString()); // Handle the exception
     }
@@ -126,31 +139,41 @@ class _ReviewPageState extends State<ReviewPage> {
     ttsService.speak(model, voiceScript);
   }
 
+  Future<void> _stopSpeaking() async {
+    ttsService.stopSpeaking();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor.white,
       appBar: CommonAppBar(title: "Review ${widget.appBarTitle}"),
       body: SafeArea(
-        child: !dataFound
-            ? buildShimmerLoadingEffect()
-            : Stack(
+        child: Stack(
+          children: [
+            buildIconWaterMark(context),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: ListView(
                 children: [
-                  buildIconWaterMark(context),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: ListView(
-                      children: [
-                        buildScoreContainer(),
-                        const Divider(),
-                        buildReadingQuestionListView(),
-                        const Divider(),
-                        buildListeningQuestionListView(),
-                      ],
-                    ),
-                  ),
+                  !resultDataFound
+                      ? _buildShimmerContainer(height: 230)
+                      : buildScoreContainer(),
+                  const Divider(),
+                  !dataFound
+                      ? buildShimmerLoadingEffect()
+                      : Column(
+                          children: [
+                            buildReadingQuestionListView(),
+                            const Divider(),
+                            buildListeningQuestionListView(),
+                          ],
+                        ),
                 ],
               ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -201,6 +224,7 @@ class _ReviewPageState extends State<ReviewPage> {
                   showZoomedImage: showZoomedImage,
                   cachedImages: cachedImages,
                   speak: speak,
+                  stopSpeaking: _stopSpeaking,
                   isInReviewMode: true,
                 ),
                 buildOptionSection(
@@ -222,6 +246,7 @@ class _ReviewPageState extends State<ReviewPage> {
                   playedAudiosList: [],
                   selectionHandling: (v, c) {},
                   speak: speak,
+                  stopSpeaking: _stopSpeaking,
                   showZoomedImage: showZoomedImage,
                   cachedImages: cachedImages,
                 ),
@@ -286,6 +311,7 @@ class _ReviewPageState extends State<ReviewPage> {
                   showZoomedImage: showZoomedImage,
                   cachedImages: cachedImages,
                   speak: speak,
+                  stopSpeaking: _stopSpeaking,
                   isInReviewMode: true,
                 ),
                 buildOptionSection(
@@ -308,6 +334,7 @@ class _ReviewPageState extends State<ReviewPage> {
                   playedAudiosList: [],
                   selectionHandling: (v, c) {},
                   speak: speak,
+                  stopSpeaking: _stopSpeaking,
                   showZoomedImage: showZoomedImage,
                   cachedImages: cachedImages,
                 ),
@@ -473,22 +500,23 @@ class _ReviewPageState extends State<ReviewPage> {
     return Shimmer.fromColors(
       baseColor: Colors.grey[300]!,
       highlightColor: Colors.grey[100]!,
-      child: ListView(
+      child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10),
-        children: [
-          _buildShimmerContainer(height: 230),
-          const SizedBox(height: 10),
-          _buildShimmerContainer(height: 35, width: 150),
-          _buildShimmerContainer(height: 35, width: 150),
-          const SizedBox(height: 10),
-          ..._buildShimmerRows(4),
-          const SizedBox(height: 5),
-          _buildShimmerContainer(height: 35, width: 150),
-          _buildShimmerContainer(height: 35, width: 150),
-          const SizedBox(height: 10),
-          ..._buildShimmerRows(4),
-          const SizedBox(height: 5),
-        ],
+        child: Column(
+          children: [
+            const SizedBox(height: 10),
+            _buildShimmerContainer(height: 35, width: 150),
+            _buildShimmerContainer(height: 35, width: 150),
+            const SizedBox(height: 10),
+            ..._buildShimmerRows(4),
+            const SizedBox(height: 5),
+            _buildShimmerContainer(height: 35, width: 150),
+            _buildShimmerContainer(height: 35, width: 150),
+            const SizedBox(height: 10),
+            ..._buildShimmerRows(4),
+            const SizedBox(height: 5),
+          ],
+        ),
       ),
     );
   }

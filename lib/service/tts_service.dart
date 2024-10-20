@@ -70,10 +70,10 @@ class TtsService {
       return;
     }
 
-    if (isSpeaking || isInDelay) {
-      log("Audio is already playing or in delay. Ignoring click.");
-      return;
-    }
+    // if (isSpeaking || isInDelay) {
+    //   log("Audio is already playing or in delay. Ignoring click.");
+    //   return;
+    // }
 
     isInDelay = true;
 
@@ -126,7 +126,5 @@ class TtsService {
     flutterTts.setCompletionHandler(() {});
     flutterTts.setCancelHandler(() {});
     flutterTts.setErrorHandler((dynamic error) {});
-
   }
-
 }

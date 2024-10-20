@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
-import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
-import 'package:kpathshala/common_error_all_layout/connection_lost.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/model/profile_model/profile_get_data_model.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
@@ -10,7 +8,6 @@ import 'package:kpathshala/repository/payment/profile_get_data_repository.dart';
 
 import 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
 import 'package:kpathshala/view/login_signup_page/registration_and_login_page.dart';
-import 'package:kpathshala/view/login_signup_page/social_login.dart';
 import 'package:kpathshala/view/notifications/notifications_page.dart';
 import 'package:kpathshala/view/payment_page/payment_history.dart';
 import 'package:kpathshala/view/profile_page/connect_social_page.dart';
@@ -31,34 +28,12 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
   bool isLoadingProfile = true;
   final AuthService _authService = AuthService();
   final ProfileRepository _profileRepository = ProfileRepository();
-  bool isConectdToInternet = false;
-  StreamSubscription? _internetConectionStreamSubscription;
+  bool isConnectedToInternet = false;
+  StreamSubscription? _internetConnectionStreamSubscription;
 
   @override
   void initState() {
     super.initState();
-    // _internetConectionStreamSubscription =
-    //     InternetConnection().onStatusChange.listen((event) {
-    //   print(event);
-    //   switch (event) {
-    //     case InternetStatus.connected:
-    //       setState(() {
-    //         isConectdToInternet = true;
-    //       });
-    //       break;
-    //     case InternetStatus.disconnected:
-    //       setState(() {
-    //         isConectdToInternet = false;
-    //         slideNavigationPush(ConnectionLost(), context);
-    //       });
-    //       break;
-    //     default:
-    //       setState(() {
-    //         isConectdToInternet = false;
-    //       });
-    //       break;
-    //   }
-    // });
     readCredentials();
     fetchProfileData();
   }
@@ -113,7 +88,7 @@ class ProfileScreenInMainPageState extends State<ProfileScreenInMainPage> {
 
   @override
   void dispose() {
-    _internetConectionStreamSubscription?.cancel();
+    _internetConnectionStreamSubscription?.cancel();
     super.dispose();
   }
 
