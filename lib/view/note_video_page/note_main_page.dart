@@ -2,10 +2,11 @@ import 'dart:developer';
 
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/model/notes_model/RetrieveNotebyIDModel.dart';
+import 'package:kpathshala/model/notes_model/note_video_model.dart';
 import 'package:kpathshala/model/notes_model/retrieve_notes_model_all_list.dart';
 import 'package:kpathshala/repository/notes_Repository/notes_repository.dart';
 import 'package:kpathshala/view/common_widget/common_app_bar.dart';
-import 'package:kpathshala/view/exam_main_page/note/add_note_page.dart';
+import 'package:kpathshala/view/note_video_page/add_note_page.dart';
 import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/quiz_attempt_page_imports.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -24,8 +25,9 @@ class _NoteMainPageState extends State<NoteMainPage> {
   late YoutubePlayerController _youtubeController;
   NoteResultData? noteResultData;
   NoteGetModel? noteGet;
-  List<QuestionNotes>? questionNotes;
-  QuestionSetSolutions? questionSetSolutions;
+  NoteVideoModel ? noteVideoGet;
+  NoteVideoData? noteVideoData;
+  List<NoteResultData>? questionNotes;
   String? _titleError;
   String? _descriptionError;
   bool _isLoading = true;
@@ -34,63 +36,85 @@ class _NoteMainPageState extends State<NoteMainPage> {
   @override
   void initState() {
     super.initState();
+    _fetchVideoNotes();
     _fetchNotes();
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   }
 
-  void _fetchNotes() async {
-    try {
-      NoteRepository noteRepository = NoteRepository();
-      NoteGetModel? noteData = await noteRepository.fetchNotes(
-        questionSetId: widget.questionId!,
-        context: context,
-      );
+void _fetchNotes() async {
+  try {
+    NoteRepository noteRepository = NoteRepository();    
+    NoteGetModel? noteData = await noteRepository.fetchNotes(
+      questionSetId: widget.questionId!,
+      context: context,
+    );
 
-      if (noteData != null) {
-        noteGet = noteData;
-        questionNotes = noteData.data?.questionNotes ?? [];
-        questionSetSolutions = noteData.data?.questionSetSolutions;
+    if (noteData != null) {
+      noteGet = noteData;
+      questionNotes = noteData.data ?? [];
+      setState(() {
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  } catch (e) {
+    log("Error fetching notes: ${e.toString()}");    
+    setState(() {
+      _isLoading = false;
+    });
+  }
+}
 
-        if (questionSetSolutions?.videoLink != null) {
-          _youtubeController = YoutubePlayerController(
-            initialVideoId:
-                YoutubePlayer.convertUrlToId(questionSetSolutions!.videoLink!)!,
-            flags: const YoutubePlayerFlags(
-              autoPlay: false,
-              loop: false,
-            ),
-          );
-        }
-
+void _fetchVideoNotes() async {
+  try {
+    NoteRepository noteRepository = NoteRepository();
+    NoteVideoModel? fetchedNoteVideo = await noteRepository.fetchNotesVideo(
+      questionSetId: widget.questionId!,
+      context: context,
+    );
+    if (fetchedNoteVideo != null) {
+      noteVideoGet = fetchedNoteVideo;
+      noteVideoData = fetchedNoteVideo.data;
+      if (noteVideoData?.videoLink != null) {
+        _youtubeController = YoutubePlayerController(
+          initialVideoId: YoutubePlayer.convertUrlToId(
+            noteVideoData!.videoLink!,
+          )!,
+          flags: const YoutubePlayerFlags(
+            autoPlay: false,
+            loop: false,
+          ),
+        );
         _youtubeController.addListener(() {
-          // Check if the player is in full-screen mode
           if (_youtubeController.value.isFullScreen && !_isFullScreen) {
             setState(() {
-              _isFullScreen = true; // Set full-screen state
+              _isFullScreen = true;
             });
           } else if (!_youtubeController.value.isFullScreen && _isFullScreen) {
             setState(() {
-              _isFullScreen = false; // Reset full-screen state
+              _isFullScreen = false;
             });
           }
         });
-
-        setState(() {
-          _isLoading = false;
-        });
-      } else {
-        setState(() {
-          _isLoading = false;
-        });
       }
-    } catch (e) {
-      log("Error fetching notes: ${e.toString()}"); // Handle the exception
       setState(() {
-        _isLoading = false; // Ensure loading state is updated even on error
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
       });
     }
+  } catch (e) {
+    log("Error fetching notes: ${e.toString()}");
+    setState(() {
+      _isLoading = false;
+    });
   }
-
+}
   @override
   void dispose() {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -122,7 +146,7 @@ class _NoteMainPageState extends State<NoteMainPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        questionSetSolutions?.videoLink != null
+                        noteVideoData?.videoLink != null
                             ? Center(
                                 child: Container(
                                   width: _isFullScreen
@@ -160,8 +184,10 @@ class _NoteMainPageState extends State<NoteMainPage> {
                           const SizedBox(height: 10),
                           Expanded(
                             child:
-                                questionNotes == null || questionNotes!.isEmpty
-                                    ? const Center(
+                                _isLoading
+          ? buildNotesShimmerLoadingEffect()
+          : questionNotes == null || questionNotes!.isEmpty
+              ?  const Center(
                                         child: Column(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
@@ -409,8 +435,7 @@ class _NoteMainPageState extends State<NoteMainPage> {
                                                                 noteGet = null;
                                                                 questionNotes =
                                                                     null;
-                                                                questionSetSolutions =
-                                                                    null;
+                                                              
                                                                 _isLoading =
                                                                     false;
                                                                 setState(() {});
@@ -478,7 +503,7 @@ class _NoteMainPageState extends State<NoteMainPage> {
                                   if (value) {
                                     noteGet = null;
                                     questionNotes = null;
-                                    questionSetSolutions = null;
+                                
                                     _isLoading = false;
                                     setState(() {});
                                     _fetchNotes();
@@ -523,7 +548,7 @@ class _NoteMainPageState extends State<NoteMainPage> {
     );
   }
 
-  void _updateNoteDialog(BuildContext context, QuestionNotes note, int index) {
+  void _updateNoteDialog(BuildContext context, NoteResultData note, int index) {
     TextEditingController titleController =
         TextEditingController(text: note.title);
     TextEditingController descriptionController =
@@ -635,7 +660,6 @@ class _NoteMainPageState extends State<NoteMainPage> {
                               );
                               noteGet = null;
                               questionNotes = null;
-                              questionSetSolutions = null;
                               _isLoading = false;
                               setState(() {});
                               _fetchNotes();
@@ -680,6 +704,25 @@ class _NoteMainPageState extends State<NoteMainPage> {
         children: [
           _buildShimmerContainer(height: 230),
           const SizedBox(height: 10),
+          _buildShimmerContainer(height: 45, width: 150),
+          _buildShimmerContainer(height: 85, width: 150),
+          _buildShimmerContainer(height: 45, width: 150),
+          _buildShimmerContainer(height: 45, width: 150),
+          _buildShimmerContainer(height: 85, width: 150),
+          const SizedBox(height: 5),
+        ],
+      ),
+    );
+  }
+
+
+    Widget buildNotesShimmerLoadingEffect() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        children: [
           _buildShimmerContainer(height: 45, width: 150),
           _buildShimmerContainer(height: 85, width: 150),
           _buildShimmerContainer(height: 45, width: 150),

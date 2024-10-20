@@ -1,6 +1,7 @@
 import 'package:flutter_svg/svg.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/view/exam_main_page/widgets/payment_example.dart';
+import 'package:kpathshala/view/exam_main_page/widgets/payment_sandbox.dart';
 
 class BottomSheetPage extends StatefulWidget {
   final BuildContext context;
@@ -85,43 +86,8 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
             ),
           ),
         ),
-        const Gap(30),
-        commonCustomButton(
-          width: double.infinity,
-          backgroundColor: AppColor.navyBlue,
-          height: 55,
-          borderRadius: 30,
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => MyForm(
-                        packageId: widget.packageId.toString(),
-                        total: widget.price.toString(),
-                      )),
-            ).then((_) {
-              widget.refreshPage();
-              Navigator.pop(context);
-            });
-            // showPaymentDialog();
-          },
-          reversePosition: false,
-          child: Row(
-            children: [
-              SvgPicture.asset(
-                'assets/BKashwine.svg',
-                width: 40,
-                height: 40,
-              ),
-              const Gap(10),
-              const Text(
-                "Pay With Bkash",
-                style: TextStyle(color: AppColor.white, fontSize: 20),
-              ),
-            ],
-          ),
-        ),
-        // const SSLCommerzPage(),
+         Gap(screenHeight * 0.03),
+        SSLCommerzPage(packageId: widget.packageId,),
         Gap(screenHeight * 0.03),
         SizedBox(
           width: double.infinity,

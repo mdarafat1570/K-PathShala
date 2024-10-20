@@ -447,6 +447,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                       cachedImages: cachedImages,
                       playedAudiosList: playedAudiosList,
                       speak: speak,
+                      stopSpeaking: _stopSpeaking,
                       changeInDelayStatus: changeInDelayStatus,
                       isSpeechCompleted: ttsService.firstSpeechCompleted),
                   buildOptionSection(
@@ -461,6 +462,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                     playedAudiosList: playedAudiosList,
                     selectionHandling: selectionHandling,
                     speak: speak,
+                    stopSpeaking: _stopSpeaking,
                     selectedListeningQuestionData: selectedListeningQuestionData,
                     showZoomedImage: showZoomedImage,
                     cachedImages: cachedImages,

@@ -193,15 +193,12 @@ void _verifyOtp() async {
   try {
     // Show loading indicator
     showLoadingIndicator(context: context, showLoader: true);
-
     // Prepare data for OTP verification
     String mobile = widget.mobileNumber;
     String deviceId = await getDeviceId() ?? "";
     int otp = int.tryParse(pinController.text.trim()) ?? 0;
-
-    // Retrieve OneSignal Player ID (ensure this method is implemented)
+    // Retrieve OneSignal Player ID
     String oneSignalPlayerId = await getOneSignalPlayerId() ?? "";
-
     log("Mobile: $mobile");
     log("OTP: ${pinController.text}");
     log("Device ID: $deviceId");

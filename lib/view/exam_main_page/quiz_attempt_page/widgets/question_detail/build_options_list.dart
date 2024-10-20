@@ -19,6 +19,7 @@ Widget buildOptionsList({
   required List<PlayedAudios> playedAudiosList,
   required Function(int, int) selectionHandling,
   required Function(String?, String) speak,
+  required Function() stopSpeaking,
   ListeningQuestions? selectedListeningQuestionData,
 }) {
   return ListView.builder(
@@ -30,7 +31,7 @@ Widget buildOptionsList({
       int answerId = options[index].id ?? -1;
       String voiceScript = options[index].voiceScript ?? '';
       bool optionExists = playedAudiosList.any(
-        (audio) => audio.audioId == answerId && audio.audioType == 'option',
+            (audio) => audio.audioId == answerId && audio.audioType == 'option',
       );
 
       Color containerColor = isInReviewMode
@@ -55,8 +56,8 @@ Widget buildOptionsList({
           onTap: isInReviewMode
               ? null
               : () {
-                  selectionHandling(index, answerId);
-                },
+            selectionHandling(index, answerId);
+          },
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -79,6 +80,7 @@ Widget buildOptionsList({
                   answerId,
                   playedAudiosList,
                   speak,
+                  stopSpeaking,
                   selectedListeningQuestionData,
                 ),
               if (isTextWithVoice)
@@ -98,6 +100,7 @@ Widget buildOptionsList({
                           answerId,
                           playedAudiosList,
                           speak,
+                          stopSpeaking,
                           selectedListeningQuestionData,
                         ),
                       if (answer.isNotEmpty)
@@ -128,7 +131,7 @@ Widget buildOptionsGrid({
   required bool isInReviewMode,
   required Function(int, int) selectionHandling,
   required Function(BuildContext, String, Map<String, Uint8List>)
-      showZoomedImage,
+  showZoomedImage,
   required Map<String, Uint8List> cachedImages,
 }) {
   return GridView.builder(
@@ -156,18 +159,16 @@ Widget buildOptionsGrid({
   );
 }
 
-Widget _buildGridItem(
-  BuildContext context,
-  Options option,
-  int index,
-  int selectedSolvedIndex,
+Widget _buildGridItem(BuildContext context,
+    Options option,
+    int index,
+    int selectedSolvedIndex,
     int? correctAnswerId,
     int? submissionId,
-  bool isInReviewMode,
-  Function(int, int) selectionHandling,
-  Function(BuildContext, String, Map<String, Uint8List>) showZoomedImage,
-  Map<String, Uint8List> cachedImages,
-) {
+    bool isInReviewMode,
+    Function(int, int) selectionHandling,
+    Function(BuildContext, String, Map<String, Uint8List>) showZoomedImage,
+    Map<String, Uint8List> cachedImages,) {
   String answerImage = option.imageUrl ?? "";
   int answerId = option.id ?? -1;
   Color containerColor = isInReviewMode
@@ -181,20 +182,19 @@ Widget _buildGridItem(
       : Colors.transparent;
 
 
-
   return Container(
     padding: const EdgeInsets.all(6),
     margin: const EdgeInsets.all(2),
     decoration: BoxDecoration(
-      color: containerColor,
-      borderRadius: BorderRadius.circular(8)
+        color: containerColor,
+        borderRadius: BorderRadius.circular(8)
     ),
     child: InkWell(
       onTap: isInReviewMode
           ? null
           : () {
-              selectionHandling(index, answerId);
-            },
+        selectionHandling(index, answerId);
+      },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
@@ -219,13 +219,13 @@ Widget _buildGridItem(
 Widget _buildImage(String imageUrl, Map<String, Uint8List> cachedImages) {
   return cachedImages.containsKey(imageUrl)
       ? Image.memory(
-          cachedImages[imageUrl]!,
-          fit: BoxFit.cover,
-        )
+    cachedImages[imageUrl]!,
+    fit: BoxFit.cover,
+  )
       : const Padding(
-          padding: EdgeInsets.all(1.0),
-          child: CircularProgressIndicator(),
-        );
+    padding: EdgeInsets.all(1.0),
+    child: CircularProgressIndicator(),
+  );
 }
 
 Widget _buildOptionCircle(int index, int selectedSolvedIndex) {
@@ -248,38 +248,37 @@ Widget _buildOptionCircle(int index, int selectedSolvedIndex) {
   );
 }
 
-Widget _buildVoiceIcon(
-  BuildContext context,
-  bool optionExists,
-  bool isSpeaking,
-  bool isInDelay,
-  String voiceScript,
-  int answerId,
-  List<PlayedAudios> playedAudiosList,
-  Function(String?, String) speak,
-  ListeningQuestions? selectedListeningQuestionData,
-) {
+Widget _buildVoiceIcon(BuildContext context,
+    bool optionExists,
+    bool isSpeaking,
+    bool isInDelay,
+    String voiceScript,
+    int answerId,
+    List<PlayedAudios> playedAudiosList,
+    Function(String?, String) speak,
+    Function() stopSpeaking,
+    ListeningQuestions? selectedListeningQuestionData,) {
   return Container(
     margin: const EdgeInsets.only(left: 20),
     child: InkWell(
       onTap: optionExists
           ? null
-          : () {
-              if (!isSpeaking && !isInDelay) {
-                playedAudiosList.add(
-                  PlayedAudios(audioId: answerId, audioType: 'option'),
-                );
-                speak(
-                  selectedListeningQuestionData?.voiceGender,
-                  voiceScript,
-                );
-              }
-            },
+          : () async {
+        if (isSpeaking) {
+          await stopSpeaking();
+        }
+        playedAudiosList.add(
+          PlayedAudios(audioId: answerId, audioType: 'option'),
+        );
+        await speak(
+          selectedListeningQuestionData?.voiceGender,
+          voiceScript,
+        );
+      },
       child: Image.asset(
-        'assets/speaker.png',
-        height: 40,
-        color: optionExists ? Colors.black54 : AppColor.navyBlue,
-      ),
+      'assets/speaker.png',
+      height: 40,
+      color: optionExists ? Colors.black54 : AppColor.navyBlue,
     ),
-  );
+  ),);
 }

@@ -7,7 +7,7 @@ import 'package:kpathshala/repository/question/question_set_repo.dart';
 import 'package:kpathshala/view/common_widget/common_app_bar.dart';
 import 'package:kpathshala/view/common_widget/format_date_with_ordinal.dart';
 import 'package:kpathshala/view/exam_main_page/bottom_sheets/bottom_panel_page_course_purchase.dart';
-import 'package:kpathshala/view/exam_main_page/note/note_main_page.dart';
+import 'package:kpathshala/view/note_video_page/note_main_page.dart';
 import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/quiz_attempt_page.dart';
 import 'package:kpathshala/view/exam_main_page/widgets/test_sets_page_shimmer.dart';
 import 'package:kpathshala/view/exam_main_page/widgets/ubt_exam_row.dart';
@@ -15,8 +15,10 @@ import 'package:kpathshala/model/item_list.dart';
 
 import 'review_page.dart';
 
+//ignore: must_be_immutable
 class UBTMockTestPage extends StatefulWidget {
   final int packageId;
+  final String appBarTitle;
   final PackageList? package;
   bool? isInPreviewMode;
 
@@ -24,7 +26,9 @@ class UBTMockTestPage extends StatefulWidget {
       {super.key,
       this.package,
       this.isInPreviewMode = false,
-      required this.packageId});
+      required this.packageId,
+        required this.appBarTitle,
+      });
 
   @override
   State<UBTMockTestPage> createState() => _UBTMockTestPageState();
@@ -210,8 +214,8 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
   Widget build(BuildContext context) {
     return GradientBackground(
       child: Scaffold(
-        appBar: const CommonAppBar(
-          title: "UBT Mock Test",
+        appBar: CommonAppBar(
+          title: widget.appBarTitle,
         ),
         body: !dataFound
             ? buildShimmerLoadingEffect()
@@ -313,19 +317,21 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
                         const listingTestScore = 0;
                         const timeTaken = 'Unknown';
 
+                        void rowDetailsClick () {
+                          (widget.isInPreviewMode! && index > 2)
+                              ? null
+                              : _showBottomSheet(
+                              context: context,
+                              courseTitle: title,
+                              courseDescription: description,
+                              score: score ?? 0,
+                              questionId: question.id,
+                              status: status);
+                        }
+
                         return GestureDetector(
                           behavior: HitTestBehavior.opaque,
-                          onTap: () {
-                            (widget.isInPreviewMode! && index > 2)
-                                ? null
-                                : _showBottomSheet(
-                                    context: context,
-                                    courseTitle: title,
-                                    courseDescription: description,
-                                    score: score ?? 0,
-                                    questionId: question.id,
-                                    status: status);
-                          },
+                          onTap: rowDetailsClick,
                           child: CourseRow(
                             title: title,
                             description: description,
@@ -336,17 +342,7 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
                             status: status,
                             isInPreviewMode:
                                 (widget.isInPreviewMode! && index > 2),
-                            onDetailsClick: () {
-                              (widget.isInPreviewMode! && index > 2)
-                                  ? null
-                                  : _showBottomSheet(
-                                      context: context,
-                                      courseTitle: title,
-                                      courseDescription: description,
-                                      score: score,
-                                      questionId: question.id,
-                                      status: status);
-                            },
+                            onDetailsClick: rowDetailsClick,
                             onRetakeTestClick: () {
                               (widget.isInPreviewMode! && index > 2)
                                   ? null

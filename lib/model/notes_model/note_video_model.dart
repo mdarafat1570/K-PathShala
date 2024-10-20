@@ -1,18 +1,13 @@
-class NoteGetModel {
+class NoteVideoModel {
   String? status;
-  List<NoteResultData>? data;
+  NoteVideoData? data;
   String? message;
 
-  NoteGetModel({this.status, this.data, this.message});
+  NoteVideoModel({this.status, this.data, this.message});
 
-  NoteGetModel.fromJson(Map<String, dynamic> json) {
+  NoteVideoModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
-    if (json['data'] != null) {
-      data = <NoteResultData>[];
-      json['data'].forEach((v) {
-        data!.add(new NoteResultData.fromJson(v));
-      });
-    }
+    data = json['data'] != null ? new NoteVideoData.fromJson(json['data']) : null;
     message = json['message'];
   }
 
@@ -20,37 +15,37 @@ class NoteGetModel {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['status'] = this.status;
     if (this.data != null) {
-      data['data'] = this.data!.map((v) => v.toJson()).toList();
+      data['data'] = this.data!.toJson();
     }
     data['message'] = this.message;
     return data;
   }
 }
 
-class NoteResultData {
+class NoteVideoData {
   int? id;
-  int? questionSetId;
-  int? userId;
   String? title;
-  String? description;
+  String?subtitle;
+  String? videoLink;
+  int? questionSetId;
   String? createdAt;
   String? updatedAt;
 
-  NoteResultData(
+  NoteVideoData(
       {this.id,
-      this.questionSetId,
-      this.userId,
       this.title,
-      this.description,
+      this.subtitle,
+      this.videoLink,
+      this.questionSetId,
       this.createdAt,
       this.updatedAt});
 
-  NoteResultData.fromJson(Map<String, dynamic> json) {
+  NoteVideoData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    questionSetId = json['question_set_id'];
-    userId = json['user_id'];
     title = json['title'];
-    description = json['description'];
+    subtitle = json['subtitle'];
+    videoLink = json['video_link'];
+    questionSetId = json['question_set_id'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
   }
@@ -58,10 +53,10 @@ class NoteResultData {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    data['question_set_id'] = this.questionSetId;
-    data['user_id'] = this.userId;
     data['title'] = this.title;
-    data['description'] = this.description;
+    data['subtitle'] = this.subtitle;
+    data['video_link'] = this.videoLink;
+    data['question_set_id'] = this.questionSetId;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
     return data;

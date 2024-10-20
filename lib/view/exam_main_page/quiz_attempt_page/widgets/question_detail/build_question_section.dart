@@ -27,6 +27,7 @@ Widget buildQuestionSection({
   required Map<String, Uint8List> cachedImages,
   List<PlayedAudios>? playedAudiosList,
   required Function(String?, String, {bool isDialogue}) speak,
+  required Function() stopSpeaking,
   VoidCallback? changeInDelayStatus,
   Function? onImageTap,
 }) {
@@ -59,6 +60,7 @@ Widget buildQuestionSection({
             showZoomedImage: showZoomedImage,
             playedAudiosList: playedAudiosList ?? [],
             speak: speak,
+            stopSpeaking: stopSpeaking,
             onImageTap: onImageTap,
             changeInDelayStatus: changeInDelayStatus ?? (){},
             isSpeechCompleted: isSpeechCompleted!
@@ -96,6 +98,7 @@ Widget _buildQuestionSection(
       required Function showZoomedImage,
       required List<PlayedAudios> playedAudiosList,
       required Function(String?, String, {bool isDialogue}) speak,
+      required Function() stopSpeaking,
       required VoidCallback changeInDelayStatus,
       Function? onImageTap,
     }) {
@@ -139,14 +142,15 @@ Widget _buildQuestionSection(
               onTap: exists
                   ? null
                   : () async {
-                if (!isSpeaking && !isInDelay) {
-                  playedAudiosList.add(
-                      PlayedAudios(audioId: questionId, audioType: "question"));
-                  if (listeningQuestionType != "dialogues") {
-                    speak(voiceModel, voiceScript);
-                  } else {
-                    await _playDialogue(dialogue, speak, changeInDelayStatus, isSpeechCompleted);
-                  }
+                if (isSpeaking) {
+                  await stopSpeaking();
+                }
+                playedAudiosList.add(
+                    PlayedAudios(audioId: questionId, audioType: "question"));
+                if (listeningQuestionType != "dialogues") {
+                  speak(voiceModel, voiceScript);
+                } else {
+                  await _playDialogue(dialogue, speak, changeInDelayStatus, isSpeechCompleted);
                 }
               },
               child: Image.asset(

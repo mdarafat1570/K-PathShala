@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
-import 'package:connectivity_plus/connectivity_plus.dart'; // To check internet connection
 
 class ConnectionLost extends StatelessWidget {
+  const ConnectionLost({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +21,7 @@ class ConnectionLost extends StatelessWidget {
                 height: 400,
                 fit: BoxFit.contain,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               const Text(
                 'Your connection is lost',
                 style: TextStyle(
@@ -37,7 +38,7 @@ class ConnectionLost extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               ElevatedButton(
                 onPressed: () async {
                   bool isConnected =
@@ -47,7 +48,7 @@ class ConnectionLost extends StatelessWidget {
                     Navigator.of(context).pop();
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Still no internet connection')),
+                      const SnackBar(content: Text('Still no internet connection')),
                     );
                   }
                 },
@@ -56,7 +57,7 @@ class ConnectionLost extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                 ),
                 child: const Text(
                   'Try Again',
