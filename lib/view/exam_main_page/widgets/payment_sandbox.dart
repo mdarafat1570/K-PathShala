@@ -16,12 +16,15 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
+import 'package:kpathshala/repository/payment/payment_repository.dart';
 import 'package:kpathshala/view/common_widget/common_button_add.dart';
+import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/quiz_attempt_page_imports.dart';
 
 enum SdkType { TESTBOX, LIVE }
 
 class SSLCommerzPage extends StatefulWidget {
-  const SSLCommerzPage({super.key});
+  final int packageId;
+  const SSLCommerzPage({super.key,required this.packageId});
 
   @override
   SSLCommerzPageState createState() => SSLCommerzPageState();
@@ -247,9 +250,10 @@ void paymentStatusCheck(SSLCTransactionInfoModel result) async {
         textColor: Colors.white,
         fontSize: 16.0,
       );
-    } else if (result.status!.toLowerCase() == "closed") {
+    }
+    else if (result.status!.toLowerCase() == "closed") {
       Fluttertoast.showToast(
-        msg: "Transaction canceled by the user.",
+        msg: "Transaction canceled.",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
         timeInSecForIosWeb: 2,
@@ -257,16 +261,64 @@ void paymentStatusCheck(SSLCTransactionInfoModel result) async {
         textColor: Colors.white,
         fontSize: 16.0,
       );
-    } else {
-      Fluttertoast.showToast(
-        msg: "Transaction ${result.status}. Amount: ${result.amount ?? 0} BDT",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 2,
-        backgroundColor: Colors.black,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
+    }
+    else {
+        try {
+          // Show loading indicator
+          showLoadingIndicator(context: context, showLoader: true);
+
+          // Parse input data
+          final int packageId = widget.packageId;
+          final String payReferenceNumber = transactionID;
+          final double totalAmount = formData['amount'];
+          final double grossTotal = formData['amount'];
+          const String paymentMethod = "SSL Commerz";
+
+          // Make payment request
+          final response = await PaymentRepository().paymentPost(
+            packageId: packageId,
+            payReferenceNumber: payReferenceNumber,
+            totalAmount: totalAmount,
+            grossTotal: grossTotal,
+            paymentMethod: paymentMethod,
+          );
+
+          log(jsonEncode(response));
+
+          if ((response['error'] == null || !response['error']) && mounted) {
+            showLoadingIndicator(context: context, showLoader: false);
+
+            Fluttertoast.showToast(
+              msg: "Transaction ${result.status}. Amount: ${result.amount ?? 0} BDT",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 2,
+              backgroundColor: Colors.black,
+              textColor: Colors.white,
+              fontSize: 16.0,
+            );
+
+            log("Payment successful.");
+          } else {
+            if (mounted) {
+              showLoadingIndicator(context: context, showLoader: false);
+              log("Payment failed: {response['message']}");
+            }
+          }
+        } catch (e) {
+          if (mounted) {
+            showLoadingIndicator(context: context, showLoader: false);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("An error occurred: $e")),
+            );
+            log("An error occurred: $e");
+          }
+        } finally {
+          // Ensure the loading indicator is hidden
+          if (mounted) {
+            showLoadingIndicator(context: context, showLoader: false);
+          }
+        }
     }
   } catch (e) {
     debugPrint("Error: ${e.toString()}");
@@ -281,5 +333,4 @@ void paymentStatusCheck(SSLCTransactionInfoModel result) async {
     );
   }
 }
-
 }
