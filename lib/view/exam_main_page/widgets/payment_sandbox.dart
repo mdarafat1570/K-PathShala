@@ -159,6 +159,10 @@ void paymentStatusCheck(SSLCTransactionInfoModel result) async {
             );
 
             log("Payment successful.");
+
+ 
+Navigator.of(context).pop();
+
           } else {
             if (mounted) {
               showLoadingIndicator(context: context, showLoader: false);

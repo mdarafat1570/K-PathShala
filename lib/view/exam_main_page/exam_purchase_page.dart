@@ -417,16 +417,4 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
       ),
     );
   }
-
-  // List<Widget> _buildShimmerRows(int count) {
-  //   return List.generate(
-  //     count,
-  //     (index) => Row(
-  //       children: [
-  //         _buildShimmerContainer(height: 35, width: 35),
-  //         _buildShimmerContainer(height: 35, width: 200),
-  //       ],
-  //     ),
-  //   );
-  // }
 }
