@@ -97,170 +97,6 @@ class SSLCommerzPageState extends State<SSLCommerzPage> {
     paymentStatusCheck(result);
   }
 
-<<<<<<< HEAD
-  Future<void> sslCommerzCustomizedCall() async {
-    Sslcommerz sslcommerz = Sslcommerz(
-      initializer: SSLCommerzInitialization(
-        //Use the ipn if you have valid one, or it will fail the transaction.
-        ipn_url: "www.ipnurl.com",
-        multi_card_name: formData['multicard'],
-        currency: SSLCurrencyType.BDT,
-        product_category: "Food",
-        sdkType: _radioSelected == SdkType.TESTBOX
-            ? SSLCSdkType.TESTBOX
-            : SSLCSdkType.LIVE,
-        store_id: formData['store_id'],
-        store_passwd: formData['store_password'],
-        total_amount: formData['amount'],
-        tran_id: "1231321321321312",
-      ),
-    );
-
-    sslcommerz
-        .addEMITransactionInitializer(
-            sslcemiTransactionInitializer: SSLCEMITransactionInitializer(
-                emi_options: 1, emi_max_list_options: 9, emi_selected_inst: 0))
-        .addShipmentInfoInitializer(
-            sslcShipmentInfoInitializer: SSLCShipmentInfoInitializer(
-                shipmentMethod: "yes",
-                numOfItems: 5,
-                shipmentDetails: ShipmentDetails(
-                    shipAddress1: "Ship address 1",
-                    shipCity: "Faridpur",
-                    shipCountry: "Bangladesh",
-                    shipName: "Ship name 1",
-                    shipPostCode: "7860")))
-        .addCustomerInfoInitializer(
-          customerInfoInitializer: SSLCCustomerInfoInitializer(
-            customerState: "Chattogram",
-            customerName: "Abu Sayed Chowdhury",
-            customerEmail: "abc@gmail.com",
-            customerAddress1: "Anderkilla",
-            customerCity: "Chattogram",
-            customerPostCode: "200",
-            customerCountry: "Bangladesh",
-            customerPhone: formData['phone'],
-          ),
-        )
-        .addProductInitializer(
-            sslcProductInitializer:
-                // ***** ssl product initializer for general product STARTS*****
-                SSLCProductInitializer(
-          productName: "Water Filter",
-          productCategory: "Widgets",
-          general: General(
-            general: "General Purpose",
-            productProfile: "Product Profile",
-          ),
-        )
-            // ***** ssl product initializer for general product ENDS*****
-
-            // ***** ssl product initializer for non physical goods STARTS *****
-            // SSLCProductInitializer.WithNonPhysicalGoodsProfile(
-            //     productName:
-            //   "productName",
-            //   productCategory:
-            //   "productCategory",
-            //   nonPhysicalGoods:
-            //   NonPhysicalGoods(
-            //      productProfile:
-            //       "Product profile",
-            //     nonPhysicalGoods:
-            //     "non physical good"
-            //       ))
-            // ***** ssl product initializer for non physical goods ENDS *****
-
-            // ***** ssl product initialization for travel vertices STARTS *****
-            //       SSLCProductInitializer.WithTravelVerticalProfile(
-            //          productName:
-            //         "productName",
-            //         productCategory:
-            //         "productCategory",
-            //         travelVertical:
-            //         TravelVertical(
-            //               productProfile: "productProfile",
-            //               hotelName: "hotelName",
-            //               lengthOfStay: "lengthOfStay",
-            //               checkInTime: "checkInTime",
-            //               hotelCity: "hotelCity"
-            //             )
-            //       )
-            // ***** ssl product initialization for travel vertices ENDS *****
-
-            // ***** ssl product initialization for physical goods STARTS *****
-
-            // SSLCProductInitializer.WithPhysicalGoodsProfile(
-            //     productName: "productName",
-            //     productCategory: "productCategory",
-            //     physicalGoods: PhysicalGoods(
-            //         productProfile: "Product profile",
-            //         physicalGoods: "non physical good"))
-
-            // ***** ssl product initialization for physical goods ENDS *****
-
-            // ***** ssl product initialization for telecom vertice STARTS *****
-            // SSLCProductInitializer.WithTelecomVerticalProfile(
-            //     productName: "productName",
-            //     productCategory: "productCategory",
-            //     telecomVertical: TelecomVertical(
-            //         productProfile: "productProfile",
-            //         productType: "productType",
-            //         topUpNumber: "topUpNumber",
-            //         countryTopUp: "countryTopUp"))
-            // ***** ssl product initialization for telecom vertice ENDS *****
-            )
-        .addAdditionalInitializer(
-          sslcAdditionalInitializer: SSLCAdditionalInitializer(
-            valueA: "value a ",
-            valueB: "value b",
-            valueC: "value c",
-            valueD: "value d",
-            extras: {"key": "key", "key2": "key2"},
-          ),
-        );
-
-    SSLCTransactionInfoModel result = await sslcommerz.payNow();
-    paymentStatusCheck(result);
-  }
-
-  void paymentStatusCheck(SSLCTransactionInfoModel result) async {
-    try {
-      log("result status ::${result.status ?? ""}");
-
-      if (result.status!.toLowerCase() == "failed") {
-        Fluttertoast.showToast(
-          msg: "Transaction failed. Please try again.",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
-      } else if (result.status!.toLowerCase() == "closed") {
-        Fluttertoast.showToast(
-          msg: "Transaction canceled by the user.",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
-      } else {
-        Fluttertoast.showToast(
-            msg:
-                "Transaction is ${result.status} and Amount is ${result.amount ?? 0}",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
-      }
-    } catch (e) {
-      debugPrint(e.toString());
-=======
 void paymentStatusCheck(SSLCTransactionInfoModel result) async {
   try {
     log("Transaction status: ${result.status ?? ""}");
@@ -291,7 +127,6 @@ void paymentStatusCheck(SSLCTransactionInfoModel result) async {
         try {
           // Show loading indicator
           showLoadingIndicator(context: context, showLoader: true);
-
           // Parse input data
           final int packageId = widget.packageId;
           final String payReferenceNumber = transactionID;
@@ -344,11 +179,18 @@ void paymentStatusCheck(SSLCTransactionInfoModel result) async {
             showLoadingIndicator(context: context, showLoader: false);
           }
         }
->>>>>>> 2f5d96be17042b651dc92e65b0a98fab6c3516c7
     }
+  } catch (e) {
+    debugPrint("Error: ${e.toString()}");
+    Fluttertoast.showToast(
+      msg: "An error occurred. Please try again later.",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIosWeb: 2,
+      backgroundColor: Colors.orange,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
   }
 }
-<<<<<<< HEAD
-=======
 }
->>>>>>> 2f5d96be17042b651dc92e65b0a98fab6c3516c7
