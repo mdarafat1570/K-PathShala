@@ -127,7 +127,6 @@ void paymentStatusCheck(SSLCTransactionInfoModel result) async {
         try {
           // Show loading indicator
           showLoadingIndicator(context: context, showLoader: true);
-
           // Parse input data
           final int packageId = widget.packageId;
           final String payReferenceNumber = transactionID;
