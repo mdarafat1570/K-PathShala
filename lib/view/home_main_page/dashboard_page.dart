@@ -239,9 +239,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => UBTMockTestPage(
-                                    packageId:
-                                        dashboardPageModel!.exam!.packageId ??
-                                            -1,
+                                    packageId: dashboardPageModel!.exam!.packageId ?? -1,
+                                    appBarTitle: dashboardPageModel?.exam?.examName ?? "UBT Mock Test",
                                   ),
                                 ),
                               );

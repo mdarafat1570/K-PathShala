@@ -14,6 +14,8 @@ import 'package:flutter_sslcommerz/model/sslproductinitilizer/SSLCProductInitial
 import 'package:flutter_sslcommerz/sslcommerz.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
+import 'package:kpathshala/model/log_in_credentials.dart';
+import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/view/common_widget/common_button_add.dart';
 
 enum SdkType { TESTBOX, LIVE }
@@ -26,6 +28,10 @@ class SSLCommerzPage extends StatefulWidget {
 }
 
 class SSLCommerzPageState extends State<SSLCommerzPage> {
+  LogInCredentials? credentials;
+  final AuthService _authService = AuthService();
+
+  String transactionID = 'KP+${DateTime.now().second}';
 
   dynamic formData = {};
   SdkType _radioSelected = SdkType.TESTBOX;
@@ -33,6 +39,7 @@ class SSLCommerzPageState extends State<SSLCommerzPage> {
   @override
   void initState() {
     super.initState();
+    readCredentials();
     formData['store_id'] = "kpathshala0live";
     formData['store_password'] = "670CFD3A7D0E727025";
     formData['phone'] = "";
@@ -40,6 +47,26 @@ class SSLCommerzPageState extends State<SSLCommerzPage> {
     formData['multicard'] = '';
     _radioSelected = SdkType.LIVE;
   }
+  Future<void> readCredentials() async {
+    credentials = await _authService.getLogInCredentials();
+
+    if (credentials == null && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("No credentials found")),
+      );
+    }
+    transactionID = generateCode(credentials);
+    log("---------------$transactionID--------------");
+    setState(() {});
+  }
+
+  String generateCode(LogInCredentials? credentials) {
+    final now = DateTime.now();
+    String formattedDate = '${now.day.toString().padLeft(2, '0')}${now.month.toString().padLeft(2, '0')}${now.year.toString().substring(now.year.toString().length - 2)}''${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}${now.second.toString().padLeft(2, '0')}';
+
+    return 'KP${(credentials?.name ?? '').substring(0, 2).toUpperCase()}${(credentials?.mobile ?? '').substring((credentials?.mobile?.length ?? 4) - 4)}$formattedDate';
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -70,14 +97,11 @@ class SSLCommerzPageState extends State<SSLCommerzPage> {
         multi_card_name: formData['multicard'],
         currency: SSLCurrencyType.BDT,
         product_category: "Course",
-        // sdkType: _radioSelected == SdkType.TESTBOX
-        //     ? SSLCSdkType.TESTBOX
-        //     : SSLCSdkType.LIVE,
         sdkType: SSLCSdkType.LIVE,
         store_id: formData['store_id'],
         store_passwd: formData['store_password'],
         total_amount: formData['amount'],
-        tran_id: DateTime.now().toString(),
+        tran_id: transactionID,
       ),
     );
     SSLCTransactionInfoModel result = await sslcommerz.payNow();
@@ -208,6 +232,7 @@ class SSLCommerzPageState extends State<SSLCommerzPage> {
     SSLCTransactionInfoModel result = await sslcommerz.payNow();
     paymentStatusCheck(result);
   }
+
 void paymentStatusCheck(SSLCTransactionInfoModel result) async {
   try {
     log("Transaction status: ${result.status ?? ""}");

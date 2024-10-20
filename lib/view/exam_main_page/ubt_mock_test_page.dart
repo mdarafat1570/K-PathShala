@@ -15,8 +15,10 @@ import 'package:kpathshala/model/item_list.dart';
 
 import 'review_page.dart';
 
+//ignore: must_be_immutable
 class UBTMockTestPage extends StatefulWidget {
   final int packageId;
+  final String appBarTitle;
   final PackageList? package;
   bool? isInPreviewMode;
 
@@ -24,7 +26,9 @@ class UBTMockTestPage extends StatefulWidget {
       {super.key,
       this.package,
       this.isInPreviewMode = false,
-      required this.packageId});
+      required this.packageId,
+        required this.appBarTitle,
+      });
 
   @override
   State<UBTMockTestPage> createState() => _UBTMockTestPageState();
@@ -210,8 +214,8 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
   Widget build(BuildContext context) {
     return GradientBackground(
       child: Scaffold(
-        appBar: const CommonAppBar(
-          title: "UBT Mock Test",
+        appBar: CommonAppBar(
+          title: widget.appBarTitle,
         ),
         body: !dataFound
             ? buildShimmerLoadingEffect()

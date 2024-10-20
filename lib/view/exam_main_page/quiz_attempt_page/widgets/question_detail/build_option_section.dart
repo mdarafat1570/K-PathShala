@@ -21,6 +21,7 @@ Widget buildOptionSection({
   required List<PlayedAudios> playedAudiosList,
   required Function(int, int) selectionHandling,
   required Function(String?, String) speak,
+  required Function() stopSpeaking,
   ListeningQuestions? selectedListeningQuestionData,
   required Function(BuildContext, String, Map<String, Uint8List>) showZoomedImage,
   required Map<String, Uint8List> cachedImages,
@@ -43,6 +44,7 @@ Widget buildOptionSection({
               playedAudiosList: playedAudiosList,
               selectionHandling: selectionHandling,
               speak: speak,
+              stopSpeaking: stopSpeaking,
               selectedListeningQuestionData: selectedListeningQuestionData)
           : buildOptionsGrid(
               context: context,

@@ -6,7 +6,6 @@ import 'package:kpathshala/repository/package_service_repository.dart';
 import 'package:kpathshala/view/common_widget/format_date_with_ordinal.dart';
 import 'package:kpathshala/view/exam_main_page/bottom_sheets/bottom_panel_page_course_purchase.dart';
 import 'package:kpathshala/view/exam_main_page/ubt_mock_test_page.dart';
-import 'package:kpathshala/view/exam_main_page/widgets/test_sets_page_shimmer.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ExamPurchasePage extends StatefulWidget {
@@ -23,34 +22,9 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
 
   StreamSubscription? _internetConnectionStreamSubscription;
 
-  // bool _isLoading = true;
-
   @override
   void initState() {
     super.initState();
-    // _internetConnectionStreamSubscription =
-    //     InternetConnection().onStatusChange.listen((event) {
-    //   print(event);
-    //   switch (event) {
-    //     case InternetStatus.connected:
-    //       setState(() {
-    //         isConnectedToInternet = true;
-    //       });
-    //       break;
-    //     case InternetStatus.disconnected:
-    //       setState(() {
-    //         isConnectedToInternet = false;
-    //         // _showDisconnectionDialog();
-    //         slideNavigationPush(ConnectionLost(), context);
-    //       });
-    //       break;
-    //     default:
-    //       setState(() {
-    //         isConnectedToInternet = false;
-    //       });
-    //       break;
-    //   }
-    // });
     _fetchPackages();
   }
 
@@ -168,6 +142,7 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                                         UBTMockTestPage(
                                                           package: package,
                                                           packageId: package.id,
+                                                          appBarTitle: package.title ?? "UBT Mock Test",
                                                         )),
                                               ).then((_) {
                                                 _packagesFuture = null;
@@ -315,6 +290,7 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                                           package: package,
                                                           isInPreviewMode: true,
                                                           packageId: package.id,
+                                                          appBarTitle: package.title ?? "UBT Mock Test",
                                                         )),
                                               ).then((_) {
                                                 _packagesFuture = null;
@@ -349,8 +325,8 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                               final validityDate =
                                                   formatDateWithOrdinal(
                                                       futureDate);
-                                              final packagePrice = package
-                                                  .price; // Get price from the API
+                                              // final packagePrice = package
+                                              //     .price; // Get price from the API
                                               showCommonBottomSheet(
                                                 context: context,
                                                 height: screenHeight *
@@ -442,15 +418,15 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
     );
   }
 
-  List<Widget> _buildShimmerRows(int count) {
-    return List.generate(
-      count,
-      (index) => Row(
-        children: [
-          _buildShimmerContainer(height: 35, width: 35),
-          _buildShimmerContainer(height: 35, width: 200),
-        ],
-      ),
-    );
-  }
+  // List<Widget> _buildShimmerRows(int count) {
+  //   return List.generate(
+  //     count,
+  //     (index) => Row(
+  //       children: [
+  //         _buildShimmerContainer(height: 35, width: 35),
+  //         _buildShimmerContainer(height: 35, width: 200),
+  //       ],
+  //     ),
+  //   );
+  // }
 }
