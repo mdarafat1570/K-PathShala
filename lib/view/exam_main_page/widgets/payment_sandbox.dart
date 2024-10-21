@@ -157,7 +157,7 @@ void paymentStatusCheck(SSLCTransactionInfoModel result) async {
               textColor: Colors.white,
               fontSize: 16.0,
             );
-            widget.refreshPage;
+            widget.refreshPage();
 
             log("Payment successful.");
           } else {

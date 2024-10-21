@@ -44,7 +44,7 @@ android {
     defaultConfig {
         applicationId = "com.designdebugger.kpathshala"
         minSdk = 23
-        targetSdk = 33
+        targetSdk = 34
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
         multiDexEnabled true

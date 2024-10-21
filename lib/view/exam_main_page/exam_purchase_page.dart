@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/model/package_model/package_model.dart';
@@ -317,8 +318,8 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                               final validityDate =
                                                   formatDateWithOrdinal(
                                                       futureDate);
-                                              // final packagePrice = package
-                                              //     .price; // Get price from the API
+                                              final packagePrice = package
+                                                  .price.toDouble(); // Get price from the API
                                               showCommonBottomSheet(
                                                 context: context,
                                                 height: screenHeight * heightPercentage,
@@ -327,7 +328,7 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                                   packageId: package.id!,
                                                   packageName:
                                                       package.title ?? '',
-                                                  price:10,
+                                                  price:packagePrice,
                                                       // packagePrice!.toDouble(),
                                                   validityDate:
                                                       validityDate.toString(),
