@@ -3,6 +3,7 @@ import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/common_error_all_layout/connection_lost.dart';
 import 'package:kpathshala/common_error_all_layout/page_not_found.dart';
 import 'package:kpathshala/common_error_all_layout/under_maintenance.dart';
+import 'package:kpathshala/view/courses_page/device_id_button_sheet.dart';
 
 class Courses extends StatefulWidget {
   const Courses({super.key});
@@ -14,6 +15,8 @@ class Courses extends StatefulWidget {
 class _CoursesState extends State<Courses> {
   @override
   Widget build(BuildContext context) {
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final heightPercentage = 315 / screenHeight;
     return Scaffold(
       body: GradientBackground(
         child: Padding(
@@ -41,6 +44,17 @@ class _CoursesState extends State<Courses> {
                   ),
                 ),
               ),
+              ElevatedButton(
+                  onPressed: () {
+                    showCommonBottomSheet(
+                      context: context,
+                      content: const DevoiceIdButtonSheet(),
+                      actions: [],
+                      color: Colors.white,
+                      height: screenHeight * heightPercentage,
+                    );
+                  },
+                  child: const Text("Bottom Sheet"))
               // Gap(30),
               // InkWell(
               //   onTap: () {
