@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/model/package_model/package_model.dart';

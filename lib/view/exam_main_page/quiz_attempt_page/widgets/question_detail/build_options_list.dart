@@ -1,8 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:kpathshala/app_theme/app_color.dart';
-import 'package:kpathshala/model/question_model/reading_question_page_model.dart';
-import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/played_audio_object.dart';
-import 'dart:typed_data';
+import '../../quiz_attempt_page_imports.dart';
 
 Widget buildOptionsList({
   required BuildContext context,
@@ -14,7 +10,6 @@ Widget buildOptionsList({
   required bool isVoiceType,
   required bool isTextWithVoice,
   required bool isSpeaking,
-  required bool isInDelay,
   required bool isInReviewMode,
   required List<PlayedAudios> playedAudiosList,
   required Function(int, int) selectionHandling,
@@ -31,33 +26,30 @@ Widget buildOptionsList({
       int answerId = options[index].id ?? -1;
       String voiceScript = options[index].voiceScript ?? '';
       bool optionExists = playedAudiosList.any(
-            (audio) => audio.audioId == answerId && audio.audioType == 'option',
+        (audio) => audio.audioId == answerId && audio.audioType == 'option',
       );
 
       Color containerColor = isInReviewMode
           ? (correctAnswerId == answerId && submissionId == answerId
-          ? Colors.green.withOpacity(0.5)
-          : correctAnswerId == answerId
-          ? Colors.green.withOpacity(0.5)
-          : submissionId == answerId
-          ? Colors.red.withOpacity(0.5)
-          : Colors.white.withOpacity(0.5))
+              ? Colors.green.withOpacity(0.5)
+              : correctAnswerId == answerId
+                  ? Colors.green.withOpacity(0.5)
+                  : submissionId == answerId
+                      ? Colors.red.withOpacity(0.5)
+                      : Colors.white.withOpacity(0.5))
           : Colors.transparent;
-
 
       return Container(
         padding: const EdgeInsets.all(6),
         margin: const EdgeInsets.all(2),
         decoration: BoxDecoration(
-            color: containerColor,
-            borderRadius: BorderRadius.circular(8)
-        ),
+            color: containerColor, borderRadius: BorderRadius.circular(8)),
         child: InkWell(
           onTap: isInReviewMode
               ? null
               : () {
-            selectionHandling(index, answerId);
-          },
+                  selectionHandling(index, answerId);
+                },
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -75,7 +67,6 @@ Widget buildOptionsList({
                   context,
                   optionExists,
                   isSpeaking,
-                  isInDelay,
                   voiceScript,
                   answerId,
                   playedAudiosList,
@@ -83,19 +74,17 @@ Widget buildOptionsList({
                   stopSpeaking,
                   selectedListeningQuestionData,
                 ),
-              if (isTextWithVoice)
+              if (isTextWithVoice && answer.isNotEmpty)
                 Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      if (answer.isNotEmpty)
                         _buildVoiceIcon(
                           context,
                           optionExists,
                           isSpeaking,
-                          isInDelay,
                           answer,
                           answerId,
                           playedAudiosList,
@@ -103,13 +92,14 @@ Widget buildOptionsList({
                           stopSpeaking,
                           selectedListeningQuestionData,
                         ),
-                      if (answer.isNotEmpty)
-                        Text(
-                          answer,
-                          style: const TextStyle(fontSize: 18),
-                          softWrap: true,
-                          overflow: TextOverflow
-                              .visible,
+                        const Gap(5),
+                        Expanded(
+                          child: Text(
+                            answer,
+                            style: const TextStyle(fontSize: 18),
+                            softWrap: true,
+                            overflow: TextOverflow.visible,
+                          ),
                         ),
                     ],
                   ),
@@ -131,7 +121,7 @@ Widget buildOptionsGrid({
   required bool isInReviewMode,
   required Function(int, int) selectionHandling,
   required Function(BuildContext, String, Map<String, Uint8List>)
-  showZoomedImage,
+      showZoomedImage,
   required Map<String, Uint8List> cachedImages,
 }) {
   return GridView.builder(
@@ -159,42 +149,41 @@ Widget buildOptionsGrid({
   );
 }
 
-Widget _buildGridItem(BuildContext context,
-    Options option,
-    int index,
-    int selectedSolvedIndex,
-    int? correctAnswerId,
-    int? submissionId,
-    bool isInReviewMode,
-    Function(int, int) selectionHandling,
-    Function(BuildContext, String, Map<String, Uint8List>) showZoomedImage,
-    Map<String, Uint8List> cachedImages,) {
+Widget _buildGridItem(
+  BuildContext context,
+  Options option,
+  int index,
+  int selectedSolvedIndex,
+  int? correctAnswerId,
+  int? submissionId,
+  bool isInReviewMode,
+  Function(int, int) selectionHandling,
+  Function(BuildContext, String, Map<String, Uint8List>) showZoomedImage,
+  Map<String, Uint8List> cachedImages,
+) {
   String answerImage = option.imageUrl ?? "";
   int answerId = option.id ?? -1;
   Color containerColor = isInReviewMode
       ? (correctAnswerId == answerId && submissionId == answerId
-      ? Colors.green.withOpacity(0.5)
-      : correctAnswerId == answerId
-      ? Colors.green.withOpacity(0.5)
-      : submissionId == answerId
-      ? Colors.red.withOpacity(0.5)
-      : Colors.white.withOpacity(0.5))
+          ? Colors.green.withOpacity(0.5)
+          : correctAnswerId == answerId
+              ? Colors.green.withOpacity(0.5)
+              : submissionId == answerId
+                  ? Colors.red.withOpacity(0.5)
+                  : Colors.white.withOpacity(0.5))
       : Colors.transparent;
-
 
   return Container(
     padding: const EdgeInsets.all(6),
     margin: const EdgeInsets.all(2),
     decoration: BoxDecoration(
-        color: containerColor,
-        borderRadius: BorderRadius.circular(8)
-    ),
+        color: containerColor, borderRadius: BorderRadius.circular(8)),
     child: InkWell(
       onTap: isInReviewMode
           ? null
           : () {
-        selectionHandling(index, answerId);
-      },
+              selectionHandling(index, answerId);
+            },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
@@ -219,13 +208,13 @@ Widget _buildGridItem(BuildContext context,
 Widget _buildImage(String imageUrl, Map<String, Uint8List> cachedImages) {
   return cachedImages.containsKey(imageUrl)
       ? Image.memory(
-    cachedImages[imageUrl]!,
-    fit: BoxFit.cover,
-  )
+          cachedImages[imageUrl]!,
+          fit: BoxFit.cover,
+        )
       : const Padding(
-    padding: EdgeInsets.all(1.0),
-    child: CircularProgressIndicator(),
-  );
+          padding: EdgeInsets.all(1.0),
+          child: CircularProgressIndicator(),
+        );
 }
 
 Widget _buildOptionCircle(int index, int selectedSolvedIndex) {
@@ -248,37 +237,39 @@ Widget _buildOptionCircle(int index, int selectedSolvedIndex) {
   );
 }
 
-Widget _buildVoiceIcon(BuildContext context,
-    bool optionExists,
-    bool isSpeaking,
-    bool isInDelay,
-    String voiceScript,
-    int answerId,
-    List<PlayedAudios> playedAudiosList,
-    Function(String?, String) speak,
-    Function() stopSpeaking,
-    ListeningQuestions? selectedListeningQuestionData,) {
+Widget _buildVoiceIcon(
+  BuildContext context,
+  bool optionExists,
+  bool isSpeaking,
+  String voiceScript,
+  int answerId,
+  List<PlayedAudios> playedAudiosList,
+  Function(String?, String) speak,
+  Function() stopSpeaking,
+  ListeningQuestions? selectedListeningQuestionData,
+) {
   return Container(
     margin: const EdgeInsets.only(left: 20),
     child: InkWell(
       onTap: optionExists
           ? null
           : () async {
-        if (isSpeaking) {
-          await stopSpeaking();
-        }
-        playedAudiosList.add(
-          PlayedAudios(audioId: answerId, audioType: 'option'),
-        );
-        await speak(
-          selectedListeningQuestionData?.voiceGender,
-          voiceScript,
-        );
-      },
+              if (isSpeaking) {
+                await stopSpeaking();
+              }
+              playedAudiosList.add(
+                PlayedAudios(audioId: answerId, audioType: 'option'),
+              );
+              await speak(
+                selectedListeningQuestionData?.voiceGender,
+                voiceScript,
+              );
+            },
       child: Image.asset(
-      'assets/speaker.png',
-      height: 40,
-      color: optionExists ? Colors.black54 : AppColor.navyBlue,
+        'assets/speaker.png',
+        height: 40,
+        color: optionExists ? Colors.black54 : AppColor.navyBlue,
+      ),
     ),
-  ),);
+  );
 }

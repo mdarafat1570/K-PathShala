@@ -200,7 +200,6 @@ class Dialogue {
   }
 }
 
-
 class Options {
   int? id;
   String? optionType;
