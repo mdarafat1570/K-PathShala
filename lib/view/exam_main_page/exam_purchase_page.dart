@@ -145,7 +145,7 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                                           appBarTitle: package.title ?? "UBT Mock Test",
                                                         )),
                                               ).then((_) {
-
+                                                refreshPage();
                                               });
                                             },
                                             style: ElevatedButton.styleFrom(

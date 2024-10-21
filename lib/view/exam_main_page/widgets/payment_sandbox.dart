@@ -31,7 +31,6 @@ class SSLCommerzPageState extends State<SSLCommerzPage> {
     readCredentials();
     formData['store_id'] = "kpathshala0live";
     formData['store_password'] = "670CFD3A7D0E727025";
-    formData['phone'] = "";
     formData['amount'] = 10.0;
     formData['multicard'] = '';
   }
