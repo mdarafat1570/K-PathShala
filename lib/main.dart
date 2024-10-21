@@ -96,6 +96,8 @@ class MyApp extends StatelessWidget {
         '/ProfileScreenInMainPage': (context) =>
             const ProfileScreenInMainPage(),
         '/PaymentHistory': (context) => const PaymentHistory(),
+        
+
       },
       home: const SplashScreen(),
       builder: DevicePreview.appBuilder,
