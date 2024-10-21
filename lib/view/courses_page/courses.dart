@@ -3,7 +3,7 @@ import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/common_error_all_layout/connection_lost.dart';
 import 'package:kpathshala/common_error_all_layout/page_not_found.dart';
 import 'package:kpathshala/common_error_all_layout/under_maintenance.dart';
-import 'package:kpathshala/view/courses_page/device_id_button_sheet.dart';
+import 'package:kpathshala/view/login_signup_page/device_id_button_sheet.dart';
 
 class Courses extends StatefulWidget {
   const Courses({super.key});
@@ -44,51 +44,20 @@ class _CoursesState extends State<Courses> {
                   ),
                 ),
               ),
-              ElevatedButton(
-                  onPressed: () {
-                    showCommonBottomSheet(
-                      context: context,
-                      content: const DevoiceIdButtonSheet(),
-                      actions: [],
-                      color: Colors.white,
-                      height: screenHeight * heightPercentage,
-                    );
-                  },
-                  child: const Text("Bottom Sheet"))
-              // Gap(30),
-              // InkWell(
-              //   onTap: () {
-              //     Navigator.push(
-              //       context,
-              //       MaterialPageRoute(builder: (context) => ConnectionLost()),
-              //     );
-              //   },
-              //   child: const Text(
-              //     "Stay tuned premium\ncourses are coming soon (INTERNET)",
-              //     textAlign: TextAlign.center,
-              //     style: TextStyle(
-              //       color: AppColor.navyBlue,
-              //       fontSize: 12,
-              //     ),
-              //   ),
-              // ),
-              // Gap(30),
-              // InkWell(
-              //   onTap: () {
-              //     Navigator.push(
-              //       context,
-              //       MaterialPageRoute(builder: (context) => PageNotFound()),
-              //     );
-              //   },
-              //   child: const Text(
-              //     "Stay tuned premium\ncourses are coming soon (Page Not)",
-              //     textAlign: TextAlign.center,
-              //     style: TextStyle(
-              //       color: AppColor.navyBlue,
-              //       fontSize: 12,
-              //     ),
-              //   ),
-              // ),
+              Visibility(
+                visible: false,
+                child: ElevatedButton(
+                    onPressed: () {
+                      showCommonBottomSheet(
+                        context: context,
+                        content: const DevoiceIdButtonSheet(),
+                        actions: [],
+                        color: Colors.white,
+                        height: screenHeight * heightPercentage,
+                      );
+                    },
+                    child: const Text("Bottom Sheet")),
+              )
             ],
           ),
         ),
