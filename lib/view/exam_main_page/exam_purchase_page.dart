@@ -145,9 +145,7 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                                           appBarTitle: package.title ?? "UBT Mock Test",
                                                         )),
                                               ).then((_) {
-                                                _packagesFuture = null;
-                                                _fetchPackages();
-                                                setState(() {});
+                                                refreshPage();
                                               });
                                             },
                                             style: ElevatedButton.styleFrom(
@@ -273,13 +271,11 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                     ),
                                     const Gap(16),
                                     Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                       children: [
                                         SizedBox(
                                           width:
-                                              MediaQuery.sizeOf(context).width *
-                                                  0.35,
+                                              MediaQuery.sizeOf(context).width * 0.35,
                                           child: OutlinedButton(
                                             onPressed: () {
                                               Navigator.push(
@@ -293,18 +289,14 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                                           appBarTitle: package.title ?? "UBT Mock Test",
                                                         )),
                                               ).then((_) {
-                                                _packagesFuture = null;
-                                                _fetchPackages();
-                                                setState(() {});
+                                                refreshPage();
                                               });
                                             },
                                             style: OutlinedButton.styleFrom(
                                               padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 6),
+                                                  const EdgeInsets.symmetric(vertical: 6),
                                               backgroundColor:
-                                                  const Color.fromRGBO(
-                                                      26, 35, 126, 0.15),
+                                                  const Color.fromRGBO(26, 35, 126, 0.15),
                                               shape: RoundedRectangleBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(15),
@@ -329,8 +321,7 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                               //     .price; // Get price from the API
                                               showCommonBottomSheet(
                                                 context: context,
-                                                height: screenHeight *
-                                                    heightPercentage,
+                                                height: screenHeight * heightPercentage,
                                                 content: BottomSheetPage(
                                                   context: context,
                                                   packageId: package.id!,
@@ -340,11 +331,7 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                                       // packagePrice!.toDouble(),
                                                   validityDate:
                                                       validityDate.toString(),
-                                                  refreshPage: () {
-                                                    _packagesFuture = null;
-                                                    _fetchPackages();
-                                                    setState(() {});
-                                                  },
+                                                  refreshPage: refreshPage,
                                                 ),
                                                 actions: [],
                                                 color: Colors.white,
@@ -379,6 +366,12 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
         ),
       ),
     );
+  }
+
+  void refreshPage (){
+    _packagesFuture = null;
+    _fetchPackages();
+    setState(() {});
   }
 
   Widget buildShimmerLoadingEffectExam() {
@@ -417,16 +410,4 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
       ),
     );
   }
-
-  // List<Widget> _buildShimmerRows(int count) {
-  //   return List.generate(
-  //     count,
-  //     (index) => Row(
-  //       children: [
-  //         _buildShimmerContainer(height: 35, width: 35),
-  //         _buildShimmerContainer(height: 35, width: 200),
-  //       ],
-  //     ),
-  //   );
-  // }
 }

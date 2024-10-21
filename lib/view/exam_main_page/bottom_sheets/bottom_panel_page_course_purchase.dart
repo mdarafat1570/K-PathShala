@@ -1,6 +1,4 @@
-import 'package:flutter_svg/svg.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
-import 'package:kpathshala/view/exam_main_page/widgets/payment_example.dart';
 import 'package:kpathshala/view/exam_main_page/widgets/payment_sandbox.dart';
 
 class BottomSheetPage extends StatefulWidget {
@@ -87,15 +85,14 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
           ),
         ),
          Gap(screenHeight * 0.03),
-        SSLCommerzPage(packageId: widget.packageId,),
+        SSLCommerzPage(packageId: widget.packageId, refreshPage: widget.refreshPage,),
         Gap(screenHeight * 0.03),
         SizedBox(
           width: double.infinity,
           child: RichText(
             textAlign: TextAlign.center,
             text: const TextSpan(
-              text:
-                  "By proceeding you’re agreeing with K-Pathshala’s purchasing ",
+              text: "By proceeding you’re agreeing with K-Pathshala’s purchasing ",
               style: TextStyle(
                 color: AppColor.grey500,
                 fontSize: 10,
@@ -115,31 +112,6 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
         const Gap(15),
         // Image.asset('assets/pixelcut-export.png', fit: BoxFit.cover),
       ],
-    );
-  }
-
-  Future<void> showPaymentDialog() {
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) => Dialog(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Text('This is a typical dialog.'),
-              const SizedBox(height: 15),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('Close'),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

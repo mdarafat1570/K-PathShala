@@ -11,7 +11,8 @@ import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/quiz_attempt_pa
 
 class SSLCommerzPage extends StatefulWidget {
   final int packageId;
-  const SSLCommerzPage({super.key,required this.packageId});
+  final VoidCallback refreshPage;
+  const SSLCommerzPage({super.key,required this.packageId, required this.refreshPage});
 
   @override
   SSLCommerzPageState createState() => SSLCommerzPageState();
@@ -31,7 +32,6 @@ class SSLCommerzPageState extends State<SSLCommerzPage> {
     readCredentials();
     formData['store_id'] = "kpathshala0live";
     formData['store_password'] = "670CFD3A7D0E727025";
-    formData['phone'] = "";
     formData['amount'] = 10.0;
     formData['multicard'] = '';
   }
@@ -127,7 +127,6 @@ void paymentStatusCheck(SSLCTransactionInfoModel result) async {
         try {
           // Show loading indicator
           showLoadingIndicator(context: context, showLoader: true);
-
           // Parse input data
           final int packageId = widget.packageId;
           final String payReferenceNumber = transactionID;
@@ -158,6 +157,7 @@ void paymentStatusCheck(SSLCTransactionInfoModel result) async {
               textColor: Colors.white,
               fontSize: 16.0,
             );
+            widget.refreshPage;
 
             log("Payment successful.");
           } else {
