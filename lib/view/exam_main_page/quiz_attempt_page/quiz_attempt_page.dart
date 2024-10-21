@@ -102,8 +102,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
   Future<void> speak(String? model, String voiceScript,
       {bool? isDialogue = false}) async
   {
-    // String fileName = _audioCacheService.generateFileName(voiceScript);
     String fileName = voiceScript;
+    log("playing$fileName");
     await _audioPlaybackService.playCachedAudio(fileName);
   }
 
