@@ -36,7 +36,6 @@ Widget buildOptionSection({
               isTextType: isTextType,
               isVoiceType: isVoiceType,
               isSpeaking: isSpeaking,
-              isInDelay: isInDelay,
               isInReviewMode: isInReviewMode,
               isTextWithVoice: isTextWithVoice,
               correctAnswerId: correctAnswerId,

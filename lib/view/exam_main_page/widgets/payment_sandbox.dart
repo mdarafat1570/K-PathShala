@@ -11,7 +11,8 @@ import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/quiz_attempt_pa
 
 class SSLCommerzPage extends StatefulWidget {
   final int packageId;
-  const SSLCommerzPage({super.key,required this.packageId, required VoidCallback refreshPage});
+  final VoidCallback refreshPage;
+  const SSLCommerzPage({super.key,required this.packageId, required this.refreshPage});
 
   @override
   SSLCommerzPageState createState() => SSLCommerzPageState();
@@ -156,12 +157,9 @@ void paymentStatusCheck(SSLCTransactionInfoModel result) async {
               textColor: Colors.white,
               fontSize: 16.0,
             );
+            widget.refreshPage();
 
             log("Payment successful.");
-
- 
-// Navigator.of(context).pop();
-
           } else {
             if (mounted) {
               showLoadingIndicator(context: context, showLoader: false);
