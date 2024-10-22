@@ -22,6 +22,7 @@ class Preferences {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+      final prefs = await SharedPreferences.getInstance();
 
   // Initialize Firebase for authentication
   developer.log("Initializing Firebase...", name: 'INFO');
@@ -52,7 +53,6 @@ void main() async {
     developer.log("OneSignal ID fetched: $oneSignalId", name: 'INFO');
 
     if (oneSignalId != null) {
-      final prefs = await SharedPreferences.getInstance();
       await prefs.setString(Preferences.oneSignalUserId, oneSignalId);
       developer.log("OneSignal ID stored in SharedPreferences.", name: 'INFO');
     } else {
