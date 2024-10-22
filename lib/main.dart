@@ -44,22 +44,41 @@ void main() async {
   OneSignal.Notifications.requestPermission(true);
   developer.log("Notification permissions requested.", name: 'INFO');
 
-  // Fetch OneSignal ID and store it in SharedPreferences
-  String? oneSignalId;
-  try {
-    developer.log("Fetching OneSignal ID...", name: 'INFO');
-    oneSignalId = await OneSignal.User.getOnesignalId();
-    developer.log("OneSignal ID fetched: $oneSignalId", name: 'INFO');
+  // Wait for a short period to ensure initialization completes
+  await Future.delayed(const Duration(seconds: 5));
 
-    if (oneSignalId != null) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(Preferences.oneSignalUserId, oneSignalId);
-      developer.log("OneSignal ID stored in SharedPreferences.", name: 'INFO');
-    } else {
-      developer.log("OneSignal ID is null.", name: 'WARNING');
+  // Retry fetching OneSignal ID with a delay if not immediately available
+  String? oneSignalId;
+  int retryCount = 0;
+  const maxRetries = 3;
+  const retryDelay = Duration(seconds: 3);
+
+  while (oneSignalId == null && retryCount < maxRetries) {
+    try {
+      developer.log("Fetching OneSignal ID (Attempt ${retryCount + 1})...",
+          name: 'INFO');
+      oneSignalId = await OneSignal.User.getOnesignalId();
+
+      if (oneSignalId != null) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString(Preferences.oneSignalUserId, oneSignalId);
+        developer.log("OneSignal ID fetched and stored: $oneSignalId",
+            name: 'INFO');
+      } else {
+        developer.log("OneSignal ID is null, retrying...", name: 'WARNING');
+        retryCount++;
+        await Future.delayed(retryDelay); // wait before retrying
+      }
+    } catch (e) {
+      developer.log("Error fetching OneSignal ID: $e", name: 'ERROR');
+      retryCount++;
+      await Future.delayed(retryDelay);
     }
-  } catch (e) {
-    developer.log("Error fetching OneSignal ID: $e", name: 'ERROR');
+  }
+
+  if (oneSignalId == null) {
+    developer.log("Failed to fetch OneSignal ID after $maxRetries attempts.",
+        name: 'ERROR');
   }
 
   runApp(
