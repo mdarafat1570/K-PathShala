@@ -75,6 +75,8 @@ Widget _buildTextBlock(String text, TextType textType) {
       text,
       textType,
       fontSize: 20,
+      fontWeight: textType == TextType.subtitle ? FontWeight.w400 : null,
+      color: textType == TextType.subtitle ? AppColor.neutralGrey : null
     ),
   );
 }
