@@ -7,30 +7,26 @@ import 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
 import 'package:kpathshala/view/login_signup_page/registration_and_login_page.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:connectivity_plus/connectivity_plus.dart'; // For connectivity checking
+import 'package:connectivity_plus/connectivity_plus.dart'; 
 
 class BaseRepository {
   static const String _tokenKey = 'authToken';
 
-  // Check if there is internet connection
+
   Future<bool> _hasInternetConnection() async {
     var connectivityResult = await Connectivity().checkConnectivity();
     return connectivityResult != ConnectivityResult.none;
   }
     final AuthService _authService = AuthService();
 
-  // Perform HTTP POST request
-// Perform HTTP POST request
 Future<Map<String, dynamic>> postRequest(
     String url, Map<String, dynamic> body,
     {Map<String, String>? headers, required BuildContext context}) async {
-  // Check for internet connection
   if (!await _hasInternetConnection()) {
-    _showSnackbar(context, 'No Internet Connection'); // Notify user
+    _showSnackbar(context, 'No Internet Connection'); 
     throw Exception('No Internet Connection');
   }
 
-  // Prepare the request URI and headers
   final uri = Uri.parse(url);
   final defaultHeaders = {
     'Content-Type': 'application/json',
@@ -42,16 +38,12 @@ Future<Map<String, dynamic>> postRequest(
     log('POST Request URL: $url');
     log('Request Headers: ${jsonEncode(headers)}');
     log('Request Body: ${jsonEncode(body)}');
-
-    // Perform the POST request
     final response = await http.post(uri, headers: headers, body: jsonEncode(body));
-
-    // Process the response and handle errors gracefully
     return _processResponse(response, context);
   } catch (e) {
     log('Error in POST request: $e');
     _showSnackbar(context, 'An unexpected error occurred. Please try again.');
-    rethrow; // Allow higher-level handlers to deal with the error if needed
+    rethrow; 
   }
 }
 
@@ -72,7 +64,7 @@ Future<Map<String, dynamic>> postRequest(
     try {
       final response = await http.get(uri, headers: headers);
       log("Data Found From $url");
-      return _processResponse(response, context); // Pass context to _processResponse
+      return _processResponse(response, context);
     } catch (e) {
       log('Error in GET request: $e');
       rethrow;
@@ -88,10 +80,10 @@ Map<String, dynamic> _processResponse(http.Response response, BuildContext conte
     final decodedResponse = jsonDecode(response.body) as Map<String, dynamic>;
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      // Success: Return the decoded response body
+
       return decodedResponse;
     } else {
-      // Handle different HTTP errors with custom messages
+
       String message = decodedResponse['message'] ?? 'Something went wrong';
       if (response.statusCode == 400) {
         message = 'Bad request: $message';
@@ -100,7 +92,7 @@ Map<String, dynamic> _processResponse(http.Response response, BuildContext conte
       } else if (response.statusCode == 500) {
         message = 'Server error. Please try again later.';
       }
-      _showSnackbar(context, message); // Notify the user
+      _showSnackbar(context, message);
       throw Exception('Error: ${response.statusCode}, $message');
     }
   } catch (e) {
@@ -110,7 +102,6 @@ Map<String, dynamic> _processResponse(http.Response response, BuildContext conte
   }
 }
 
-// Display a Snackbar for user notifications
 void _showSnackbar(BuildContext context, String message) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(content: Text(message)),
