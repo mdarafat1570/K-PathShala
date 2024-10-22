@@ -1,25 +1,29 @@
-import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
+import 'package:kpathshala/authentication/base_repository.dart';
+
 import '../../app_base/common_imports.dart';
 
-class DevoiceIdButtonSheet extends StatefulWidget {
-  const DevoiceIdButtonSheet({super.key});
+class DeviceIdBottomSheet extends StatefulWidget {
+  const DeviceIdBottomSheet({super.key});
 
   @override
-  State<DevoiceIdButtonSheet> createState() => _DevoiceIdButtonSheetState();
+  State<DeviceIdBottomSheet> createState() => _DeviceIdBottomSheetState();
 }
 
-class _DevoiceIdButtonSheetState extends State<DevoiceIdButtonSheet> {
+class _DeviceIdBottomSheetState extends State<DeviceIdBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
 
-    return Center(
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           // Top indicator
+          const Gap(5),
           Container(
             width: screenWidth * 0.2,
             height: screenHeight * 0.005,
@@ -40,22 +44,24 @@ class _DevoiceIdButtonSheetState extends State<DevoiceIdButtonSheet> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: SizedBox(
-              width: 340,
               child: customText(
                 "You can’t use one K-Pathshala App account in more than 2 devices.",
                 TextType.normal,
-                textAlign: TextAlign.center,  
+                textAlign: TextAlign.center,
               ),
             ),
           ),
           const Gap(30),
          SizedBox(
               height: 54,
-              width: 340,
+              width: double.maxFinite,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  BaseRepository().userSignOut(context);
+                },
                 child:  customText("Log out",TextType.normal,color: AppColor.white,fontSize: 18),
               )),
+          const Gap(30),
         ],
       ),
     );

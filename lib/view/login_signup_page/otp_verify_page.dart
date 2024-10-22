@@ -5,13 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'dart:async';
 import 'package:kpathshala/app_theme/app_color.dart';
+import 'package:kpathshala/authentication/base_repository.dart';
 import 'package:kpathshala/base/get_device_id.dart';
 import 'package:kpathshala/main.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/model/otp_response_model.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
-import 'package:kpathshala/repository/verifyOtp_repository.dart';
-import 'package:kpathshala/view/login_signup_page/device_id_button_sheet.dart';
+import 'package:kpathshala/repository/verify_otp_repository.dart';
+import 'package:kpathshala/view/login_signup_page/device_id_bottom_sheet.dart';
 import 'package:kpathshala/view/navigation_bar_page/navigation_bar.dart';
 import 'package:kpathshala/view/profile_page/profile_edit.dart';
 import 'package:kpathshala/view/common_widget/common_slide_navigation_push.dart';
@@ -213,14 +214,6 @@ void _verifyOtp() async {
       context: context,
     );
 
-    if (response['status'] == 'error' &&
-        response['message'] == 'Login device limitation is over') {
-      // Stop loader and show the device limitation message
-      showLoadingIndicator(context: context, showLoader: false);
-      _showDeviceIdButtonSheet(context); // Ensure this method works as expected
-      return;
-    }
-
     // Handle successful response
     final apiResponse = OTPApiResponse.fromJson(response);
     log("API Response: ${jsonEncode(response)}");
@@ -254,37 +247,39 @@ void _verifyOtp() async {
         } else {
           slideNavigationPushAndRemoveUntil(const Navigation(), context);
         }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Failed to verify OTP: ${response['message']}")),
-        );
       }
     }
   } catch (e) {
     log("Error verifying OTP: $e");
-    if (e is Exception && e.toString().contains('"Login device limitation is over"')) {
+    String errorMessage = e.toString().replaceFirst("Exception: ", "");
+    if (e is Exception && e.toString().contains('Login device limitation is over')) {
       showLoadingIndicator(context: context, showLoader: false);
-      _showDeviceIdButtonSheet(context); 
+      _showDeviceIdBottomSheet(context);
     } else if (mounted) {
       showLoadingIndicator(context: context, showLoader: false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("An error occurred during OTP verification.")),
+        SnackBar(content: Text(errorMessage)),
       );
     }
   }
 }
 
 
-// Function to show DevoiceIdButtonSheet
-void _showDeviceIdButtonSheet(BuildContext context) {
+// Function to show DeviceIdButtonSheet
+void _showDeviceIdBottomSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
     isScrollControlled: true,
-    backgroundColor: Colors.transparent,
+    backgroundColor: Colors.white,
     builder: (BuildContext context) {
-      return const DevoiceIdButtonSheet();
+      return const DeviceIdBottomSheet();
     },
-  );
+  ).then((_){
+    BaseRepository().userSignOut(context);
+  });
 }
 
 
