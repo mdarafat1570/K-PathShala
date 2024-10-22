@@ -26,7 +26,7 @@ Widget buildQuestionSection({
   required Function showZoomedImage,
   required Map<String, Uint8List> cachedImages,
   List<PlayedAudios>? playedAudiosList,
-  required Function(String?, String, {bool isDialogue}) speak,
+  required Function(List<String>) speak,
   required Function() stopSpeaking,
   VoidCallback? changeInDelayStatus,
   Function? onImageTap,
@@ -97,7 +97,7 @@ Widget _buildQuestionSection(
       required Map<String, Uint8List> cachedImages,
       required Function showZoomedImage,
       required List<PlayedAudios> playedAudiosList,
-      required Function(String?, String, {bool isDialogue}) speak,
+      required Function(List<String>) speak,
       required Function() stopSpeaking,
       required VoidCallback changeInDelayStatus,
       Function? onImageTap,
@@ -148,7 +148,7 @@ Widget _buildQuestionSection(
                 playedAudiosList.add(
                     PlayedAudios(audioId: questionId, audioType: "question"));
                 if (listeningQuestionType != "dialogues") {
-                  speak(voiceModel, voiceScript);
+                  speak([voiceScript,voiceScript]);
                 } else {
                   await _playDialogue(dialogue, speak, changeInDelayStatus, isSpeechCompleted);
                 }
@@ -167,20 +167,18 @@ Widget _buildQuestionSection(
 
 Future<void> _playDialogue(
     List<Dialogue> dialogue,
-    Function(String?, String, {bool isDialogue}) speak,
+    Function(List<String>) speak,
     VoidCallback changeInDelayStatus, bool isSpeechCompleted
     ) async {
+  dialogue.sort((a, b) => (a.sequence ?? -1).compareTo(b.sequence ?? -1));
+  List<String> voiceScriptQueue = [];
+
   for (int i = 0; i < 2; i++) {
     for (var voice in dialogue) {
-      await speak(voice.voiceGender, voice.voiceScript ?? '', isDialogue: true);
-      if(isSpeechCompleted == false){
-        return;
-      }
+      voiceScriptQueue.add(voice.voiceScript ?? '');
     }
-    changeInDelayStatus();
-    await Future.delayed(const Duration(seconds: 3));
-    changeInDelayStatus();
   }
+  await speak(voiceScriptQueue);
 }
 
 

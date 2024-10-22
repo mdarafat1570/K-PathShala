@@ -141,12 +141,10 @@ class _ReviewPageState extends State<ReviewPage> {
 
   Map<String, Uint8List> cachedImages = {};
 
-  Future<void> speak(String? model, String voiceScript,
-      {bool? isDialogue = false}) async
+  Future<void> speak(List<String> voiceScriptQueue) async
   {
-    String fileName = voiceScript;
-    log("playing$fileName");
-    await _audioPlaybackService.playCachedAudio(fileName);
+    log("playing$voiceScriptQueue");
+    await _audioPlaybackService.playAudioQueue(voiceScriptQueue);
   }
 
   Future<void> _stopSpeaking() async {

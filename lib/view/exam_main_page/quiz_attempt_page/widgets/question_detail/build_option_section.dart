@@ -20,7 +20,7 @@ Widget buildOptionSection({
   required bool isInDelay,
   required List<PlayedAudios> playedAudiosList,
   required Function(int, int) selectionHandling,
-  required Function(String?, String) speak,
+  required Function(List<String>) speak,
   required Function() stopSpeaking,
   ListeningQuestions? selectedListeningQuestionData,
   required Function(BuildContext, String, Map<String, Uint8List>) showZoomedImage,

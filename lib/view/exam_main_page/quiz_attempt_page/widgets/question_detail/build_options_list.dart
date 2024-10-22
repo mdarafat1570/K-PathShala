@@ -13,7 +13,7 @@ Widget buildOptionsList({
   required bool isInReviewMode,
   required List<PlayedAudios> playedAudiosList,
   required Function(int, int) selectionHandling,
-  required Function(String?, String) speak,
+  required Function(List<String>) speak,
   required Function() stopSpeaking,
   ListeningQuestions? selectedListeningQuestionData,
 }) {
@@ -244,7 +244,7 @@ Widget _buildVoiceIcon(
   String voiceScript,
   int answerId,
   List<PlayedAudios> playedAudiosList,
-  Function(String?, String) speak,
+  Function(List<String>) speak,
   Function() stopSpeaking,
   ListeningQuestions? selectedListeningQuestionData,
 ) {
@@ -260,10 +260,7 @@ Widget _buildVoiceIcon(
               playedAudiosList.add(
                 PlayedAudios(audioId: answerId, audioType: 'option'),
               );
-              await speak(
-                selectedListeningQuestionData?.voiceGender,
-                voiceScript,
-              );
+              await speak([voiceScript,voiceScript]);
             },
       child: Image.asset(
         'assets/speaker.png',
