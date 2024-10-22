@@ -38,30 +38,6 @@ class AuthService {
     return prefs.containsKey(_tokenKey);
   }
 
-  // // Send OTP
-  // Future<Map<String, dynamic>> sendOtp(String mobile, {String? email}) async {
-  //   final url = Uri.parse(AuthorizationEndpoints.sendOTP);
-  //   final headers = {'Content-Type': 'application/json'};
-  //   final body = {
-  //     'mobile': mobile,
-  //   };
-  //   if (email != null) {
-  //     body['email'] = email;
-  //   }
-
-  //   final response =
-  //       await http.post(url, headers: headers, body: json.encode(body));
-  //   if (response.statusCode == 200) {
-  //     return json.decode(response.body);
-  //   } else {
-  //     return {
-  //       'error': true,
-  //       'message': 'Failed to send OTP',
-  //       'details': json.decode(response.body)
-  //     };
-  //   }
-  // }
-
   Future<Map<String, dynamic>> sendOtp(
     String mobile, {
     String? email,
@@ -182,7 +158,7 @@ class AuthService {
     final headers = {
       'Content-Type': 'application/json',
       'Authorization':
-          'Bearer $token', // Ensure the Authorization header is correctly prefixed
+          'Bearer $token',
     };
 
     final body = jsonEncode({
@@ -220,7 +196,6 @@ class AuthService {
     }
   }
 
-// Helper function to check if a string is valid JSON
   bool _isJson(String str) {
     try {
       jsonDecode(str);
@@ -334,11 +309,4 @@ class AuthService {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));
   }
-
-  //  onPressed: () async {
-  //   Map<String, dynamic> result = await AuthService().logout(context);
-  //   if (result['status'] == 'success') {
-  //     Navigator.pushReplacementNamed(context, '/login');  // Navigate to login or initial screen
-  //   }
-  // },
 }

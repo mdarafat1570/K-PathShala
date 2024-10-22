@@ -19,14 +19,13 @@ Widget buildQuestionSection({
   required List<Dialogue> dialogue,
   required int questionId,
   bool? isSpeaking = false,
-  bool? isInDelay = false,
   bool? isSpeechCompleted = false,
   bool? exists = false,
   bool? isInReviewMode = false,
   required Function showZoomedImage,
   required Map<String, Uint8List> cachedImages,
   List<PlayedAudios>? playedAudiosList,
-  required Function(String?, String, {bool isDialogue}) speak,
+  required Function(List<String>) speak,
   required Function() stopSpeaking,
   VoidCallback? changeInDelayStatus,
   Function? onImageTap,
@@ -54,7 +53,6 @@ Widget buildQuestionSection({
             listeningQuestionType: listeningQuestionType,
             questionId: questionId,
             isSpeaking: isSpeaking!,
-            isInDelay: isInDelay!,
             exists: exists!,
             cachedImages: cachedImages,
             showZoomedImage: showZoomedImage,
@@ -77,6 +75,8 @@ Widget _buildTextBlock(String text, TextType textType) {
       text,
       textType,
       fontSize: 20,
+      fontWeight: textType == TextType.subtitle ? FontWeight.w400 : null,
+      color: textType == TextType.subtitle ? AppColor.neutralGrey : null
     ),
   );
 }
@@ -91,13 +91,12 @@ Widget _buildQuestionSection(
       required String listeningQuestionType,
       required int questionId,
       required bool isSpeaking,
-      required bool isInDelay,
       required bool isSpeechCompleted,
       required bool exists,
       required Map<String, Uint8List> cachedImages,
       required Function showZoomedImage,
       required List<PlayedAudios> playedAudiosList,
-      required Function(String?, String, {bool isDialogue}) speak,
+      required Function(List<String>) speak,
       required Function() stopSpeaking,
       required VoidCallback changeInDelayStatus,
       Function? onImageTap,
@@ -148,7 +147,7 @@ Widget _buildQuestionSection(
                 playedAudiosList.add(
                     PlayedAudios(audioId: questionId, audioType: "question"));
                 if (listeningQuestionType != "dialogues") {
-                  speak(voiceModel, voiceScript);
+                  speak([voiceScript,voiceScript]);
                 } else {
                   await _playDialogue(dialogue, speak, changeInDelayStatus, isSpeechCompleted);
                 }
@@ -167,20 +166,18 @@ Widget _buildQuestionSection(
 
 Future<void> _playDialogue(
     List<Dialogue> dialogue,
-    Function(String?, String, {bool isDialogue}) speak,
+    Function(List<String>) speak,
     VoidCallback changeInDelayStatus, bool isSpeechCompleted
     ) async {
+  dialogue.sort((a, b) => (a.sequence ?? -1).compareTo(b.sequence ?? -1));
+  List<String> voiceScriptQueue = [];
+
   for (int i = 0; i < 2; i++) {
     for (var voice in dialogue) {
-      await speak(voice.voiceGender, voice.voiceScript ?? '', isDialogue: true);
-      if(isSpeechCompleted == false){
-        return;
-      }
+      voiceScriptQueue.add(voice.voiceScript ?? '');
     }
-    changeInDelayStatus();
-    await Future.delayed(const Duration(seconds: 3));
-    changeInDelayStatus();
   }
+  await speak(voiceScriptQueue);
 }
 
 

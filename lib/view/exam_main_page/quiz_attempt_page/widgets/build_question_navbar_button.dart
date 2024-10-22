@@ -30,6 +30,13 @@ class BottomNavBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+            _buildQuestionNavbarButton(
+              context,
+              'Previous',
+              AppColor.navyBlue,
+              isPreviousButtonVisible ? moveToPrevious : null,
+              textColor: isPreviousButtonVisible ? Colors.white : Colors.grey[600]!,
+            ),
           if (!isListViewVisible)
             _buildQuestionNavbarButton(
               context,
@@ -37,15 +44,6 @@ class BottomNavBar extends StatelessWidget {
               AppColor.grey200,
               onTotalQuestionsPress,
             ),
-          const Spacer(), // Spacing between buttons
-          if (isPreviousButtonVisible)
-            _buildQuestionNavbarButton(
-              context,
-              'Previous',
-              AppColor.grey300,
-              moveToPrevious,
-            ),
-          const SizedBox(width: 10),
           if (isSubmitAnswerButtonVisible)
             _buildQuestionNavbarButton(
               context,
@@ -71,11 +69,11 @@ class BottomNavBar extends StatelessWidget {
       BuildContext context,
       String text,
       Color backgroundColor,
-      VoidCallback onPressed, {
+      VoidCallback? onPressed, {
         Color textColor = AppColor.navyBlue,
       }) {
     return SizedBox(
-      width: MediaQuery.sizeOf(context).width * 0.2,
+      width: MediaQuery.sizeOf(context).width * 0.25,
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(

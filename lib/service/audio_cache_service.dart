@@ -8,12 +8,18 @@ import 'package:kpathshala/service/azure_tts_service.dart';
 class AudioCacheService {
   final AzureTTS _azureTTS = AzureTTS();
 
-  // Cache the audio files
-  Future<void> cacheAudioFiles({required List<CachedVoiceModel> cachedVoiceModelList}) async {
+  Future<void> cacheAudioFiles({
+    required List<CachedVoiceModel> cachedVoiceModelList,
+    required bool isDisposed,
+  }) async {
     final Directory tempDir = await getTemporaryDirectory();
 
     for (CachedVoiceModel model in cachedVoiceModelList) {
-      // String fileName = generateFileName(model.text);
+      if (isDisposed) {
+        log('Page is disposed. Stopping the caching process.');
+        return;
+      }
+
       String fileName = model.text;
 
       File audioFile = File('${tempDir.path}/$fileName.mp3');
@@ -25,6 +31,11 @@ class AudioCacheService {
       try {
         Uint8List audioData = await _azureTTS.synthesizeSpeech(model.text, model.gender);
 
+        if (isDisposed) {
+          log('Page is disposed. Stopping the caching process before saving the file.');
+          return;
+        }
+
         await audioFile.writeAsBytes(audioData);
         log('Cached audio for: ${model.text}');
       } catch (e) {
@@ -33,24 +44,10 @@ class AudioCacheService {
     }
   }
 
-  // Generate a file name based on the text
-  // String generateFileName(String text) {
-  //   String cleanText = text.replaceAll(RegExp(r'[^\w\s]+'), '').replaceAll(' ', '_');
-  //
-  //   String uniqueIdentifier = text.hashCode.toString();
-  //
-  //   return '${cleanText}_$uniqueIdentifier';
-  // }
-
-
-  // Clear the cached audio files
   Future<void> clearCache() async {
     final Directory tempDir = await getTemporaryDirectory();
 
-    // List all files in the temporary directory
     List<FileSystemEntity> files = tempDir.listSync();
-
-    // Remove all cached audio files (.mp3)
     for (var file in files) {
       if (file is File && file.path.endsWith('.mp3')) {
         await file.delete();
@@ -59,10 +56,8 @@ class AudioCacheService {
     }
   }
 
-  // Fetch the cached audio file if it exists
   Future<File?> getCachedAudio(String text) async {
     final Directory tempDir = await getTemporaryDirectory();
-    // String fileName = generateFileName(text);
     String fileName = text;
     File audioFile = File('${tempDir.path}/$fileName.mp3');
 
@@ -75,13 +70,11 @@ class AudioCacheService {
   }
 }
 
-
 List<CachedVoiceModel> extractCachedVoiceModels(
     {required List<ListeningQuestions> listeningQuestionList}) {
   List<CachedVoiceModel> cachedVoiceList = [];
 
   for (var question in listeningQuestionList) {
-    // Add voice script and gender from the ListeningQuestions model itself
     if (question.voiceScript != null && question.voiceGender != null) {
       log(question.voiceScript!);
       cachedVoiceList.add(CachedVoiceModel(
@@ -90,7 +83,6 @@ List<CachedVoiceModel> extractCachedVoiceModels(
       ));
     }
 
-    // Add voice script and gender from dialogues
     for (var dialogue in question.dialogues) {
       if (dialogue.voiceScript != null && dialogue.voiceGender != null) {
         log(dialogue.voiceScript!);
@@ -101,7 +93,6 @@ List<CachedVoiceModel> extractCachedVoiceModels(
       }
     }
 
-    // Add voice script and gender from options
     for (var option in question.options) {
       if (option.voiceScript != null && option.voiceGender != null) {
         log(option.voiceScript!);
@@ -112,8 +103,6 @@ List<CachedVoiceModel> extractCachedVoiceModels(
       }
     }
   }
-  log("-----------------${cachedVoiceList.length} number of texts");
-
   return cachedVoiceList;
 }
 
