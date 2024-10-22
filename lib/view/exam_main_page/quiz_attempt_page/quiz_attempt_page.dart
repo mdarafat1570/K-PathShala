@@ -1,6 +1,8 @@
 import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:kpathshala/service/audio_cache_service.dart';
+import 'package:kpathshala/service/audio_playback_service.dart';
 import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/quiz_attempt_page_imports.dart';
 
 class RetakeTestPage extends StatefulWidget {
@@ -21,6 +23,7 @@ class RetakeTestPage extends StatefulWidget {
 
 class RetakeTestPageState extends State<RetakeTestPage>
     with WidgetsBindingObserver {
+
   int _remainingTime = 3600;
   int _examTime = 3600;
   int totalQuestion = 0;
@@ -31,6 +34,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
 
   final QuestionsRepository _repository = QuestionsRepository();
   final AuthService _authService = AuthService();
+  final AudioCacheService _audioCacheService = AudioCacheService();
+  final AudioPlaybackService _audioPlaybackService = AudioPlaybackService();
   late TtsService ttsService;
 
   ReadingQuestions? selectedReadingQuestionData;
@@ -65,7 +70,22 @@ class RetakeTestPageState extends State<RetakeTestPage>
     readCredentials();
     ttsService = TtsService();
     ttsService.initializeTtsHandlers();
-    _fetchReadingQuestions();
+    _fetchQuestions();
+  }
+
+  @override
+  void dispose() {
+    if (_timer != null && _timer!.isActive) {
+      _timer?.cancel();
+    }
+    super.dispose();
+    ttsService.dispose();
+    _audioCacheService.clearCache();
+    _audioPlaybackService.dispose();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
   Future<void> readCredentials() async {
@@ -82,14 +102,16 @@ class RetakeTestPageState extends State<RetakeTestPage>
   Future<void> speak(String? model, String voiceScript,
       {bool? isDialogue = false}) async
   {
-    ttsService.speak(model, voiceScript);
+    String fileName = voiceScript;
+    log("playing$fileName");
+    await _audioPlaybackService.playCachedAudio(fileName);
   }
 
   Future<void> _stopSpeaking() async {
-    ttsService.stopSpeaking();
+    await _audioPlaybackService.stop();
     }
 
-  Future<void> _fetchReadingQuestions() async {
+  Future<void> _fetchQuestions() async {
     try {
       QuestionsModel? questionsModel = await _repository.fetchReadingQuestions(
           widget.questionSetId, context);
@@ -100,7 +122,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
         readingQuestions = questionsModel.data?.readingQuestions ?? [];
         listeningQuestions = questionsModel.data?.listeningQuestions ?? [];
 
-        await _preloadImages();
+        await _preloadFiles();
 
         totalQuestion = questionsModel.data?.totalQuestion ?? 0;
         _remainingTime = (questionsModel.data?.duration ?? 60) * 60;
@@ -132,7 +154,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
     }
   }
 
-  Future<void> _preloadImages() async {
+  Future<void> _preloadFiles() async {
     log("Loading Image");
     List<Future<void>> preloadFutures = [];
 
@@ -161,6 +183,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
     }
 
     await Future.wait(preloadFutures);
+    await _audioCacheService.cacheAudioFiles(cachedVoiceModelList: extractCachedVoiceModels(listeningQuestionList: listeningQuestions));
   }
 
   Future<void> _cacheImage(String imageUrl) async {
@@ -230,19 +253,6 @@ class RetakeTestPageState extends State<RetakeTestPage>
         ],
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    if (_timer != null && _timer!.isActive) {
-      _timer?.cancel();
-    }
-    super.dispose();
-    ttsService.dispose();
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
   }
 
   String get _formattedTime {
@@ -440,7 +450,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                       listeningQuestionType: listeningQuestionType,
                       dialogue: dialogue,
                       questionId: questionId,
-                      isSpeaking: ttsService.isSpeaking,
+                      isSpeaking: _audioPlaybackService.isPlaying(),
                       isInDelay: ttsService.isInDelay,
                       exists: exists,
                       showZoomedImage: showZoomedImage,
@@ -457,7 +467,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                     isTextType: isTextType,
                     isVoiceType: isVoiceType,
                     isTextWithVoice: isTextWithVoice,
-                    isSpeaking: ttsService.isSpeaking,
+                    isSpeaking: _audioPlaybackService.isPlaying(),
                     isInDelay: ttsService.isInDelay,
                     playedAudiosList: playedAudiosList,
                     selectionHandling: selectionHandling,

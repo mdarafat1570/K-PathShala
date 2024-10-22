@@ -62,58 +62,58 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get/get.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 
-class ConectivityController extends GetxController {
-  final Connectivity _conectivity = Connectivity();
+class ConnectivityController extends GetxController {
+  final Connectivity _connectivity = Connectivity();
 
   late final StreamSubscription _streamSubscription;
 
-  var _isConected = true.obs;
+  var isConnected = true.obs;
 
-  bool _isDialogopen = true;
+  bool _isDialogOpen = true;
 
   @override
   void onInit() {
     super.onInit();
-    _checkinternetconectivity();
+    _checkInternetConnectivity();
     _streamSubscription =
-        _conectivity.onConnectivityChanged.listen(_handleConectionChange);
+        _connectivity.onConnectivityChanged.listen(_handleConnectionChange);
   }
 
-  Future<void> _checkinternetconectivity() async {
-    List<ConnectivityResult> conection = await _conectivity.checkConnectivity();
+  Future<void> _checkInternetConnectivity() async {
+    List<ConnectivityResult> connection = await _connectivity.checkConnectivity();
 
-    _handleConectionChange(conection);
+    _handleConnectionChange(connection);
   }
 
-  void _handleConectionChange(List<ConnectivityResult> conections) {
-    if (conections.contains(ConnectivityResult.none)) {
-      _isConected.value = false;
+  void _handleConnectionChange(List<ConnectivityResult> connections) {
+    if (connections.contains(ConnectivityResult.none)) {
+      isConnected.value = false;
 
-      showInternetDialof();
+      showInternetDialog();
     } else {
-      _isConected.value = true;
+      isConnected.value = true;
       _closeDialog();
     }
   }
 
-  void showInternetDialof() {
+  void showInternetDialog() {
     Get.dialog(AlertDialog(
-      title: Text("Offlinbe"),
-      content: Text("You're offline. conect and try again"),
+      title: const Text("Offline"),
+      content: const Text("You're offline. connect and try again"),
       actions: [
         SizedBox(
           height: 40,
           width: 40,
-          child: ElevatedButton(onPressed: () {}, child: Text("Retry")),
+          child: ElevatedButton(onPressed: () {}, child: const Text("Retry")),
         )
       ],
     ));
   }
 
   void _closeDialog() {
-    if (_isDialogopen) {
+    if (_isDialogOpen) {
       Get.back();
-      _isDialogopen = false;
+      _isDialogOpen = false;
     }
   }
 

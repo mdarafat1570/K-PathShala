@@ -6,13 +6,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthenticationService extends BaseRepository {
   Future<Map<String, dynamic>> verifyOtp(
-    String mobile,
-    int otp,
-    String deviceId, {
-    String? deviceName,
-    required String oneSignalPlayerId,
-    required BuildContext context,
-  }) async {
+      String mobile,
+      int otp,
+      String deviceId, {
+        String? deviceName,
+        required String oneSignalPlayerId,
+        required BuildContext context,
+      }) async {
     final url = AuthorizationEndpoints.verifyOTP;
     final body = {
       'mobile': mobile,
@@ -24,35 +24,44 @@ class AuthenticationService extends BaseRepository {
       body['device_name'] = deviceName;
     }
 
-    // Make the API request
-    final response = await postRequest(url, body, context: context);
+    try {
+      // Make the API request
+      final response = await postRequest(url, body, context: context);
 
-    if (response['status'] == 'success') {
-      final token = response['data']['token'];
-      final int deviceCount = response['data']['device_count'] ?? 0;
+      if (response['status'] == 'success') {
+        final token = response['data']['token'];
+        final int deviceCount = response['data']['device_count'] ?? 0;
 
-      if (token != null) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('authToken', token);
+        if (token != null) {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('authToken', token);
 
-       
-        if (deviceCount > 2) {
-     
-          _showDevoiceIdButtonSheet(context);
+          // Show the bottom sheet if device count exceeds the limit
+          if (deviceCount > 2) {
+            _showDeviceIdButtonSheet(context);
+          }
         }
       }
+      else if (response['status'] == 'error' && response['message'] == 'Login device limitation is over') {
+        // Show the bottom sheet if the API error indicates device limit
+        _showDeviceIdButtonSheet(context);
+      }
+
+      return response;
+    } catch (e) {
+      // Handle any other exceptions
+      print('Error verifying OTP: $e');
+      return {'status': 'error', 'message': 'Something went wrong'};
     }
-    return response;
   }
 
-
-  void _showDevoiceIdButtonSheet(BuildContext context) {
+  void _showDeviceIdButtonSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
-        return const DevoiceIdButtonSheet();
+        return const DevoiceIdButtonSheet(); // Ensure this widget is correctly implemented
       },
     );
   }

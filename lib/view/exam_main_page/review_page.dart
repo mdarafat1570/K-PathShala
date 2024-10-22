@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 
 import 'package:kpathshala/model/question_model/result_model.dart';
 import 'package:kpathshala/repository/question/answer_review_repository.dart';
+import 'package:kpathshala/service/audio_cache_service.dart';
+import 'package:kpathshala/service/audio_playback_service.dart';
 import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/quiz_attempt_page_imports.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -25,6 +27,8 @@ class _ReviewPageState extends State<ReviewPage> {
   bool dataFound = false;
   bool resultDataFound = false;
   ResultData? result;
+  final AudioCacheService _audioCacheService = AudioCacheService();
+  final AudioPlaybackService _audioPlaybackService = AudioPlaybackService();
   late TtsService ttsService;
 
   List<ReadingQuestions> readingQuestions = [];
@@ -43,6 +47,8 @@ class _ReviewPageState extends State<ReviewPage> {
   void dispose() {
     super.dispose();
     ttsService.dispose();
+    _audioCacheService.clearCache();
+    _audioPlaybackService.dispose();
   }
 
   void fetchData() async {
@@ -116,6 +122,7 @@ class _ReviewPageState extends State<ReviewPage> {
     }
 
     await Future.wait(preloadFutures);
+    await _audioCacheService.cacheAudioFiles(cachedVoiceModelList: extractCachedVoiceModels(listeningQuestionList: listeningQuestions));
   }
 
   Future<void> _cacheImage(String imageUrl) async {
@@ -135,12 +142,15 @@ class _ReviewPageState extends State<ReviewPage> {
   Map<String, Uint8List> cachedImages = {};
 
   Future<void> speak(String? model, String voiceScript,
-      {bool? isDialogue = false}) async {
-    ttsService.speak(model, voiceScript);
+      {bool? isDialogue = false}) async
+  {
+    String fileName = voiceScript;
+    log("playing$fileName");
+    await _audioPlaybackService.playCachedAudio(fileName);
   }
 
   Future<void> _stopSpeaking() async {
-    ttsService.stopSpeaking();
+    await _audioPlaybackService.stop();
   }
 
   @override
@@ -241,8 +251,8 @@ class _ReviewPageState extends State<ReviewPage> {
                   isVoiceType: optionType == 'voice',
                   isTextWithVoice: optionType == 'text_with_voice',
                   isInReviewMode: true,
-                  isSpeaking: ttsService.isInDelay,
-                  isInDelay: ttsService.isInDelay,
+                  isSpeaking: _audioPlaybackService.isPlaying(),
+                  isInDelay: _audioPlaybackService.isPlaying(),
                   playedAudiosList: [],
                   selectionHandling: (v, c) {},
                   speak: speak,
@@ -329,8 +339,8 @@ class _ReviewPageState extends State<ReviewPage> {
                   isVoiceType: optionType == 'voice',
                   isTextWithVoice: optionType == 'text_with_voice',
                   isInReviewMode: true,
-                  isSpeaking: ttsService.isInDelay,
-                  isInDelay: ttsService.isInDelay,
+                  isSpeaking: _audioPlaybackService.isPlaying(),
+                  isInDelay: _audioPlaybackService.isPlaying(),
                   playedAudiosList: [],
                   selectionHandling: (v, c) {},
                   speak: speak,

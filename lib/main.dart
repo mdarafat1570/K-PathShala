@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kpathshala/NetworkManager.dart';
+import 'package:kpathshala/network_manager.dart';
 import 'package:kpathshala/app_theme/theme_data.dart';
 import 'package:kpathshala/model/dashboard_page_model/dashboard_page_model.dart';
 import 'package:kpathshala/view/courses_page/courses.dart';
@@ -33,7 +33,7 @@ void main() async {
   );
   developer.log("Firebase initialized.", name: 'INFO');
 
-  Get.put(ConectivityController());
+  Get.put(ConnectivityController());
 
   // Initialize OneSignal
   developer.log("Setting OneSignal log level...", name: 'INFO');
