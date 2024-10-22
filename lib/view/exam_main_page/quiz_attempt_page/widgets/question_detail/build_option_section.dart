@@ -17,7 +17,6 @@ Widget buildOptionSection({
   required bool isTextWithVoice,
   bool? isInReviewMode = false,
   required bool isSpeaking,
-  required bool isInDelay,
   required List<PlayedAudios> playedAudiosList,
   required Function(int, int) selectionHandling,
   required Function(List<String>) speak,

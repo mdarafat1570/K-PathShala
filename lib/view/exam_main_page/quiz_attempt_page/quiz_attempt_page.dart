@@ -23,7 +23,6 @@ class RetakeTestPage extends StatefulWidget {
 
 class RetakeTestPageState extends State<RetakeTestPage>
     with WidgetsBindingObserver {
-
   int _remainingTime = 3600;
   int _examTime = 3600;
   int totalQuestion = 0;
@@ -36,7 +35,6 @@ class RetakeTestPageState extends State<RetakeTestPage>
   final AuthService _authService = AuthService();
   final AudioCacheService _audioCacheService = AudioCacheService();
   final AudioPlaybackService _audioPlaybackService = AudioPlaybackService();
-  late TtsService ttsService;
 
   ReadingQuestions? selectedReadingQuestionData;
   ListeningQuestions? selectedListeningQuestionData;
@@ -55,6 +53,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
   bool isListViewVisible = true;
   bool _isTimeUp = false;
   bool isSubmitted = false;
+  bool isDisposed = false;
 
   String? selectedLanguage;
   String? selectedEngine;
@@ -68,18 +67,16 @@ class RetakeTestPageState extends State<RetakeTestPage>
       DeviceOrientation.landscapeLeft,
     ]);
     readCredentials();
-    ttsService = TtsService();
-    ttsService.initializeTtsHandlers();
     _fetchQuestions();
   }
 
   @override
   void dispose() {
+    isDisposed = true;
     if (_timer != null && _timer!.isActive) {
       _timer?.cancel();
     }
     super.dispose();
-    ttsService.dispose();
     _audioCacheService.clearCache();
     _audioPlaybackService.dispose();
     SystemChrome.setPreferredOrientations([
@@ -99,15 +96,14 @@ class RetakeTestPageState extends State<RetakeTestPage>
     setState(() {});
   }
 
-  Future<void> speak( List<String> voiceScriptQueue) async
-  {
+  Future<void> speak(List<String> voiceScriptQueue) async {
     log("playing$voiceScriptQueue");
     await _audioPlaybackService.playAudioQueue(voiceScriptQueue);
   }
 
   Future<void> _stopSpeaking() async {
     await _audioPlaybackService.stop();
-    }
+  }
 
   Future<void> _fetchQuestions() async {
     try {
@@ -145,7 +141,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content:
-                Text('Failed to load reading questions. Please try again.'),
+                Text('Failed to load questions. Please try again.'),
           ),
         );
       }
@@ -181,7 +177,12 @@ class RetakeTestPageState extends State<RetakeTestPage>
     }
 
     await Future.wait(preloadFutures);
-    await _audioCacheService.cacheAudioFiles(cachedVoiceModelList: extractCachedVoiceModels(listeningQuestionList: listeningQuestions));
+    await _audioCacheService.cacheAudioFiles(
+      cachedVoiceModelList: extractCachedVoiceModels(
+        listeningQuestionList: listeningQuestions,
+      ),
+      isDisposed: isDisposed,
+    );
   }
 
   Future<void> _cacheImage(String imageUrl) async {
@@ -353,14 +354,18 @@ class RetakeTestPageState extends State<RetakeTestPage>
     final voiceModel = selectedListeningQuestionData?.voiceGender ?? '';
     final listeningQuestionType =
         selectedListeningQuestionData?.questionType ?? "";
-    final options = isListening ? selectedListeningQuestionData?.options ?? [] : selectedReadingQuestionData?.options ?? [];
+    final options = isListening
+        ? selectedListeningQuestionData?.options ?? []
+        : selectedReadingQuestionData?.options ?? [];
     if (!listEquals(options, previousOptions)) {
-      options.shuffle();  // Shuffle only if options have changed
-      previousOptions = List.from(options);  // Update the previous options list
+      options.shuffle(); // Shuffle only if options have changed
+      previousOptions = List.from(options); // Update the previous options list
     }
     bool isTextType = options.isNotEmpty && options.first.optionType == 'text';
-    bool isVoiceType = options.isNotEmpty && options.first.optionType == 'voice';
-    bool isTextWithVoice = options.isNotEmpty && options.first.optionType == 'text_with_voice';
+    bool isVoiceType =
+        options.isNotEmpty && options.first.optionType == 'voice';
+    bool isTextWithVoice =
+        options.isNotEmpty && options.first.optionType == 'text_with_voice';
     int questionId = isListening
         ? selectedListeningQuestionData?.id ?? -1
         : selectedReadingQuestionData?.id ?? -1;
@@ -449,15 +454,12 @@ class RetakeTestPageState extends State<RetakeTestPage>
                       dialogue: dialogue,
                       questionId: questionId,
                       isSpeaking: _audioPlaybackService.isPlaying(),
-                      isInDelay: ttsService.isInDelay,
                       exists: exists,
                       showZoomedImage: showZoomedImage,
                       cachedImages: cachedImages,
                       playedAudiosList: playedAudiosList,
                       speak: speak,
-                      stopSpeaking: _stopSpeaking,
-                      changeInDelayStatus: changeInDelayStatus,
-                      isSpeechCompleted: ttsService.firstSpeechCompleted),
+                      stopSpeaking: _stopSpeaking),
                   buildOptionSection(
                     context: context,
                     options: options,
@@ -466,12 +468,12 @@ class RetakeTestPageState extends State<RetakeTestPage>
                     isVoiceType: isVoiceType,
                     isTextWithVoice: isTextWithVoice,
                     isSpeaking: _audioPlaybackService.isPlaying(),
-                    isInDelay: ttsService.isInDelay,
                     playedAudiosList: playedAudiosList,
                     selectionHandling: selectionHandling,
                     speak: speak,
                     stopSpeaking: _stopSpeaking,
-                    selectedListeningQuestionData: selectedListeningQuestionData,
+                    selectedListeningQuestionData:
+                        selectedListeningQuestionData,
                     showZoomedImage: showZoomedImage,
                     cachedImages: cachedImages,
                   ),
@@ -704,11 +706,5 @@ class RetakeTestPageState extends State<RetakeTestPage>
         log("An error occurred: $e");
       }
     }
-  }
-
-  void changeInDelayStatus() {
-    setState(() {
-      ttsService.isInDelay = !ttsService.isInDelay;
-    });
   }
 }
