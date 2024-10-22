@@ -61,7 +61,7 @@ class PageHeader extends StatelessWidget {
       fit: FlexFit.loose,
       child: Row(
         children: [
-          CircleAvatar(radius: 20, backgroundImage: imageProvider),
+          CircleAvatar(radius: 17, backgroundImage: imageProvider),
           const Gap(10),
           if (userName.isNotEmpty)
             Expanded(

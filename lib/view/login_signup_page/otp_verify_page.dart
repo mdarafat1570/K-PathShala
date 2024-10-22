@@ -11,6 +11,7 @@ import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/model/otp_response_model.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/repository/verifyOtp_repository.dart';
+import 'package:kpathshala/view/login_signup_page/device_id_button_sheet.dart';
 import 'package:kpathshala/view/navigation_bar_page/navigation_bar.dart';
 import 'package:kpathshala/view/profile_page/profile_edit.dart';
 import 'package:kpathshala/view/common_widget/common_slide_navigation_push.dart';
@@ -182,8 +183,6 @@ class _OtpPageState extends State<OtpPage> {
       _resendButtonText = 'Resend In $_remainingSeconds s';
     });
   }
-
-    // Method to get OneSignal Player ID from SharedPreferences
   Future<String?> getOneSignalPlayerId() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(Preferences.oneSignalUserId);
@@ -193,40 +192,50 @@ void _verifyOtp() async {
   try {
     // Show loading indicator
     showLoadingIndicator(context: context, showLoader: true);
+
     // Prepare data for OTP verification
     String mobile = widget.mobileNumber;
     String deviceId = await getDeviceId() ?? "";
     int otp = int.tryParse(pinController.text.trim()) ?? 0;
-    // Retrieve OneSignal Player ID
     String oneSignalPlayerId = await getOneSignalPlayerId() ?? "";
+
     log("Mobile: $mobile");
     log("OTP: ${pinController.text}");
     log("Device ID: $deviceId");
     log("OneSignal Player ID: $oneSignalPlayerId");
 
-    // Make the API call
+    // Call the API to verify OTP
     final response = await authenticationService.verifyOtp(
       mobile,
       otp,
       deviceId,
-      oneSignalPlayerId: oneSignalPlayerId, 
+      oneSignalPlayerId: oneSignalPlayerId,
       context: context,
     );
 
+    if (response['status'] == 'error' &&
+        response['message'] == 'Login device limitation is over') {
+      // Stop loader and show the device limitation message
+      showLoadingIndicator(context: context, showLoader: false);
+      _showDeviceIdButtonSheet(context); // Ensure this method works as expected
+      return;
+    }
+
+    // Handle successful response
     final apiResponse = OTPApiResponse.fromJson(response);
     log("API Response: ${jsonEncode(response)}");
 
     if (mounted) {
-      // Hide loading indicator
       showLoadingIndicator(context: context, showLoader: false);
 
-      if (apiResponse.successResponse != null) { 
+      if (apiResponse.successResponse != null) {
         final token = apiResponse.successResponse!.data.token;
         final name = apiResponse.successResponse!.data.user.name;
         final email = apiResponse.successResponse!.data.user.email;
         final mobile = apiResponse.successResponse!.data.user.mobile;
         final imageUrl = apiResponse.successResponse!.data.user.image;
 
+        // Save login credentials
         await _authService.saveLogInCredentials(LogInCredentials(
           email: email,
           name: name,
@@ -246,7 +255,6 @@ void _verifyOtp() async {
           slideNavigationPushAndRemoveUntil(const Navigation(), context);
         }
       } else {
-        // Handle OTP verification failure
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Failed to verify OTP: ${response['message']}")),
         );
@@ -254,7 +262,10 @@ void _verifyOtp() async {
     }
   } catch (e) {
     log("Error verifying OTP: $e");
-    if (mounted) {
+    if (e is Exception && e.toString().contains('"Login device limitation is over"')) {
+      showLoadingIndicator(context: context, showLoader: false);
+      _showDeviceIdButtonSheet(context); 
+    } else if (mounted) {
       showLoadingIndicator(context: context, showLoader: false);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("An error occurred during OTP verification.")),
@@ -262,6 +273,20 @@ void _verifyOtp() async {
     }
   }
 }
+
+
+// Function to show DevoiceIdButtonSheet
+void _showDeviceIdButtonSheet(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (BuildContext context) {
+      return const DevoiceIdButtonSheet();
+    },
+  );
+}
+
 
   void sendOtp(
       {required String mobileNumber, required BuildContext context}) async {

@@ -36,20 +36,20 @@ class AuthenticationService extends BaseRepository {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('authToken', token);
 
-          // Show the bottom sheet if device count exceeds the limit
+    
           if (deviceCount > 2) {
             _showDeviceIdButtonSheet(context);
           }
         }
       }
       else if (response['status'] == 'error' && response['message'] == 'Login device limitation is over') {
-        // Show the bottom sheet if the API error indicates device limit
+
         _showDeviceIdButtonSheet(context);
       }
 
       return response;
     } catch (e) {
-      // Handle any other exceptions
+   
       print('Error verifying OTP: $e');
       return {'status': 'error', 'message': 'Something went wrong'};
     }
@@ -61,7 +61,7 @@ class AuthenticationService extends BaseRepository {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
-        return const DevoiceIdButtonSheet(); // Ensure this widget is correctly implemented
+        return const DevoiceIdButtonSheet(); 
       },
     );
   }
