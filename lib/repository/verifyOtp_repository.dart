@@ -1,16 +1,16 @@
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/authentication/base_repository.dart';
+import 'package:kpathshala/view/login_signup_page/device_id_button_sheet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthenticationService extends BaseRepository {
-
   Future<Map<String, dynamic>> verifyOtp(
     String mobile,
     int otp,
     String deviceId, {
     String? deviceName,
-    required String oneSignalPlayerId, 
+    required String oneSignalPlayerId,
     required BuildContext context,
   }) async {
     final url = AuthorizationEndpoints.verifyOTP;
@@ -24,12 +24,36 @@ class AuthenticationService extends BaseRepository {
       body['device_name'] = deviceName;
     }
 
+    // Make the API request
     final response = await postRequest(url, body, context: context);
-    if (response['status'] == 'success' && response['data']['token'] != null) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('authToken', response['data']['token']);
-    }
 
+    if (response['status'] == 'success') {
+      final token = response['data']['token'];
+      final int deviceCount = response['data']['device_count'] ?? 0;
+
+      if (token != null) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('authToken', token);
+
+       
+        if (deviceCount > 2) {
+     
+          _showDevoiceIdButtonSheet(context);
+        }
+      }
+    }
     return response;
+  }
+
+
+  void _showDevoiceIdButtonSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return const DevoiceIdButtonSheet();
+      },
+    );
   }
 }

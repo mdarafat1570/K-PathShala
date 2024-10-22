@@ -41,21 +41,24 @@ class _SocialLoginState extends State<SocialLogin> {
                     style: const TextStyle(fontSize: 16, color: Colors.black87),
                   )),
               Gap(10),
-              commonCustomButton(
-                  width: double.infinity,
-                  backgroundColor: Colors.white,
-                  height: 55,
-                  borderRadius: 30,
-                  onPressed: () {},
-                  iconWidget: Image.asset(
-                    'assets/facebook_logo.png',
-                    width: 20,
-                  ),
-                  reversePosition: false,
-                  child: Text(
-                    "Continue with Facebook",
-                    style: const TextStyle(fontSize: 16, color: Colors.black87),
-                  )),
+              Visibility(
+                visible: false,
+                child: commonCustomButton(
+                    width: double.infinity,
+                    backgroundColor: Colors.white,
+                    height: 55,
+                    borderRadius: 30,
+                    onPressed: () {},
+                    iconWidget: Image.asset(
+                      'assets/facebook_logo.png',
+                      width: 20,
+                    ),
+                    reversePosition: false,
+                    child: Text(
+                      "Continue with Facebook",
+                      style: const TextStyle(fontSize: 16, color: Colors.black87),
+                    )),
+              ),
             ],
           ),
         ),

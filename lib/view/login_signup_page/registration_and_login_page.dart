@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 
 // import 'package:intl_phone_field/intl_phone_field.dart';
@@ -28,29 +29,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final TextEditingController mobileNumberController = TextEditingController();
   String? errorMessage;
   final AuthService _authService = AuthService();
-
-  // InputDecoration _inputDecoration() {
-  //   return InputDecoration(
-  //     labelText: "",
-  //     errorText: errorMessage,
-  //     fillColor: Colors.white,
-  //     filled: true,
-  //     border: _borderStyle(),
-  //     focusedBorder: _borderStyle(color: AppColor.navyBlue),
-  //     contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-  //   );
-  // }
-
-  // OutlineInputBorder _borderStyle({Color? color}) {
-  //   return OutlineInputBorder(
-  //     borderRadius: BorderRadius.circular(8.0),
-  //     borderSide: BorderSide(
-  //       color: color ?? (errorMessage == null ? Colors.grey : Colors.red),
-  //       width: 0.2,
-  //     ),
-  //   );
-  // }
-
   Widget _customButton(String text, Future<UserCredential> Function() onPressed,
       String assetPath,
       {double iconHeight = 35}) {
@@ -105,19 +83,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     ],
                   ),
                   const SizedBox(height: 30),
-                  // IntlPhoneField(
-                  //   controller: mobileNumberController,
-                  //   style: const TextStyle(color: AppColor.navyBlue),
-                  //   decoration: _inputDecoration(),
-                  //   initialCountryCode: 'BD', // For Bangladesh
-                  //   onChanged: (phone) {
-                  //     setState(() {
-                  //       errorMessage = phone.number.isEmpty
-                  //           ? "Mobile number is required"
-                  //           : null;
-                  //     });
-                  //   },
-                  // ),
                   CustomTextField(
                     controller: mobileNumberController,
                     fontSize: 18,
@@ -220,17 +185,20 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                     endIndent: 60)),
                           ],
                         ),
-                        const Gap(15),
+                        const Gap(100),
                         _customButton(
                             'Continue with Google',
                             SignInMethods.signInWithGoogle,
                             'assets/google_logo.png'),
                         const Gap(5),
-                        _customButton(
-                            'Continue with Facebook',
-                            SignInMethods.signInWithFacebook,
-                            'assets/facebook_logo.png',
-                            iconHeight: 20),
+                        Visibility(
+                          visible: false,
+                          child: _customButton(
+                              'Continue with Facebook',
+                              SignInMethods.signInWithFacebook,
+                              'assets/facebook_logo.png',
+                              iconHeight: 20),
+                        ),
                       ],
                     ),
                   ),

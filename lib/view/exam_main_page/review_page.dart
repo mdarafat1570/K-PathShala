@@ -501,17 +501,17 @@ class _ReviewPageState extends State<ReviewPage> {
       baseColor: Colors.grey[300]!,
       highlightColor: Colors.grey[100]!,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 2),
         child: Column(
           children: [
             const SizedBox(height: 10),
-            _buildShimmerContainer(height: 35, width: 150),
-            _buildShimmerContainer(height: 35, width: 150),
+            _buildShimmerContainer(height: 40, width: double.infinity),
+            _buildShimmerContainer(height: 40, width: double.infinity),
             const SizedBox(height: 10),
             ..._buildShimmerRows(4),
             const SizedBox(height: 5),
-            _buildShimmerContainer(height: 35, width: 150),
-            _buildShimmerContainer(height: 35, width: 150),
+            _buildShimmerContainer(height: 40, width: double.infinity),
+            _buildShimmerContainer(height: 40, width: double.infinity),
             const SizedBox(height: 10),
             ..._buildShimmerRows(4),
             const SizedBox(height: 5),
