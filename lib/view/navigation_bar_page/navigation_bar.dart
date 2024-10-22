@@ -130,7 +130,6 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
     } else {
       imageProvider = const AssetImage('assets/new_App_icon.png');
     }
-
     return PopScope(
       canPop: false,
       onPopInvoked: (bool didPop) async {
@@ -153,19 +152,6 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
           appBar: AppBar(
             backgroundColor: AppColor.gradientStart,
             elevation: 0,
-            // leading: Padding(
-            //   padding:
-            //       const EdgeInsets.only(left: 8.0, top: 8.0), // Reduce padding to minimize space
-            //   child: GestureDetector(
-            //     onTap: () {
-            //       slideNavigationPush(const ProfileScreenInMainPage(), context);
-            //     },
-            //     child: CircleAvatar(
-            //       backgroundImage: imageProvider,
-            //       radius: 18, // Reduce radius to make the avatar smaller
-            //     ),
-            //   ),
-            // ),
             automaticallyImplyLeading: false,
             title: GestureDetector(
               onTap: () {
@@ -175,14 +161,14 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
                 children: [
                   CircleAvatar(
                     backgroundImage: imageProvider,
-                    radius: 18, // Reduce radius to make the avatar smaller
+                    radius: 18, 
                   ),
                   const Gap(5),
                   Column(
                     mainAxisAlignment:
-                        MainAxisAlignment.center, // Center the text vertically
+                        MainAxisAlignment.center, 
                     crossAxisAlignment:
-                        CrossAxisAlignment.start, // Align text to start
+                        CrossAxisAlignment.start,
                     children: [
                       if (credentials?.name != null &&
                           credentials!.name!.isNotEmpty)
@@ -208,22 +194,28 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
                 ],
               ),
             ),
-            actions: [
-              InkWell(
-                onTap: () {
-                  slideNavigationPush(const NotificationsPage(), context);
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SvgPicture.asset(
-                    'assets/ic_notifications.svg',
-                    width: 34.0,
-                    height: 34.0,
-                  ),
-                ),
-              ),
-              const Gap(20)
-            ],
+          actions: [
+  Material(
+    color: Colors.transparent, // Transparent background for ripple effect
+    shape: const CircleBorder(), // Circular boundary for ripple
+    child: InkWell(
+      borderRadius: BorderRadius.circular(50), // Ensure circular splash
+      onTap: () {
+        slideNavigationPush(const NotificationsPage(), context);
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SvgPicture.asset(
+          'assets/ic_notifications.svg',
+          width: 34.0,
+          height: 34.0,
+        ),
+      ),
+    ),
+  ),
+  const Gap(20),
+]
+
           ),
           body: Center(
             child: widgetList[countIndex],
