@@ -35,16 +35,13 @@ class AuthenticationService extends BaseRepository {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('authToken', token);
 
-       
         if (deviceCount > 2) {
-     
           _showDevoiceIdButtonSheet(context);
         }
       }
     }
     return response;
   }
-
 
   void _showDevoiceIdButtonSheet(BuildContext context) {
     showModalBottomSheet(

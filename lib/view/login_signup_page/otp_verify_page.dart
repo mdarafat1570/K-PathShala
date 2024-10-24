@@ -153,7 +153,6 @@ class _OtpPageState extends State<OtpPage> {
   }
 
   void _startResendCountdown() {
-
     setState(() {
       _isResendButtonDisabled = true;
       _remainingSeconds = 60;
@@ -167,7 +166,6 @@ class _OtpPageState extends State<OtpPage> {
           _updateResendButtonText();
         });
       } else {
-
         timer.cancel();
         setState(() {
           _isResendButtonDisabled = false;
@@ -183,85 +181,88 @@ class _OtpPageState extends State<OtpPage> {
     });
   }
 
-    // Method to get OneSignal Player ID from SharedPreferences
+  // Method to get OneSignal Player ID from SharedPreferences
   Future<String?> getOneSignalPlayerId() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(Preferences.oneSignalUserId);
   }
 
-void _verifyOtp() async {
-  try {
-    // Show loading indicator
-    showLoadingIndicator(context: context, showLoader: true);
-    // Prepare data for OTP verification
-    String mobile = widget.mobileNumber;
-    String deviceId = await getDeviceId() ?? "";
-    int otp = int.tryParse(pinController.text.trim()) ?? 0;
-    // Retrieve OneSignal Player ID
-    String oneSignalPlayerId = await getOneSignalPlayerId() ?? "";
-    log("Mobile: $mobile");
-    log("OTP: ${pinController.text}");
-    log("Device ID: $deviceId");
-    log("OneSignal Player ID: $oneSignalPlayerId");
+  void _verifyOtp() async {
+    try {
+      // Show loading indicator
+      showLoadingIndicator(context: context, showLoader: true);
+      // Prepare data for OTP verification
+      String mobile = widget.mobileNumber;
+      String deviceId = await getDeviceId() ?? "";
+      int otp = int.tryParse(pinController.text.trim()) ?? 0;
+      // Retrieve OneSignal Player ID
+      String oneSignalPlayerId = await getOneSignalPlayerId() ?? "";
+      log("Mobile: $mobile");
+      log("OTP: ${pinController.text}");
+      log("Device ID: $deviceId");
+      log("OneSignal Player ID: $oneSignalPlayerId");
 
-    // Make the API call
-    final response = await authenticationService.verifyOtp(
-      mobile,
-      otp,
-      deviceId,
-      oneSignalPlayerId: oneSignalPlayerId, 
-      context: context,
-    );
+      // Make the API call
+      final response = await authenticationService.verifyOtp(
+        mobile,
+        otp,
+        deviceId,
+        oneSignalPlayerId: oneSignalPlayerId,
+        context: context,
+      );
 
-    final apiResponse = OTPApiResponse.fromJson(response);
-    log("API Response: ${jsonEncode(response)}");
+      final apiResponse = OTPApiResponse.fromJson(response);
+      log("API Response: ${jsonEncode(response)}");
 
-    if (mounted) {
-      // Hide loading indicator
-      showLoadingIndicator(context: context, showLoader: false);
+      if (mounted) {
+        // Hide loading indicator
+        showLoadingIndicator(context: context, showLoader: false);
 
-      if (apiResponse.successResponse != null) { 
-        final token = apiResponse.successResponse!.data.token;
-        final name = apiResponse.successResponse!.data.user.name;
-        final email = apiResponse.successResponse!.data.user.email;
-        final mobile = apiResponse.successResponse!.data.user.mobile;
-        final imageUrl = apiResponse.successResponse!.data.user.image;
+        if (apiResponse.successResponse != null) {
+          final token = apiResponse.successResponse!.data.token;
+          final name = apiResponse.successResponse!.data.user.name;
+          final email = apiResponse.successResponse!.data.user.email;
+          final mobile = apiResponse.successResponse!.data.user.mobile;
+          final imageUrl = apiResponse.successResponse!.data.user.image;
 
-        await _authService.saveLogInCredentials(LogInCredentials(
-          email: email,
-          name: name,
-          imagesAddress: imageUrl,
-          mobile: mobile,
-          token: token,
-        ));
+          await _authService.saveLogInCredentials(LogInCredentials(
+            email: email,
+            name: name,
+            imagesAddress: imageUrl,
+            mobile: mobile,
+            token: token,
+          ));
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("OTP verified successfully.")),
-        );
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("OTP verified successfully.")),
+          );
 
-        // Navigate based on profile requirement
-        if (apiResponse.successResponse?.data.isProfileRequired == true) {
-          slideNavigationPushAndRemoveUntil(Profile(deviceId: deviceId), context);
+          // Navigate based on profile requirement
+          if (apiResponse.successResponse?.data.isProfileRequired == true) {
+            slideNavigationPushAndRemoveUntil(
+                Profile(deviceId: deviceId), context);
+          } else {
+            slideNavigationPushAndRemoveUntil(const Navigation(), context);
+          }
         } else {
-          slideNavigationPushAndRemoveUntil(const Navigation(), context);
+          // Handle OTP verification failure
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text("Failed to verify OTP: ${response['message']}")),
+          );
         }
-      } else {
-        // Handle OTP verification failure
+      }
+    } catch (e) {
+      log("Error verifying OTP: $e");
+      if (mounted) {
+        showLoadingIndicator(context: context, showLoader: false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Failed to verify OTP: ${response['message']}")),
+          const SnackBar(
+              content: Text("An error occurred during OTP verification.")),
         );
       }
     }
-  } catch (e) {
-    log("Error verifying OTP: $e");
-    if (mounted) {
-      showLoadingIndicator(context: context, showLoader: false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("An error occurred during OTP verification.")),
-      );
-    }
   }
-}
 
   void sendOtp(
       {required String mobileNumber, required BuildContext context}) async {
