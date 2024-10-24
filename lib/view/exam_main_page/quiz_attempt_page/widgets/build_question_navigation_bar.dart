@@ -30,13 +30,16 @@ class BottomNavBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          if (!isListViewVisible)
             _buildQuestionNavbarButton(
               context,
               'Previous',
               AppColor.navyBlue,
               isPreviousButtonVisible ? moveToPrevious : null,
               textColor: isPreviousButtonVisible ? Colors.white : Colors.grey[600]!,
-            ),
+            )
+          else
+            const SizedBox(),
           if (!isListViewVisible)
             _buildQuestionNavbarButton(
               context,

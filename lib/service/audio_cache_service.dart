@@ -84,7 +84,7 @@ List<CachedVoiceModel> extractCachedVoiceModels(
     }
 
     for (var dialogue in question.dialogues) {
-      if (dialogue.voiceScript != null && dialogue.voiceGender != null) {
+      if (dialogue.voiceScript != null && dialogue.voiceScript != ''  && dialogue.voiceGender != null) {
         log(dialogue.voiceScript!);
         cachedVoiceList.add(CachedVoiceModel(
           text: dialogue.voiceScript!,
@@ -94,10 +94,16 @@ List<CachedVoiceModel> extractCachedVoiceModels(
     }
 
     for (var option in question.options) {
-      if (option.voiceScript != null && option.voiceGender != null) {
+      if (option.voiceScript != null && option.voiceScript != '' && option.voiceGender != null) {
         log(option.voiceScript!);
         cachedVoiceList.add(CachedVoiceModel(
           text: option.voiceScript!,
+          gender: option.voiceGender!,
+        ));
+      } else if (option.optionType == 'text_with_voice' && option.voiceGender != null){
+        log(option.title!);
+        cachedVoiceList.add(CachedVoiceModel(
+          text: option.title!,
           gender: option.voiceGender!,
         ));
       }
