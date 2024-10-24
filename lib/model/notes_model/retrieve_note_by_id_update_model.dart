@@ -1,10 +1,10 @@
-class RetrieveNotebyIDUpdateModel {
+class RetrieveNoteByIDUpdateModel {
   final int id;
   final String title;
   final String description;
   final int questionSetId;
 
-  RetrieveNotebyIDUpdateModel({
+  RetrieveNoteByIDUpdateModel({
     required this.id,
     required this.title,
     required this.description,

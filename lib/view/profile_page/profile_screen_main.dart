@@ -10,7 +10,6 @@ import 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
 import 'package:kpathshala/view/login_signup_page/registration_and_login_page.dart';
 import 'package:kpathshala/view/notifications/notifications_page.dart';
 import 'package:kpathshala/view/payment_page/payment_history.dart';
-import 'package:kpathshala/view/profile_page/connect_social_page.dart';
 import 'package:kpathshala/view/profile_page/profile_edit.dart';
 
 import '../common_widget/common_app_bar.dart';

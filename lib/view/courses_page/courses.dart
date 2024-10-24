@@ -1,9 +1,5 @@
-import 'package:flutter/services.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
-import 'package:kpathshala/common_error_all_layout/connection_lost.dart';
-import 'package:kpathshala/common_error_all_layout/page_not_found.dart';
 import 'package:kpathshala/common_error_all_layout/under_maintenance.dart';
-import 'package:kpathshala/view/login_signup_page/device_id_bottom_sheet.dart';
 
 class Courses extends StatefulWidget {
   const Courses({super.key});
@@ -15,8 +11,8 @@ class Courses extends StatefulWidget {
 class _CoursesState extends State<Courses> {
   @override
   Widget build(BuildContext context) {
-    final double screenHeight = MediaQuery.of(context).size.height;
-    final heightPercentage = 315 / screenHeight;
+    // final double screenHeight = MediaQuery.of(context).size.height;
+    // final heightPercentage = 315 / screenHeight;
     return Scaffold(
       body: GradientBackground(
         child: Padding(
@@ -32,7 +28,7 @@ class _CoursesState extends State<Courses> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => UnderMaintenance()),
+                    MaterialPageRoute(builder: (context) => const UnderMaintenance()),
                   );
                 },
                 child: const Text(
@@ -63,14 +59,5 @@ class _CoursesState extends State<Courses> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-    super.dispose();
   }
 }

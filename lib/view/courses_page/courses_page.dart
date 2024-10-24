@@ -16,11 +16,11 @@ class _CoursesState extends State<Courses> {
           child: Column(
         children: [
           Center(
-              child: InkWell(onTap: () {}, child: Text("Under Construction"))),
+              child: InkWell(onTap: () {}, child: const Text("Under Construction"))),
           Center(
-              child: InkWell(onTap: () {}, child: Text("Under Construction"))),
+              child: InkWell(onTap: () {}, child: const Text("Under Construction"))),
           Center(
-              child: InkWell(onTap: () {}, child: Text("Under Construction"))), 
+              child: InkWell(onTap: () {}, child: const Text("Under Construction"))),
         ],
       )),
     );

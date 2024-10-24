@@ -62,7 +62,7 @@ class UpdateProfileRepository {
         if (responseJson['status'] == 'success') {
           // Navigate to the desired screen upon success
           Navigator.of(context)
-              .pushReplacement(MaterialPageRoute(builder: (_) => Navigation()));
+              .pushReplacement(MaterialPageRoute(builder: (_) => const Navigation()));
         } else {
           _showSnackBar(
               context, responseJson['message'] ?? "Something went wrong");
@@ -107,7 +107,7 @@ class UpdateProfileRepository {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         },
       );
     } else {

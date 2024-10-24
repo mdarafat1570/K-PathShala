@@ -1,4 +1,4 @@
-class RetrieveNotebyIDModel {
+class RetrieveNoteByIDModel {
   int? id;
   int? questionSetId;
   int? userId;
@@ -7,7 +7,7 @@ class RetrieveNotebyIDModel {
   String? createdAt;
   String? updatedAt;
 
-  RetrieveNotebyIDModel(
+  RetrieveNoteByIDModel(
       {this.id,
       this.questionSetId,
       this.userId,
@@ -16,7 +16,7 @@ class RetrieveNotebyIDModel {
       this.createdAt,
       this.updatedAt});
 
-  RetrieveNotebyIDModel.fromJson(Map<String, dynamic> json) {
+  RetrieveNoteByIDModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     questionSetId = json['question_set_id'];
     userId = json['user_id'];
@@ -27,14 +27,14 @@ class RetrieveNotebyIDModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['question_set_id'] = this.questionSetId;
-    data['user_id'] = this.userId;
-    data['title'] = this.title;
-    data['description'] = this.description;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['question_set_id'] = questionSetId;
+    data['user_id'] = userId;
+    data['title'] = title;
+    data['description'] = description;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
     return data;
   }
 }

@@ -10,36 +10,36 @@ class PackageModel {
     if (json['data'] != null) {
       data = <PackageList>[];
       json['data'].forEach((v) {
-        data!.add(new PackageList.fromJson(v));
+        data!.add(PackageList.fromJson(v));
       });
     }
     message = json['message'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['status'] = this.status;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['status'] = status;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
-    data['message'] = this.message;
+    data['message'] = message;
     return data;
   }
 }
 
 class PackageList {
-  var id;
+  dynamic id;
   String? title;
   String? subtitle;
   String? effectDate;
-  var validity;
-  var price;
-  var withDiscountPrice;
+  dynamic validity;
+  dynamic price;
+  dynamic withDiscountPrice;
   List<String>? features;
   bool? status;
-  var expiryIn;
-  var completedQuestionSet;
-  var totalQuestionSet;
+  dynamic expiryIn;
+  dynamic completedQuestionSet;
+  dynamic totalQuestionSet;
   bool? isUserAccess;
   Subscription? subscription;
 
@@ -74,42 +74,42 @@ class PackageList {
     totalQuestionSet = json['totalQuestionSet'];
     isUserAccess = json['isUserAccess'];
     subscription = json['subscription'] != null
-        ? new Subscription.fromJson(json['subscription'])
+        ? Subscription.fromJson(json['subscription'])
         : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['title'] = this.title;
-    data['subtitle'] = this.subtitle;
-    data['effect_date'] = this.effectDate;
-    data['validity'] = this.validity;
-    data['price'] = this.price;
-    data['withDiscountPrice'] = this.withDiscountPrice;
-    data['features'] = this.features;
-    data['status'] = this.status;
-    data['expiry_in'] = this.expiryIn;
-    data['completedQuestionSet'] = this.completedQuestionSet;
-    data['totalQuestionSet'] = this.totalQuestionSet;
-    data['isUserAccess'] = this.isUserAccess;
-    if (this.subscription != null) {
-      data['subscription'] = this.subscription!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['title'] = title;
+    data['subtitle'] = subtitle;
+    data['effect_date'] = effectDate;
+    data['validity'] = validity;
+    data['price'] = price;
+    data['withDiscountPrice'] = withDiscountPrice;
+    data['features'] = features;
+    data['status'] = status;
+    data['expiry_in'] = expiryIn;
+    data['completedQuestionSet'] = completedQuestionSet;
+    data['totalQuestionSet'] = totalQuestionSet;
+    data['isUserAccess'] = isUserAccess;
+    if (subscription != null) {
+      data['subscription'] = subscription!.toJson();
     }
     return data;
   }
 }
 
 class Subscription {
-  var id;
-  var packageId;
-  var bookId;
+  dynamic id;
+  dynamic packageId;
+  dynamic bookId;
   String? subscriptionTypeId;
   String? effectDate;
-  var userId;
+  dynamic userId;
   String? expireDate;
-  var validity;
-  var couponId;
+  dynamic validity;
+  dynamic couponId;
   String? createdAt;
   String? updatedAt;
 
@@ -141,18 +141,18 @@ class Subscription {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['package_id'] = this.packageId;
-    data['book_id'] = this.bookId;
-    data['subscription_type_id'] = this.subscriptionTypeId;
-    data['effect_date'] = this.effectDate;
-    data['user_id'] = this.userId;
-    data['expire_date'] = this.expireDate;
-    data['validity'] = this.validity;
-    data['coupon_id'] = this.couponId;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['package_id'] = packageId;
+    data['book_id'] = bookId;
+    data['subscription_type_id'] = subscriptionTypeId;
+    data['effect_date'] = effectDate;
+    data['user_id'] = userId;
+    data['expire_date'] = expireDate;
+    data['validity'] = validity;
+    data['coupon_id'] = couponId;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
     return data;
   }
 }

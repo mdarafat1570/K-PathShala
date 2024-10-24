@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/repository/notes_Repository/notes_repository.dart';
-import 'package:kpathshala/model/notes_model/retrieve_noteby_ID_model.dart';
+import 'package:kpathshala/model/notes_model/retrieve_note_by_id_model.dart';
 import 'package:kpathshala/view/common_widget/custom_textfield.dart';
 
 Future<bool> showAddNoteBottomSheet(
@@ -67,7 +66,7 @@ class AddNoteBottomSheetContentState extends State<AddNoteBottomSheetContent> {
 
     if (_titleError == null && _descriptionError == null) {
       try {
-        final note = RetrieveNotebyIDModel(
+        final note = RetrieveNoteByIDModel(
           id: null,
           questionSetId: widget.questionSetId,
           userId: null,

@@ -20,14 +20,14 @@ class _SocialLoginState extends State<SocialLogin> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              Gap(100),
+              const Gap(100),
               Padding(
                 padding: const EdgeInsets.all(25.0),
                 child: customText(
                     "Connect your account with any social media from bellow for easier login.",
                     TextType.normal),
               ),
-              Gap(20),
+              const Gap(20),
               commonCustomButton(
                   width: double.infinity,
                   backgroundColor: Colors.white,
@@ -36,11 +36,11 @@ class _SocialLoginState extends State<SocialLogin> {
                   onPressed: () {},
                   iconWidget: Image.asset('assets/google_logo.png'),
                   reversePosition: false,
-                  child: Text(
+                  child: const Text(
                     "Continue with Google",
-                    style: const TextStyle(fontSize: 16, color: Colors.black87),
+                    style: TextStyle(fontSize: 16, color: Colors.black87),
                   )),
-              Gap(10),
+              const Gap(10),
               Visibility(
                 visible: false,
                 child: commonCustomButton(
@@ -54,9 +54,9 @@ class _SocialLoginState extends State<SocialLogin> {
                       width: 20,
                     ),
                     reversePosition: false,
-                    child: Text(
+                    child: const Text(
                       "Continue with Facebook",
-                      style: const TextStyle(fontSize: 16, color: Colors.black87),
+                      style: TextStyle(fontSize: 16, color: Colors.black87),
                     )),
               ),
             ],

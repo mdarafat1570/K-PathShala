@@ -1,6 +1,3 @@
-// common_app_bar.dart
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
 

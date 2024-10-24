@@ -53,15 +53,15 @@ class QuestionSetData {
 }
 
 class QuestionSets {
-  var id;
+  dynamic id;
   String? title;
   String? subtitle;
-  var packageId;
+  dynamic packageId;
   String? packageName;
-  var duration;
-  var totalQuestion;
+  dynamic duration;
+  dynamic totalQuestion;
   String? status;
-  var score;
+  dynamic score;
 
   QuestionSets(
       {this.id,
@@ -102,10 +102,10 @@ class QuestionSets {
 }
 
 class QuestionSetResults {
-  var completedQuestionSet;
-  var totalQuestionSet;
-  var batch;
-  var rankPercentage;
+  dynamic completedQuestionSet;
+  dynamic totalQuestionSet;
+  dynamic batch;
+  dynamic rankPercentage;
 
   QuestionSetResults(
       {this.completedQuestionSet,
