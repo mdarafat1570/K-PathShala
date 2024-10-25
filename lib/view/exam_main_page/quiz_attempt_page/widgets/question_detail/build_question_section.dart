@@ -125,7 +125,7 @@ Widget _buildQuestionSection(
                 cachedImages[imageUrl]!,
                 fit: BoxFit.cover,
               )
-                  : const CircularProgressIndicator(),
+                  : const Center(child: CircularProgressIndicator()),
             ),
           if ((imageUrl.isNotEmpty && voiceScript.isNotEmpty) ||
               (question.isNotEmpty && voiceScript.isNotEmpty))

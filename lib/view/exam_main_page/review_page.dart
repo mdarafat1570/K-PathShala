@@ -60,11 +60,11 @@ class _ReviewPageState extends State<ReviewPage> {
 
       readingQuestions = questionsModel?.data?.readingQuestions ?? [];
       listeningQuestions = questionsModel?.data?.listeningQuestions ?? [];
-      await _preloadImages();
 
       setState(() {
         dataFound = true;
       });
+      _preloadImages();
     } catch (e) {
       log(e.toString()); // Handle the exception
     }
@@ -123,8 +123,8 @@ class _ReviewPageState extends State<ReviewPage> {
       }
     }
 
-    await Future.wait(preloadFutures);
-    await _audioCacheService.cacheAudioFiles(
+     // Future.wait(preloadFutures);
+     _audioCacheService.cacheAudioFiles(
       cachedVoiceModelList: extractCachedVoiceModels(
         listeningQuestionList: listeningQuestions,
       ),
@@ -141,6 +141,7 @@ class _ReviewPageState extends State<ReviewPage> {
       } else {
         log("Failed to load image: $imageUrl");
       }
+      setState((){});
     } catch (e) {
       log("Error caching image: $e");
     }

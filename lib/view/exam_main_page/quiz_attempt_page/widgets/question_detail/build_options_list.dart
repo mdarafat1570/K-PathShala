@@ -213,7 +213,7 @@ Widget _buildImage(String imageUrl, Map<String, Uint8List> cachedImages) {
         )
       : const Padding(
           padding: EdgeInsets.all(1.0),
-          child: CircularProgressIndicator(),
+          child: Center(child: CircularProgressIndicator()),
         );
 }
 
