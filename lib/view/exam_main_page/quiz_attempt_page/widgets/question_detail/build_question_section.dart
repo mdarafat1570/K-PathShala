@@ -47,6 +47,7 @@ Widget buildQuestionSection({
             context,
             question: question,
             imageUrl: imageUrl,
+            imageCaption: imageCaption,
             voiceScript: voiceScript,
             voiceModel: voiceModel,
             dialogue: dialogue,
@@ -85,6 +86,7 @@ Widget _buildQuestionSection(
     BuildContext context, {
       required String question,
       required String imageUrl,
+      required String imageCaption,
       required String voiceScript,
       required String voiceModel,
       required List<Dialogue> dialogue,
@@ -101,6 +103,9 @@ Widget _buildQuestionSection(
       required VoidCallback changeInDelayStatus,
       Function? onImageTap,
     }) {
+  if (listeningQuestionType == 'listening_image'){
+    voiceScript = imageCaption;
+  }
   return Container(
     padding: const EdgeInsets.all(12),
     margin: const EdgeInsets.symmetric(vertical: 10),
@@ -125,9 +130,9 @@ Widget _buildQuestionSection(
                 cachedImages[imageUrl]!,
                 fit: BoxFit.cover,
               )
-                  : const CircularProgressIndicator(),
+                  : const Center(child: CircularProgressIndicator()),
             ),
-          if ((imageUrl.isNotEmpty && voiceScript.isNotEmpty) ||
+          if ((imageUrl.isNotEmpty && voiceScript.isNotEmpty) || (imageUrl.isNotEmpty && imageCaption.isNotEmpty) ||
               (question.isNotEmpty && voiceScript.isNotEmpty))
             const Divider(
               color: Colors.black54,

@@ -75,11 +75,18 @@ List<CachedVoiceModel> extractCachedVoiceModels(
   List<CachedVoiceModel> cachedVoiceList = [];
 
   for (var question in listeningQuestionList) {
-    if (question.voiceScript != null && question.voiceGender != null) {
+    if (question.voiceScript != null) {
       log(question.voiceScript!);
       cachedVoiceList.add(CachedVoiceModel(
         text: question.voiceScript!,
-        gender: question.voiceGender!,
+        gender: question.voiceGender != null && question.voiceGender != '' ? question.voiceGender! : 'female',
+      ));
+    }
+    if (question.imageCaption != null) {
+      log(question.imageCaption!);
+      cachedVoiceList.add(CachedVoiceModel(
+        text: question.imageCaption!,
+        gender: question.voiceGender != null && question.voiceGender != '' ? question.voiceGender! : 'female',
       ));
     }
 

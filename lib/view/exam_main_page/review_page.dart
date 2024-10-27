@@ -46,11 +46,11 @@ class _ReviewPageState extends State<ReviewPage> {
 
   @override
   void dispose() {
-    super.dispose();
     isDisposed = true;
     ttsService.dispose();
     _audioCacheService.clearCache();
     _audioPlaybackService.dispose();
+    super.dispose();
   }
 
   void fetchData() async {
@@ -60,11 +60,11 @@ class _ReviewPageState extends State<ReviewPage> {
 
       readingQuestions = questionsModel?.data?.readingQuestions ?? [];
       listeningQuestions = questionsModel?.data?.listeningQuestions ?? [];
-      await _preloadImages();
 
       setState(() {
         dataFound = true;
       });
+       await _preloadImages();
     } catch (e) {
       log(e.toString()); // Handle the exception
     }
@@ -123,8 +123,8 @@ class _ReviewPageState extends State<ReviewPage> {
       }
     }
 
-    await Future.wait(preloadFutures);
-    await _audioCacheService.cacheAudioFiles(
+     Future.wait(preloadFutures);
+     await _audioCacheService.cacheAudioFiles(
       cachedVoiceModelList: extractCachedVoiceModels(
         listeningQuestionList: listeningQuestions,
       ),
@@ -133,11 +133,16 @@ class _ReviewPageState extends State<ReviewPage> {
   }
 
   Future<void> _cacheImage(String imageUrl) async {
+    if (isDisposed) return;
+
     try {
       final response = await http.get(Uri.parse(imageUrl));
+      if (isDisposed) return;
+
       if (response.statusCode == 200) {
         cachedImages[imageUrl] = response.bodyBytes;
         log("Cached image: $imageUrl");
+        setState(() {});
       } else {
         log("Failed to load image: $imageUrl");
       }
