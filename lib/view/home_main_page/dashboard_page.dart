@@ -13,6 +13,7 @@ import 'package:http/http.dart' as http;
 import 'package:kpathshala/view/exam_main_page/ubt_mock_test_page.dart';
 import 'package:kpathshala/view/home_main_page/dashboard_image_carousel.dart';
 import 'package:kpathshala/view/home_main_page/shimmer_effect_dashboard.dart';
+import 'package:kpathshala/view/login_signup_page/device_id_bottom_sheet.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -53,30 +54,9 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
-    // _internetConnectionStreamSubscription =
-    //     InternetConnection().onStatusChange.listen((event) {
-    //   print(event);
-    //   switch (event) {
-    //     case InternetStatus.connected:
-    //       setState(() {
-    //         isConnectedToInternet = true;
-    //       });
-    //       break;
-    //     case InternetStatus.disconnected:
-    //       setState(() {
-    //         isConnectedToInternet = false;
-    //         slideNavigationPush(ConnectionLost(), context);
-    //       });
-    //       break;
-    //     default:
-    //       setState(() {
-    //         isConnectedToInternet = false;
-    //       });
-    //       break;
-    //   }
-    // });
     _startCountdown();
     fetchData();
+
   }
 
   @override
@@ -88,22 +68,47 @@ class _DashboardPageState extends State<DashboardPage> {
     _internetConnectionStreamSubscription?.cancel();
     super.dispose();
   }
-
   void fetchData() async {
-    try {
-      DashboardRepository repository = DashboardRepository();
+  try {
+    DashboardRepository repository = DashboardRepository();
+    DashboardPageModel? dashModel = await repository.fetchDashboardData(context);
 
-      DashboardPageModel? dashModel =
-          await repository.fetchDashboardData(context);
-
-      setState(() {
-        dashboardPageModel = dashModel;
-        dataFound = true;
-      });
-    } catch (e) {
-      log(e.toString());
-    }
+    setState(() {
+      dashboardPageModel = dashModel;
+      dataFound = true;
+      bool? isVersionUpdateRequired = dashModel?.isVersionUpdateRequired ?? true;
+      if (!isVersionUpdateRequired) {
+        _showUpdateDialog(context);  
+      }
+    });
+  } catch (e) {
+    log("Error verifying OTP: $e");
   }
+}
+
+void _showUpdateDialog(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    builder: (BuildContext context) {
+      return CommonBottomSheet(
+        message: "Your app is now in an old version. Please update to continue.",
+        imagePath: "assets/reject.png",
+        buttonText: "Update Now",
+        onButtonPressed: () {
+          Navigator.of(context).pop(); 
+        },
+      );
+    },
+  );
+}
+
+
+
 
   void _checkCount() async {
     var url = Uri.parse(
@@ -142,28 +147,6 @@ class _DashboardPageState extends State<DashboardPage> {
       });
     }
   }
-  //
-  // void _showDisconnectionDialog() {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: const Text('No Internet Connection'),
-  //         content:
-  //             const Text('You are currently not connected to the internet.'),
-  //         actions: <Widget>[
-  //           TextButton(
-  //             child: const Text('OK'),
-  //             onPressed: () {
-  //               Navigator.of(context).pop();
-  //             },
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -175,10 +158,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // if (dashboardPageModel?.banners != null &&
-                    //     dashboardPageModel!.banners!.isNotEmpty)
                     BannerCarousel(banners: dashboardPageModel?.banners ?? []),
-                    const SizedBox(height: 20),
                     GridView(
                       physics: const NeverScrollableScrollPhysics(),
                       padding: EdgeInsets.zero,
@@ -192,44 +172,54 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
                       children: [
                         if (dashboardPageModel?.videoClasses != null)
-                          InkWell(
+                        InkWell(
                             onTap: () {},
                             child: _buildGridItem(
-                              icon: Icons.library_books,
-                              title: "Classes",
-                              subtitle:
-                                  "${dashboardPageModel?.videoClasses ?? 0} videos",
+                              icon: Icons.assessment,
+                              title: "Skill test",
+                              subtitle: "Coming Soon",
                             ),
                           ),
-                        InkWell(
-                          onTap: () {},
-                          child: _buildGridItem(
-                            icon: Icons.assessment,
-                            title: "Skill test",
-                            subtitle: "Test your skills",
-                          ),
-                        ),
-                        // if (dashboardPageModel?.syllabus != null) // Example of another null check
+                       
                         InkWell(
                           onTap: () {},
                           child: _buildGridItem(
                             icon: Icons.book,
-                            title: "Syllabus",
-                            subtitle: "UBT exam syllabus",
+                            title: "Topik Test",
+                            subtitle: "Coming Soon",
                           ),
                         ),
-                        // if (dashboardPageModel?.books != null) // Another example
+                   
                         InkWell(
                           onTap: () {},
                           child: _buildGridItem(
                             icon: Icons.library_books,
                             title: "Books",
-                            subtitle: "Order or read",
+                            subtitle: "Coming Soon",
                           ),
                         ),
+                        InkWell(
+                          onTap: () {},
+                          child: _buildGridItem(
+                            icon: Icons.library_books,
+                            title: "Speaking ",
+                            subtitle: "Coming Soon",
+                          ),
+                        ),
+                      
                       ],
                     ),
-                    const Gap(10),
+                      const Gap(8),
+                      InkWell(
+                          onTap: () {},
+                          child: _buildGridItem2(
+                            icon: Icons.library_books,
+                            title: "Chapter Wise Class",
+                            subtitle: "Coming Soon",
+                          
+                          ),
+                        ),
+                    const Gap(8),
                     if (dashboardPageModel?.exam != null)
                       Column(
                         children: [
@@ -390,15 +380,11 @@ class _DashboardPageState extends State<DashboardPage> {
         (dashboardPageModel?.exam?.totalQuestionSet ?? 0).toDouble();
     double completedQuestionSet =
         (dashboardPageModel?.exam?.completedQuestionSet ?? 0).toDouble();
-
-    // Avoid division by zero by checking if totalQuestionSet is greater than zero
     double ratio =
         (totalQuestionSet > 0) ? (completedQuestionSet / totalQuestionSet) : 0;
-
-    // Check if there's a valid exam name to display
     String examName = dashboardPageModel?.exam?.examName ?? "";
     if (examName.isEmpty) {
-      return const SizedBox.shrink(); // Return an empty widget if no exam name
+      return const SizedBox.shrink(); 
     }
 
     return Container(
@@ -508,6 +494,71 @@ Widget _buildGridItem(
                   child: customText(subtitle, TextType.normal,
                       fontSize: 10, color: AppColor.black),
                 ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _buildGridItem2({
+  required IconData icon,
+  required String title,
+  required String subtitle,
+}) {
+  return Container(
+    width: double.infinity,
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.1),
+          spreadRadius: 2,
+          blurRadius: 5,
+        ),
+      ],
+    ),
+    padding: const EdgeInsets.all(16),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                spreadRadius: 2,
+                blurRadius: 5,
+              ),
+            ],
+          ),
+          child: Icon(
+            icon, // Use Icon widget instead of SvgPicture for consistency
+            size: 20.0,
+            color: Colors.black54,
+          ),
+        ),
+        const SizedBox(width: 12), // Consistent spacing between icon and text
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              customText(
+                title,TextType.title, fontSize: 14
+              
+              ),
+              const SizedBox(height: 4), // Add slight spacing between title and subtitle
+              customText(
+                subtitle,TextType.normal,
+                      fontSize: 10, color: AppColor.black
+               
               ),
             ],
           ),
