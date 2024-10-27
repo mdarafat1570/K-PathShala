@@ -21,25 +21,39 @@ class AudioCacheService {
       }
 
       String fileName = model.text;
-
       File audioFile = File('${tempDir.path}/$fileName.mp3');
       if (await audioFile.exists()) {
         log('Audio file for "${model.text}" is already cached.');
         continue;
       }
 
-      try {
-        Uint8List audioData = await _azureTTS.synthesizeSpeech(model.text, model.gender);
+      int retryCount = 0;
+      bool success = false;
 
-        if (isDisposed) {
-          log('Page is disposed. Stopping the caching process before saving the file.');
-          return;
+      while (retryCount < 2 && !success) {
+        try {
+          Uint8List audioData = await _azureTTS.synthesizeSpeech(model.text, model.gender);
+
+          if (isDisposed) {
+            log('Page is disposed. Stopping the caching process before saving the file.');
+            return;
+          }
+
+          await audioFile.writeAsBytes(audioData);
+          log('Cached audio for: ${model.text}');
+          success = true; // Mark as successful if no errors occur
+        } catch (e) {
+          retryCount++;
+          if (retryCount < 2) {
+            log('Failed to cache audio for "${model.text}", retrying... Attempt $retryCount');
+          } else {
+            log('Failed to cache audio for "${model.text}" after $retryCount attempts: $e');
+          }
         }
+      }
 
-        await audioFile.writeAsBytes(audioData);
-        log('Cached audio for: ${model.text}');
-      } catch (e) {
-        log('Failed to cache audio for "${model.text}": $e');
+      if (!success) {
+        log('Stopping caching for "${model.text}" after multiple failed attempts.');
       }
     }
   }
@@ -73,6 +87,9 @@ class AudioCacheService {
 List<CachedVoiceModel> extractCachedVoiceModels(
     {required List<ListeningQuestions> listeningQuestionList}) {
   List<CachedVoiceModel> cachedVoiceList = [];
+  for (int i=1; i<=4; i++){
+    cachedVoiceList.addAll([CachedVoiceModel(text: "Option $i", gender: "male"), CachedVoiceModel(text: "option $i", gender: "female")]);
+  }
 
   for (var question in listeningQuestionList) {
     if (question.voiceScript != null) {

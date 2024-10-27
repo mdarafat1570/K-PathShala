@@ -28,6 +28,8 @@ Widget buildOptionsList({
       bool optionExists = playedAudiosList.any(
         (audio) => audio.audioId == answerId && audio.audioType == 'option',
       );
+      bool isAnnounce = options[index].isAnnounce ?? false;
+      String announceScript = options[index].voiceGender == "male" ? "Option ${index+1}" : "option ${index+1}";
 
       Color containerColor = isInReviewMode
           ? (correctAnswerId == answerId && submissionId == answerId
@@ -67,7 +69,9 @@ Widget buildOptionsList({
                   context: context,
                   optionExists: optionExists,
                   isSpeaking: isSpeaking,
+                  isAnnounce: isAnnounce,
                   voiceScript: voiceScript,
+                  announceScript: announceScript,
                   answerId: answerId,
                   playedAudiosList: playedAudiosList,
                   speak: speak,
@@ -85,7 +89,9 @@ Widget buildOptionsList({
                         context: context,
                         optionExists: optionExists,
                         isSpeaking: isSpeaking,
+                        isAnnounce: isAnnounce,
                         voiceScript: answer,
+                        announceScript: announceScript,
                         answerId: answerId,
                         playedAudiosList: playedAudiosList,
                         speak: speak,
@@ -241,7 +247,9 @@ Widget _buildVoiceIcon({
   required BuildContext context,
   required bool optionExists,
   required bool isSpeaking,
+  required bool isAnnounce,
   required String voiceScript,
+  required String announceScript,
   required int answerId,
   required List<PlayedAudios> playedAudiosList,
   required Function(List<String>) speak,
@@ -260,7 +268,7 @@ Widget _buildVoiceIcon({
               playedAudiosList.add(
                 PlayedAudios(audioId: answerId, audioType: 'option'),
               );
-              await speak([voiceScript, voiceScript]);
+              isAnnounce ? await speak([announceScript, voiceScript, voiceScript]) : await speak([voiceScript, voiceScript]);
             },
       child: Image.asset(
         'assets/speaker.png',

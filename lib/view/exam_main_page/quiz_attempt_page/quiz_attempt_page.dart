@@ -134,7 +134,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
         }
       }
     } catch (error, stackTrace) {
-      log('Error fetching reading questions: $error');
+      log('Error fetching questions: $error');
       log('Stack trace: $stackTrace');
 
       if (mounted) {

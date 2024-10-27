@@ -208,6 +208,7 @@ class Options {
   dynamic imageUrl;
   dynamic voiceScript;
   dynamic voiceGender;
+  bool? isAnnounce;
 
   Options({
     required this.id,
@@ -217,6 +218,7 @@ class Options {
     required this.imageUrl,
     required this.voiceScript,
     required this.voiceGender,
+    required this.isAnnounce,
   });
 
   factory Options.fromJson(Map<String, dynamic> json) => Options(
@@ -227,6 +229,7 @@ class Options {
     imageUrl: json["image_url"],
     voiceScript: json["voice_script"],
     voiceGender: json["voice_gender"],
+      isAnnounce: json["isAnnounce"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -237,6 +240,7 @@ class Options {
     "image_url": imageUrl,
     "voice_script": voiceScript,
     "voice_gender": voiceGender,
+    "isAnnounce": isAnnounce,
   };
 }
 

@@ -30,7 +30,7 @@ class AudioPlaybackService {
     await _playSingleAudio(nextAudioKey);
 
     if (_audioQueue.isNotEmpty && !_shouldStop) {
-      for (int i = 0; i < 20; i++) {
+      for (int i = 0; i < 10; i++) {
         await Future.delayed(const Duration(milliseconds: 100));
         if (_shouldStop) {
           return;

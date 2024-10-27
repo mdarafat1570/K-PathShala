@@ -19,7 +19,6 @@ Widget buildQuestionSection({
   required List<Dialogue> dialogue,
   required int questionId,
   bool? isSpeaking = false,
-  bool? isSpeechCompleted = false,
   bool? exists = false,
   bool? isInReviewMode = false,
   required Function showZoomedImage,
@@ -27,7 +26,6 @@ Widget buildQuestionSection({
   List<PlayedAudios>? playedAudiosList,
   required Function(List<String>) speak,
   required Function() stopSpeaking,
-  VoidCallback? changeInDelayStatus,
   Function? onImageTap,
 }) {
   return SizedBox(
@@ -37,7 +35,7 @@ Widget buildQuestionSection({
       children: [
         if (title.isNotEmpty) _buildTextBlock(title, TextType.paragraphTitle),
         if (subTitle.isNotEmpty) _buildTextBlock(subTitle, TextType.subtitle),
-        if (imageCaption.isNotEmpty)
+        if (imageCaption.isNotEmpty && listeningQuestionType != 'listening_image')
           _buildTextBlock(imageCaption, TextType.subtitle),
         if (question.isNotEmpty ||
             imageUrl.isNotEmpty ||
@@ -61,8 +59,6 @@ Widget buildQuestionSection({
             speak: speak,
             stopSpeaking: stopSpeaking,
             onImageTap: onImageTap,
-            changeInDelayStatus: changeInDelayStatus ?? (){},
-            isSpeechCompleted: isSpeechCompleted!
           ),
       ],
     ),
@@ -93,14 +89,12 @@ Widget _buildQuestionSection(
       required String listeningQuestionType,
       required int questionId,
       required bool isSpeaking,
-      required bool isSpeechCompleted,
       required bool exists,
       required Map<String, Uint8List> cachedImages,
       required Function showZoomedImage,
       required List<PlayedAudios> playedAudiosList,
       required Function(List<String>) speak,
       required Function() stopSpeaking,
-      required VoidCallback changeInDelayStatus,
       Function? onImageTap,
     }) {
   if (listeningQuestionType == 'listening_image'){
@@ -119,7 +113,7 @@ Widget _buildQuestionSection(
       child: Column(
         children: [
           if (question.isNotEmpty)
-            customText(question, TextType.paragraphTitle, textAlign: TextAlign.center),
+            customText(question, TextType.paragraphTitle, textAlign: TextAlign.center, fontSize: 18),
           if (imageUrl.isNotEmpty)
             InkWell(
               onTap: () {
@@ -154,7 +148,7 @@ Widget _buildQuestionSection(
                 if (listeningQuestionType != "dialogues") {
                   speak([voiceScript,voiceScript]);
                 } else {
-                  await _playDialogue(dialogue, speak, changeInDelayStatus, isSpeechCompleted);
+                  await _playDialogue(dialogue, speak);
                 }
               },
               child: Image.asset(
@@ -172,7 +166,6 @@ Widget _buildQuestionSection(
 Future<void> _playDialogue(
     List<Dialogue> dialogue,
     Function(List<String>) speak,
-    VoidCallback changeInDelayStatus, bool isSpeechCompleted
     ) async {
   dialogue.sort((a, b) => (a.sequence ?? -1).compareTo(b.sequence ?? -1));
   List<String> voiceScriptQueue = [];
