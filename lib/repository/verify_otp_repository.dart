@@ -28,7 +28,7 @@ class AuthenticationService extends BaseRepository {
 
     if (response['status'] == 'success') {
       final token = response['data']['token'];
-      final int deviceCount = response['data']['device_count'] ?? 0;
+      // final int deviceCount = response['data']['device_count'] ?? 0;
 
       if (token != null) {
         SharedPreferences prefs = await SharedPreferences.getInstance();

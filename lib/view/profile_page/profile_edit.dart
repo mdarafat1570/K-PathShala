@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:kpathshala/api/api_container.dart';
@@ -198,7 +197,7 @@ class _ProfileState extends State<Profile> {
                             ? FileImage(_imageFile!)
                             : (_networkImageUrl != null
                                     ? NetworkImage(_networkImageUrl!)
-                                    : AssetImage('assets/new_App_icon.png'))
+                                    : const AssetImage('assets/new_App_icon.png'))
                                 as ImageProvider,
                         onBackgroundImageError: (_, __) {
                           // Fallback to asset image if the network image is invalid
@@ -455,7 +454,7 @@ class _ProfileState extends State<Profile> {
     if (token.isEmpty) {
       showLoadingIndicator(context: context, showLoader: false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("You need to log in again.")),
+        const SnackBar(content: Text("You need to log in again.")),
       );
       return;
     }
@@ -507,7 +506,7 @@ class _ProfileState extends State<Profile> {
           ));
 
           Navigator.of(context)
-              .pushReplacement(MaterialPageRoute(builder: (_) => Navigation()));
+              .pushReplacement(MaterialPageRoute(builder: (_) => const Navigation()));
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -526,7 +525,7 @@ class _ProfileState extends State<Profile> {
       log('Error parsing response: $e');
       showLoadingIndicator(context: context, showLoader: false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("An error occurred while updating profile")),
+        const SnackBar(content: Text("An error occurred while updating profile")),
       );
     }
   }
@@ -539,7 +538,7 @@ class _ProfileState extends State<Profile> {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         },
       );
     } else {

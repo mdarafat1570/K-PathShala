@@ -76,13 +76,13 @@ class RetakeTestPageState extends State<RetakeTestPage>
     if (_timer != null && _timer!.isActive) {
       _timer?.cancel();
     }
-    super.dispose();
     _audioCacheService.clearCache();
     _audioPlaybackService.dispose();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+    super.dispose();
   }
 
   Future<void> readCredentials() async {
@@ -134,7 +134,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
         }
       }
     } catch (error, stackTrace) {
-      log('Error fetching reading questions: $error');
+      log('Error fetching questions: $error');
       log('Stack trace: $stackTrace');
 
       if (mounted) {
@@ -186,11 +186,16 @@ class RetakeTestPageState extends State<RetakeTestPage>
   }
 
   Future<void> _cacheImage(String imageUrl) async {
+    if (isDisposed) return;
+
     try {
       final response = await http.get(Uri.parse(imageUrl));
+      if (isDisposed) return;
+
       if (response.statusCode == 200) {
         cachedImages[imageUrl] = response.bodyBytes;
         log("Cached image: $imageUrl");
+        setState(() {});
       } else {
         log("Failed to load image: $imageUrl");
       }

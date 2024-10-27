@@ -13,7 +13,7 @@ class ProfileRepository {
           await _baseRepository.getRequest(KpatshalaProfaile.profileData,context: context);
 
       if (response['status'] == 'success') {
-        log("This is profile data : ${response}");
+        log("This is profile data : $response");
 
         return ProfileGetDataModel.fromJson(response['data']);
       } else {

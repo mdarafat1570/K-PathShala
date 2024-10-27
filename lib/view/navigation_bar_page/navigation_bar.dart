@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -23,24 +24,24 @@ class Navigation extends StatefulWidget {
 class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
   int countIndex = 0;
   bool isDialogVisible = false;
-  bool isConectdToInternet = false;
+  bool isConnectedToInternet = false;
   List<Widget> widgetList = [
     const DashboardPage(),
     const Courses(),
     const ExamPurchasePage(),
   ];
-  StreamSubscription? _internetConectionStreamSubscription;
+  StreamSubscription? _internetConnectionStreamSubscription;
 
   @override
   void initState() {
     super.initState();
-    _internetConectionStreamSubscription =
+    _internetConnectionStreamSubscription =
         InternetConnection().onStatusChange.listen((event) {
-      print(event);
+      log("$event");
       switch (event) {
         case InternetStatus.connected:
           setState(() {
-            isConectdToInternet = true;
+            isConnectedToInternet = true;
           });
           if (Navigator.canPop(context)) {
             Navigator.pop(
@@ -49,13 +50,13 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
           break;
         case InternetStatus.disconnected:
           setState(() {
-            isConectdToInternet = false;
-            slideNavigationPush(ConnectionLost(), context);
+            isConnectedToInternet = false;
+            slideNavigationPush(const ConnectionLost(), context);
           });
           break;
         default:
           setState(() {
-            isConectdToInternet = false;
+            isConnectedToInternet = false;
           });
           break;
       }
@@ -66,7 +67,7 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    _internetConectionStreamSubscription?.cancel();
+    _internetConnectionStreamSubscription?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }

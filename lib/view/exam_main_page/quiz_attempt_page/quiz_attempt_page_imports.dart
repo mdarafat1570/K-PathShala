@@ -21,7 +21,7 @@ export 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
 export 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/question_detail/build_options_list.dart';
 export 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/question_detail/build_question_section.dart';
 export 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/question_grid.dart';
-export 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/build_question_navbar_button.dart';
+export 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/build_question_navigation_bar.dart';
 export 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/exam_loading_screen.dart';
 export 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/exam_page_dialogs.dart';
 export 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/played_audio_object.dart';

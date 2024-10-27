@@ -28,6 +28,8 @@ Widget buildOptionsList({
       bool optionExists = playedAudiosList.any(
         (audio) => audio.audioId == answerId && audio.audioType == 'option',
       );
+      bool isAnnounce = options[index].isAnnounce ?? false;
+      String announceScript = options[index].voiceGender == "male" ? "Option ${index+1}" : "option ${index+1}";
 
       Color containerColor = isInReviewMode
           ? (correctAnswerId == answerId && submissionId == answerId
@@ -64,15 +66,17 @@ Widget buildOptionsList({
                 ),
               if (voiceScript.isNotEmpty && isVoiceType)
                 _buildVoiceIcon(
-                  context,
-                  optionExists,
-                  isSpeaking,
-                  voiceScript,
-                  answerId,
-                  playedAudiosList,
-                  speak,
-                  stopSpeaking,
-                  selectedListeningQuestionData,
+                  context: context,
+                  optionExists: optionExists,
+                  isSpeaking: isSpeaking,
+                  isAnnounce: isAnnounce,
+                  voiceScript: voiceScript,
+                  announceScript: announceScript,
+                  answerId: answerId,
+                  playedAudiosList: playedAudiosList,
+                  speak: speak,
+                  stopSpeaking: stopSpeaking,
+                  selectedListeningQuestionData: selectedListeningQuestionData,
                 ),
               if (isTextWithVoice && answer.isNotEmpty)
                 Expanded(
@@ -81,26 +85,28 @@ Widget buildOptionsList({
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                        _buildVoiceIcon(
-                          context,
-                          optionExists,
-                          isSpeaking,
+                      _buildVoiceIcon(
+                        context: context,
+                        optionExists: optionExists,
+                        isSpeaking: isSpeaking,
+                        isAnnounce: isAnnounce,
+                        voiceScript: answer,
+                        announceScript: announceScript,
+                        answerId: answerId,
+                        playedAudiosList: playedAudiosList,
+                        speak: speak,
+                        stopSpeaking: stopSpeaking,
+                        selectedListeningQuestionData: selectedListeningQuestionData,
+                      ),
+                      const Gap(5),
+                      Expanded(
+                        child: Text(
                           answer,
-                          answerId,
-                          playedAudiosList,
-                          speak,
-                          stopSpeaking,
-                          selectedListeningQuestionData,
+                          style: const TextStyle(fontSize: 18),
+                          softWrap: true,
+                          overflow: TextOverflow.visible,
                         ),
-                        const Gap(5),
-                        Expanded(
-                          child: Text(
-                            answer,
-                            style: const TextStyle(fontSize: 18),
-                            softWrap: true,
-                            overflow: TextOverflow.visible,
-                          ),
-                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -129,7 +135,7 @@ Widget buildOptionsGrid({
     physics: const NeverScrollableScrollPhysics(),
     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
       crossAxisCount: 2,
-      childAspectRatio: 2,
+      childAspectRatio: 1,
     ),
     itemCount: options.length,
     itemBuilder: (context, index) {
@@ -213,7 +219,7 @@ Widget _buildImage(String imageUrl, Map<String, Uint8List> cachedImages) {
         )
       : const Padding(
           padding: EdgeInsets.all(1.0),
-          child: CircularProgressIndicator(),
+          child: Center(child: CircularProgressIndicator()),
         );
 }
 
@@ -237,17 +243,19 @@ Widget _buildOptionCircle(int index, int selectedSolvedIndex) {
   );
 }
 
-Widget _buildVoiceIcon(
-  BuildContext context,
-  bool optionExists,
-  bool isSpeaking,
-  String voiceScript,
-  int answerId,
-  List<PlayedAudios> playedAudiosList,
-  Function(List<String>) speak,
-  Function() stopSpeaking,
-  ListeningQuestions? selectedListeningQuestionData,
-) {
+Widget _buildVoiceIcon({
+  required BuildContext context,
+  required bool optionExists,
+  required bool isSpeaking,
+  required bool isAnnounce,
+  required String voiceScript,
+  required String announceScript,
+  required int answerId,
+  required List<PlayedAudios> playedAudiosList,
+  required Function(List<String>) speak,
+  required Function() stopSpeaking,
+  required ListeningQuestions? selectedListeningQuestionData,
+}) {
   return Container(
     margin: const EdgeInsets.only(left: 20),
     child: InkWell(
@@ -260,7 +268,7 @@ Widget _buildVoiceIcon(
               playedAudiosList.add(
                 PlayedAudios(audioId: answerId, audioType: 'option'),
               );
-              await speak([voiceScript,voiceScript]);
+              isAnnounce ? await speak([announceScript, voiceScript, voiceScript]) : await speak([voiceScript, voiceScript]);
             },
       child: Image.asset(
         'assets/speaker.png',

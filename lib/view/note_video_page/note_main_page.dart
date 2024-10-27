@@ -1,7 +1,6 @@
 import 'dart:developer';
 
-import 'package:kpathshala/app_base/common_imports.dart';
-import 'package:kpathshala/model/notes_model/RetrieveNotebyIDModel.dart';
+import 'package:kpathshala/model/notes_model/retrieve_note_by_id_update_model.dart';
 import 'package:kpathshala/model/notes_model/note_video_model.dart';
 import 'package:kpathshala/model/notes_model/retrieve_notes_model_all_list.dart';
 import 'package:kpathshala/repository/notes_Repository/notes_repository.dart';
@@ -639,7 +638,7 @@ void _fetchVideoNotes() async {
                         onPressed: () async {
                           if (titleController.text.isNotEmpty &&
                               descriptionController.text.isNotEmpty) {
-                            final updatedNote = RetrieveNotebyIDUpdateModel(
+                            final updatedNote = RetrieveNoteByIDUpdateModel(
                               id: note.id!,
                               title: titleController.text,
                               description: descriptionController.text,
@@ -748,16 +747,16 @@ void _fetchVideoNotes() async {
       ),
     );
   }
-
-  List<Widget> _buildShimmerRows(int count) {
-    return List.generate(
-      count,
-      (index) => Row(
-        children: [
-          _buildShimmerContainer(height: 35, width: 35),
-          _buildShimmerContainer(height: 35, width: 200),
-        ],
-      ),
-    );
-  }
+  //
+  // List<Widget> _buildShimmerRows(int count) {
+  //   return List.generate(
+  //     count,
+  //     (index) => Row(
+  //       children: [
+  //         _buildShimmerContainer(height: 35, width: 35),
+  //         _buildShimmerContainer(height: 35, width: 200),
+  //       ],
+  //     ),
+  //   );
+  // }
 }

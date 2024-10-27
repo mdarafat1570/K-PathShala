@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kpathshala/network_manager.dart';
 import 'package:kpathshala/app_theme/theme_data.dart';
-import 'package:kpathshala/model/dashboard_page_model/dashboard_page_model.dart';
 import 'package:kpathshala/view/courses_page/courses.dart';
 import 'package:kpathshala/view/exam_main_page/exam_purchase_page.dart';
-import 'package:kpathshala/view/exam_main_page/ubt_mock_test_page.dart';
 import 'package:kpathshala/view/payment_page/payment_history.dart';
 import 'package:kpathshala/view/profile_page/profile_screen_main.dart';
 import 'package:kpathshala/view/splash_screen.dart';
@@ -77,7 +75,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DashboardPageModel? dashboardPageModel;
+    // DashboardPageModel? dashboardPageModel;
     String? screen;
     OneSignal.Notifications.addClickListener((event) {
       final data = event.notification.additionalData;
@@ -98,7 +96,7 @@ class MyApp extends StatelessWidget {
         '/ProfileScreenInMainPage': (context) =>
             const ProfileScreenInMainPage(),
         '/PaymentHistory': (context) => const PaymentHistory(),
-        // '/indivisualExamPage': (context) => UBTMockTestPage(
+        // '/individualExamPage': (context) => UBTMockTestPage(
         //     packageId: dashboardPageModel!.exam!.packageId ?? -1),
       },
       home: const SplashScreen(),
