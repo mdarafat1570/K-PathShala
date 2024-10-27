@@ -17,7 +17,7 @@ class BaseRepository {
     var connectivityResult = await Connectivity().checkConnectivity();
     return connectivityResult != ConnectivityResult.none;
   }
-    final AuthService _authService = AuthService();
+  final AuthService _authService = AuthService();
 
   // Perform HTTP POST request
   Future<Map<String, dynamic>> postRequest(
@@ -36,7 +36,7 @@ class BaseRepository {
 
     try {
       final response = await http.post(uri, headers: headers, body: jsonEncode(body));
-      return _processResponse(response, context); // Pass context to _processResponse
+      return _processResponse(response, context);
     } catch (e) {
       log('Error in POST request: $e');
       rethrow;
@@ -79,59 +79,59 @@ class BaseRepository {
         showSessionExpiredDialog(context); // Trigger session expiration dialog
         return {}; // Return empty map after dialog
       } else {
-        throw Exception('Error: ${response.statusCode}, ${response.body}');
+        throw Exception(decodedBody["message"]);
       }
     } else {
-      throw Exception('Non-JSON response: ${response.body}');
+      throw Exception(response.body);
     }
   }
 
 
   // Perform HTTP PUT request
-Future<Map<String, dynamic>> putRequest(String url, Map<String, dynamic> body,
-    {Map<String, String>? headers, required BuildContext context}) async {
-  if (!await _hasInternetConnection()) {
-    throw Exception('No Internet Connection');
-  }
+  Future<Map<String, dynamic>> putRequest(String url, Map<String, dynamic> body,
+      {Map<String, String>? headers, required BuildContext context}) async {
+    if (!await _hasInternetConnection()) {
+      throw Exception('No Internet Connection');
+    }
 
-  final uri = Uri.parse(url);
-  final defaultHeaders = {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer ${await getToken()}',
-  };
-  headers = headers != null ? {...defaultHeaders, ...headers} : defaultHeaders;
+    final uri = Uri.parse(url);
+    final defaultHeaders = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${await getToken()}',
+    };
+    headers = headers != null ? {...defaultHeaders, ...headers} : defaultHeaders;
 
-  try {
-    final response = await http.put(uri, headers: headers, body: jsonEncode(body));
-    return _processResponse(response, context); // Pass context to _processResponse
-  } catch (e) {
-    log('Error in PUT request: $e');
-    rethrow;
+    try {
+      final response = await http.put(uri, headers: headers, body: jsonEncode(body));
+      return _processResponse(response, context); // Pass context to _processResponse
+    } catch (e) {
+      log('Error in PUT request: $e');
+      rethrow;
+    }
   }
-}
 
 // Perform HTTP DELETE request
-Future<Map<String, dynamic>> deleteRequest(String url,
-    {Map<String, String>? headers, required BuildContext context}) async {
-  if (!await _hasInternetConnection()) {
-    throw Exception('No Internet Connection');
-  }
+  Future<Map<String, dynamic>> deleteRequest(String url,
+      {Map<String, String>? headers, required BuildContext context}) async {
+    if (!await _hasInternetConnection()) {
+      throw Exception('No Internet Connection');
+    }
 
-  final uri = Uri.parse(url);
-  final defaultHeaders = {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer ${await getToken()}',
-  };
-  headers = headers != null ? {...defaultHeaders, ...headers} : defaultHeaders;
+    final uri = Uri.parse(url);
+    final defaultHeaders = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${await getToken()}',
+    };
+    headers = headers != null ? {...defaultHeaders, ...headers} : defaultHeaders;
 
-  try {
-    final response = await http.delete(uri, headers: headers);
-    return _processResponse(response, context); // Pass context to _processResponse
-  } catch (e) {
-    log('Error in DELETE request: $e');
-    rethrow;
+    try {
+      final response = await http.delete(uri, headers: headers);
+      return _processResponse(response, context); // Pass context to _processResponse
+    } catch (e) {
+      log('Error in DELETE request: $e');
+      rethrow;
+    }
   }
-}
 
 
 
@@ -175,7 +175,7 @@ Future<Map<String, dynamic>> deleteRequest(String url,
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const RegistrationPage(title: "Registration Page")),
-          (route) => false,
+              (route) => false,
         );
       } else {
         throw Exception("${response["message"]}");
@@ -189,33 +189,33 @@ Future<Map<String, dynamic>> deleteRequest(String url,
   }
 
   // Show session expired dialog
-Future<void> showSessionExpiredDialog(BuildContext context) async {
-  return showDialog<void>(
-    context: context,
-    barrierDismissible: false, 
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Session Expired'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Lottie.asset('assets/unauth_error.json'),
-            const SizedBox(height: 16),
-            const Text('Your session has expired. Please log in again.'),
-          ],
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: const Text('OK'),
-            onPressed: () {
-              log("pressed ok--------");
-              Navigator.of(context).pop();
-              userSignOut(context); 
-            },
+  Future<void> showSessionExpiredDialog(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Session Expired'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Lottie.asset('assets/unauth_error.json'),
+              const SizedBox(height: 16),
+              const Text('Your session has expired. Please log in again.'),
+            ],
           ),
-        ],
-      );
-    },
-  );
-}
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                log("pressed ok--------");
+                Navigator.of(context).pop();
+                userSignOut(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 }

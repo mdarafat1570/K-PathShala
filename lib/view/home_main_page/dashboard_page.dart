@@ -164,6 +164,76 @@ class _DashboardPageState extends State<DashboardPage> {
   //   );
   // }
 
+  void _showComingSoonDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          backgroundColor: Color(0xFF1A237E), // Primary color
+          elevation: 12,
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.announcement_rounded,
+                  color: Colors.amberAccent,
+                  size: 40,
+                ),
+                SizedBox(height: 15),
+                Text(
+                  "Coming Soon",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 22,
+                    letterSpacing: 1.2,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 10),
+                Text(
+                  "This feature will be available soon. Stay tuned for updates!",
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 16,
+                    height: 1.4,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 20),
+                Divider(color: Colors.white24),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 25),
+                    backgroundColor: Colors.amberAccent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    "OK",
+                    style: TextStyle(
+                      color: Color(0xFF1A237E),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -193,38 +263,54 @@ class _DashboardPageState extends State<DashboardPage> {
                       children: [
                         if (dashboardPageModel?.videoClasses != null)
                           InkWell(
-                            onTap: () {},
+                            onTap: () => _showComingSoonDialog(context),
                             child: _buildGridItem(
                               icon: Icons.library_books,
-                              title: "Classes",
+                              title: "Chapter Wise Class",
                               subtitle:
                                   "${dashboardPageModel?.videoClasses ?? 0} videos",
                             ),
                           ),
                         InkWell(
-                          onTap: () {},
+                          onTap: () => _showComingSoonDialog(context),
                           child: _buildGridItem(
                             icon: Icons.assessment,
                             title: "Skill test",
-                            subtitle: "Test your skills",
+                            subtitle: "Test your Skills",
                           ),
                         ),
                         // if (dashboardPageModel?.syllabus != null) // Example of another null check
                         InkWell(
-                          onTap: () {},
+                          onTap: () => _showComingSoonDialog(context),
                           child: _buildGridItem(
                             icon: Icons.book,
-                            title: "Syllabus",
-                            subtitle: "UBT exam syllabus",
+                            title: "Topik Test",
+                            subtitle: "TOPIK Prep for All Levels",
                           ),
                         ),
                         // if (dashboardPageModel?.books != null) // Another example
                         InkWell(
-                          onTap: () {},
+                          onTap: () => _showComingSoonDialog(context),
                           child: _buildGridItem(
                             icon: Icons.library_books,
                             title: "Books",
                             subtitle: "Order or read",
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () => _showComingSoonDialog(context),
+                          child: _buildGridItem(
+                            icon: Icons.library_books,
+                            title: "Speaking",
+                            subtitle: "Fluency Through Practice",
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () => _showComingSoonDialog(context),
+                          child: _buildGridItem(
+                            icon: Icons.library_books,
+                            title: "Syllabus",
+                            subtitle: "UBT exam syllabus",
                           ),
                         ),
                       ],
@@ -239,8 +325,12 @@ class _DashboardPageState extends State<DashboardPage> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => UBTMockTestPage(
-                                    packageId: dashboardPageModel!.exam!.packageId ?? -1,
-                                    appBarTitle: dashboardPageModel?.exam?.examName ?? "UBT Mock Test",
+                                    packageId:
+                                        dashboardPageModel!.exam!.packageId ??
+                                            -1,
+                                    appBarTitle:
+                                        dashboardPageModel?.exam?.examName ??
+                                            "UBT Mock Test",
                                   ),
                                 ),
                               );

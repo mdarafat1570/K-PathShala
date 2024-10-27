@@ -1,7 +1,7 @@
 class ProfileGetDataModel {
-  var courseTaken;
-  var examTaken;
-  var memberSince;
+  dynamic courseTaken;
+  dynamic examTaken;
+  dynamic memberSince;
 
   ProfileGetDataModel({this.courseTaken, this.examTaken, this.memberSince});
 

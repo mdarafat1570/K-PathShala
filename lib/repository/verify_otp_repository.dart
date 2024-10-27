@@ -1,7 +1,6 @@
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/authentication/base_repository.dart';
-import 'package:kpathshala/view/login_signup_page/device_id_button_sheet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthenticationService extends BaseRepository {
@@ -13,7 +12,7 @@ class AuthenticationService extends BaseRepository {
     required String oneSignalPlayerId,
     required BuildContext context,
   }) async {
-    final url = AuthorizationEndpoints.verifyOTP;
+    const url = AuthorizationEndpoints.verifyOTP;
     final body = {
       'mobile': mobile,
       'otp': otp,
@@ -29,28 +28,13 @@ class AuthenticationService extends BaseRepository {
 
     if (response['status'] == 'success') {
       final token = response['data']['token'];
-      final int deviceCount = response['data']['device_count'] ?? 0;
+      // final int deviceCount = response['data']['device_count'] ?? 0;
 
       if (token != null) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('authToken', token);
-
-        if (deviceCount > 2) {
-          _showDevoiceIdButtonSheet(context);
-        }
       }
     }
     return response;
-  }
-
-  void _showDevoiceIdButtonSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return const DevoiceIdButtonSheet();
-      },
-    );
   }
 }

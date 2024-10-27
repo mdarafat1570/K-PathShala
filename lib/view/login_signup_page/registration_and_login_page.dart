@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 
 // import 'package:intl_phone_field/intl_phone_field.dart';
@@ -15,6 +14,7 @@ import 'package:kpathshala/view/login_signup_page/otp_verify_page.dart';
 import 'package:kpathshala/view/navigation_bar_page/navigation_bar.dart';
 import 'package:kpathshala/view/profile_page/profile_edit.dart';
 import 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key, required this.title});
@@ -64,8 +64,19 @@ class _RegistrationPageState extends State<RegistrationPage> {
     );
   }
 
+  
+
   @override
   Widget build(BuildContext context) {
+
+     Future<void> launchTermsUrl() async {
+    final url = Uri.parse("https://kpathshala.com/terms-and-conditions.html");
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
     return Scaffold(
       backgroundColor: AppColor.accentColor,
       body: GradientBackground(
@@ -159,10 +170,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 color: Colors.black, fontSize: 13),
                             const SizedBox(width: 5),
                             InkWell(
+                              onTap: launchTermsUrl,
                               child: customText(
                                   "terms and conditions.", TextType.normal,
                                   color: AppColor.navyBlue, fontSize: 13),
-                              onTap: () {},
                             ),
                           ],
                         ),

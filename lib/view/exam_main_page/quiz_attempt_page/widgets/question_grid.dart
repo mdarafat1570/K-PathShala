@@ -69,6 +69,7 @@ class QuestionGrid extends StatelessWidget {
               ),
             ],
           ),
+          const SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.only(top: 5.0, bottom: 10),
             child: !dataFound
@@ -108,14 +109,15 @@ class QuestionGrid extends StatelessWidget {
               borderRadius: BorderRadius.circular(15),
             ),
             child: Center(
-              child: Text( isListening ? '${readingQuestionsLength + index + 1}' :
-                '${index + 1}',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: isSelected
-                      ? const Color.fromRGBO(245, 247, 250, 1)
-                      : AppColor.navyBlue,
-                ),
+              child: Text(
+  isListening ? '${readingQuestionsLength + index + 1}' : '${index + 1}',
+  style: TextStyle(
+    fontSize: 20,
+    color: isSelected
+        ? const Color.fromRGBO(245, 247, 250, 1)
+        : AppColor.navyBlue,
+    fontWeight:   FontWeight.w500 ,
+  )
               ),
             ),
           ),

@@ -1,14 +1,17 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:http/http.dart' as http;
 
 class BkashPayment extends StatefulWidget {
+  const BkashPayment({super.key});
+
   @override
-  _BkashPaymentState createState() => _BkashPaymentState();
+  BkashPaymentState createState() => BkashPaymentState();
 }
 
-class _BkashPaymentState extends State<BkashPayment> {
+class BkashPaymentState extends State<BkashPayment> {
   final _formKey = GlobalKey<FormState>();
   String _paymentID = '';
   bool _isLoading = false;
@@ -32,7 +35,7 @@ class _BkashPaymentState extends State<BkashPayment> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        print('Auth Token: ${data['id_token']}');
+        log('Auth Token: ${data['id_token']}');
         return data['id_token'];
       } else {
         throw Exception('Failed to get auth token: ${response.body}');
@@ -62,7 +65,7 @@ class _BkashPaymentState extends State<BkashPayment> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        print('Payment Created: ${data['paymentID']}');
+        log('Payment Created: ${data['paymentID']}');
         setState(() {
           _paymentID = data['paymentID'];
         });
@@ -90,7 +93,7 @@ class _BkashPaymentState extends State<BkashPayment> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        print('Payment Executed: ${data['transactionStatus']}');
+        log('Payment Executed: ${data['transactionStatus']}');
         // Handle successful payment here (e.g., show success message)
       } else {
         throw Exception('Failed to execute payment: ${response.body}');
@@ -107,7 +110,7 @@ class _BkashPaymentState extends State<BkashPayment> {
     });
 
     try {
-      final token = await getAuthToken();
+      // final token = await getAuthToken();
       // await createPayment(token);
       // await executePayment(token);
     } catch (e) {
@@ -122,7 +125,7 @@ class _BkashPaymentState extends State<BkashPayment> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('bKash Payment'),
+        title: const Text('bKash Payment'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -132,7 +135,7 @@ class _BkashPaymentState extends State<BkashPayment> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextFormField(
-                decoration: InputDecoration(labelText: 'Amount'),
+                decoration: const InputDecoration(labelText: 'Amount'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -144,13 +147,13 @@ class _BkashPaymentState extends State<BkashPayment> {
                   // Update the amount in the createPayment function if needed
                 },
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: _isLoading ? null : startBkashPayment,
                 child: Text(_isLoading ? 'Processing...' : 'Pay with bKash'),
               ),
-              SizedBox(height: 16.0),
-              if (_errorMessage.isNotEmpty) Text(_errorMessage, style: TextStyle(color: Colors.red)),
+              const SizedBox(height: 16.0),
+              if (_errorMessage.isNotEmpty) Text(_errorMessage, style: const TextStyle(color: Colors.red)),
             ],
           ),
         ),

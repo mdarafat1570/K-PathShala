@@ -26,6 +26,7 @@ class _ReviewPageState extends State<ReviewPage> {
 
   bool dataFound = false;
   bool resultDataFound = false;
+  bool isDisposed = false;
   ResultData? result;
   final AudioCacheService _audioCacheService = AudioCacheService();
   final AudioPlaybackService _audioPlaybackService = AudioPlaybackService();
@@ -46,6 +47,7 @@ class _ReviewPageState extends State<ReviewPage> {
   @override
   void dispose() {
     super.dispose();
+    isDisposed = true;
     ttsService.dispose();
     _audioCacheService.clearCache();
     _audioPlaybackService.dispose();
@@ -122,7 +124,12 @@ class _ReviewPageState extends State<ReviewPage> {
     }
 
     await Future.wait(preloadFutures);
-    await _audioCacheService.cacheAudioFiles(cachedVoiceModelList: extractCachedVoiceModels(listeningQuestionList: listeningQuestions));
+    await _audioCacheService.cacheAudioFiles(
+      cachedVoiceModelList: extractCachedVoiceModels(
+        listeningQuestionList: listeningQuestions,
+      ),
+      isDisposed: isDisposed,
+    );
   }
 
   Future<void> _cacheImage(String imageUrl) async {
@@ -141,12 +148,9 @@ class _ReviewPageState extends State<ReviewPage> {
 
   Map<String, Uint8List> cachedImages = {};
 
-  Future<void> speak(String? model, String voiceScript,
-      {bool? isDialogue = false}) async
-  {
-    String fileName = voiceScript;
-    log("playing$fileName");
-    await _audioPlaybackService.playCachedAudio(fileName);
+  Future<void> speak(List<String> voiceScriptQueue) async {
+    log("playing$voiceScriptQueue");
+    await _audioPlaybackService.playAudioQueue(voiceScriptQueue);
   }
 
   Future<void> _stopSpeaking() async {
@@ -252,7 +256,6 @@ class _ReviewPageState extends State<ReviewPage> {
                   isTextWithVoice: optionType == 'text_with_voice',
                   isInReviewMode: true,
                   isSpeaking: _audioPlaybackService.isPlaying(),
-                  isInDelay: _audioPlaybackService.isPlaying(),
                   playedAudiosList: [],
                   selectionHandling: (v, c) {},
                   speak: speak,
@@ -340,7 +343,6 @@ class _ReviewPageState extends State<ReviewPage> {
                   isTextWithVoice: optionType == 'text_with_voice',
                   isInReviewMode: true,
                   isSpeaking: _audioPlaybackService.isPlaying(),
-                  isInDelay: _audioPlaybackService.isPlaying(),
                   playedAudiosList: [],
                   selectionHandling: (v, c) {},
                   speak: speak,

@@ -5,12 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'dart:async';
 import 'package:kpathshala/app_theme/app_color.dart';
+import 'package:kpathshala/authentication/base_repository.dart';
 import 'package:kpathshala/base/get_device_id.dart';
 import 'package:kpathshala/main.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/model/otp_response_model.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
-import 'package:kpathshala/repository/verifyOtp_repository.dart';
+import 'package:kpathshala/repository/verify_otp_repository.dart';
+import 'package:kpathshala/view/login_signup_page/device_id_bottom_sheet.dart';
 import 'package:kpathshala/view/navigation_bar_page/navigation_bar.dart';
 import 'package:kpathshala/view/profile_page/profile_edit.dart';
 import 'package:kpathshala/view/common_widget/common_slide_navigation_push.dart';
@@ -181,7 +183,6 @@ class _OtpPageState extends State<OtpPage> {
     });
   }
 
-  // Method to get OneSignal Player ID from SharedPreferences
   Future<String?> getOneSignalPlayerId() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(Preferences.oneSignalUserId);
@@ -191,18 +192,19 @@ class _OtpPageState extends State<OtpPage> {
     try {
       // Show loading indicator
       showLoadingIndicator(context: context, showLoader: true);
+
       // Prepare data for OTP verification
       String mobile = widget.mobileNumber;
       String deviceId = await getDeviceId() ?? "";
       int otp = int.tryParse(pinController.text.trim()) ?? 0;
-      // Retrieve OneSignal Player ID
       String oneSignalPlayerId = await getOneSignalPlayerId() ?? "";
+
       log("Mobile: $mobile");
       log("OTP: ${pinController.text}");
       log("Device ID: $deviceId");
       log("OneSignal Player ID: $oneSignalPlayerId");
 
-      // Make the API call
+      // Call the API to verify OTP
       final response = await authenticationService.verifyOtp(
         mobile,
         otp,
@@ -211,11 +213,11 @@ class _OtpPageState extends State<OtpPage> {
         context: context,
       );
 
+      // Handle successful response
       final apiResponse = OTPApiResponse.fromJson(response);
       log("API Response: ${jsonEncode(response)}");
 
       if (mounted) {
-        // Hide loading indicator
         showLoadingIndicator(context: context, showLoader: false);
 
         if (apiResponse.successResponse != null) {
@@ -225,6 +227,7 @@ class _OtpPageState extends State<OtpPage> {
           final mobile = apiResponse.successResponse!.data.user.mobile;
           final imageUrl = apiResponse.successResponse!.data.user.image;
 
+          // Save login credentials
           await _authService.saveLogInCredentials(LogInCredentials(
             email: email,
             name: name,
@@ -244,24 +247,39 @@ class _OtpPageState extends State<OtpPage> {
           } else {
             slideNavigationPushAndRemoveUntil(const Navigation(), context);
           }
-        } else {
-          // Handle OTP verification failure
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text("Failed to verify OTP: ${response['message']}")),
-          );
         }
       }
     } catch (e) {
       log("Error verifying OTP: $e");
-      if (mounted) {
+      String errorMessage = e.toString().replaceFirst("Exception: ", "");
+      if (e is Exception &&
+          e.toString().contains('Login device limitation is over')) {
+        showLoadingIndicator(context: context, showLoader: false);
+        _showDeviceIdBottomSheet(context);
+      } else if (mounted) {
         showLoadingIndicator(context: context, showLoader: false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text("An error occurred during OTP verification.")),
+          SnackBar(content: Text(errorMessage)),
         );
       }
     }
+  }
+
+// Function to show DeviceIdButtonSheet
+  void _showDeviceIdBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      builder: (BuildContext context) {
+        return const DeviceIdBottomSheet();
+      },
+    ).then((_) {
+      BaseRepository().userSignOut(context);
+    });
   }
 
   void sendOtp(

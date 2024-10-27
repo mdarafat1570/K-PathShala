@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 
 class UnderMaintenance extends StatefulWidget {
+  const UnderMaintenance({super.key});
+
   @override
   State<UnderMaintenance> createState() => _UnderMaintenanceState();
 }
@@ -31,7 +32,7 @@ class _UnderMaintenanceState extends State<UnderMaintenance> {
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
                 'Please check back soon, just putting the last touch on some updates.',
                 style: TextStyle(
@@ -40,7 +41,7 @@ class _UnderMaintenanceState extends State<UnderMaintenance> {
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               ElevatedButton(
                 onPressed: () {
                   // Handle Close action
@@ -50,7 +51,7 @@ class _UnderMaintenanceState extends State<UnderMaintenance> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                 ),
                 child: const Text(
                   'Close',

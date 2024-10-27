@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kpathshala/network_manager.dart';
 import 'package:kpathshala/app_theme/theme_data.dart';
-import 'package:kpathshala/model/dashboard_page_model/dashboard_page_model.dart';
 import 'package:kpathshala/view/courses_page/courses.dart';
 import 'package:kpathshala/view/exam_main_page/exam_purchase_page.dart';
-import 'package:kpathshala/view/exam_main_page/ubt_mock_test_page.dart';
 import 'package:kpathshala/view/payment_page/payment_history.dart';
 import 'package:kpathshala/view/profile_page/profile_screen_main.dart';
 import 'package:kpathshala/view/splash_screen.dart';
@@ -22,6 +20,8 @@ class Preferences {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
+  String? oneSignalId;
 
   // Initialize Firebase for authentication
   developer.log("Initializing Firebase...", name: 'INFO');
@@ -44,41 +44,20 @@ void main() async {
   OneSignal.Notifications.requestPermission(true);
   developer.log("Notification permissions requested.", name: 'INFO');
 
-  // Wait for a short period to ensure initialization completes
-  await Future.delayed(const Duration(seconds: 5));
+  // Fetch OneSignal ID and store it in SharedPreferences
+  try {
+    developer.log("Fetching OneSignal ID...", name: 'INFO');
+    oneSignalId = await OneSignal.User.getOnesignalId();
+    developer.log("OneSignal ID fetched: $oneSignalId", name: 'INFO');
 
-  // Retry fetching OneSignal ID with a delay if not immediately available
-  String? oneSignalId;
-  int retryCount = 0;
-  const maxRetries = 3;
-  const retryDelay = Duration(seconds: 3);
-
-  while (oneSignalId == null && retryCount < maxRetries) {
-    try {
-      developer.log("Fetching OneSignal ID (Attempt ${retryCount + 1})...",
-          name: 'INFO');
-      oneSignalId = await OneSignal.User.getOnesignalId();
-
-      if (oneSignalId != null) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString(Preferences.oneSignalUserId, oneSignalId);
-        developer.log("OneSignal ID fetched and stored: $oneSignalId",
-            name: 'INFO');
-      } else {
-        developer.log("OneSignal ID is null, retrying...", name: 'WARNING');
-        retryCount++;
-        await Future.delayed(retryDelay); // wait before retrying
-      }
-    } catch (e) {
-      developer.log("Error fetching OneSignal ID: $e", name: 'ERROR');
-      retryCount++;
-      await Future.delayed(retryDelay);
+    if (oneSignalId != null) {
+      await prefs.setString(Preferences.oneSignalUserId, oneSignalId);
+      developer.log("OneSignal ID stored in SharedPreferences.", name: 'INFO');
+    } else {
+      developer.log("OneSignal ID is null.", name: 'WARNING');
     }
-  }
-
-  if (oneSignalId == null) {
-    developer.log("Failed to fetch OneSignal ID after $maxRetries attempts.",
-        name: 'ERROR');
+  } catch (e) {
+    developer.log("Error fetching OneSignal ID: $e", name: 'ERROR');
   }
 
   runApp(
@@ -95,7 +74,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DashboardPageModel? dashboardPageModel;
+    // DashboardPageModel? dashboardPageModel;
     String? screen;
     OneSignal.Notifications.addClickListener((event) {
       final data = event.notification.additionalData;
@@ -116,7 +95,7 @@ class MyApp extends StatelessWidget {
         '/ProfileScreenInMainPage': (context) =>
             const ProfileScreenInMainPage(),
         '/PaymentHistory': (context) => const PaymentHistory(),
-        // '/indivisualExamPage': (context) => UBTMockTestPage(
+        // '/individualExamPage': (context) => UBTMockTestPage(
         //     packageId: dashboardPageModel!.exam!.packageId ?? -1),
       },
       home: const SplashScreen(),

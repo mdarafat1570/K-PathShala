@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:kpathshala/app_base/common_imports.dart';
-import 'package:kpathshala/view/exam_main_page/exam_purchase_page.dart';
 import '../api/json_response.dart';
 
  class BaseRepository {

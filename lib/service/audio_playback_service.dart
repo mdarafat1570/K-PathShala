@@ -1,6 +1,7 @@
+import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 import 'package:audioplayers/audioplayers.dart';
-import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
 class AudioPlaybackService {
@@ -9,29 +10,58 @@ class AudioPlaybackService {
   final double _speed = 1.0;
   final double _volume = 1.0;
 
-  PlayerState _currentState = PlayerState.stopped;
+  List<String> _audioQueue = [];
+  bool _isPlaying = false;
+  bool _shouldStop = false;
 
-  AudioPlaybackService() {
-    _audioPlayer.onPlayerStateChanged.listen((PlayerState state) {
-      _currentState = state;
-    });
+  Future<void> playAudioQueue(List<String> audioKeys) async {
+    _audioQueue = List.from(audioKeys);
+    _shouldStop = false;
+
+    await _playNextAudio();
   }
 
-  Future<void> playCachedAudio(String cacheKey) async {
+  Future<void> _playNextAudio() async {
+    if (_audioQueue.isEmpty || _shouldStop) {
+      return;
+    }
+
+    String nextAudioKey = _audioQueue.removeAt(0);
+    await _playSingleAudio(nextAudioKey);
+
+    if (_audioQueue.isNotEmpty && !_shouldStop) {
+      for (int i = 0; i < 20; i++) {
+        await Future.delayed(const Duration(milliseconds: 100));
+        if (_shouldStop) {
+          return;
+        }
+      }
+
+      await _playNextAudio();
+    }
+  }
+
+  Future<void> _playSingleAudio(String cacheKey) async {
     final directory = await getTemporaryDirectory();
     final file = File('${directory.path}/$cacheKey.mp3');
 
     if (file.existsSync()) {
+      _isPlaying = true;
       _audioPlayer.setVolume(_volume);
       await _audioPlayer.setSourceDeviceFile(file.path);
       await _audioPlayer.setPlaybackRate(_speed);
       await _audioPlayer.resume();
+
+      await _audioPlayer.onPlayerComplete.first;
+      _isPlaying = false;
     } else {
       throw Exception('Audio file not found in cache');
     }
   }
 
   Future<void> stop() async {
+    _shouldStop = true;
+    _audioQueue.clear();
     await _audioPlayer.stop();
   }
 
@@ -46,6 +76,6 @@ class AudioPlaybackService {
   }
 
   bool isPlaying() {
-    return _currentState == PlayerState.playing;
+    return _isPlaying;
   }
 }

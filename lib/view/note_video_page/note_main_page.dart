@@ -1,7 +1,6 @@
 import 'dart:developer';
 
-import 'package:kpathshala/app_base/common_imports.dart';
-import 'package:kpathshala/model/notes_model/RetrieveNotebyIDModel.dart';
+import 'package:kpathshala/model/notes_model/retrieve_note_by_id_update_model.dart';
 import 'package:kpathshala/model/notes_model/note_video_model.dart';
 import 'package:kpathshala/model/notes_model/retrieve_notes_model_all_list.dart';
 import 'package:kpathshala/repository/notes_Repository/notes_repository.dart';
@@ -25,7 +24,7 @@ class _NoteMainPageState extends State<NoteMainPage> {
   late YoutubePlayerController _youtubeController;
   NoteResultData? noteResultData;
   NoteGetModel? noteGet;
-  NoteVideoModel ? noteVideoGet;
+  NoteVideoModel? noteVideoGet;
   NoteVideoData? noteVideoData;
   List<NoteResultData>? questionNotes;
   String? _titleError;
@@ -41,80 +40,82 @@ class _NoteMainPageState extends State<NoteMainPage> {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   }
 
-void _fetchNotes() async {
-  try {
-    NoteRepository noteRepository = NoteRepository();    
-    NoteGetModel? noteData = await noteRepository.fetchNotes(
-      questionSetId: widget.questionId!,
-      context: context,
-    );
+  void _fetchNotes() async {
+    try {
+      NoteRepository noteRepository = NoteRepository();
+      NoteGetModel? noteData = await noteRepository.fetchNotes(
+        questionSetId: widget.questionId!,
+        context: context,
+      );
 
-    if (noteData != null) {
-      noteGet = noteData;
-      questionNotes = noteData.data ?? [];
-      setState(() {
-        _isLoading = false;
-      });
-    } else {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  } catch (e) {
-    log("Error fetching notes: ${e.toString()}");    
-    setState(() {
-      _isLoading = false;
-    });
-  }
-}
-
-void _fetchVideoNotes() async {
-  try {
-    NoteRepository noteRepository = NoteRepository();
-    NoteVideoModel? fetchedNoteVideo = await noteRepository.fetchNotesVideo(
-      questionSetId: widget.questionId!,
-      context: context,
-    );
-    if (fetchedNoteVideo != null) {
-      noteVideoGet = fetchedNoteVideo;
-      noteVideoData = fetchedNoteVideo.data;
-      if (noteVideoData?.videoLink != null) {
-        _youtubeController = YoutubePlayerController(
-          initialVideoId: YoutubePlayer.convertUrlToId(
-            noteVideoData!.videoLink!,
-          )!,
-          flags: const YoutubePlayerFlags(
-            autoPlay: false,
-            loop: false,
-          ),
-        );
-        _youtubeController.addListener(() {
-          if (_youtubeController.value.isFullScreen && !_isFullScreen) {
-            setState(() {
-              _isFullScreen = true;
-            });
-          } else if (!_youtubeController.value.isFullScreen && _isFullScreen) {
-            setState(() {
-              _isFullScreen = false;
-            });
-          }
+      if (noteData != null) {
+        noteGet = noteData;
+        questionNotes = noteData.data ?? [];
+        setState(() {
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _isLoading = false;
         });
       }
-      setState(() {
-        _isLoading = false;
-      });
-    } else {
+    } catch (e) {
+      log("Error fetching notes: ${e.toString()}");
       setState(() {
         _isLoading = false;
       });
     }
-  } catch (e) {
-    log("Error fetching notes: ${e.toString()}");
-    setState(() {
-      _isLoading = false;
-    });
   }
-}
+
+  void _fetchVideoNotes() async {
+    try {
+      NoteRepository noteRepository = NoteRepository();
+      NoteVideoModel? fetchedNoteVideo = await noteRepository.fetchNotesVideo(
+        questionSetId: widget.questionId!,
+        context: context,
+      );
+      if (fetchedNoteVideo != null) {
+        noteVideoGet = fetchedNoteVideo;
+        noteVideoData = fetchedNoteVideo.data;
+        if (noteVideoData?.videoLink != null) {
+          _youtubeController = YoutubePlayerController(
+            initialVideoId: YoutubePlayer.convertUrlToId(
+              noteVideoData!.videoLink!,
+            )!,
+            flags: const YoutubePlayerFlags(
+              autoPlay: false,
+              loop: false,
+            ),
+          );
+          _youtubeController.addListener(() {
+            if (_youtubeController.value.isFullScreen && !_isFullScreen) {
+              setState(() {
+                _isFullScreen = true;
+              });
+            } else if (!_youtubeController.value.isFullScreen &&
+                _isFullScreen) {
+              setState(() {
+                _isFullScreen = false;
+              });
+            }
+          });
+        }
+        setState(() {
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      log("Error fetching notes: ${e.toString()}");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   void dispose() {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -127,11 +128,13 @@ void _fetchVideoNotes() async {
     return WillPopScope(
       onWillPop: () async {
         if (_youtubeController.value.isFullScreen) {
-          // Exit full-screen mode
+          // If video is in full-screen, toggle full-screen mode to exit it
           _youtubeController.toggleFullScreenMode();
-          return false; // Do not pop the page
+          return false; // Do not pop the page when in full-screen
         }
-        return true; // Allow page to pop
+        return true; // Allow the page to pop if not in full-screen
+
+        // Allow page to pop
       },
       child: GradientBackground(
         child: Scaffold(
@@ -183,11 +186,11 @@ void _fetchVideoNotes() async {
                               fontSize: 10),
                           const SizedBox(height: 10),
                           Expanded(
-                            child:
-                                _isLoading
-          ? buildNotesShimmerLoadingEffect()
-          : questionNotes == null || questionNotes!.isEmpty
-              ?  const Center(
+                            child: _isLoading
+                                ? buildNotesShimmerLoadingEffect()
+                                : questionNotes == null ||
+                                        questionNotes!.isEmpty
+                                    ? const Center(
                                         child: Column(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
@@ -435,7 +438,7 @@ void _fetchVideoNotes() async {
                                                                 noteGet = null;
                                                                 questionNotes =
                                                                     null;
-                                                              
+
                                                                 _isLoading =
                                                                     false;
                                                                 setState(() {});
@@ -503,7 +506,7 @@ void _fetchVideoNotes() async {
                                   if (value) {
                                     noteGet = null;
                                     questionNotes = null;
-                                
+
                                     _isLoading = false;
                                     setState(() {});
                                     _fetchNotes();
@@ -639,7 +642,7 @@ void _fetchVideoNotes() async {
                         onPressed: () async {
                           if (titleController.text.isNotEmpty &&
                               descriptionController.text.isNotEmpty) {
-                            final updatedNote = RetrieveNotebyIDUpdateModel(
+                            final updatedNote = RetrieveNoteByIDUpdateModel(
                               id: note.id!,
                               title: titleController.text,
                               description: descriptionController.text,
@@ -715,8 +718,7 @@ void _fetchVideoNotes() async {
     );
   }
 
-
-    Widget buildNotesShimmerLoadingEffect() {
+  Widget buildNotesShimmerLoadingEffect() {
     return Shimmer.fromColors(
       baseColor: Colors.grey[300]!,
       highlightColor: Colors.grey[100]!,
@@ -748,16 +750,16 @@ void _fetchVideoNotes() async {
       ),
     );
   }
-
-  List<Widget> _buildShimmerRows(int count) {
-    return List.generate(
-      count,
-      (index) => Row(
-        children: [
-          _buildShimmerContainer(height: 35, width: 35),
-          _buildShimmerContainer(height: 35, width: 200),
-        ],
-      ),
-    );
-  }
+  //
+  // List<Widget> _buildShimmerRows(int count) {
+  //   return List.generate(
+  //     count,
+  //     (index) => Row(
+  //       children: [
+  //         _buildShimmerContainer(height: 35, width: 35),
+  //         _buildShimmerContainer(height: 35, width: 200),
+  //       ],
+  //     ),
+  //   );
+  // }
 }

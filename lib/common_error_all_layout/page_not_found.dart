@@ -3,6 +3,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:kpathshala/app_theme/app_color.dart';
 
 class PageNotFound extends StatefulWidget {
+  const PageNotFound({super.key});
+
   @override
   State<PageNotFound> createState() => _PageNotFoundState();
 }
@@ -23,7 +25,7 @@ class _PageNotFoundState extends State<PageNotFound> {
                 height: 400,
                 fit: BoxFit.contain,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               const Text(
                 'Your page didn\'t respond',
                 style: TextStyle(
@@ -32,7 +34,7 @@ class _PageNotFoundState extends State<PageNotFound> {
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
                 'This page doesn\'t exist or may have fallen asleep! We suggest you go back to home.',
                 style: TextStyle(
@@ -41,7 +43,7 @@ class _PageNotFoundState extends State<PageNotFound> {
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               ElevatedButton(
                 onPressed: () {
                   // Handle Back Home action
@@ -51,9 +53,9 @@ class _PageNotFoundState extends State<PageNotFound> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                 ),
-                child: Text(
+                child: const Text(
                   'Back Home',
                   style: TextStyle(color: Colors.white),
                 ),
