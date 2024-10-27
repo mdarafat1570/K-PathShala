@@ -19,6 +19,7 @@ import 'package:kpathshala/view/common_widget/common_slide_navigation_push.dart'
 import 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
 import 'package:kpathshala/view/common_widget/custom_background.dart';
 import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pinput/pinput.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -189,34 +190,36 @@ class _OtpPageState extends State<OtpPage> {
     return prefs.getString(Preferences.oneSignalUserId);
   }
 
+
+
 void _verifyOtp() async {
   try {
-    // Show loading indicator
     showLoadingIndicator(context: context, showLoader: true);
 
-    // Prepare data for OTP verification
     String mobile = widget.mobileNumber;
     String deviceId = await getDeviceId() ?? "";
     int otp = int.tryParse(pinController.text.trim()) ?? 0;
     String oneSignalPlayerId = await getOneSignalPlayerId() ?? "";
 
+    // Fetch the app version
+    String appVersion = await authenticationService.getAppVersion(); 
+
     log("Mobile: $mobile");
     log("OTP: ${pinController.text}");
     log("Device ID: $deviceId");
     log("OneSignal Player ID: $oneSignalPlayerId");
+    log("App Version: $appVersion");
 
-    // Call the API to verify OTP
     final response = await authenticationService.verifyOtp(
       mobile,
       otp,
       deviceId,
       oneSignalPlayerId: oneSignalPlayerId,
       context: context,
+      appVersion: appVersion,
     );
 
-    // Handle successful response
     final apiResponse = OTPApiResponse.fromJson(response);
-    log("API Response: ${jsonEncode(response)}");
 
     if (mounted) {
       showLoadingIndicator(context: context, showLoader: false);
@@ -228,7 +231,6 @@ void _verifyOtp() async {
         final mobile = apiResponse.successResponse!.data.user.mobile;
         final imageUrl = apiResponse.successResponse!.data.user.image;
 
-        // Save login credentials
         await _authService.saveLogInCredentials(LogInCredentials(
           email: email,
           name: name,
@@ -241,7 +243,6 @@ void _verifyOtp() async {
           const SnackBar(content: Text("OTP verified successfully.")),
         );
 
-        // Navigate based on profile requirement
         if (apiResponse.successResponse?.data.isProfileRequired == true) {
           slideNavigationPushAndRemoveUntil(Profile(deviceId: deviceId), context);
         } else {
@@ -252,7 +253,8 @@ void _verifyOtp() async {
   } catch (e) {
     log("Error verifying OTP: $e");
     String errorMessage = e.toString().replaceFirst("Exception: ", "");
-    if (e is Exception && e.toString().contains('Login device limitation is over')) {
+
+    if (e.toString().contains('Login device limitation is over')) {
       showLoadingIndicator(context: context, showLoader: false);
       _showDeviceIdBottomSheet(context);
     } else if (mounted) {
@@ -263,6 +265,9 @@ void _verifyOtp() async {
     }
   }
 }
+
+
+
 
 
 // Function to show DeviceIdButtonSheet
