@@ -84,15 +84,19 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
             ),
           ),
         ),
-         Gap(screenHeight * 0.03),
-        SSLCommerzPage(packageId: widget.packageId, refreshPage: widget.refreshPage,),
+        Gap(screenHeight * 0.03),
+        SSLCommerzPage(
+          packageId: widget.packageId,
+          refreshPage: widget.refreshPage,
+        ),
         Gap(screenHeight * 0.03),
         SizedBox(
           width: double.infinity,
           child: RichText(
             textAlign: TextAlign.center,
             text: const TextSpan(
-              text: "By proceeding you’re agreeing with K-Pathshala’s purchasing ",
+              text:
+                  "By proceeding you’re agreeing with K-Pathshala’s purchasing ",
               style: TextStyle(
                 color: AppColor.grey500,
                 fontSize: 10,
@@ -110,7 +114,7 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
           ),
         ),
         const Gap(15),
-        // Image.asset('assets/pixelcut-export.png', fit: BoxFit.cover),
+        Image.asset('assets/pixelcut-export.png', fit: BoxFit.cover),
       ],
     );
   }

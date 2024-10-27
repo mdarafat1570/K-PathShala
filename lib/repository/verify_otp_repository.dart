@@ -5,13 +5,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthenticationService extends BaseRepository {
   Future<Map<String, dynamic>> verifyOtp(
-      String mobile,
-      int otp,
-      String deviceId, {
-        String? deviceName,
-        required String oneSignalPlayerId,
-        required BuildContext context,
-      }) async {
+    String mobile,
+    int otp,
+    String deviceId, {
+    String? deviceName,
+    required String oneSignalPlayerId,
+    required BuildContext context,
+  }) async {
     const url = AuthorizationEndpoints.verifyOTP;
     final body = {
       'mobile': mobile,

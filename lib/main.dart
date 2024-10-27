@@ -20,9 +20,8 @@ class Preferences {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-      final prefs = await SharedPreferences.getInstance();
-        String? oneSignalId;
-
+  final prefs = await SharedPreferences.getInstance();
+  String? oneSignalId;
 
   // Initialize Firebase for authentication
   developer.log("Initializing Firebase...", name: 'INFO');
