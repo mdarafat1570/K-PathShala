@@ -164,75 +164,75 @@ class _DashboardPageState extends State<DashboardPage> {
   //   );
   // }
 
-  void _showComingSoonDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          backgroundColor: Color(0xFF1A237E), // Primary color
-          elevation: 12,
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.announcement_rounded,
-                  color: Colors.amberAccent,
-                  size: 40,
-                ),
-                SizedBox(height: 15),
-                Text(
-                  "Coming Soon",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 22,
-                    letterSpacing: 1.2,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 10),
-                Text(
-                  "This feature will be available soon. Stay tuned for updates!",
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 16,
-                    height: 1.4,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 20),
-                Divider(color: Colors.white24),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 25),
-                    backgroundColor: Colors.amberAccent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: Text(
-                    "OK",
-                    style: TextStyle(
-                      color: Color(0xFF1A237E),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
+  // void _showComingSoonDialog(BuildContext context) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return Dialog(
+  //         shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(20),
+  //         ),
+  //         backgroundColor: Color(0xFF1A237E), // Primary color
+  //         elevation: 12,
+  //         child: Padding(
+  //           padding: const EdgeInsets.all(20.0),
+  //           child: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             children: [
+  //               Icon(
+  //                 Icons.announcement_rounded,
+  //                 color: Colors.amberAccent,
+  //                 size: 40,
+  //               ),
+  //               SizedBox(height: 15),
+  //               Text(
+  //                 "Coming Soon",
+  //                 style: TextStyle(
+  //                   color: Colors.white,
+  //                   fontWeight: FontWeight.w600,
+  //                   fontSize: 22,
+  //                   letterSpacing: 1.2,
+  //                 ),
+  //                 textAlign: TextAlign.center,
+  //               ),
+  //               SizedBox(height: 10),
+  //               Text(
+  //                 "This feature will be available soon. Stay tuned for updates!",
+  //                 style: TextStyle(
+  //                   color: Colors.white70,
+  //                   fontSize: 16,
+  //                   height: 1.4,
+  //                 ),
+  //                 textAlign: TextAlign.center,
+  //               ),
+  //               SizedBox(height: 20),
+  //               Divider(color: Colors.white24),
+  //               TextButton(
+  //                 onPressed: () {
+  //                   Navigator.of(context).pop();
+  //                 },
+  //                 style: TextButton.styleFrom(
+  //                   padding: EdgeInsets.symmetric(vertical: 12, horizontal: 25),
+  //                   backgroundColor: Colors.amberAccent,
+  //                   shape: RoundedRectangleBorder(
+  //                     borderRadius: BorderRadius.circular(10),
+  //                   ),
+  //                 ),
+  //                 child: Text(
+  //                   "OK",
+  //                   style: TextStyle(
+  //                     color: Color(0xFF1A237E),
+  //                     fontWeight: FontWeight.bold,
+  //                   ),
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -263,54 +263,46 @@ class _DashboardPageState extends State<DashboardPage> {
                       children: [
                         if (dashboardPageModel?.videoClasses != null)
                           InkWell(
-                            onTap: () => _showComingSoonDialog(context),
+                            onTap: () {},
                             child: _buildGridItem(
-                              icon: Icons.library_books,
-                              title: "Chapter Wise Class",
-                              subtitle:
-                                  "${dashboardPageModel?.videoClasses ?? 0} videos",
+                              icon: Icons.assessment,
+                              title: "Skill test",
+                              subtitle: "Coming Soon",
                             ),
                           ),
-                        InkWell(
-                          onTap: () => _showComingSoonDialog(context),
-                          child: _buildGridItem(
-                            icon: Icons.assessment,
-                            title: "Skill test",
-                            subtitle: "Test your Skills",
-                          ),
-                        ),
                         // if (dashboardPageModel?.syllabus != null) // Example of another null check
                         InkWell(
-                          onTap: () => _showComingSoonDialog(context),
+                          onTap: () {},
                           child: _buildGridItem(
                             icon: Icons.book,
                             title: "Topik Test",
-                            subtitle: "TOPIK Prep for All Levels",
+                            subtitle: "Coming Soon",
                           ),
                         ),
                         // if (dashboardPageModel?.books != null) // Another example
                         InkWell(
-                          onTap: () => _showComingSoonDialog(context),
+                          onTap: () {},
                           child: _buildGridItem(
                             icon: Icons.library_books,
                             title: "Books",
-                            subtitle: "Order or read",
+                            subtitle: "Coming Soon",
                           ),
                         ),
                         InkWell(
-                          onTap: () => _showComingSoonDialog(context),
+                          onTap: () {},
                           child: _buildGridItem(
                             icon: Icons.library_books,
-                            title: "Speaking",
-                            subtitle: "Fluency Through Practice",
+                            title: "Speaking ",
+                            subtitle: "Coming Soon",
                           ),
                         ),
                         InkWell(
-                          onTap: () => _showComingSoonDialog(context),
-                          child: _buildGridItem(
+                          onTap: () {},
+                          child: _buildGridItem2(
                             icon: Icons.library_books,
-                            title: "Syllabus",
-                            subtitle: "UBT exam syllabus",
+                            title: "Chapter Wise Class",
+                            subtitle: "Coming Soon",
+                            // "${dashboardPageModel?.videoClasses ?? 0} videos",
                           ),
                         ),
                       ],
@@ -585,6 +577,66 @@ Widget _buildGridItem(
           ),
         ),
         const Gap(12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                  child: FittedBox(
+                      child: customText(title, TextType.title, fontSize: 14))),
+              Flexible(
+                child: FittedBox(
+                  child: customText(subtitle, TextType.normal,
+                      fontSize: 10, color: AppColor.black),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _buildGridItem2(
+    {required IconData icon, required String title, required String subtitle}) {
+  return Container(
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.1),
+          spreadRadius: 2,
+          blurRadius: 5,
+        ),
+      ],
+    ),
+    padding: const EdgeInsets.all(16),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                spreadRadius: 2,
+                blurRadius: 5,
+              ),
+            ],
+          ),
+          child: SvgPicture.asset(
+            'assets/Icon.svg',
+            width: 20.0,
+            height: 20.0,
+          ),
+        ),
+        const SizedBox(width: 12), // Use SizedBox for consistent spacing
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
