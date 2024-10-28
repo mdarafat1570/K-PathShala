@@ -116,8 +116,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
         readingQuestions = questionsModel.data?.readingQuestions ?? [];
         listeningQuestions = questionsModel.data?.listeningQuestions ?? [];
 
-        _preloadFiles();
-        preloadAudio();
+        await _preloadFiles();
+        await preloadAudio();
 
         totalQuestion = questionsModel.data?.totalQuestion ?? 0;
         _remainingTime = (questionsModel.data?.duration ?? 60) * 60;

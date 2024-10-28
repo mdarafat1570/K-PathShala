@@ -87,6 +87,7 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
         Gap(screenHeight * 0.03),
         SSLCommerzPage(
           packageId: widget.packageId,
+          price: widget.price,
           refreshPage: widget.refreshPage,
         ),
         Gap(screenHeight * 0.03),
