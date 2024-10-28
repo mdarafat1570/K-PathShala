@@ -8,15 +8,18 @@ import 'package:kpathshala/service/azure_tts_service.dart';
 class AudioCacheService {
   final AzureTTS _azureTTS = AzureTTS();
   bool isDisposed = false;
+  bool isLoading = false; // Flag to indicate loading state
 
   Future<void> cacheAudioFiles({
     required List<CachedVoiceModel> cachedVoiceModelList,
   }) async {
+    isLoading = true; // Start loading
     final Directory tempDir = await getTemporaryDirectory();
 
     for (CachedVoiceModel model in cachedVoiceModelList) {
       if (isDisposed) {
         log('Page is disposed. Stopping the caching process.');
+        isLoading = false; // End loading if disposed
         return;
       }
 
@@ -36,6 +39,7 @@ class AudioCacheService {
 
           if (isDisposed) {
             log('Page is disposed. Stopping the caching process before saving the file.');
+            isLoading = false; // End loading if disposed
             return;
           }
 
@@ -57,6 +61,7 @@ class AudioCacheService {
         log('Stopping caching for "${model.text}" after multiple failed attempts.');
       }
     }
+    isLoading = false; // End loading after completion
   }
 
   Future<void> clearCache({required bool isCachingDisposed}) async {
@@ -90,7 +95,7 @@ List<CachedVoiceModel> extractCachedVoiceModels(
     {required List<ListeningQuestions> listeningQuestionList}) {
   List<CachedVoiceModel> cachedVoiceList = [];
   for (int i=1; i<=4; i++){
-    cachedVoiceList.addAll([CachedVoiceModel(text: "Option $i", gender: "male", id: "-1$i", voiceType: 'option'), CachedVoiceModel(text: "Option $i", gender: "female", id: "-2$i", voiceType: 'option')]);
+    cachedVoiceList.addAll([CachedVoiceModel(text: "$i", gender: "male", id: "-1$i", voiceType: 'option'), CachedVoiceModel(text: "$i", gender: "female", id: "-2$i", voiceType: 'option')]);
   }
 
   for (var question in listeningQuestionList) {

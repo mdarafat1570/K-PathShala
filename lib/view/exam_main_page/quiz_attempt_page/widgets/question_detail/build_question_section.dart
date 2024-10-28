@@ -21,6 +21,7 @@ Widget buildQuestionSection({
   bool? isSpeaking = false,
   bool? exists = false,
   bool? isInReviewMode = false,
+  required bool isLoading,
   required Function showZoomedImage,
   required Map<String, Uint8List> cachedImages,
   List<PlayedAudios>? playedAudiosList,
@@ -53,6 +54,7 @@ Widget buildQuestionSection({
             questionId: questionId,
             isSpeaking: isSpeaking!,
             exists: exists!,
+            isLoading: isLoading,
             cachedImages: cachedImages,
             showZoomedImage: showZoomedImage,
             playedAudiosList: playedAudiosList ?? [],
@@ -90,6 +92,7 @@ Widget _buildQuestionSection(
       required int questionId,
       required bool isSpeaking,
       required bool exists,
+      required bool isLoading,
       required Map<String, Uint8List> cachedImages,
       required Function showZoomedImage,
       required List<PlayedAudios> playedAudiosList,
@@ -133,6 +136,12 @@ Widget _buildQuestionSection(
               thickness: 1,
             ),
           if (listeningQuestionType == 'dialogues' || listeningQuestionType == 'listening_image' || listeningQuestionType == 'voice')
+            isLoading ? const Center(
+              child: SizedBox(
+                height: 40,
+                child: CircularProgressIndicator(),
+              ),
+            ) :
             InkWell(
               onTap: exists
                   ? null

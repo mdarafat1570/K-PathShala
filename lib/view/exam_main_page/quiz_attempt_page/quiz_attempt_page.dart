@@ -116,7 +116,8 @@ class RetakeTestPageState extends State<RetakeTestPage>
         readingQuestions = questionsModel.data?.readingQuestions ?? [];
         listeningQuestions = questionsModel.data?.listeningQuestions ?? [];
 
-        await _preloadFiles();
+        _preloadFiles();
+        preloadAudio();
 
         totalQuestion = questionsModel.data?.totalQuestion ?? 0;
         _remainingTime = (questionsModel.data?.duration ?? 60) * 60;
@@ -179,6 +180,9 @@ class RetakeTestPageState extends State<RetakeTestPage>
     }
 
     await Future.wait(preloadFutures);
+  }
+
+  Future<void> preloadAudio ()async{
     await _audioCacheService.cacheAudioFiles(
       cachedVoiceModelList: extractCachedVoiceModels(
         listeningQuestionList: listeningQuestions,
@@ -460,6 +464,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                       dialogue: dialogue,
                       questionId: questionId,
                       isSpeaking: _audioPlaybackService.isPlaying(),
+                      isLoading: _audioCacheService.isLoading,
                       exists: exists,
                       showZoomedImage: showZoomedImage,
                       cachedImages: cachedImages,
@@ -474,6 +479,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                     isVoiceType: isVoiceType,
                     isTextWithVoice: isTextWithVoice,
                     isSpeaking: _audioPlaybackService.isPlaying(),
+                    isLoading: _audioCacheService.isLoading,
                     playedAudiosList: playedAudiosList,
                     selectionHandling: selectionHandling,
                     speak: speak,

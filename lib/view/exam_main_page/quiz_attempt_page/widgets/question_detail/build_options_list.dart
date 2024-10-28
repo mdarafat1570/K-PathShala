@@ -10,6 +10,7 @@ Widget buildOptionsList({
   required bool isVoiceType,
   required bool isTextWithVoice,
   required bool isSpeaking,
+  required bool isLoading,
   required bool isInReviewMode,
   required List<PlayedAudios> playedAudiosList,
   required Function(int, int) selectionHandling,
@@ -70,6 +71,7 @@ Widget buildOptionsList({
                   optionExists: optionExists,
                   isSpeaking: isSpeaking,
                   isAnnounce: isAnnounce,
+                  isLoading: isLoading,
                   voiceScript: voiceScript,
                   announceScript: announceScript,
                   answerId: answerId,
@@ -90,6 +92,7 @@ Widget buildOptionsList({
                         optionExists: optionExists,
                         isSpeaking: isSpeaking,
                         isAnnounce: isAnnounce,
+                        isLoading: isLoading,
                         voiceScript: voiceScript,
                         announceScript: announceScript,
                         answerId: answerId,
@@ -248,6 +251,7 @@ Widget _buildVoiceIcon({
   required bool optionExists,
   required bool isSpeaking,
   required bool isAnnounce,
+  required bool isLoading,
   required String voiceScript,
   required String announceScript,
   required int answerId,
@@ -258,7 +262,12 @@ Widget _buildVoiceIcon({
 }) {
   return Container(
     margin: const EdgeInsets.only(left: 20),
-    child: InkWell(
+    child: isLoading ? const Center(
+      child: SizedBox(
+        height: 40,
+        child: CircularProgressIndicator(),
+      ),
+    ) : InkWell(
       onTap: optionExists
           ? null
           : () async {

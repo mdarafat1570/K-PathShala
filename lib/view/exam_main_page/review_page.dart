@@ -244,6 +244,7 @@ class _ReviewPageState extends State<ReviewPage> {
                   speak: speak,
                   stopSpeaking: _stopSpeaking,
                   isInReviewMode: true,
+                  isLoading: _audioCacheService.isLoading,
                 ),
                 buildOptionSection(
                   context: context,
@@ -258,6 +259,7 @@ class _ReviewPageState extends State<ReviewPage> {
                   isTextType: optionType == 'text',
                   isVoiceType: optionType == 'voice',
                   isTextWithVoice: optionType == 'text_with_voice',
+                  isLoading: _audioCacheService.isLoading,
                   isInReviewMode: true,
                   isSpeaking: _audioPlaybackService.isPlaying(),
                   playedAudiosList: [],
@@ -329,6 +331,7 @@ class _ReviewPageState extends State<ReviewPage> {
                   speak: speak,
                   stopSpeaking: _stopSpeaking,
                   isInReviewMode: true,
+                  isLoading: _audioCacheService.isLoading,
                 ),
                 buildOptionSection(
                   context: context,
@@ -339,6 +342,7 @@ class _ReviewPageState extends State<ReviewPage> {
                   isTextType: optionType == 'text',
                   isVoiceType: optionType == 'voice',
                   isTextWithVoice: optionType == 'text_with_voice',
+                  isLoading: _audioCacheService.isLoading,
                   isInReviewMode: true,
                   isSpeaking: _audioPlaybackService.isPlaying(),
                   playedAudiosList: [],
