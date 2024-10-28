@@ -13,6 +13,7 @@ import 'package:http/http.dart' as http;
 import 'package:kpathshala/view/exam_main_page/ubt_mock_test_page.dart';
 import 'package:kpathshala/view/home_main_page/dashboard_image_carousel.dart';
 import 'package:kpathshala/view/home_main_page/shimmer_effect_dashboard.dart';
+import 'package:kpathshala/view/login_signup_page/device_id_bottom_sheet.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -53,30 +54,9 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
-    // _internetConnectionStreamSubscription =
-    //     InternetConnection().onStatusChange.listen((event) {
-    //   print(event);
-    //   switch (event) {
-    //     case InternetStatus.connected:
-    //       setState(() {
-    //         isConnectedToInternet = true;
-    //       });
-    //       break;
-    //     case InternetStatus.disconnected:
-    //       setState(() {
-    //         isConnectedToInternet = false;
-    //         slideNavigationPush(ConnectionLost(), context);
-    //       });
-    //       break;
-    //     default:
-    //       setState(() {
-    //         isConnectedToInternet = false;
-    //       });
-    //       break;
-    //   }
-    // });
     _startCountdown();
     fetchData();
+
   }
 
   @override
@@ -88,22 +68,47 @@ class _DashboardPageState extends State<DashboardPage> {
     _internetConnectionStreamSubscription?.cancel();
     super.dispose();
   }
-
   void fetchData() async {
-    try {
-      DashboardRepository repository = DashboardRepository();
+  try {
+    DashboardRepository repository = DashboardRepository();
+    DashboardPageModel? dashModel = await repository.fetchDashboardData(context);
 
-      DashboardPageModel? dashModel =
-          await repository.fetchDashboardData(context);
-
-      setState(() {
-        dashboardPageModel = dashModel;
-        dataFound = true;
-      });
-    } catch (e) {
-      log(e.toString());
-    }
+    setState(() {
+      dashboardPageModel = dashModel;
+      dataFound = true;
+      bool? isVersionUpdateRequired = dashModel?.isVersionUpdateRequired ?? true;
+      if (!isVersionUpdateRequired) {
+        _showUpdateDialog(context);  
+      }
+    });
+  } catch (e) {
+    log("Error verifying OTP: $e");
   }
+}
+
+void _showUpdateDialog(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    builder: (BuildContext context) {
+      return CommonBottomSheet(
+        message: "Your app is now in an old version. Please update to continue.",
+        imagePath: "assets/reject.png",
+        buttonText: "Update Now",
+        onButtonPressed: () {
+          Navigator.of(context).pop(); 
+        },
+      );
+    },
+  );
+}
+
+
+
 
   void _checkCount() async {
     var url = Uri.parse(
@@ -142,98 +147,6 @@ class _DashboardPageState extends State<DashboardPage> {
       });
     }
   }
-  //
-  // void _showDisconnectionDialog() {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: const Text('No Internet Connection'),
-  //         content:
-  //             const Text('You are currently not connected to the internet.'),
-  //         actions: <Widget>[
-  //           TextButton(
-  //             child: const Text('OK'),
-  //             onPressed: () {
-  //               Navigator.of(context).pop();
-  //             },
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
-
-  // void _showComingSoonDialog(BuildContext context) {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return Dialog(
-  //         shape: RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.circular(20),
-  //         ),
-  //         backgroundColor: Color(0xFF1A237E), // Primary color
-  //         elevation: 12,
-  //         child: Padding(
-  //           padding: const EdgeInsets.all(20.0),
-  //           child: Column(
-  //             mainAxisSize: MainAxisSize.min,
-  //             children: [
-  //               Icon(
-  //                 Icons.announcement_rounded,
-  //                 color: Colors.amberAccent,
-  //                 size: 40,
-  //               ),
-  //               SizedBox(height: 15),
-  //               Text(
-  //                 "Coming Soon",
-  //                 style: TextStyle(
-  //                   color: Colors.white,
-  //                   fontWeight: FontWeight.w600,
-  //                   fontSize: 22,
-  //                   letterSpacing: 1.2,
-  //                 ),
-  //                 textAlign: TextAlign.center,
-  //               ),
-  //               SizedBox(height: 10),
-  //               Text(
-  //                 "This feature will be available soon. Stay tuned for updates!",
-  //                 style: TextStyle(
-  //                   color: Colors.white70,
-  //                   fontSize: 16,
-  //                   height: 1.4,
-  //                 ),
-  //                 textAlign: TextAlign.center,
-  //               ),
-  //               SizedBox(height: 20),
-  //               Divider(color: Colors.white24),
-  //               TextButton(
-  //                 onPressed: () {
-  //                   Navigator.of(context).pop();
-  //                 },
-  //                 style: TextButton.styleFrom(
-  //                   padding: EdgeInsets.symmetric(vertical: 12, horizontal: 25),
-  //                   backgroundColor: Colors.amberAccent,
-  //                   shape: RoundedRectangleBorder(
-  //                     borderRadius: BorderRadius.circular(10),
-  //                   ),
-  //                 ),
-  //                 child: Text(
-  //                   "OK",
-  //                   style: TextStyle(
-  //                     color: Color(0xFF1A237E),
-  //                     fontWeight: FontWeight.bold,
-  //                   ),
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -245,10 +158,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // if (dashboardPageModel?.banners != null &&
-                    //     dashboardPageModel!.banners!.isNotEmpty)
                     BannerCarousel(banners: dashboardPageModel?.banners ?? []),
-                    const SizedBox(height: 20),
                     GridView(
                       physics: const NeverScrollableScrollPhysics(),
                       padding: EdgeInsets.zero,
@@ -262,7 +172,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
                       children: [
                         if (dashboardPageModel?.videoClasses != null)
-                          InkWell(
+                        InkWell(
                             onTap: () {},
                             child: _buildGridItem(
                               icon: Icons.assessment,
@@ -270,7 +180,7 @@ class _DashboardPageState extends State<DashboardPage> {
                               subtitle: "Coming Soon",
                             ),
                           ),
-                        // if (dashboardPageModel?.syllabus != null) // Example of another null check
+                       
                         InkWell(
                           onTap: () {},
                           child: _buildGridItem(
@@ -279,7 +189,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             subtitle: "Coming Soon",
                           ),
                         ),
-                        // if (dashboardPageModel?.books != null) // Another example
+                   
                         InkWell(
                           onTap: () {},
                           child: _buildGridItem(
@@ -296,18 +206,20 @@ class _DashboardPageState extends State<DashboardPage> {
                             subtitle: "Coming Soon",
                           ),
                         ),
-                        InkWell(
+                      
+                      ],
+                    ),
+                      const Gap(8),
+                      InkWell(
                           onTap: () {},
                           child: _buildGridItem2(
                             icon: Icons.library_books,
                             title: "Chapter Wise Class",
                             subtitle: "Coming Soon",
-                            // "${dashboardPageModel?.videoClasses ?? 0} videos",
+                          
                           ),
                         ),
-                      ],
-                    ),
-                    const Gap(10),
+                    const Gap(8),
                     if (dashboardPageModel?.exam != null)
                       Column(
                         children: [
@@ -317,12 +229,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => UBTMockTestPage(
-                                    packageId:
-                                        dashboardPageModel!.exam!.packageId ??
-                                            -1,
-                                    appBarTitle:
-                                        dashboardPageModel?.exam?.examName ??
-                                            "UBT Mock Test",
+                                    packageId: dashboardPageModel!.exam!.packageId ?? -1,
+                                    appBarTitle: dashboardPageModel?.exam?.examName ?? "UBT Mock Test",
                                   ),
                                 ),
                               );
@@ -472,15 +380,11 @@ class _DashboardPageState extends State<DashboardPage> {
         (dashboardPageModel?.exam?.totalQuestionSet ?? 0).toDouble();
     double completedQuestionSet =
         (dashboardPageModel?.exam?.completedQuestionSet ?? 0).toDouble();
-
-    // Avoid division by zero by checking if totalQuestionSet is greater than zero
     double ratio =
         (totalQuestionSet > 0) ? (completedQuestionSet / totalQuestionSet) : 0;
-
-    // Check if there's a valid exam name to display
     String examName = dashboardPageModel?.exam?.examName ?? "";
     if (examName.isEmpty) {
-      return const SizedBox.shrink(); // Return an empty widget if no exam name
+      return const SizedBox.shrink(); 
     }
 
     return Container(
@@ -599,9 +503,13 @@ Widget _buildGridItem(
   );
 }
 
-Widget _buildGridItem2(
-    {required IconData icon, required String title, required String subtitle}) {
+Widget _buildGridItem2({
+  required IconData icon,
+  required String title,
+  required String subtitle,
+}) {
   return Container(
+    width: double.infinity,
     decoration: BoxDecoration(
       color: Colors.white,
       borderRadius: BorderRadius.circular(12),
@@ -630,26 +538,27 @@ Widget _buildGridItem2(
               ),
             ],
           ),
-          child: SvgPicture.asset(
-            'assets/Icon.svg',
-            width: 20.0,
-            height: 20.0,
+          child: Icon(
+            icon, // Use Icon widget instead of SvgPicture for consistency
+            size: 20.0,
+            color: Colors.black54,
           ),
         ),
-        const SizedBox(width: 12), // Use SizedBox for consistent spacing
+        const SizedBox(width: 12), // Consistent spacing between icon and text
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Flexible(
-                  child: FittedBox(
-                      child: customText(title, TextType.title, fontSize: 14))),
-              Flexible(
-                child: FittedBox(
-                  child: customText(subtitle, TextType.normal,
-                      fontSize: 10, color: AppColor.black),
-                ),
+              customText(
+                title,TextType.title, fontSize: 14
+              
+              ),
+              const SizedBox(height: 4), // Add slight spacing between title and subtitle
+              customText(
+                subtitle,TextType.normal,
+                      fontSize: 10, color: AppColor.black
+               
               ),
             ],
           ),

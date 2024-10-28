@@ -59,6 +59,7 @@ dependencies:
   internet_connection_checker_plus: ^2.5.2
   youtube_player_flutter: 8.1.0
   audioplayers: ^6.1.0
+  package_info_plus: ^8.1.0
 
 dev_dependencies:
   flutter_test:
