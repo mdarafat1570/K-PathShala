@@ -48,7 +48,7 @@ class _ReviewPageState extends State<ReviewPage> {
   void dispose() {
     isDisposed = true;
     ttsService.dispose();
-    _audioCacheService.clearCache();
+    _audioCacheService.clearCache(isCachingDisposed: isDisposed);
     _audioPlaybackService.dispose();
     super.dispose();
   }
@@ -128,7 +128,6 @@ class _ReviewPageState extends State<ReviewPage> {
       cachedVoiceModelList: extractCachedVoiceModels(
         listeningQuestionList: listeningQuestions,
       ),
-      isDisposed: isDisposed,
     );
   }
 
@@ -320,10 +319,9 @@ class _ReviewPageState extends State<ReviewPage> {
                   imageCaption: listeningQuestions[index].imageCaption ?? '',
                   question: '',
                   imageUrl: listeningQuestions[index].imageUrl ?? '',
-                  voiceScript: listeningQuestions[index].voiceScript ?? '',
-                  voiceModel: listeningQuestions[index].voiceGender ?? '',
-                  listeningQuestionType:
-                      listeningQuestions[index].questionType ?? '',
+                  voiceScript: "question-${listeningQuestions[index].id}-${listeningQuestions[index].voiceGender ?? ''}",
+                  voiceModel: listeningQuestions[index].voiceGender ?? 'female',
+                  listeningQuestionType: listeningQuestions[index].questionType ?? '',
                   dialogue: listeningQuestions[index].dialogues,
                   questionId: listeningQuestions[index].id ?? -1,
                   showZoomedImage: showZoomedImage,
@@ -336,13 +334,8 @@ class _ReviewPageState extends State<ReviewPage> {
                   context: context,
                   options: listeningQuestions[index].options,
                   selectedSolvedIndex: selectedSolvedIndex,
-                  correctAnswerId: listeningQuestions[index]
-                          .answerOption
-                          ?.questionOptionId ??
-                      -1,
-                  submissionId:
-                      listeningQuestions[index].submission?.questionOptionId ??
-                          -1,
+                  correctAnswerId: listeningQuestions[index].answerOption?.questionOptionId ?? -1,
+                  submissionId: listeningQuestions[index].submission?.questionOptionId ?? -1,
                   isTextType: optionType == 'text',
                   isVoiceType: optionType == 'voice',
                   isTextWithVoice: optionType == 'text_with_voice',

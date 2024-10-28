@@ -24,12 +24,12 @@ Widget buildOptionsList({
     itemBuilder: (context, index) {
       String answer = options[index].title ?? '';
       int answerId = options[index].id ?? -1;
-      String voiceScript = options[index].voiceScript ?? '';
+      String voiceScript = "option-${options[index].id}-${options[index].voiceGender}";
       bool optionExists = playedAudiosList.any(
         (audio) => audio.audioId == answerId && audio.audioType == 'option',
       );
-      bool isAnnounce = options[index].isAnnounce ?? false;
-      String announceScript = options[index].voiceGender == "male" ? "Option ${index+1}" : "option ${index+1}";
+      bool isAnnounce = options[index].isAnnounce == true || options[index].isAnnounce == 1;
+      String announceScript = options[index].voiceGender == "male" ? "option--1${index+1}-male" : "option--2${index+1}-female";
 
       Color containerColor = isInReviewMode
           ? (correctAnswerId == answerId && submissionId == answerId
@@ -90,7 +90,7 @@ Widget buildOptionsList({
                         optionExists: optionExists,
                         isSpeaking: isSpeaking,
                         isAnnounce: isAnnounce,
-                        voiceScript: answer,
+                        voiceScript: voiceScript,
                         announceScript: announceScript,
                         answerId: answerId,
                         playedAudiosList: playedAudiosList,

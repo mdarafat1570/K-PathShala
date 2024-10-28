@@ -76,7 +76,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
     if (_timer != null && _timer!.isActive) {
       _timer?.cancel();
     }
-    _audioCacheService.clearCache();
+    _audioCacheService.clearCache(isCachingDisposed: isDisposed);
     _audioPlaybackService.dispose();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -122,10 +122,12 @@ class RetakeTestPageState extends State<RetakeTestPage>
         _remainingTime = (questionsModel.data?.duration ?? 60) * 60;
         _examTime = (questionsModel.data?.duration ?? 60) * 60;
 
-        setState(() {
-          dataFound = true;
-          _startTimer();
-        });
+        if (mounted){
+          setState(() {
+            dataFound = true;
+            _startTimer();
+          });
+        }
       } else {
         log('Questions model or data is null');
         if (mounted) {
@@ -181,7 +183,6 @@ class RetakeTestPageState extends State<RetakeTestPage>
       cachedVoiceModelList: extractCachedVoiceModels(
         listeningQuestionList: listeningQuestions,
       ),
-      isDisposed: isDisposed,
     );
   }
 
@@ -354,9 +355,9 @@ class RetakeTestPageState extends State<RetakeTestPage>
     final imageUrl = isListening
         ? selectedListeningQuestionData?.imageUrl ?? ""
         : selectedReadingQuestionData?.imageUrl ?? "";
-    final voiceScript = selectedListeningQuestionData?.voiceScript ?? "";
+    final voiceModel = selectedListeningQuestionData?.voiceGender ?? 'female';
+    final voiceScript = "question-${selectedListeningQuestionData?.id}-$voiceModel";
     dialogue = selectedListeningQuestionData?.dialogues ?? [];
-    final voiceModel = selectedListeningQuestionData?.voiceGender ?? '';
     final listeningQuestionType =
         selectedListeningQuestionData?.questionType ?? "";
     final options = isListening

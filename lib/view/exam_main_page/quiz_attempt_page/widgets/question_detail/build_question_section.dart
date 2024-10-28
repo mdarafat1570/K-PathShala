@@ -98,7 +98,7 @@ Widget _buildQuestionSection(
       Function? onImageTap,
     }) {
   if (listeningQuestionType == 'listening_image'){
-    voiceScript = imageCaption;
+    voiceScript = 'image_caption-$questionId-$voiceModel';
   }
   return Container(
     padding: const EdgeInsets.all(12),
@@ -126,16 +126,13 @@ Widget _buildQuestionSection(
               )
                   : const Center(child: CircularProgressIndicator()),
             ),
-          if ((imageUrl.isNotEmpty && voiceScript.isNotEmpty) || (imageUrl.isNotEmpty && imageCaption.isNotEmpty) ||
-              (question.isNotEmpty && voiceScript.isNotEmpty))
+          if (listeningQuestionType == 'listening_image')
             const Divider(
               color: Colors.black54,
               height: 20,
               thickness: 1,
             ),
-          if (listeningQuestionType != 'dialogues'
-              ? voiceScript.isNotEmpty
-              : dialogue.isNotEmpty)
+          if (listeningQuestionType == 'dialogues' || listeningQuestionType == 'listening_image' || listeningQuestionType == 'voice')
             InkWell(
               onTap: exists
                   ? null
@@ -148,7 +145,7 @@ Widget _buildQuestionSection(
                 if (listeningQuestionType != "dialogues") {
                   speak([voiceScript,voiceScript]);
                 } else {
-                  await _playDialogue(dialogue, speak);
+                  await _playDialogue(dialogue, speak, questionId);
                 }
               },
               child: Image.asset(
@@ -166,13 +163,15 @@ Widget _buildQuestionSection(
 Future<void> _playDialogue(
     List<Dialogue> dialogue,
     Function(List<String>) speak,
+    int questionId,
     ) async {
   dialogue.sort((a, b) => (a.sequence ?? -1).compareTo(b.sequence ?? -1));
   List<String> voiceScriptQueue = [];
 
   for (int i = 0; i < 2; i++) {
     for (var voice in dialogue) {
-      voiceScriptQueue.add(voice.voiceScript ?? '');
+      String voiceScript = "dialogue-${voice.sequence}-$questionId-${voice.voiceGender}";
+      voiceScriptQueue.add(voiceScript);
     }
   }
   await speak(voiceScriptQueue);

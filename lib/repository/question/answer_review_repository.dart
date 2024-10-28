@@ -34,6 +34,7 @@ class AnswerReviewRepository {
       final url = '${KpatshalaAnswerReview.answerReview}?questionSetId=$questionSetId';
       final response = await _baseRepository.getRequest(url, context: context);
       final resultDataModel = QuestionsModel.fromJson(response);
+      log("message");
       log(jsonEncode(resultDataModel));
       return resultDataModel;
     } catch (e) {
@@ -42,8 +43,7 @@ class AnswerReviewRepository {
       } else if (e.toString().contains('404')) {
         throw Exception('Not Found: The specified package ID does not exist.');
       } else {
-        throw Exception(
-            'Server Error: An error occurred while processing the request.');
+        throw Exception('Server Error: An error occurred while processing the request.$e');
       }
     }
   }
