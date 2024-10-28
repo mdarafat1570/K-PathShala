@@ -95,7 +95,12 @@ List<CachedVoiceModel> extractCachedVoiceModels(
     {required List<ListeningQuestions> listeningQuestionList}) {
   List<CachedVoiceModel> cachedVoiceList = [];
   for (int i=1; i<=4; i++){
-    cachedVoiceList.addAll([CachedVoiceModel(text: "$i", gender: "male", id: "-1$i", voiceType: 'option'), CachedVoiceModel(text: "$i", gender: "female", id: "-2$i", voiceType: 'option')]);
+    String koreanText = (i == 1) ? '일'
+        : (i == 2) ? '이'
+        : (i == 3) ? '삼'
+        : (i == 4) ? '사'
+        : '';
+    cachedVoiceList.addAll([CachedVoiceModel(text: koreanText, gender: "male", id: "-1$i", voiceType: 'option'), CachedVoiceModel(text: koreanText, gender: "female", id: "-2$i", voiceType: 'option')]);
   }
 
   for (var question in listeningQuestionList) {
