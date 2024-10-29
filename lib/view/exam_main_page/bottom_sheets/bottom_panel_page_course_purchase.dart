@@ -71,7 +71,7 @@ class _BottomSheetPageState extends State<BottomSheetPage> {
                     ),
                     children: [
                       TextSpan(
-                        text: widget.validityDate,
+                        text: widget.validityDate ,
                         style: const TextStyle(
                           color: AppColor.navyBlue,
                           fontSize: 12,
