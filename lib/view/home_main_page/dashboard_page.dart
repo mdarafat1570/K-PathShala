@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
+import 'package:kpathshala/authentication/base_repository.dart';
 import 'package:kpathshala/model/dashboard_page_model/dashboard_page_model.dart';
 import 'package:kpathshala/repository/dashboard_repository/dashboard_page_repository.dart';
 import 'dart:async';
@@ -87,25 +88,34 @@ class _DashboardPageState extends State<DashboardPage> {
 }
 
 void _showUpdateDialog(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-    ),
-    builder: (BuildContext context) {
-      return CommonBottomSheet(
-        message: "Your app is now in an old version. Please update to continue.",
-        imagePath: "assets/reject.png",
-        buttonText: "Update Now",
-        onButtonPressed: () {
-          Navigator.of(context).pop(); 
-        },
-      );
-    },
-  );
-}
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (BuildContext context) {
+        return CommonBottomSheet(
+          message: "Your app is now in an old version. Please update to continue.",
+          imagePath: "assets/reject.png",
+          buttonText: "Update Now",
+          onButtonPressed: () async {
+            BaseRepository().userSignOut(context);
+            final url = Uri.parse("https://kpathshala.com/");
+            if (await canLaunchUrl(url)) {
+              await launchUrl(url, mode: LaunchMode.externalApplication);
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Could not launch the update link.")),
+              );
+            }
+          },
+        );
+      },
+    );
+  }
+
 
 
 

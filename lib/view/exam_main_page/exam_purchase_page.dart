@@ -44,7 +44,6 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final heightPercentage = 350 / screenHeight;
 
     return Scaffold(
       body: GradientBackground(
@@ -321,12 +320,11 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                                   .price.toDouble(); // Get price from the API
                                               showCommonBottomSheet(
                                                 context: context,
-                                                height: screenHeight * heightPercentage,
+                                                height: screenHeight * 0.55,
                                                 content: BottomSheetPage(
                                                   context: context,
                                                   packageId: package.id!,
-                                                  packageName:
-                                                      package.title ?? '',
+                                                  packageName: package.title ?? '',
                                                   price:packagePrice,
                                                       // packagePrice!.toDouble(),
                                                   validityDate:
