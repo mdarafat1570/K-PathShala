@@ -539,12 +539,12 @@ Widget _buildGridItem2({
             ],
           ),
           child: Icon(
-            icon, // Use Icon widget instead of SvgPicture for consistency
+            icon, 
             size: 20.0,
             color: Colors.black54,
           ),
         ),
-        const SizedBox(width: 12), // Consistent spacing between icon and text
+        const SizedBox(width: 12), 
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -552,9 +552,8 @@ Widget _buildGridItem2({
             children: [
               customText(
                 title,TextType.title, fontSize: 14
-              
               ),
-              const SizedBox(height: 4), // Add slight spacing between title and subtitle
+              const SizedBox(height: 4),
               customText(
                 subtitle,TextType.normal,
                       fontSize: 10, color: AppColor.black
