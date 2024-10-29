@@ -310,12 +310,8 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                                   0.35,
                                           child: ElevatedButton(
                                             onPressed: () {
-                                              DateTime futureDate =
-                                                  DateTime.now().add(
-                                                      const Duration(days: 5));
-                                              final validityDate =
-                                                  formatDateWithOrdinal(
-                                                      futureDate);
+                                              DateTime futureDate = DateTime.now().add(Duration(days: package.validity ?? 0));
+                                              final validityDate = formatDateWithOrdinal(futureDate);
                                               final packagePrice = package
                                                   .price.toDouble(); // Get price from the API
                                               showCommonBottomSheet(
@@ -327,8 +323,7 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                                   packageName: package.title ?? '',
                                                   price:packagePrice,
                                                       // packagePrice!.toDouble(),
-                                                  validityDate:
-                                                      validityDate.toString(),
+                                                  validityDate: package.validity != null ? validityDate.toString() : 'N/A',
                                                   refreshPage: refreshPage,
                                                 ),
                                                 actions: [],
