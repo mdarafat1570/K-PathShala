@@ -202,7 +202,8 @@ void _verifyOtp() async {
     String oneSignalPlayerId = await getOneSignalPlayerId() ?? "";
 
     // Fetch the app version
-    String appVersion = await authenticationService.getAppVersion(); 
+    String appVersionString = await authenticationService.getAppVersion();
+    double appVersion = double.tryParse(appVersionString) ?? 1.3;
 
     log("Mobile: $mobile");
     log("OTP: ${pinController.text}");
