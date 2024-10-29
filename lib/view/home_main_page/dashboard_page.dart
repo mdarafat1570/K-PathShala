@@ -58,6 +58,7 @@ class _DashboardPageState extends State<DashboardPage> {
     super.initState();
     // _startCountdown();
     fetchData();
+    _checkCount();
   }
 
   @override
@@ -122,23 +123,31 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Future<void> _checkCount() async {
+    log("Starting _checkCount");
+
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+    log("SharedPreferences instance obtained");
 
     // Get today's date in "YYYY-MM-DD" format
     final DateTime now = DateTime.now();
     final String todayDate = "${now.year}-${now.month}-${now.day}";
+    log("Today's date: $todayDate");
 
     // Check if cached data exists and is from today
     final String? lastUpdateDate = prefs.getString('lastUpdateDate');
+    log("Last update date from cache: $lastUpdateDate");
+
     if (lastUpdateDate == todayDate) {
       // Load cached data if it's today's date
       setState(() {
         count = prefs.getString('subscriberCount') ?? "0";
         vidCount = prefs.getString('videoCount') ?? "0";
       });
-      print("Loaded cached data for YouTube stats.");
+      log("Loaded cached data for YouTube stats - Subscriber Count: $count, Video Count: $vidCount");
       return;
     }
+
+    log("No cache available for today. Fetching new data from YouTube API");
 
     // Fetch data from YouTube API if there's no cache or it's a new day
     var url = Uri.parse(
@@ -146,6 +155,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
 
     var response = await http.get(url);
+    log("YouTube API response received - Status Code: ${response.statusCode}");
 
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
@@ -156,14 +166,15 @@ class _DashboardPageState extends State<DashboardPage> {
         count = subscriberCount;
         vidCount = videoCount;
       });
+      log("New data fetched - Subscriber Count: $subscriberCount, Video Count: $videoCount");
 
       // Save new data and update date in SharedPreferences
       await prefs.setString('subscriberCount', subscriberCount);
       await prefs.setString('videoCount', videoCount);
       await prefs.setString('lastUpdateDate', todayDate);
-      print("Fetched new data for YouTube stats and updated cache.");
+      log("New data saved to cache with today's date");
     } else {
-      print("Failed to fetch subscriber count: ${response.statusCode}");
+      log("Failed to fetch subscriber count: ${response.statusCode}");
     }
   }
 
