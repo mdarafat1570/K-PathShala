@@ -44,7 +44,7 @@ class AzureTTS {
     final body = '''
     <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="ko-KR">
         <voice name="$voiceName">
-            <prosody rate="0.67">
+            <prosody rate="0.75">
                 $text
             </prosody>
         </voice>

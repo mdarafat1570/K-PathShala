@@ -23,8 +23,8 @@ class QuestionsModel {
 }
 
 class Data {
-  int? duration;
-  int? totalQuestion;
+  dynamic duration;
+  dynamic totalQuestion;
   List<ReadingQuestions>? readingQuestions;
   List<ListeningQuestions>? listeningQuestions;
 
@@ -33,8 +33,8 @@ class Data {
   });
 
   Data.fromJson(Map<String, dynamic> json) {
-    duration = json['duration'] as int?;
-    totalQuestion = json['total_question'] as int?;
+    duration = json['duration'] as dynamic;
+    totalQuestion = json['total_question'] as dynamic;
     if (json['reading_questions'] != null) {
       readingQuestions = <ReadingQuestions>[];
       json['reading_questions'].forEach((v) {
@@ -65,8 +65,8 @@ class Data {
 
 
 class ReadingQuestions {
-  int? id;
-  int? questionSetId;
+  dynamic id;
+  dynamic questionSetId;
   String? title;
   String? question;
   String? subtitle;
@@ -117,8 +117,8 @@ class ReadingQuestions {
 }
 
 class ListeningQuestions {
-  int? id;
-  int? questionSetId;
+  dynamic id;
+  dynamic questionSetId;
   String? questionType;
   String? title;
   String? subtitle;
@@ -181,7 +181,7 @@ class ListeningQuestions {
 class Dialogue {
   String? voiceScript;
   String? voiceGender;
-  int? sequence;
+  dynamic sequence;
 
   Dialogue({this.voiceScript, this.voiceGender, this.sequence});
 
@@ -201,13 +201,14 @@ class Dialogue {
 }
 
 class Options {
-  int? id;
+  dynamic id;
   String? optionType;
   String? title;
   dynamic subtitle;
   dynamic imageUrl;
   dynamic voiceScript;
   dynamic voiceGender;
+  dynamic isAnnounce;
 
   Options({
     required this.id,
@@ -217,6 +218,7 @@ class Options {
     required this.imageUrl,
     required this.voiceScript,
     required this.voiceGender,
+    required this.isAnnounce,
   });
 
   factory Options.fromJson(Map<String, dynamic> json) => Options(
@@ -227,6 +229,7 @@ class Options {
     imageUrl: json["image_url"],
     voiceScript: json["voice_script"],
     voiceGender: json["voice_gender"],
+      isAnnounce: json["isAnnounce"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -237,13 +240,14 @@ class Options {
     "image_url": imageUrl,
     "voice_script": voiceScript,
     "voice_gender": voiceGender,
+    "isAnnounce": isAnnounce,
   };
 }
 
 class AnswerOption {
-  int? id;
-  int? questionId;
-  int? questionOptionId;
+  dynamic id;
+  dynamic questionId;
+  dynamic questionOptionId;
   String? description;
   String? createdAt;
   String? updatedAt;
@@ -278,10 +282,10 @@ class AnswerOption {
 }
 
 class Submission {
-  int? id;
-  int? questionSetSubmissionsId;
-  int? questionId;
-  int? questionOptionId;
+  dynamic id;
+  dynamic questionSetSubmissionsId;
+  dynamic questionId;
+  dynamic questionOptionId;
   String? userResponse;
   String? createdAt;
   String? updatedAt;

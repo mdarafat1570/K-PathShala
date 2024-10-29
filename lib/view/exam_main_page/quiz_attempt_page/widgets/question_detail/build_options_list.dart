@@ -10,6 +10,7 @@ Widget buildOptionsList({
   required bool isVoiceType,
   required bool isTextWithVoice,
   required bool isSpeaking,
+  required bool isLoading,
   required bool isInReviewMode,
   required List<PlayedAudios> playedAudiosList,
   required Function(int, int) selectionHandling,
@@ -24,10 +25,12 @@ Widget buildOptionsList({
     itemBuilder: (context, index) {
       String answer = options[index].title ?? '';
       int answerId = options[index].id ?? -1;
-      String voiceScript = options[index].voiceScript ?? '';
+      String voiceScript = "option-${options[index].id}-${options[index].voiceGender}";
       bool optionExists = playedAudiosList.any(
         (audio) => audio.audioId == answerId && audio.audioType == 'option',
       );
+      bool isAnnounce = options[index].isAnnounce == true || options[index].isAnnounce == 1;
+      String announceScript = options[index].voiceGender == "male" ? "option--1${index+1}-male" : "option--2${index+1}-female";
 
       Color containerColor = isInReviewMode
           ? (correctAnswerId == answerId && submissionId == answerId
@@ -67,7 +70,10 @@ Widget buildOptionsList({
                   context: context,
                   optionExists: optionExists,
                   isSpeaking: isSpeaking,
+                  isAnnounce: isAnnounce,
+                  isLoading: isLoading,
                   voiceScript: voiceScript,
+                  announceScript: announceScript,
                   answerId: answerId,
                   playedAudiosList: playedAudiosList,
                   speak: speak,
@@ -85,7 +91,10 @@ Widget buildOptionsList({
                         context: context,
                         optionExists: optionExists,
                         isSpeaking: isSpeaking,
-                        voiceScript: answer,
+                        isAnnounce: isAnnounce,
+                        isLoading: isLoading,
+                        voiceScript: voiceScript,
+                        announceScript: announceScript,
                         answerId: answerId,
                         playedAudiosList: playedAudiosList,
                         speak: speak,
@@ -241,7 +250,10 @@ Widget _buildVoiceIcon({
   required BuildContext context,
   required bool optionExists,
   required bool isSpeaking,
+  required bool isAnnounce,
+  required bool isLoading,
   required String voiceScript,
+  required String announceScript,
   required int answerId,
   required List<PlayedAudios> playedAudiosList,
   required Function(List<String>) speak,
@@ -250,7 +262,12 @@ Widget _buildVoiceIcon({
 }) {
   return Container(
     margin: const EdgeInsets.only(left: 20),
-    child: InkWell(
+    child: isLoading ? const Center(
+      child: SizedBox(
+        height: 40,
+        child: CircularProgressIndicator(),
+      ),
+    ) : InkWell(
       onTap: optionExists
           ? null
           : () async {
@@ -260,7 +277,7 @@ Widget _buildVoiceIcon({
               playedAudiosList.add(
                 PlayedAudios(audioId: answerId, audioType: 'option'),
               );
-              await speak([voiceScript, voiceScript]);
+              isAnnounce ? await speak([announceScript, voiceScript, voiceScript]) : await speak([voiceScript, voiceScript]);
             },
       child: Image.asset(
         'assets/speaker.png',

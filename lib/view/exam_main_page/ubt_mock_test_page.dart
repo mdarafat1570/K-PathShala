@@ -394,7 +394,7 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
                             onPressed: () {
                               showCommonBottomSheet(
                                 context: context,
-                                height: MediaQuery.sizeOf(context).height * 0.5,
+                                height: MediaQuery.sizeOf(context).height * 0.55,
                                 content: BottomSheetPage(
                                   context: context,
                                   packageId: widget.packageId,

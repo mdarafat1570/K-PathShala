@@ -19,15 +19,14 @@ Widget buildQuestionSection({
   required List<Dialogue> dialogue,
   required int questionId,
   bool? isSpeaking = false,
-  bool? isSpeechCompleted = false,
   bool? exists = false,
   bool? isInReviewMode = false,
+  required bool isLoading,
   required Function showZoomedImage,
   required Map<String, Uint8List> cachedImages,
   List<PlayedAudios>? playedAudiosList,
   required Function(List<String>) speak,
   required Function() stopSpeaking,
-  VoidCallback? changeInDelayStatus,
   Function? onImageTap,
 }) {
   return SizedBox(
@@ -37,7 +36,7 @@ Widget buildQuestionSection({
       children: [
         if (title.isNotEmpty) _buildTextBlock(title, TextType.paragraphTitle),
         if (subTitle.isNotEmpty) _buildTextBlock(subTitle, TextType.subtitle),
-        if (imageCaption.isNotEmpty)
+        if (imageCaption.isNotEmpty && listeningQuestionType != 'listening_image')
           _buildTextBlock(imageCaption, TextType.subtitle),
         if (question.isNotEmpty ||
             imageUrl.isNotEmpty ||
@@ -55,14 +54,13 @@ Widget buildQuestionSection({
             questionId: questionId,
             isSpeaking: isSpeaking!,
             exists: exists!,
+            isLoading: isLoading,
             cachedImages: cachedImages,
             showZoomedImage: showZoomedImage,
             playedAudiosList: playedAudiosList ?? [],
             speak: speak,
             stopSpeaking: stopSpeaking,
             onImageTap: onImageTap,
-            changeInDelayStatus: changeInDelayStatus ?? (){},
-            isSpeechCompleted: isSpeechCompleted!
           ),
       ],
     ),
@@ -93,18 +91,17 @@ Widget _buildQuestionSection(
       required String listeningQuestionType,
       required int questionId,
       required bool isSpeaking,
-      required bool isSpeechCompleted,
       required bool exists,
+      required bool isLoading,
       required Map<String, Uint8List> cachedImages,
       required Function showZoomedImage,
       required List<PlayedAudios> playedAudiosList,
       required Function(List<String>) speak,
       required Function() stopSpeaking,
-      required VoidCallback changeInDelayStatus,
       Function? onImageTap,
     }) {
   if (listeningQuestionType == 'listening_image'){
-    voiceScript = imageCaption;
+    voiceScript = 'image_caption-$questionId-$voiceModel';
   }
   return Container(
     padding: const EdgeInsets.all(12),
@@ -119,7 +116,7 @@ Widget _buildQuestionSection(
       child: Column(
         children: [
           if (question.isNotEmpty)
-            customText(question, TextType.paragraphTitle, textAlign: TextAlign.center),
+            customText(question, TextType.paragraphTitle, textAlign: TextAlign.center, fontSize: 18),
           if (imageUrl.isNotEmpty)
             InkWell(
               onTap: () {
@@ -132,16 +129,19 @@ Widget _buildQuestionSection(
               )
                   : const Center(child: CircularProgressIndicator()),
             ),
-          if ((imageUrl.isNotEmpty && voiceScript.isNotEmpty) || (imageUrl.isNotEmpty && imageCaption.isNotEmpty) ||
-              (question.isNotEmpty && voiceScript.isNotEmpty))
+          if (listeningQuestionType == 'listening_image')
             const Divider(
               color: Colors.black54,
               height: 20,
               thickness: 1,
             ),
-          if (listeningQuestionType != 'dialogues'
-              ? voiceScript.isNotEmpty
-              : dialogue.isNotEmpty)
+          if (listeningQuestionType == 'dialogues' || listeningQuestionType == 'listening_image' || listeningQuestionType == 'voice')
+            isLoading ? const Center(
+              child: SizedBox(
+                height: 40,
+                child: CircularProgressIndicator(),
+              ),
+            ) :
             InkWell(
               onTap: exists
                   ? null
@@ -154,7 +154,7 @@ Widget _buildQuestionSection(
                 if (listeningQuestionType != "dialogues") {
                   speak([voiceScript,voiceScript]);
                 } else {
-                  await _playDialogue(dialogue, speak, changeInDelayStatus, isSpeechCompleted);
+                  await _playDialogue(dialogue, speak, questionId);
                 }
               },
               child: Image.asset(
@@ -172,14 +172,15 @@ Widget _buildQuestionSection(
 Future<void> _playDialogue(
     List<Dialogue> dialogue,
     Function(List<String>) speak,
-    VoidCallback changeInDelayStatus, bool isSpeechCompleted
+    int questionId,
     ) async {
   dialogue.sort((a, b) => (a.sequence ?? -1).compareTo(b.sequence ?? -1));
   List<String> voiceScriptQueue = [];
 
   for (int i = 0; i < 2; i++) {
     for (var voice in dialogue) {
-      voiceScriptQueue.add(voice.voiceScript ?? '');
+      String voiceScript = "dialogue-${voice.sequence}-$questionId-${voice.voiceGender}";
+      voiceScriptQueue.add(voiceScript);
     }
   }
   await speak(voiceScriptQueue);

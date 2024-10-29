@@ -6,11 +6,8 @@ import 'package:kpathshala/app_base/common_imports.dart';
 
 class ConnectivityController extends GetxController {
   final Connectivity _connectivity = Connectivity();
-
   late final StreamSubscription _streamSubscription;
-
   var isConnected = true.obs;
-
   bool _isDialogOpen = true;
 
   @override
@@ -37,7 +34,6 @@ class ConnectivityController extends GetxController {
       _closeDialog();
     }
   }
-
   void showInternetDialog() {
     Get.dialog(AlertDialog(
       title: const Text("Offline"),
@@ -51,14 +47,12 @@ class ConnectivityController extends GetxController {
       ],
     ));
   }
-
   void _closeDialog() {
     if (_isDialogOpen) {
       Get.back();
       _isDialogOpen = false;
     }
   }
-
   @override
   void onClose() {
     _streamSubscription.cancel();
