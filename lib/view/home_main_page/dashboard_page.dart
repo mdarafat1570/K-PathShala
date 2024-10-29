@@ -13,6 +13,7 @@ import 'package:http/http.dart' as http;
 import 'package:kpathshala/view/exam_main_page/ubt_mock_test_page.dart';
 import 'package:kpathshala/view/home_main_page/dashboard_image_carousel.dart';
 import 'package:kpathshala/view/home_main_page/shimmer_effect_dashboard.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -75,7 +76,7 @@ class _DashboardPageState extends State<DashboardPage> {
     //       break;
     //   }
     // });
-    _startCountdown();
+    _checkCount();
     fetchData();
   }
 
@@ -105,43 +106,67 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
-  void _checkCount() async {
+  Future<void> _checkCount() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Get the current date in "YYYY-MM-DD" format
+    final DateTime now = DateTime.now();
+    final String todayDate = "${now.year}-${now.month}-${now.day}";
+    final String? lastUpdateDate = prefs.getString('lastUpdateDate');
+
+    // Check if cached data is from today
+    if (lastUpdateDate == todayDate) {
+      setState(() {
+        count = prefs.getString('subscriberCount') ?? "0";
+        vidCount = prefs.getString('videoCount') ?? "0";
+      });
+      print("Loaded cached data for YouTube stats.");
+      return;
+    }
+
+    // If data is outdated or not cached, fetch from the API
     var url = Uri.parse(
-      AuthorizationEndpoints.getYouTubeStats(
-          'UCKeeBsW1hGy0NBCqKgd5oBw', apikey),
+      "https://www.googleapis.com/youtube/v3/channels?part=statistics&id=UCKeeBsW1hGy0NBCqKgd5oBw&key=$apikey",
     );
 
     var response = await http.get(url);
 
-    if (response.statusCode == 200 && mounted) {
+    if (response.statusCode == 200) {
       var data = json.decode(response.body);
       var subscriberCount = data['items'][0]['statistics']['subscriberCount'];
       var videoCount = data['items'][0]['statistics']['videoCount'];
+
       setState(() {
         count = subscriberCount;
         vidCount = videoCount;
       });
+
+      // Save new data and update date in SharedPreferences
+      await prefs.setString('subscriberCount', subscriberCount);
+      await prefs.setString('videoCount', videoCount);
+      await prefs.setString('lastUpdateDate', todayDate);
+      print("Fetched new data for YouTube stats and updated cache.");
     } else {
-      log("Failed to fetch subscriber count: ${response.statusCode}");
+      print("Failed to fetch subscriber count: ${response.statusCode}");
     }
   }
 
-  void _startCountdown() {
-    const interval = Duration(seconds: 1);
+  // void _startCountdown() {
+  //   const interval = Duration(seconds: 1);
 
-    if (mounted) {
-      _timer = Timer.periodic(interval, (Timer t) {
-        setState(() {
-          if (_currentTimer > 0) {
-            _currentTimer -= 1;
-          } else {
-            _currentTimer = 1;
-            _checkCount();
-          }
-        });
-      });
-    }
-  }
+  //   if (mounted) {
+  //     _timer = Timer.periodic(interval, (Timer t) {
+  //       setState(() {
+  //         if (_currentTimer > 0) {
+  //           _currentTimer -= 1;
+  //         } else {
+  //           _currentTimer = 1;
+  //           _checkCount();
+  //         }
+  //       });
+  //     });
+  //   }
+  // }
   //
   // void _showDisconnectionDialog() {
   //   showDialog(
