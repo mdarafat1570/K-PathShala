@@ -15,6 +15,7 @@ import 'package:kpathshala/view/exam_main_page/ubt_mock_test_page.dart';
 import 'package:kpathshala/view/home_main_page/dashboard_image_carousel.dart';
 import 'package:kpathshala/view/home_main_page/shimmer_effect_dashboard.dart';
 import 'package:kpathshala/view/login_signup_page/device_id_bottom_sheet.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -55,9 +56,9 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
-    _startCountdown();
+    // _startCountdown();
     fetchData();
-
+    _checkCount();
   }
 
   @override
@@ -69,25 +70,28 @@ class _DashboardPageState extends State<DashboardPage> {
     _internetConnectionStreamSubscription?.cancel();
     super.dispose();
   }
+
   void fetchData() async {
-  try {
-    DashboardRepository repository = DashboardRepository();
-    DashboardPageModel? dashModel = await repository.fetchDashboardData(context);
+    try {
+      DashboardRepository repository = DashboardRepository();
+      DashboardPageModel? dashModel =
+          await repository.fetchDashboardData(context);
 
-    setState(() {
-      dashboardPageModel = dashModel;
-      dataFound = true;
-      bool? isVersionUpdateRequired = dashModel?.isVersionUpdateRequired ?? true;
-      if (!isVersionUpdateRequired) {
-        _showUpdateDialog(context);  
-      }
-    });
-  } catch (e) {
-    log("Error verifying OTP: $e");
+      setState(() {
+        dashboardPageModel = dashModel;
+        dataFound = true;
+        bool? isVersionUpdateRequired =
+            dashModel?.isVersionUpdateRequired ?? true;
+        if (!isVersionUpdateRequired) {
+          _showUpdateDialog(context);
+        }
+      });
+    } catch (e) {
+      log("Error verifying OTP: $e");
+    }
   }
-}
 
-void _showUpdateDialog(BuildContext context) {
+  void _showUpdateDialog(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -97,7 +101,8 @@ void _showUpdateDialog(BuildContext context) {
       ),
       builder: (BuildContext context) {
         return CommonBottomSheet(
-          message: "Your app is now in an old version. Please update to continue.",
+          message:
+              "Your app is now in an old version. Please update to continue.",
           imagePath: "assets/reject.png",
           buttonText: "Update Now",
           onButtonPressed: () async {
@@ -107,7 +112,8 @@ void _showUpdateDialog(BuildContext context) {
               await launchUrl(url, mode: LaunchMode.externalApplication);
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Could not launch the update link.")),
+                const SnackBar(
+                    content: Text("Could not launch the update link.")),
               );
             }
           },
@@ -116,47 +122,78 @@ void _showUpdateDialog(BuildContext context) {
     );
   }
 
+  Future<void> _checkCount() async {
+    log("Starting _checkCount");
 
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    log("SharedPreferences instance obtained");
 
+    // Get today's date in "YYYY-MM-DD" format
+    final DateTime now = DateTime.now();
+    final String todayDate = "${now.year}-${now.month}-${now.day}";
+    log("Today's date: $todayDate");
 
+    // Check if cached data exists and is from today
+    final String? lastUpdateDate = prefs.getString('lastUpdateDate');
+    log("Last update date from cache: $lastUpdateDate");
 
-  void _checkCount() async {
+    if (lastUpdateDate == todayDate) {
+      // Load cached data if it's today's date
+      setState(() {
+        count = prefs.getString('subscriberCount') ?? "0";
+        vidCount = prefs.getString('videoCount') ?? "0";
+      });
+      log("Loaded cached data for YouTube stats - Subscriber Count: $count, Video Count: $vidCount");
+      return;
+    }
+
+    log("No cache available for today. Fetching new data from YouTube API");
+
+    // Fetch data from YouTube API if there's no cache or it's a new day
     var url = Uri.parse(
-      AuthorizationEndpoints.getYouTubeStats(
-          'UCKeeBsW1hGy0NBCqKgd5oBw', apikey),
+      "https://www.googleapis.com/youtube/v3/channels?part=statistics&id=UCKeeBsW1hGy0NBCqKgd5oBw&key=$apikey",
     );
 
     var response = await http.get(url);
+    log("YouTube API response received - Status Code: ${response.statusCode}");
 
-    if (response.statusCode == 200 && mounted) {
+    if (response.statusCode == 200) {
       var data = json.decode(response.body);
       var subscriberCount = data['items'][0]['statistics']['subscriberCount'];
       var videoCount = data['items'][0]['statistics']['videoCount'];
+
       setState(() {
         count = subscriberCount;
         vidCount = videoCount;
       });
+      log("New data fetched - Subscriber Count: $subscriberCount, Video Count: $videoCount");
+
+      // Save new data and update date in SharedPreferences
+      await prefs.setString('subscriberCount', subscriberCount);
+      await prefs.setString('videoCount', videoCount);
+      await prefs.setString('lastUpdateDate', todayDate);
+      log("New data saved to cache with today's date");
     } else {
       log("Failed to fetch subscriber count: ${response.statusCode}");
     }
   }
 
-  void _startCountdown() {
-    const interval = Duration(seconds: 1);
+  // void _startCountdown() {
+  //   const interval = Duration(seconds: 1);
 
-    if (mounted) {
-      _timer = Timer.periodic(interval, (Timer t) {
-        setState(() {
-          if (_currentTimer > 0) {
-            _currentTimer -= 1;
-          } else {
-            _currentTimer = 1;
-            _checkCount();
-          }
-        });
-      });
-    }
-  }
+  //   if (mounted) {
+  //     _timer = Timer.periodic(interval, (Timer t) {
+  //       setState(() {
+  //         if (_currentTimer > 0) {
+  //           _currentTimer -= 1;
+  //         } else {
+  //           _currentTimer = 1;
+  //           _checkCount();
+  //         }
+  //       });
+  //     });
+  //   }
+  // }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -182,7 +219,7 @@ void _showUpdateDialog(BuildContext context) {
                       ),
                       children: [
                         if (dashboardPageModel?.videoClasses != null)
-                        InkWell(
+                          InkWell(
                             onTap: () {},
                             child: _buildGridItem(
                               icon: Icons.assessment,
@@ -190,7 +227,6 @@ void _showUpdateDialog(BuildContext context) {
                               subtitle: "Coming Soon",
                             ),
                           ),
-                       
                         InkWell(
                           onTap: () {},
                           child: _buildGridItem(
@@ -199,7 +235,6 @@ void _showUpdateDialog(BuildContext context) {
                             subtitle: "Coming Soon",
                           ),
                         ),
-                   
                         InkWell(
                           onTap: () {},
                           child: _buildGridItem(
@@ -216,19 +251,17 @@ void _showUpdateDialog(BuildContext context) {
                             subtitle: "Coming Soon",
                           ),
                         ),
-                      
                       ],
                     ),
-                      const Gap(8),
-                      InkWell(
-                          onTap: () {},
-                          child: _buildGridItem2(
-                            icon: Icons.library_books,
-                            title: "Chapter Wise Class",
-                            subtitle: "Coming Soon",
-                          
-                          ),
-                        ),
+                    const Gap(8),
+                    InkWell(
+                      onTap: () {},
+                      child: _buildGridItem2(
+                        icon: Icons.library_books,
+                        title: "Chapter Wise Class",
+                        subtitle: "Coming Soon",
+                      ),
+                    ),
                     const Gap(8),
                     if (dashboardPageModel?.exam != null)
                       Column(
@@ -239,8 +272,12 @@ void _showUpdateDialog(BuildContext context) {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => UBTMockTestPage(
-                                    packageId: dashboardPageModel!.exam!.packageId ?? -1,
-                                    appBarTitle: dashboardPageModel?.exam?.examName ?? "UBT Mock Test",
+                                    packageId:
+                                        dashboardPageModel!.exam!.packageId ??
+                                            -1,
+                                    appBarTitle:
+                                        dashboardPageModel?.exam?.examName ??
+                                            "UBT Mock Test",
                                   ),
                                 ),
                               );
@@ -394,7 +431,7 @@ void _showUpdateDialog(BuildContext context) {
         (totalQuestionSet > 0) ? (completedQuestionSet / totalQuestionSet) : 0;
     String examName = dashboardPageModel?.exam?.examName ?? "";
     if (examName.isEmpty) {
-      return const SizedBox.shrink(); 
+      return const SizedBox.shrink();
     }
 
     return Container(
@@ -549,27 +586,21 @@ Widget _buildGridItem2({
             ],
           ),
           child: Icon(
-            icon, // Use Icon widget instead of SvgPicture for consistency
+            icon,
             size: 20.0,
             color: Colors.black54,
           ),
         ),
-        const SizedBox(width: 12), // Consistent spacing between icon and text
+        const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              customText(
-                title,TextType.title, fontSize: 14
-              
-              ),
-              const SizedBox(height: 4), // Add slight spacing between title and subtitle
-              customText(
-                subtitle,TextType.normal,
-                      fontSize: 10, color: AppColor.black
-               
-              ),
+              customText(title, TextType.title, fontSize: 14),
+              const SizedBox(height: 4),
+              customText(subtitle, TextType.normal,
+                  fontSize: 10, color: AppColor.black),
             ],
           ),
         ),

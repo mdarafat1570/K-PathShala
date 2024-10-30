@@ -21,7 +21,7 @@ class AuthenticationService extends BaseRepository {
     String? deviceName,
     required String oneSignalPlayerId,
     required BuildContext context,
-    required String appVersion, 
+    required double appVersion,
   }) async {
     const url = AuthorizationEndpoints.verifyOTP;
 

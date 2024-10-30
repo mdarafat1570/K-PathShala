@@ -22,7 +22,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
 
-  // Initialize Firebase for authentication
+  // Initialize Firebase
   developer.log("Initializing Firebase...", name: 'INFO');
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -84,15 +84,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // DashboardPageModel? dashboardPageModel;
-    String? screen;
+    // Add OneSignal notification click listener
     OneSignal.Notifications.addClickListener((event) {
-      final data = event.notification.additionalData;
-      screen = data?['screen'];
-      if (screen != null) {
-        navigatorKey.currentState?.pushNamed(screen!);
+      final url = event.notification.launchUrl;
+      if (url != null) {
+        _handleDeepLink(url);
       }
     });
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
@@ -105,12 +104,26 @@ class MyApp extends StatelessWidget {
         '/ProfileScreenInMainPage': (context) =>
             const ProfileScreenInMainPage(),
         '/PaymentHistory': (context) => const PaymentHistory(),
-        // '/individualExamPage': (context) => UBTMockTestPage(
-        //     packageId: dashboardPageModel!.exam!.packageId ?? -1),
       },
       home: const SplashScreen(),
       builder: DevicePreview.appBuilder,
       locale: DevicePreview.locale(context),
     );
+  }
+
+  // Method to handle deep link URLs and navigate to the specified screen
+  static void _handleDeepLink(String url) {
+    Uri uri = Uri.parse(url);
+
+    // Map each deep link path to a specific route
+    if (uri.path == '/courses') {
+      navigatorKey.currentState?.pushNamed('/courses');
+    } else if (uri.path == '/ExamPurchasePage') {
+      navigatorKey.currentState?.pushNamed('/ExamPurchasePage');
+    } else if (uri.path == '/ProfileScreenInMainPage') {
+      navigatorKey.currentState?.pushNamed('/ProfileScreenInMainPage');
+    } else if (uri.path == '/PaymentHistory') {
+      navigatorKey.currentState?.pushNamed('/PaymentHistory');
+    }
   }
 }
