@@ -21,7 +21,6 @@ class Preferences {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
-  String? oneSignalId;
 
   // Initialize Firebase
   developer.log("Initializing Firebase...", name: 'INFO');
@@ -34,27 +33,38 @@ void main() async {
 
   // Initialize OneSignal
   developer.log("Setting OneSignal log level...", name: 'INFO');
-  OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
+  await OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
   developer.log("Initializing OneSignal...", name: 'INFO');
   OneSignal.initialize("e701d691-d45f-4a70-b430-f9e7037085af");
   developer.log("OneSignal initialized.", name: 'INFO');
 
   // Request permission for notifications
   developer.log("Requesting notification permissions...", name: 'INFO');
-  OneSignal.Notifications.requestPermission(true);
+  await OneSignal.Notifications.requestPermission(true);
   developer.log("Notification permissions requested.", name: 'INFO');
 
-  // Fetch OneSignal ID and store it in SharedPreferences
+  // Fetch OneSignal ID with retry mechanism
   try {
-    developer.log("Fetching OneSignal ID...", name: 'INFO');
-    oneSignalId = await OneSignal.User.getOnesignalId();
-    developer.log("OneSignal ID fetched: $oneSignalId", name: 'INFO');
+    String? oneSignalId;
+    int retries = 0;
+    const maxRetries = 5;
+    const delayDuration = Duration(seconds: 2);
 
-    if (oneSignalId != null) {
-      await prefs.setString(Preferences.oneSignalUserId, oneSignalId);
-      developer.log("OneSignal ID stored in SharedPreferences.", name: 'INFO');
-    } else {
-      developer.log("OneSignal ID is null.", name: 'WARNING');
+    while (oneSignalId == null && retries < maxRetries) {
+      developer.log("Attempt $retries: Fetching OneSignal ID...", name: 'INFO');
+      oneSignalId = await OneSignal.User.getOnesignalId();
+      if (oneSignalId != null) {
+        await prefs.setString(Preferences.oneSignalUserId, oneSignalId);
+        developer.log("OneSignal ID stored in SharedPreferences: $oneSignalId", name: 'INFO');
+      } else {
+        developer.log("OneSignal ID is null, retrying in 2 seconds...", name: 'WARNING');
+        await Future.delayed(delayDuration);
+        retries++;
+      }
+    }
+
+    if (oneSignalId == null) {
+      developer.log("Failed to fetch OneSignal ID after $maxRetries attempts.", name: 'ERROR');
     }
   } catch (e) {
     developer.log("Error fetching OneSignal ID: $e", name: 'ERROR');

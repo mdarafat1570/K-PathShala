@@ -1,5 +1,6 @@
 class AuthorizationEndpoints {
-  static const String baseUrl = 'https://api.kpathshala.com/api/v1';
+  static const String liveBaseUrl = 'https://api.kpathshala.com/api/v1';
+  static const String baseUrl = 'https://dev.kpathshala.com/api/v1';
 
   // OTP Endpoints
   static String sendOTP = '$baseUrl/send-otp';
@@ -53,12 +54,18 @@ class KpatshalaAnswerSubmission {
       '${AuthorizationEndpoints.baseUrl}/answer_submission';
 }
 
-
 class KpatshalaRetrieveNotesQuestion {
   static String retrieveNotesQuestion =
       '${AuthorizationEndpoints.baseUrl}/notes';
        static String retrieveNotesVideo =
       '${AuthorizationEndpoints.baseUrl}/setExplanationVideo';
       
+}
+
+class KpathShalaYoutubeWebSite{
+  static String kpathshalaWeb = "https://kpathshala.com/";
+  static String kpathshalaYoutubeChannel = 'https://www.youtube.com/channel/UCKeeBsW1hGy0NBCqKgd5oBw';
+  static String youtubeSubscriberCountBase = 'https://www.googleapis.com/youtube/v3/channels?part=statistics&id=UCKeeBsW1hGy0NBCqKgd5oBw&key=';
+  static String youtubeSubscriberCountApiKey = "AIzaSyClsZlG68dO9BB9mF5XzxrdXvFcxehh9RA";
 }
 
