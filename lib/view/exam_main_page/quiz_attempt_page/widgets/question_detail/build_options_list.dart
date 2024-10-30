@@ -1,3 +1,7 @@
+import 'dart:developer';
+
+import 'package:lottie/lottie.dart';
+
 import '../../quiz_attempt_page_imports.dart';
 
 Widget buildOptionsList({
@@ -5,6 +9,7 @@ Widget buildOptionsList({
   required List<Options> options,
   required int selectedSolvedIndex,
   int? correctAnswerId,
+  String? currentPlayingAudioId,
   int? submissionId,
   required bool isTextType,
   required bool isVoiceType,
@@ -75,6 +80,7 @@ Widget buildOptionsList({
                   voiceScript: voiceScript,
                   announceScript: announceScript,
                   answerId: answerId,
+                  currentPlayingAnswerId: currentPlayingAudioId,
                   playedAudiosList: playedAudiosList,
                   speak: speak,
                   stopSpeaking: stopSpeaking,
@@ -97,6 +103,7 @@ Widget buildOptionsList({
                         announceScript: announceScript,
                         answerId: answerId,
                         playedAudiosList: playedAudiosList,
+                        currentPlayingAnswerId: currentPlayingAudioId,
                         speak: speak,
                         stopSpeaking: stopSpeaking,
                         selectedListeningQuestionData: selectedListeningQuestionData,
@@ -255,6 +262,7 @@ Widget _buildVoiceIcon({
   required String voiceScript,
   required String announceScript,
   required int answerId,
+  required String? currentPlayingAnswerId, // New parameter
   required List<PlayedAudios> playedAudiosList,
   required Function(List<String>) speak,
   required Function() stopSpeaking,
@@ -262,27 +270,37 @@ Widget _buildVoiceIcon({
 }) {
   return Container(
     margin: const EdgeInsets.only(left: 20),
-    child: isLoading ? const Center(
+    child: isLoading
+        ? const Center(
       child: SizedBox(
         height: 40,
         child: CircularProgressIndicator(),
       ),
-    ) : InkWell(
+    )
+        : InkWell(
       onTap: optionExists
           ? null
           : () async {
-              if (isSpeaking) {
-                await stopSpeaking();
-              }
-              playedAudiosList.add(
-                PlayedAudios(audioId: answerId, audioType: 'option'),
-              );
-              isAnnounce ? await speak([announceScript, voiceScript, voiceScript]) : await speak([voiceScript, voiceScript]);
-            },
-      child: Image.asset(
-        'assets/speaker.png',
+        log("Current id $currentPlayingAnswerId && Answer Id $answerId----------------------------------");
+        if (isSpeaking) {
+          await stopSpeaking();
+        }
+        isAnnounce
+            ? await speak([announceScript, voiceScript, voiceScript])
+            : await speak([voiceScript, voiceScript]);
+        playedAudiosList.add(
+          PlayedAudios(audioId: answerId, audioType: 'option'),
+        );
+      },
+      child: (isSpeaking && !optionExists && (currentPlayingAnswerId == voiceScript || currentPlayingAnswerId == announceScript))
+          ? Lottie.asset(
+        "assets/sound.json",
+        height: 50,
+      )
+          : Image.asset(
+        'assets/sound.png',
         height: 40,
-        color: optionExists ? Colors.black54 : AppColor.navyBlue,
+        color: optionExists ? Colors.black54 : null,
       ),
     ),
   );

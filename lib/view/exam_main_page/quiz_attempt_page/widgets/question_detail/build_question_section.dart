@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/model/question_model/reading_question_page_model.dart';
 import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
 import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/played_audio_object.dart';
+import 'package:lottie/lottie.dart';
 
 Widget buildQuestionSection({
   required BuildContext context,
@@ -13,6 +15,7 @@ Widget buildQuestionSection({
   required String imageCaption,
   required String question,
   required String imageUrl,
+  String? currentPlayingAnswerId,
   required String voiceScript,
   required String voiceModel,
   required String listeningQuestionType,
@@ -49,6 +52,7 @@ Widget buildQuestionSection({
             imageCaption: imageCaption,
             voiceScript: voiceScript,
             voiceModel: voiceModel,
+            currentPlayingAnswerId: currentPlayingAnswerId,
             dialogue: dialogue,
             listeningQuestionType: listeningQuestionType,
             questionId: questionId,
@@ -89,6 +93,7 @@ Widget _buildQuestionSection(
       required String voiceModel,
       required List<Dialogue> dialogue,
       required String listeningQuestionType,
+      String? currentPlayingAnswerId,
       required int questionId,
       required bool isSpeaking,
       required bool exists,
@@ -146,21 +151,23 @@ Widget _buildQuestionSection(
               onTap: exists
                   ? null
                   : () async {
+                log("-|-|-|-|-|-|-|-|-|-|-|-|-|-|${currentPlayingAnswerId != null}-|-|-|-|-|-|-|-|-|-|");
                 if (isSpeaking) {
                   await stopSpeaking();
                 }
-                playedAudiosList.add(
-                    PlayedAudios(audioId: questionId, audioType: "question"));
                 if (listeningQuestionType != "dialogues") {
-                  speak([voiceScript,voiceScript]);
+                  await speak([voiceScript,voiceScript]);
                 } else {
                   await _playDialogue(dialogue, speak, questionId);
                 }
+                playedAudiosList.add(PlayedAudios(audioId: questionId, audioType: "question"));
               },
-              child: Image.asset(
-                "assets/speaker.png",
-                height: 40,
-                color: exists ? Colors.black54 : AppColor.navyBlue,
+              child: (isSpeaking && !exists && currentPlayingAnswerId != null && (currentPlayingAnswerId.contains("question") || currentPlayingAnswerId.contains("dialogue"))) ?
+              Lottie.asset("assets/sound.json", height: 50,)
+                  : Image.asset(
+                      "assets/sound.png",
+                      height: 40,
+                color: exists ? Colors.black54 : null,
               ),
             ),
         ],
