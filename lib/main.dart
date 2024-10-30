@@ -55,16 +55,19 @@ void main() async {
       oneSignalId = await OneSignal.User.getOnesignalId();
       if (oneSignalId != null) {
         await prefs.setString(Preferences.oneSignalUserId, oneSignalId);
-        developer.log("OneSignal ID stored in SharedPreferences: $oneSignalId", name: 'INFO');
+        developer.log("OneSignal ID stored in SharedPreferences: $oneSignalId",
+            name: 'INFO');
       } else {
-        developer.log("OneSignal ID is null, retrying in 2 seconds...", name: 'WARNING');
+        developer.log("OneSignal ID is null, retrying in 2 seconds...",
+            name: 'WARNING');
         await Future.delayed(delayDuration);
         retries++;
       }
     }
 
     if (oneSignalId == null) {
-      developer.log("Failed to fetch OneSignal ID after $maxRetries attempts.", name: 'ERROR');
+      developer.log("Failed to fetch OneSignal ID after $maxRetries attempts.",
+          name: 'ERROR');
     }
   } catch (e) {
     developer.log("Error fetching OneSignal ID: $e", name: 'ERROR');

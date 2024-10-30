@@ -110,7 +110,7 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Text(
-                                        "Expiring in ${package.expiryIn} days",
+                                        "Expiring in ${package.expiryIn}",
                                         style: const TextStyle(
                                             color: AppColor.brightCoral,
                                             fontSize: 10),
@@ -141,7 +141,9 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                                         UBTMockTestPage(
                                                           package: package,
                                                           packageId: package.id,
-                                                          appBarTitle: package.title ?? "UBT Mock Test",
+                                                          appBarTitle: package
+                                                                  .title ??
+                                                              "UBT Mock Test",
                                                         )),
                                               ).then((_) {
                                                 refreshPage();
@@ -270,11 +272,13 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                     ),
                                     const Gap(16),
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
                                       children: [
                                         SizedBox(
                                           width:
-                                              MediaQuery.sizeOf(context).width * 0.35,
+                                              MediaQuery.sizeOf(context).width *
+                                                  0.35,
                                           child: OutlinedButton(
                                             onPressed: () {
                                               Navigator.push(
@@ -285,7 +289,9 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                                           package: package,
                                                           isInPreviewMode: true,
                                                           packageId: package.id,
-                                                          appBarTitle: package.title ?? "UBT Mock Test",
+                                                          appBarTitle: package
+                                                                  .title ??
+                                                              "UBT Mock Test",
                                                         )),
                                               ).then((_) {
                                                 refreshPage();
@@ -293,9 +299,11 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                             },
                                             style: OutlinedButton.styleFrom(
                                               padding:
-                                                  const EdgeInsets.symmetric(vertical: 6),
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 6),
                                               backgroundColor:
-                                                  const Color.fromRGBO(26, 35, 126, 0.15),
+                                                  const Color.fromRGBO(
+                                                      26, 35, 126, 0.15),
                                               shape: RoundedRectangleBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(15),
@@ -310,20 +318,30 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
                                                   0.35,
                                           child: ElevatedButton(
                                             onPressed: () {
-                                              DateTime futureDate = DateTime.now().add(Duration(days: package.validity ?? 0));
-                                              final validityDate = formatDateWithOrdinal(futureDate);
-                                              final packagePrice = package
-                                                  .price.toDouble(); // Get price from the API
+                                              DateTime futureDate =
+                                                  DateTime.now().add(Duration(
+                                                      days: package.validity ??
+                                                          0));
+                                              final validityDate =
+                                                  formatDateWithOrdinal(
+                                                      futureDate);
+                                              final packagePrice = package.price
+                                                  .toDouble(); // Get price from the API
                                               showCommonBottomSheet(
                                                 context: context,
                                                 height: screenHeight * 0.55,
                                                 content: BottomSheetPage(
                                                   context: context,
                                                   packageId: package.id!,
-                                                  packageName: package.title ?? '',
-                                                  price:packagePrice,
-                                                      // packagePrice!.toDouble(),
-                                                  validityDate: package.validity != null ? validityDate.toString() : 'N/A',
+                                                  packageName:
+                                                      package.title ?? '',
+                                                  price: packagePrice,
+                                                  // packagePrice!.toDouble(),
+                                                  validityDate:
+                                                      package.validity != null
+                                                          ? validityDate
+                                                              .toString()
+                                                          : 'N/A',
                                                   refreshPage: refreshPage,
                                                 ),
                                                 actions: [],
@@ -361,7 +379,7 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
     );
   }
 
-  void refreshPage (){
+  void refreshPage() {
     _packagesFuture = null;
     _fetchPackages();
     setState(() {});

@@ -156,7 +156,6 @@ class _OtpPageState extends State<OtpPage> {
   }
 
   void _startResendCountdown() {
-
     setState(() {
       _isResendButtonDisabled = true;
       _remainingSeconds = 60;
@@ -170,7 +169,6 @@ class _OtpPageState extends State<OtpPage> {
           _updateResendButtonText();
         });
       } else {
-
         timer.cancel();
         setState(() {
           _isResendButtonDisabled = false;
@@ -185,109 +183,103 @@ class _OtpPageState extends State<OtpPage> {
       _resendButtonText = 'Resend In $_remainingSeconds s';
     });
   }
+
   Future<String?> getOneSignalPlayerId() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(Preferences.oneSignalUserId);
   }
 
+  void _verifyOtp() async {
+    try {
+      showLoadingIndicator(context: context, showLoader: true);
 
+      String mobile = widget.mobileNumber;
+      String deviceId = await getDeviceId() ?? "";
+      int otp = int.tryParse(pinController.text.trim()) ?? 0;
+      String oneSignalPlayerId = await getOneSignalPlayerId() ?? "";
 
-void _verifyOtp() async {
-  try {
-    showLoadingIndicator(context: context, showLoader: true);
+      // Fetch the app version
+      String appVersionPost = await authenticationService.getAppVersion();
 
-    String mobile = widget.mobileNumber;
-    String deviceId = await getDeviceId() ?? "";
-    int otp = int.tryParse(pinController.text.trim()) ?? 0;
-    String oneSignalPlayerId = await getOneSignalPlayerId() ?? "";
+      log("Mobile: $mobile");
+      log("OTP: ${pinController.text}");
+      log("Device ID: $deviceId");
+      log("OneSignal Player ID: $oneSignalPlayerId");
+      log("App Version: $appVersionPost");
 
-    // Fetch the app version
-    String appVersionString = await authenticationService.getAppVersion();
-    double appVersion = double.tryParse(appVersionString) ?? 1.3;
+      final response = await authenticationService.verifyOtp(
+        mobile,
+        otp,
+        deviceId,
+        oneSignalPlayerId: oneSignalPlayerId,
+        context: context,
+        appVersion: appVersionPost,
+      );
 
-    log("Mobile: $mobile");
-    log("OTP: ${pinController.text}");
-    log("Device ID: $deviceId");
-    log("OneSignal Player ID: $oneSignalPlayerId");
-    log("App Version: $appVersion");
+      final apiResponse = OTPApiResponse.fromJson(response);
 
-    final response = await authenticationService.verifyOtp(
-      mobile,
-      otp,
-      deviceId,
-      oneSignalPlayerId: oneSignalPlayerId,
-      context: context,
-      appVersion: appVersion,
-    );
+      if (mounted) {
+        showLoadingIndicator(context: context, showLoader: false);
 
-    final apiResponse = OTPApiResponse.fromJson(response);
+        if (apiResponse.successResponse != null) {
+          final token = apiResponse.successResponse!.data.token;
+          final name = apiResponse.successResponse!.data.user.name;
+          final email = apiResponse.successResponse!.data.user.email;
+          final mobile = apiResponse.successResponse!.data.user.mobile;
+          final imageUrl = apiResponse.successResponse!.data.user.image;
 
-    if (mounted) {
-      showLoadingIndicator(context: context, showLoader: false);
+          await _authService.saveLogInCredentials(LogInCredentials(
+            email: email,
+            name: name,
+            imagesAddress: imageUrl,
+            mobile: mobile,
+            token: token,
+          ));
 
-      if (apiResponse.successResponse != null) {
-        final token = apiResponse.successResponse!.data.token;
-        final name = apiResponse.successResponse!.data.user.name;
-        final email = apiResponse.successResponse!.data.user.email;
-        final mobile = apiResponse.successResponse!.data.user.mobile;
-        final imageUrl = apiResponse.successResponse!.data.user.image;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("OTP verified successfully.")),
+          );
 
-        await _authService.saveLogInCredentials(LogInCredentials(
-          email: email,
-          name: name,
-          imagesAddress: imageUrl,
-          mobile: mobile,
-          token: token,
-        ));
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("OTP verified successfully.")),
-        );
-
-        if (apiResponse.successResponse?.data.isProfileRequired == true) {
-          slideNavigationPushAndRemoveUntil(Profile(deviceId: deviceId), context);
-        } else {
-          slideNavigationPushAndRemoveUntil(const Navigation(), context);
+          if (apiResponse.successResponse?.data.isProfileRequired == true) {
+            slideNavigationPushAndRemoveUntil(
+                Profile(deviceId: deviceId), context);
+          } else {
+            slideNavigationPushAndRemoveUntil(const Navigation(), context);
+          }
         }
       }
-    }
-  } catch (e) {
-    log("Error verifying OTP: $e");
-    String errorMessage = e.toString().replaceFirst("Exception: ", "");
+    } catch (e) {
+      log("Error verifying OTP: $e");
+      String errorMessage = e.toString().replaceFirst("Exception: ", "");
 
-    if (e.toString().contains('Login device limitation is over')) {
-      showLoadingIndicator(context: context, showLoader: false);
-      _showDeviceIdBottomSheet(context);
-    } else if (mounted) {
-      showLoadingIndicator(context: context, showLoader: false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage)),
-      );
+      if (e.toString().contains('Login device limitation is over')) {
+        showLoadingIndicator(context: context, showLoader: false);
+        _showDeviceIdBottomSheet(context);
+      } else if (mounted) {
+        showLoadingIndicator(context: context, showLoader: false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage)),
+        );
+      }
     }
   }
-}
-
-
-
-
 
 // Function to show DeviceIdButtonSheet
-void _showDeviceIdBottomSheet(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-    ),
-    isScrollControlled: true,
-    backgroundColor: Colors.white,
-    builder: (BuildContext context) {
-      return const DeviceIdBottomSheet();
-    },
-  ).then((_){
-    BaseRepository().userSignOut(context);
-  });
-}
-
+  void _showDeviceIdBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      builder: (BuildContext context) {
+        return const DeviceIdBottomSheet();
+      },
+    ).then((_) {
+      BaseRepository().userSignOut(context);
+    });
+  }
 
   void sendOtp(
       {required String mobileNumber, required BuildContext context}) async {
