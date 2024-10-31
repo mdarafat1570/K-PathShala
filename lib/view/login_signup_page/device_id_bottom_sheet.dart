@@ -78,12 +78,12 @@ class CommonBottomSheet extends StatelessWidget {
   final VoidCallback onButtonPressed;
 
   const CommonBottomSheet({
-    Key? key,
+    super.key,
     required this.message,
     required this.imagePath,
     required this.buttonText,
     required this.onButtonPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -93,20 +93,19 @@ class CommonBottomSheet extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
         children: [
           const SizedBox(height: 5),
           // Top indicator
-          Container(
-            width: screenWidth * 0.2,
-            height: screenHeight * 0.005,
-            decoration: BoxDecoration(
-              color: AppColor.notBillable,
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
+          // Container(
+          //   width: screenWidth * 0.2,
+          //   height: screenHeight * 0.005,
+          //   decoration: BoxDecoration(
+          //     color: AppColor.notBillable,
+          //     borderRadius: BorderRadius.circular(8),
+          //   ),
+          // ),
           const SizedBox(height: 35),
           // Error icon
           Image.asset(

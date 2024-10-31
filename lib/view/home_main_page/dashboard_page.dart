@@ -77,15 +77,52 @@ class _DashboardPageState extends State<DashboardPage> {
       setState(() {
         dashboardPageModel = dashModel;
         dataFound = true;
-        bool? isVersionUpdateRequired =
-            dashModel?.isVersionUpdateRequired ?? true;
-        if (!isVersionUpdateRequired) {
+        bool? isVersionUpdateRequired = dashModel?.isVersionUpdateRequired ?? true;
+        if (isVersionUpdateRequired) {
           _showUpdateDialog(context);
         }
       });
     } catch (e) {
       log("Error verifying OTP: $e");
     }
+  }
+
+  void _showUpdateDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      isDismissible: false, // Prevents dismissal by tapping outside
+      enableDrag:
+          false, // Prevents the sheet from being dragged down to dismiss
+      builder: (BuildContext context) {
+        return WillPopScope(
+          // Prevents back button from dismissing the sheet
+          onWillPop: () async => false,
+          child: CommonBottomSheet(
+            message: "Your app is now in an old version. Please update to continue.",
+            imagePath: "assets/reject.png",
+            buttonText: "Update Now",
+            onButtonPressed: () async {
+              BaseRepository().userSignOut(context);
+              final url = Uri.parse(KpathShalaYoutubeWebSite.kpathshalaWeb);
+              if (await canLaunchUrl(url)) {
+                await launchUrl(url, mode: LaunchMode.externalApplication);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Could not launch the update link."),
+                  ),
+                );
+              }
+            },
+          ),
+        );
+      },
+    );
   }
 
   // void _showUpdateDialog(BuildContext context) {
@@ -96,67 +133,28 @@ class _DashboardPageState extends State<DashboardPage> {
   //     shape: const RoundedRectangleBorder(
   //       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
   //     ),
-  //     isDismissible: false, // Prevents dismissal by tapping outside
-  //     enableDrag:
-  //         false, // Prevents the sheet from being dragged down to dismiss
   //     builder: (BuildContext context) {
-  //       return WillPopScope(
-  //         // Prevents back button from dismissing the sheet
-  //         onWillPop: () async => false,
-  //         child: CommonBottomSheet(
-  //           message:
-  //               "Your app is now in an old version. Please update to continue.",
-  //           imagePath: "assets/reject.png",
-  //           buttonText: "Update Now",
-  //           onButtonPressed: () async {
-  //             BaseRepository().userSignOut(context);
-  //             final url = Uri.parse(KpathShalaYoutubeWebSite.kpathshalaWeb);
-  //             if (await canLaunchUrl(url)) {
-  //               await launchUrl(url, mode: LaunchMode.externalApplication);
-  //             } else {
-  //               ScaffoldMessenger.of(context).showSnackBar(
-  //                 const SnackBar(
-  //                   content: Text("Could not launch the update link."),
-  //                 ),
-  //               );
-  //             }
-  //           },
-  //         ),
+  //       return CommonBottomSheet(
+  //         message:
+  //             "Your app is now in an old version. Please update to continue.",
+  //         imagePath: "assets/reject.png",
+  //         buttonText: "Update Now",
+  //         onButtonPressed: () async {
+  //           BaseRepository().userSignOut(context);
+  //           final url = Uri.parse(KpathShalaYoutubeWebSite.kpathshalaWeb);
+  //           if (await canLaunchUrl(url)) {
+  //             await launchUrl(url, mode: LaunchMode.externalApplication);
+  //           } else {
+  //             ScaffoldMessenger.of(context).showSnackBar(
+  //               const SnackBar(
+  //                   content: Text("Could not launch the update link.")),
+  //             );
+  //           }
+  //         },
   //       );
   //     },
   //   );
   // }
-
-  void _showUpdateDialog(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (BuildContext context) {
-        return CommonBottomSheet(
-          message:
-              "Your app is now in an old version. Please update to continue.",
-          imagePath: "assets/reject.png",
-          buttonText: "Update Now",
-          onButtonPressed: () async {
-            BaseRepository().userSignOut(context);
-            final url = Uri.parse(KpathShalaYoutubeWebSite.kpathshalaWeb);
-            if (await canLaunchUrl(url)) {
-              await launchUrl(url, mode: LaunchMode.externalApplication);
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                    content: Text("Could not launch the update link.")),
-              );
-            }
-          },
-        );
-      },
-    );
-  }
 
   Future<void> _checkCount() async {
     log("Starting _checkCount");

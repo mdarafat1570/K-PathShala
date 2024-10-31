@@ -2,7 +2,7 @@ class AuthorizationEndpoints {
   static const String demoBaseUrl = 'https://dev.kpathshala.com/api/v1';
   static const String liveBaseUrl = 'https://api.kpathshala.com/api/v1';
 
-  static bool useLiveServer = false; // Set to true for live
+  static bool useLiveServer = true; // Set to true for live
 
   static String get baseUrl => useLiveServer ? liveBaseUrl : demoBaseUrl;
 
