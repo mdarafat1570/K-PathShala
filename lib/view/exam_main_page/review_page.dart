@@ -64,7 +64,10 @@ class _ReviewPageState extends State<ReviewPage> {
       setState(() {
         dataFound = true;
       });
-       await _preloadImages();
+      await Future.wait([
+        _preloadFiles(),
+        preloadAudio(),
+      ]);
     } catch (e) {
       log(e.toString()); // Handle the exception
     }
@@ -95,36 +98,41 @@ class _ReviewPageState extends State<ReviewPage> {
     }
   }
 
-  Future<void> _preloadImages() async {
-    log("Loading Image");
+  Future<void> _preloadFiles() async {
+    log("Loading Images");
+
+    // Helper to add cache tasks only for valid URLs
+    void addCacheTask(String? imageUrl, List<Future<void>> tasks) {
+      if (imageUrl?.isNotEmpty ?? false) {
+        tasks.add(_cacheImage(imageUrl!));
+      }
+    }
+
+    // Prepare futures for all caching tasks
     List<Future<void>> preloadFutures = [];
 
-    for (ReadingQuestions question in readingQuestions) {
-      if (question.imageUrl != null && question.imageUrl!.isNotEmpty) {
-        preloadFutures.add(_cacheImage(question.imageUrl!));
-      }
-
+    // Cache reading question images and options
+    for (var question in readingQuestions) {
+      addCacheTask(question.imageUrl, preloadFutures);
       for (var option in question.options) {
-        if (option.imageUrl != null && option.imageUrl!.isNotEmpty) {
-          preloadFutures.add(_cacheImage(option.imageUrl!));
-        }
+        addCacheTask(option.imageUrl, preloadFutures);
       }
     }
 
-    for (ListeningQuestions question in listeningQuestions) {
-      if (question.imageUrl != null && question.imageUrl!.isNotEmpty) {
-        preloadFutures.add(_cacheImage(question.imageUrl!));
-      }
-
+    // Cache listening question images and options concurrently
+    for (var question in listeningQuestions) {
+      addCacheTask(question.imageUrl, preloadFutures);
       for (var option in question.options) {
-        if (option.imageUrl != null && option.imageUrl!.isNotEmpty) {
-          preloadFutures.add(_cacheImage(option.imageUrl!));
-        }
+        addCacheTask(option.imageUrl, preloadFutures);
       }
     }
 
-     Future.wait(preloadFutures);
-     await _audioCacheService.cacheAudioFiles(
+    // Await all tasks to complete
+    await Future.wait(preloadFutures);
+  }
+
+  Future<void> preloadAudio ()async{
+    await _audioCacheService.cacheAudioFiles(
       cachedVoiceModelList: extractCachedVoiceModels(
         listeningQuestionList: listeningQuestions,
       ),

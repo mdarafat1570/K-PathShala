@@ -77,7 +77,8 @@ class _DashboardPageState extends State<DashboardPage> {
       setState(() {
         dashboardPageModel = dashModel;
         dataFound = true;
-        bool? isVersionUpdateRequired = dashModel?.isVersionUpdateRequired ?? true;
+        // bool? isVersionUpdateRequired = dashModel?.isVersionUpdateRequired ?? false;
+        bool? isVersionUpdateRequired = false;
         if (isVersionUpdateRequired) {
           _showUpdateDialog(context);
         }

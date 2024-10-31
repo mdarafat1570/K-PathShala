@@ -66,6 +66,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
     ]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     readCredentials();
     _fetchQuestions();
   }
@@ -82,6 +83,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     super.dispose();
   }
 
@@ -116,8 +118,10 @@ class RetakeTestPageState extends State<RetakeTestPage>
         readingQuestions = questionsModel.data?.readingQuestions ?? [];
         listeningQuestions = questionsModel.data?.listeningQuestions ?? [];
 
-        await _preloadFiles();
-        await preloadAudio();
+        await Future.wait([
+          _preloadFiles(),
+          preloadAudio(),
+        ]);
 
         totalQuestion = questionsModel.data?.totalQuestion ?? 0;
         _remainingTime = (questionsModel.data?.duration ?? 60) * 60;
@@ -152,33 +156,35 @@ class RetakeTestPageState extends State<RetakeTestPage>
   }
 
   Future<void> _preloadFiles() async {
-    log("Loading Image");
+    log("Loading Images");
+
+    // Helper to add cache tasks only for valid URLs
+    void addCacheTask(String? imageUrl, List<Future<void>> tasks) {
+      if (imageUrl?.isNotEmpty ?? false) {
+        tasks.add(_cacheImage(imageUrl!));
+      }
+    }
+
+    // Prepare futures for all caching tasks
     List<Future<void>> preloadFutures = [];
 
-    for (ReadingQuestions question in readingQuestions) {
-      if (question.imageUrl != null && question.imageUrl!.isNotEmpty) {
-        preloadFutures.add(_cacheImage(question.imageUrl!));
-      }
-
+    // Cache reading question images and options
+    for (var question in readingQuestions) {
+      addCacheTask(question.imageUrl, preloadFutures);
       for (var option in question.options) {
-        if (option.imageUrl != null && option.imageUrl!.isNotEmpty) {
-          preloadFutures.add(_cacheImage(option.imageUrl!));
-        }
+        addCacheTask(option.imageUrl, preloadFutures);
       }
     }
 
-    for (ListeningQuestions question in listeningQuestions) {
-      if (question.imageUrl != null && question.imageUrl!.isNotEmpty) {
-        preloadFutures.add(_cacheImage(question.imageUrl!));
-      }
-
+    // Cache listening question images and options concurrently
+    for (var question in listeningQuestions) {
+      addCacheTask(question.imageUrl, preloadFutures);
       for (var option in question.options) {
-        if (option.imageUrl != null && option.imageUrl!.isNotEmpty) {
-          preloadFutures.add(_cacheImage(option.imageUrl!));
-        }
+        addCacheTask(option.imageUrl, preloadFutures);
       }
     }
 
+    // Await all tasks to complete
     await Future.wait(preloadFutures);
   }
 
