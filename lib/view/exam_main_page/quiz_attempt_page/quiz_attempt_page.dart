@@ -79,11 +79,11 @@ class RetakeTestPageState extends State<RetakeTestPage>
     }
     _audioCacheService.clearCache(isCachingDisposed: isDisposed);
     _audioPlaybackService.dispose();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge, overlays: SystemUiOverlay.values);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     super.dispose();
   }
 
@@ -296,8 +296,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
             isListViewVisible = true;
           });
         } else {
-          final bool shouldPop =
-              await _showExitExamConfirmation(context) ?? false;
+          final bool shouldPop = await _showExitExamConfirmation(context) ?? false;
           if (context.mounted && shouldPop) {
             Navigator.pop(context);
           }

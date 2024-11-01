@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -151,18 +150,17 @@ Widget _buildQuestionSection(
               onTap: exists
                   ? null
                   : () async {
-                log("-|-|-|-|-|-|-|-|-|-|-|-|-|-|${currentPlayingAnswerId != null}-|-|-|-|-|-|-|-|-|-|");
                 if (isSpeaking) {
                   await stopSpeaking();
                 }
+                playedAudiosList.add(PlayedAudios(audioId: questionId, audioType: "question"));
                 if (listeningQuestionType != "dialogues") {
                   await speak([voiceScript,voiceScript]);
                 } else {
                   await _playDialogue(dialogue, speak, questionId);
                 }
-                playedAudiosList.add(PlayedAudios(audioId: questionId, audioType: "question"));
               },
-              child: (isSpeaking && !exists && currentPlayingAnswerId != null && (currentPlayingAnswerId.contains("question") || currentPlayingAnswerId.contains("dialogue"))) ?
+              child: (isSpeaking && currentPlayingAnswerId != null && (currentPlayingAnswerId.contains("question") || currentPlayingAnswerId.contains("dialogue") || currentPlayingAnswerId.contains("image_caption"))) ?
               Lottie.asset("assets/sound.json", height: 50,)
                   : Image.asset(
                       "assets/sound.png",
