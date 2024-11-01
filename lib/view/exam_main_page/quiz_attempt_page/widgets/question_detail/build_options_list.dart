@@ -281,18 +281,17 @@ Widget _buildVoiceIcon({
       onTap: optionExists
           ? null
           : () async {
-        log("Current id $currentPlayingAnswerId && Answer Id $answerId----------------------------------");
         if (isSpeaking) {
           await stopSpeaking();
         }
-        isAnnounce
-            ? await speak([announceScript, voiceScript, voiceScript])
-            : await speak([voiceScript, voiceScript]);
         playedAudiosList.add(
           PlayedAudios(audioId: answerId, audioType: 'option'),
         );
+        isAnnounce
+            ? await speak([announceScript, voiceScript, voiceScript])
+            : await speak([voiceScript, voiceScript]);
       },
-      child: (isSpeaking && !optionExists && (currentPlayingAnswerId == voiceScript || currentPlayingAnswerId == announceScript))
+      child: (isSpeaking && (currentPlayingAnswerId == voiceScript || currentPlayingAnswerId == announceScript))
           ? Lottie.asset(
         "assets/sound.json",
         height: 50,

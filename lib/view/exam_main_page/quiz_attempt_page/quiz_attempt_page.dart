@@ -99,7 +99,12 @@ class RetakeTestPageState extends State<RetakeTestPage>
   }
 
   Future<void> speak(List<String> voiceScriptQueue) async {
-    log("playing$voiceScriptQueue");
+    log("Playing: $voiceScriptQueue");
+
+    // Stop current playback and reset the queue
+    await _audioPlaybackService.stop();
+
+    // Start playing the new queue
     await _audioPlaybackService.playAudioQueue(voiceScriptQueue);
   }
 
