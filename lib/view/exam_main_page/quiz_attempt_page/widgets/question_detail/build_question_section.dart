@@ -105,7 +105,6 @@ Widget _buildQuestionSection(
       required Function() stopSpeaking,
       Function? onImageTap,
     }) {
-  log("id---$currentPlayingAnswerId" ?? 'no id');
   if (listeningQuestionType == 'listening_image'){
     voiceScript = 'image_caption-$questionId-$voiceModel';
   }
@@ -162,13 +161,15 @@ Widget _buildQuestionSection(
                   await _playDialogue(dialogue, speak, questionId);
                 }
               },
-              child: (isSpeaking && currentPlayingAnswerId != null && (currentPlayingAnswerId.contains("question") || currentPlayingAnswerId.contains("dialogue") || currentPlayingAnswerId.contains("image_caption"))) ?
+              child: (isSpeaking && currentPlayingAnswerId != null && (currentPlayingAnswerId.contains("question") || currentPlayingAnswerId.contains("dialogue") || currentPlayingAnswerId.contains("image_caption")) && currentPlayingAnswerId.contains("$questionId")) ?
               Lottie.asset("assets/sound.json", height: 50,)
-                  : Image.asset(
-                      "assets/sound.png",
-                      height: 40,
-                color: exists ? Colors.black54 : null,
-              ),
+                  : Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5.0),
+                    child: Image.asset(
+                        "assets/sound.png",
+                        height: 40, color: exists ? Colors.black54 : null,
+                    ),
+                  ),
             ),
         ],
       ),

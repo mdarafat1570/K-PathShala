@@ -296,11 +296,14 @@ Widget _buildVoiceIcon({
         "assets/sound.json",
         height: 50,
       )
-          : Image.asset(
-        'assets/sound.png',
-        height: 40,
-        color: optionExists ? Colors.black54 : null,
-      ),
+          : Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5.0),
+            child: Image.asset(
+                    'assets/sound.png',
+                    height: 40,
+                    color: optionExists ? Colors.black54 : null,
+                  ),
+          ),
     ),
   );
 }

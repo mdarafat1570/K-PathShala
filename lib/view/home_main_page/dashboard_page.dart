@@ -102,7 +102,7 @@ class _DashboardPageState extends State<DashboardPage> {
       builder: (BuildContext context) {
         return WillPopScope(
           // Prevents back button from dismissing the sheet
-          onWillPop: () async => false,
+          onWillPop: () async => false  ,
           child: CommonBottomSheet(
             message: "Your app is now in an old version. Please update to continue.",
             imagePath: "assets/reject.png",
