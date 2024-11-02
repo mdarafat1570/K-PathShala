@@ -137,6 +137,7 @@ class _ReviewPageState extends State<ReviewPage> {
         listeningQuestionList: listeningQuestions,
       ),
     );
+    setState(() {});
   }
 
   Future<void> _cacheImage(String imageUrl) async {
@@ -161,8 +162,18 @@ class _ReviewPageState extends State<ReviewPage> {
   Map<String, Uint8List> cachedImages = {};
 
   Future<void> speak(List<String> voiceScriptQueue) async {
-    log("playing$voiceScriptQueue");
+    Timer? timer;
+    await _audioPlaybackService.stop();
+
+    timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
+      log(_audioPlaybackService.currentPlayingAudioId ?? 'no');
+      setState(() {});
+    });
+
     await _audioPlaybackService.playAudioQueue(voiceScriptQueue);
+    timer.cancel();
+
+    setState(() {});
   }
 
   Future<void> _stopSpeaking() async {
@@ -242,6 +253,7 @@ class _ReviewPageState extends State<ReviewPage> {
                   imageCaption: readingQuestions[index].imageCaption ?? '',
                   question: readingQuestions[index].question ?? '',
                   imageUrl: readingQuestions[index].imageUrl ?? '',
+                  currentPlayingAnswerId: _audioPlaybackService.currentPlayingAudioId,
                   voiceScript: '',
                   voiceModel: '',
                   listeningQuestionType: '',
@@ -258,12 +270,9 @@ class _ReviewPageState extends State<ReviewPage> {
                   context: context,
                   options: readingQuestions[index].options,
                   selectedSolvedIndex: selectedSolvedIndex,
-                  correctAnswerId:
-                      readingQuestions[index].answerOption?.questionOptionId ??
-                          -1,
-                  submissionId:
-                      readingQuestions[index].submission?.questionOptionId ??
-                          -1,
+                  correctAnswerId: readingQuestions[index].answerOption?.questionOptionId ?? -1,
+                  submissionId: readingQuestions[index].submission?.questionOptionId ?? -1,
+                  currentPlayingAudioId: _audioPlaybackService.currentPlayingAudioId,
                   isTextType: optionType == 'text',
                   isVoiceType: optionType == 'voice',
                   isTextWithVoice: optionType == 'text_with_voice',
@@ -328,6 +337,7 @@ class _ReviewPageState extends State<ReviewPage> {
                   subTitle: listeningQuestions[index].subtitle ?? '',
                   imageCaption: listeningQuestions[index].imageCaption ?? '',
                   question: '',
+                  currentPlayingAnswerId: _audioPlaybackService.currentPlayingAudioId,
                   imageUrl: listeningQuestions[index].imageUrl ?? '',
                   voiceScript: "question-${listeningQuestions[index].id}-${listeningQuestions[index].voiceGender ?? ''}",
                   voiceModel: listeningQuestions[index].voiceGender ?? 'female',
@@ -340,6 +350,7 @@ class _ReviewPageState extends State<ReviewPage> {
                   stopSpeaking: _stopSpeaking,
                   isInReviewMode: true,
                   isLoading: _audioCacheService.isLoading,
+                  isSpeaking: _audioPlaybackService.isPlaying(),
                 ),
                 buildOptionSection(
                   context: context,
@@ -347,6 +358,7 @@ class _ReviewPageState extends State<ReviewPage> {
                   selectedSolvedIndex: selectedSolvedIndex,
                   correctAnswerId: listeningQuestions[index].answerOption?.questionOptionId ?? -1,
                   submissionId: listeningQuestions[index].submission?.questionOptionId ?? -1,
+                  currentPlayingAudioId: _audioPlaybackService.currentPlayingAudioId,
                   isTextType: optionType == 'text',
                   isVoiceType: optionType == 'voice',
                   isTextWithVoice: optionType == 'text_with_voice',

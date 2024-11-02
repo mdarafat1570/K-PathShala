@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -104,6 +105,7 @@ Widget _buildQuestionSection(
       required Function() stopSpeaking,
       Function? onImageTap,
     }) {
+  log("id---$currentPlayingAnswerId" ?? 'no id');
   if (listeningQuestionType == 'listening_image'){
     voiceScript = 'image_caption-$questionId-$voiceModel';
   }
