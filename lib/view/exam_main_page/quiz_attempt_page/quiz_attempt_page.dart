@@ -370,10 +370,26 @@ class RetakeTestPageState extends State<RetakeTestPage>
         ? selectedListeningQuestionData?.imageUrl ?? ""
         : selectedReadingQuestionData?.imageUrl ?? "";
     final voiceModel = selectedListeningQuestionData?.voiceGender ?? 'female';
-    final voiceScript = "question-${selectedListeningQuestionData?.id}-$voiceModel";
+    final listeningQuestionType = selectedListeningQuestionData?.questionType ?? 'questions';
+    int questionId = isListening
+        ? selectedListeningQuestionData?.id ?? -1
+        : selectedReadingQuestionData?.id ?? -1;
     dialogue = selectedListeningQuestionData?.dialogues ?? [];
-    final listeningQuestionType =
-        selectedListeningQuestionData?.questionType ?? "";
+
+    List<String> playDialogue(List<Dialogue> dialogue, int questionId,){
+      dialogue.sort((a, b) => (a.sequence ?? -1).compareTo(b.sequence ?? -1));
+      List<String> voiceScriptQueue = [];
+
+        for (var voice in dialogue) {
+          String voiceScript = "dialogue-${voice.sequence}-$questionId-${voice.voiceGender}";
+          voiceScriptQueue.add(voiceScript);
+        }
+      return voiceScriptQueue;
+    }
+
+    String voiceScript = '';
+    List <String> audioQueue= [];
+
     final options = isListening
         ? selectedListeningQuestionData?.options ?? []
         : selectedReadingQuestionData?.options ?? [];
@@ -382,13 +398,50 @@ class RetakeTestPageState extends State<RetakeTestPage>
       previousOptions = List.from(options); // Update the previous options list
     }
     bool isTextType = options.isNotEmpty && options.first.optionType == 'text';
-    bool isVoiceType =
-        options.isNotEmpty && options.first.optionType == 'voice';
-    bool isTextWithVoice =
-        options.isNotEmpty && options.first.optionType == 'text_with_voice';
-    int questionId = isListening
-        ? selectedListeningQuestionData?.id ?? -1
-        : selectedReadingQuestionData?.id ?? -1;
+    bool isVoiceType = options.isNotEmpty && options.first.optionType == 'voice';
+    bool isTextWithVoice = options.isNotEmpty && options.first.optionType == 'text_with_voice';
+
+    bool isAnnounce = options.first.isAnnounce == true || options.first.isAnnounce == 1;
+
+    List<String> generateOptionScript(var option, int index) {
+      String announceScript = option.voiceGender == "male"
+          ? "option--1${index + 1}-male"
+          : "option--2${index + 1}-female";
+      String optionScript = "text_with_voice-${option.id}-$questionId-${option.voiceGender}";
+      return isAnnounce ? [announceScript, optionScript] : [optionScript];
+    }
+
+    void addVoiceScript(String type, String script, List<String> optionsScripts) {
+      audioQueue.addAll([script, ...optionsScripts]);
+    }
+
+    List<String> generateOptionsScripts(List options) {
+      List<String> scripts = [];
+      for (var i = 0; i < options.length; i++) {
+        scripts.addAll(generateOptionScript(options[i], i));
+      }
+      return scripts;
+    }
+
+    if (listeningQuestionType == "voice" || listeningQuestionType == "listening_image") {
+      String prefix = listeningQuestionType == "voice" ? "question-${selectedListeningQuestionData?.id}" : 'image_caption-$questionId';
+      voiceScript = "$prefix-$voiceModel";
+
+      if (isTextWithVoice) {
+        List<String> optionsScripts = generateOptionsScripts(options);
+        addVoiceScript(listeningQuestionType, voiceScript, optionsScripts);
+      } else {
+        audioQueue.addAll([voiceScript, voiceScript]);
+      }
+    } else if (listeningQuestionType == 'dialogues') {
+      audioQueue.addAll(playDialogue(dialogue, questionId));
+      if (isTextWithVoice) {
+        List<String> optionsScripts = generateOptionsScripts(options);
+        audioQueue.addAll(optionsScripts);
+      }
+    }
+
+
     int selectedSolvedIndex = -1;
     if (!isListening &&
         (solvedReadingQuestions.any((answer) =>
@@ -468,14 +521,15 @@ class RetakeTestPageState extends State<RetakeTestPage>
                       imageCaption: imageCaption,
                       question: question,
                       imageUrl: imageUrl,
-                      voiceScript: voiceScript,
                       voiceModel: voiceModel,
                       currentPlayingAnswerId: _audioPlaybackService.currentPlayingAudioId,
                       listeningQuestionType: listeningQuestionType,
+                      audioQueue: audioQueue,
                       dialogue: dialogue,
                       questionId: questionId,
                       isSpeaking: _audioPlaybackService.isPlaying(),
                       isLoading: _audioCacheService.isLoading,
+                      isAutoPlay: isTextWithVoice,
                       exists: exists,
                       showZoomedImage: showZoomedImage,
                       cachedImages: cachedImages,
@@ -496,8 +550,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                     selectionHandling: selectionHandling,
                     speak: speak,
                     stopSpeaking: _stopSpeaking,
-                    selectedListeningQuestionData:
-                        selectedListeningQuestionData,
+                    selectedListeningQuestionData: selectedListeningQuestionData,
                     showZoomedImage: showZoomedImage,
                     cachedImages: cachedImages,
                   ),

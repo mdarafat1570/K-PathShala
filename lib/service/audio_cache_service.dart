@@ -139,7 +139,7 @@ List<CachedVoiceModel> extractCachedVoiceModels({
     for (var option in question.options) {
       String optionId = option.id.toString();
       if (option.optionType == 'text_with_voice' && option.voiceGender != null) {
-        addVoiceModel(option.title, option.voiceGender!, "option", optionId);
+        addVoiceModel(option.title, option.voiceGender!, "text_with_voice", "$optionId-$questionId");
       } else if (option.voiceScript != null && option.voiceGender != null) {
         addVoiceModel(option.voiceScript, option.voiceGender!, "option", optionId);
       }

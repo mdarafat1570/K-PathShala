@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:lottie/lottie.dart';
 
 import '../../quiz_attempt_page_imports.dart';
@@ -63,7 +61,7 @@ Widget buildOptionsList({
             children: [
               _buildOptionCircle(index, selectedSolvedIndex),
               const SizedBox(width: 8),
-              if (answer.isNotEmpty && isTextType)
+              if (answer.isNotEmpty && (isTextType || isTextWithVoice))
                 Expanded(
                   child: Text(
                     answer,
@@ -85,40 +83,6 @@ Widget buildOptionsList({
                   speak: speak,
                   stopSpeaking: stopSpeaking,
                   selectedListeningQuestionData: selectedListeningQuestionData,
-                ),
-              if (isTextWithVoice && answer.isNotEmpty)
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _buildVoiceIcon(
-                        context: context,
-                        optionExists: optionExists,
-                        isSpeaking: isSpeaking,
-                        isAnnounce: isAnnounce,
-                        isLoading: isLoading,
-                        voiceScript: voiceScript,
-                        announceScript: announceScript,
-                        answerId: answerId,
-                        playedAudiosList: playedAudiosList,
-                        currentPlayingAnswerId: currentPlayingAudioId,
-                        speak: speak,
-                        stopSpeaking: stopSpeaking,
-                        selectedListeningQuestionData: selectedListeningQuestionData,
-                      ),
-                      const Gap(5),
-                      Expanded(
-                        child: Text(
-                          answer,
-                          style: const TextStyle(fontSize: 18),
-                          softWrap: true,
-                          overflow: TextOverflow.visible,
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
             ],
           ),
