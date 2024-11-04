@@ -21,7 +21,6 @@ class Preferences {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
-  String? oneSignalId;
 
   // Initialize Firebase
   developer.log("Initializing Firebase...", name: 'INFO');
@@ -41,24 +40,11 @@ void main() async {
 
   // Request permission for notifications
   developer.log("Requesting notification permissions...", name: 'INFO');
-  OneSignal.Notifications.requestPermission(true);
+  await OneSignal.Notifications.requestPermission(true);
   developer.log("Notification permissions requested.", name: 'INFO');
 
-  // Fetch OneSignal ID and store it in SharedPreferences
-  try {
-    developer.log("Fetching OneSignal ID...", name: 'INFO');
-    oneSignalId = await OneSignal.User.getOnesignalId();
-    developer.log("OneSignal ID fetched: $oneSignalId", name: 'INFO');
-
-    if (oneSignalId != null) {
-      await prefs.setString(Preferences.oneSignalUserId, oneSignalId);
-      developer.log("OneSignal ID stored in SharedPreferences.", name: 'INFO');
-    } else {
-      developer.log("OneSignal ID is null.", name: 'WARNING');
-    }
-  } catch (e) {
-    developer.log("Error fetching OneSignal ID: $e", name: 'ERROR');
-  }
+  // Fetch OneSignal ID with retry logic
+  await _fetchAndStoreOneSignalId(prefs);
 
   runApp(
     DevicePreview(
@@ -66,6 +52,40 @@ void main() async {
       builder: (context) => const MyApp(),
     ),
   );
+}
+
+// Helper function to fetch and store OneSignal player ID with retry
+Future<void> _fetchAndStoreOneSignalId(SharedPreferences prefs) async {
+  String? oneSignalId;
+  const maxRetries = 3; // Max number of retries
+  int attempt = 0;
+
+  while (oneSignalId == null && attempt < maxRetries) {
+    try {
+      developer.log("Fetching OneSignal ID... Attempt ${attempt + 1}",
+          name: 'INFO');
+      oneSignalId = await OneSignal.User.getOnesignalId();
+
+      if (oneSignalId != null) {
+        await prefs.setString(Preferences.oneSignalUserId, oneSignalId);
+        developer.log("OneSignal ID stored in SharedPreferences: $oneSignalId",
+            name: 'INFO');
+      } else {
+        developer.log("OneSignal ID is null, retrying...", name: 'WARNING');
+      }
+    } catch (e) {
+      developer.log("Error fetching OneSignal ID: $e", name: 'ERROR');
+    }
+
+    attempt++;
+    if (oneSignalId == null)
+      await Future.delayed(const Duration(seconds: 2)); // Delay between retries
+  }
+
+  if (oneSignalId == null) {
+    developer.log("Failed to fetch OneSignal ID after $maxRetries attempts.",
+        name: 'ERROR');
+  }
 }
 
 class MyApp extends StatelessWidget {
