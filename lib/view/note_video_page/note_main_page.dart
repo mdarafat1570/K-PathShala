@@ -127,12 +127,18 @@ class _NoteMainPageState extends State<NoteMainPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
+        if (noteVideoData?.videoLink == null ||
+            noteVideoData!.videoLink!.isEmpty) {
+          return true; // Allow the page to pop if no video link
+        }
+
         if (_youtubeController.value.isFullScreen) {
           // If video is in full-screen, toggle full-screen mode to exit it
           _youtubeController.toggleFullScreenMode();
           return false; // Do not pop the page when in full-screen
         }
-        return true; // Allow the page to pop if not in full-screen
+
+        return true;
 
         // Allow page to pop
       },
@@ -159,9 +165,8 @@ class _NoteMainPageState extends State<NoteMainPage> {
                                       : MediaQuery.of(context).size.width *
                                           0.9, // 90% width otherwise
                                   height: _isFullScreen
-                                      ? MediaQuery.of(context)
-                                          .size
-                                          .height // Full height in full-screen mode
+                                      ? MediaQuery.of(context).size.height -
+                                          54 // Adjusted height in full-screen mode
                                       : 180, // Fixed height otherwise
                                   decoration: BoxDecoration(
                                     color:
