@@ -68,6 +68,9 @@ class _ReviewPageState extends State<ReviewPage> {
         _preloadFiles(),
         preloadAudio(),
       ]);
+      setState(() {
+        log("---------------Loading Completed--------------");
+      });
     } catch (e) {
       log(e.toString()); // Handle the exception
     }
@@ -322,10 +325,11 @@ class _ReviewPageState extends State<ReviewPage> {
           shrinkWrap: true,
           itemCount: listeningQuestions.length,
           itemBuilder: (context, index) {
-            final optionType = listeningQuestions[index].options.first.optionType ?? 'question';
+            final optionType = listeningQuestions[index].options.first.optionType ?? 'text';
             final selectedSolvedIndex = listeningQuestions[index].options
                 .indexWhere((option) =>
                     option.id == (listeningQuestions[index].submission?.questionOptionId ?? -1));
+            final listeningQuestionType = listeningQuestions[index].questionType ?? 'question';
             List<String> playDialogue(List<Dialogue> dialogue, int questionId,){
               dialogue.sort((a, b) => (a.sequence ?? -1).compareTo(b.sequence ?? -1));
               List<String> voiceScriptQueue = [];
@@ -345,11 +349,11 @@ class _ReviewPageState extends State<ReviewPage> {
 
             bool isAnnounce = options.first.isAnnounce == true || options.first.isAnnounce == 1;
 
-            List<String> generateOptionScript(var option, int index) {
+            List<String> generateOptionScript(var option, int i) {
               String announceScript = option.voiceGender == "male"
-                  ? "option--1${index + 1}-male"
-                  : "option--2${index + 1}-female";
-              String optionScript = "text_with_voice-${option.id}-${listeningQuestions[index].id ?? -1}-${option.voiceGender}";
+                  ? "option--1${i + 1}-male"
+                  : "option--2${i + 1}-female";
+              String optionScript = "text_with_voice-${option.id}-${listeningQuestions[index].id}-${option.voiceGender}";
               return isAnnounce ? [announceScript, optionScript] : [optionScript];
             }
 
@@ -365,23 +369,24 @@ class _ReviewPageState extends State<ReviewPage> {
               return scripts;
             }
 
-            if (optionType == "voice" || optionType == "listening_image") {
-              String prefix = optionType == "voice" ? "question-${listeningQuestions[index].id}-${listeningQuestions[index].voiceGender ?? ''}" : 'image_caption-${listeningQuestions[index].id}';
-              voiceScript = "$prefix-${listeningQuestions[index].voiceGender ?? ''}";
+            if (listeningQuestionType == "voice" || listeningQuestionType == "listening_image") {
+              String prefix = listeningQuestionType == "voice" ? "question-${listeningQuestions[index].id}" : 'image_caption-${listeningQuestions[index].id}';
+              voiceScript = "$prefix-${listeningQuestions[index].voiceGender ?? 'female'}";
 
               if (isTextWithVoice) {
                 List<String> optionsScripts = generateOptionsScripts(options);
-                addVoiceScript(optionType, voiceScript, optionsScripts);
+                addVoiceScript(listeningQuestionType, voiceScript, optionsScripts);
               } else {
                 audioQueue.addAll([voiceScript, voiceScript]);
               }
-            } else if (optionType == 'dialogues') {
+            } else if (listeningQuestionType == 'dialogues') {
               audioQueue.addAll(playDialogue(listeningQuestions[index].dialogues, listeningQuestions[index].id));
               if (isTextWithVoice) {
                 List<String> optionsScripts = generateOptionsScripts(options);
                 audioQueue.addAll(optionsScripts);
               }
             }
+
             return Column(
               children: [
                 buildQuestionSection(
@@ -391,6 +396,7 @@ class _ReviewPageState extends State<ReviewPage> {
                   imageCaption: listeningQuestions[index].imageCaption ?? '',
                   question: '',
                   currentPlayingAnswerId: _audioPlaybackService.currentPlayingAudioId,
+                  nextAudioKey: _audioPlaybackService.nextAudioKey,
                   imageUrl: listeningQuestions[index].imageUrl ?? '',
                   audioQueue: audioQueue,
                   voiceModel: listeningQuestions[index].voiceGender ?? 'female',

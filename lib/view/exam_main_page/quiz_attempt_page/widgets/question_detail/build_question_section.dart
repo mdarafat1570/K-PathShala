@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ Widget buildQuestionSection({
   required String question,
   required String imageUrl,
   String? currentPlayingAnswerId,
+  String? nextAudioKey,
   required String voiceModel,
   required String listeningQuestionType,
   required List<Dialogue> dialogue,
@@ -52,6 +54,7 @@ Widget buildQuestionSection({
             imageCaption: imageCaption,
             voiceModel: voiceModel,
             currentPlayingAnswerId: currentPlayingAnswerId,
+            nextAudioKey: nextAudioKey,
             dialogue: dialogue,
             audioQueue: audioQueue,
             listeningQuestionType: listeningQuestionType,
@@ -95,6 +98,7 @@ Widget _buildQuestionSection(
       required List<String> audioQueue,
       required String listeningQuestionType,
       String? currentPlayingAnswerId,
+      String? nextAudioKey,
       required int questionId,
       required bool isSpeaking,
       required bool exists,
@@ -156,10 +160,11 @@ Widget _buildQuestionSection(
                 playedAudiosList.add(PlayedAudios(audioId: questionId, audioType: "question"));
                 await speak(audioQueue);
               },
-              child: (isSpeaking &&
-                  currentPlayingAnswerId != null &&
-                  currentPlayingAnswerId.contains(RegExp(r'(question|dialogue|image_caption|text_with_voice|option--)')) &&
-                  (currentPlayingAnswerId.contains('$questionId') || isAutoPlay)) ?
+              child: ((isSpeaking &&
+                  currentPlayingAnswerId?.contains(RegExp(r'(question|dialogue|image_caption|text_with_voice)')) == true &&
+                  currentPlayingAnswerId!.contains('$questionId')) ||
+                  (isSpeaking && isAutoPlay && nextAudioKey?.contains('text_with_voice') == true &&
+                      nextAudioKey?.contains('$questionId') == true)) ?
               Lottie.asset("assets/sound.json", height: 50,)
                   : Padding(
                     padding: const EdgeInsets.symmetric(vertical: 5.0),

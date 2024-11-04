@@ -12,6 +12,7 @@ class AudioPlaybackService {
   bool _isPlaying = false;
   bool _shouldStop = false;
   String? currentPlayingAudioId;
+  String? nextAudioKey;
 
   Future<void> playAudioQueue(List<String> audioKeys) async {
     // Stop any currently playing queue and reset state
@@ -21,11 +22,13 @@ class AudioPlaybackService {
     _shouldStop = false;
     _isPlaying = true; // Set isPlaying to true for the entire queue duration
 
-    for (String audioKey in _audioQueue) {
+    for (int i = 0; i < _audioQueue.length; i++) {
       if (_shouldStop) break; // Exit loop if playback is stopped
 
-      currentPlayingAudioId = audioKey;
-      await _playSingleAudio(audioKey);
+      currentPlayingAudioId = _audioQueue[i];
+      nextAudioKey = (i + 1 < _audioQueue.length) ? _audioQueue[i + 1] : null;
+
+      await _playSingleAudio(currentPlayingAudioId!);
 
       // Delay between audios
       if (!_shouldStop) {
@@ -35,6 +38,7 @@ class AudioPlaybackService {
 
     // Reset when queue is finished or stopped
     currentPlayingAudioId = null;
+    nextAudioKey = null;
     _isPlaying = false; // Only set isPlaying to false after the entire queue has finished
   }
 

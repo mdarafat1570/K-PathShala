@@ -127,6 +127,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
           _preloadFiles(),
           preloadAudio(),
         ]);
+        log("---------------Loading Completed--------------");
 
         totalQuestion = questionsModel.data?.totalQuestion ?? 0;
         _remainingTime = (questionsModel.data?.duration ?? 60) * 60;
@@ -523,6 +524,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                       imageUrl: imageUrl,
                       voiceModel: voiceModel,
                       currentPlayingAnswerId: _audioPlaybackService.currentPlayingAudioId,
+                      nextAudioKey: _audioPlaybackService.nextAudioKey,
                       listeningQuestionType: listeningQuestionType,
                       audioQueue: audioQueue,
                       dialogue: dialogue,
