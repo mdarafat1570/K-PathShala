@@ -1,3 +1,5 @@
+import 'package:lottie/lottie.dart';
+
 import '../../quiz_attempt_page_imports.dart';
 
 Widget buildOptionsList({
@@ -5,6 +7,7 @@ Widget buildOptionsList({
   required List<Options> options,
   required int selectedSolvedIndex,
   int? correctAnswerId,
+  String? currentPlayingAudioId,
   int? submissionId,
   required bool isTextType,
   required bool isVoiceType,
@@ -58,7 +61,7 @@ Widget buildOptionsList({
             children: [
               _buildOptionCircle(index, selectedSolvedIndex),
               const SizedBox(width: 8),
-              if (answer.isNotEmpty && isTextType)
+              if (answer.isNotEmpty && (isTextType || isTextWithVoice))
                 Expanded(
                   child: Text(
                     answer,
@@ -75,43 +78,11 @@ Widget buildOptionsList({
                   voiceScript: voiceScript,
                   announceScript: announceScript,
                   answerId: answerId,
+                  currentPlayingAnswerId: currentPlayingAudioId,
                   playedAudiosList: playedAudiosList,
                   speak: speak,
                   stopSpeaking: stopSpeaking,
                   selectedListeningQuestionData: selectedListeningQuestionData,
-                ),
-              if (isTextWithVoice && answer.isNotEmpty)
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _buildVoiceIcon(
-                        context: context,
-                        optionExists: optionExists,
-                        isSpeaking: isSpeaking,
-                        isAnnounce: isAnnounce,
-                        isLoading: isLoading,
-                        voiceScript: voiceScript,
-                        announceScript: announceScript,
-                        answerId: answerId,
-                        playedAudiosList: playedAudiosList,
-                        speak: speak,
-                        stopSpeaking: stopSpeaking,
-                        selectedListeningQuestionData: selectedListeningQuestionData,
-                      ),
-                      const Gap(5),
-                      Expanded(
-                        child: Text(
-                          answer,
-                          style: const TextStyle(fontSize: 18),
-                          softWrap: true,
-                          overflow: TextOverflow.visible,
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
             ],
           ),
@@ -255,6 +226,7 @@ Widget _buildVoiceIcon({
   required String voiceScript,
   required String announceScript,
   required int answerId,
+  required String? currentPlayingAnswerId, // New parameter
   required List<PlayedAudios> playedAudiosList,
   required Function(List<String>) speak,
   required Function() stopSpeaking,
@@ -262,28 +234,40 @@ Widget _buildVoiceIcon({
 }) {
   return Container(
     margin: const EdgeInsets.only(left: 20),
-    child: isLoading ? const Center(
+    child: isLoading
+        ? const Center(
       child: SizedBox(
         height: 40,
         child: CircularProgressIndicator(),
       ),
-    ) : InkWell(
+    )
+        : InkWell(
       onTap: optionExists
           ? null
           : () async {
-              if (isSpeaking) {
-                await stopSpeaking();
-              }
-              playedAudiosList.add(
-                PlayedAudios(audioId: answerId, audioType: 'option'),
-              );
-              isAnnounce ? await speak([announceScript, voiceScript, voiceScript]) : await speak([voiceScript, voiceScript]);
-            },
-      child: Image.asset(
-        'assets/speaker.png',
-        height: 40,
-        color: optionExists ? Colors.black54 : AppColor.navyBlue,
-      ),
+        if (isSpeaking) {
+          await stopSpeaking();
+        }
+        playedAudiosList.add(
+          PlayedAudios(audioId: answerId, audioType: 'option'),
+        );
+        isAnnounce
+            ? await speak([announceScript, voiceScript, voiceScript])
+            : await speak([voiceScript, voiceScript]);
+      },
+      child: (isSpeaking && (currentPlayingAnswerId == voiceScript || currentPlayingAnswerId == announceScript))
+          ? Lottie.asset(
+        "assets/sound.json",
+        height: 50,
+      )
+          : Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5.0),
+            child: Image.asset(
+                    'assets/sound.png',
+                    height: 40,
+                    color: optionExists ? Colors.black54 : null,
+                  ),
+          ),
     ),
   );
 }

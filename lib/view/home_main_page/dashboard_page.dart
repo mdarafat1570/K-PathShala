@@ -28,8 +28,7 @@ class DashboardPage extends StatefulWidget {
 //For navigate to Youtube Chanel
 Future<void> _launchYouTubeChannel() async {
   //Convert the URL string to a Uri object
-  final Uri url =
-      Uri.parse('https://www.youtube.com/channel/UCKeeBsW1hGy0NBCqKgd5oBw');
+  final Uri url = Uri.parse(KpathShalaYoutubeWebSite.kpathshalaYoutubeChannel);
   log('Trying to launch URL: $url');
   if (await canLaunchUrl(url)) {
     log('Launching URL...');
@@ -41,10 +40,8 @@ Future<void> _launchYouTubeChannel() async {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  String apikey = "AIzaSyClsZlG68dO9BB9mF5XzxrdXvFcxehh9RA";
   String count = "0";
   String vidCount = "0";
-  int _currentTimer = 1;
   bool dataFound = false;
   bool isConnectedToInternet = false;
   Timer? _timer;
@@ -80,9 +77,9 @@ class _DashboardPageState extends State<DashboardPage> {
       setState(() {
         dashboardPageModel = dashModel;
         dataFound = true;
-        bool? isVersionUpdateRequired =
-            dashModel?.isVersionUpdateRequired ?? true;
-        if (!isVersionUpdateRequired) {
+        bool? isVersionUpdateRequired = dashModel?.isVersionUpdateRequired ?? false;
+        // bool? isVersionUpdateRequired = false;
+        if (isVersionUpdateRequired) {
           _showUpdateDialog(context);
         }
       });
@@ -99,28 +96,66 @@ class _DashboardPageState extends State<DashboardPage> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
+      isDismissible: false, // Prevents dismissal by tapping outside
+      enableDrag:
+          false, // Prevents the sheet from being dragged down to dismiss
       builder: (BuildContext context) {
-        return CommonBottomSheet(
-          message:
-              "Your app is now in an old version. Please update to continue.",
-          imagePath: "assets/reject.png",
-          buttonText: "Update Now",
-          onButtonPressed: () async {
-            BaseRepository().userSignOut(context);
-            final url = Uri.parse("https://kpathshala.com/");
-            if (await canLaunchUrl(url)) {
-              await launchUrl(url, mode: LaunchMode.externalApplication);
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                    content: Text("Could not launch the update link.")),
-              );
-            }
-          },
+        return WillPopScope(
+          // Prevents back button from dismissing the sheet
+          onWillPop: () async => false  ,
+          child: CommonBottomSheet(
+            message: "Your app is now in an old version. Please update to continue.",
+            imagePath: "assets/reject.png",
+            buttonText: "Update Now",
+            onButtonPressed: () async {
+              BaseRepository().userSignOut(context);
+              final url = Uri.parse(KpathShalaYoutubeWebSite.kpathshalaWeb);
+              if (await canLaunchUrl(url)) {
+                await launchUrl(url, mode: LaunchMode.externalApplication);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Could not launch the update link."),
+                  ),
+                );
+              }
+            },
+          ),
         );
       },
     );
   }
+
+  // void _showUpdateDialog(BuildContext context) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.white,
+  //     shape: const RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+  //     ),
+  //     builder: (BuildContext context) {
+  //       return CommonBottomSheet(
+  //         message:
+  //             "Your app is now in an old version. Please update to continue.",
+  //         imagePath: "assets/reject.png",
+  //         buttonText: "Update Now",
+  //         onButtonPressed: () async {
+  //           BaseRepository().userSignOut(context);
+  //           final url = Uri.parse(KpathShalaYoutubeWebSite.kpathshalaWeb);
+  //           if (await canLaunchUrl(url)) {
+  //             await launchUrl(url, mode: LaunchMode.externalApplication);
+  //           } else {
+  //             ScaffoldMessenger.of(context).showSnackBar(
+  //               const SnackBar(
+  //                   content: Text("Could not launch the update link.")),
+  //             );
+  //           }
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
 
   Future<void> _checkCount() async {
     log("Starting _checkCount");
@@ -151,7 +186,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
     // Fetch data from YouTube API if there's no cache or it's a new day
     var url = Uri.parse(
-      "https://www.googleapis.com/youtube/v3/channels?part=statistics&id=UCKeeBsW1hGy0NBCqKgd5oBw&key=$apikey",
+      "${KpathShalaYoutubeWebSite.youtubeSubscriberCountBase}${KpathShalaYoutubeWebSite.youtubeSubscriberCountApiKey}",
     );
 
     var response = await http.get(url);
@@ -178,22 +213,6 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
-  // void _startCountdown() {
-  //   const interval = Duration(seconds: 1);
-
-  //   if (mounted) {
-  //     _timer = Timer.periodic(interval, (Timer t) {
-  //       setState(() {
-  //         if (_currentTimer > 0) {
-  //           _currentTimer -= 1;
-  //         } else {
-  //           _currentTimer = 1;
-  //           _checkCount();
-  //         }
-  //       });
-  //     });
-  //   }
-  // }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

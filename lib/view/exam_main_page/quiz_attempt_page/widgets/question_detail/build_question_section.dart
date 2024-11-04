@@ -5,6 +5,7 @@ import 'package:kpathshala/app_theme/app_color.dart';
 import 'package:kpathshala/model/question_model/reading_question_page_model.dart';
 import 'package:kpathshala/view/common_widget/custom_text.dart.dart';
 import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/widgets/played_audio_object.dart';
+import 'package:lottie/lottie.dart';
 
 Widget buildQuestionSection({
   required BuildContext context,
@@ -13,13 +14,15 @@ Widget buildQuestionSection({
   required String imageCaption,
   required String question,
   required String imageUrl,
-  required String voiceScript,
+  String? currentPlayingAnswerId,
   required String voiceModel,
   required String listeningQuestionType,
   required List<Dialogue> dialogue,
+  required List<String> audioQueue,
   required int questionId,
   bool? isSpeaking = false,
   bool? exists = false,
+  required bool isAutoPlay,
   bool? isInReviewMode = false,
   required bool isLoading,
   required Function showZoomedImage,
@@ -40,19 +43,21 @@ Widget buildQuestionSection({
           _buildTextBlock(imageCaption, TextType.subtitle),
         if (question.isNotEmpty ||
             imageUrl.isNotEmpty ||
-            voiceScript.isNotEmpty ||
+            audioQueue.isNotEmpty ||
             dialogue.isNotEmpty)
           _buildQuestionSection(
             context,
             question: question,
             imageUrl: imageUrl,
             imageCaption: imageCaption,
-            voiceScript: voiceScript,
             voiceModel: voiceModel,
+            currentPlayingAnswerId: currentPlayingAnswerId,
             dialogue: dialogue,
+            audioQueue: audioQueue,
             listeningQuestionType: listeningQuestionType,
             questionId: questionId,
             isSpeaking: isSpeaking!,
+            isAutoPlay: isAutoPlay,
             exists: exists!,
             isLoading: isLoading,
             cachedImages: cachedImages,
@@ -85,14 +90,16 @@ Widget _buildQuestionSection(
       required String question,
       required String imageUrl,
       required String imageCaption,
-      required String voiceScript,
       required String voiceModel,
       required List<Dialogue> dialogue,
+      required List<String> audioQueue,
       required String listeningQuestionType,
+      String? currentPlayingAnswerId,
       required int questionId,
       required bool isSpeaking,
       required bool exists,
       required bool isLoading,
+      required bool isAutoPlay,
       required Map<String, Uint8List> cachedImages,
       required Function showZoomedImage,
       required List<PlayedAudios> playedAudiosList,
@@ -100,9 +107,6 @@ Widget _buildQuestionSection(
       required Function() stopSpeaking,
       Function? onImageTap,
     }) {
-  if (listeningQuestionType == 'listening_image'){
-    voiceScript = 'image_caption-$questionId-$voiceModel';
-  }
   return Container(
     padding: const EdgeInsets.all(12),
     margin: const EdgeInsets.symmetric(vertical: 10),
@@ -149,41 +153,26 @@ Widget _buildQuestionSection(
                 if (isSpeaking) {
                   await stopSpeaking();
                 }
-                playedAudiosList.add(
-                    PlayedAudios(audioId: questionId, audioType: "question"));
-                if (listeningQuestionType != "dialogues") {
-                  speak([voiceScript,voiceScript]);
-                } else {
-                  await _playDialogue(dialogue, speak, questionId);
-                }
+                playedAudiosList.add(PlayedAudios(audioId: questionId, audioType: "question"));
+                await speak(audioQueue);
               },
-              child: Image.asset(
-                "assets/speaker.png",
-                height: 40,
-                color: exists ? Colors.black54 : AppColor.navyBlue,
-              ),
+              child: (isSpeaking &&
+                  currentPlayingAnswerId != null &&
+                  currentPlayingAnswerId.contains(RegExp(r'(question|dialogue|image_caption|text_with_voice|option--)')) &&
+                  (currentPlayingAnswerId.contains('$questionId') || isAutoPlay)) ?
+              Lottie.asset("assets/sound.json", height: 50,)
+                  : Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5.0),
+                    child: Image.asset(
+                        "assets/sound.png",
+                        height: 40, color: exists ? Colors.black54 : null,
+                    ),
+                  ),
             ),
         ],
       ),
     ),
   );
-}
-
-Future<void> _playDialogue(
-    List<Dialogue> dialogue,
-    Function(List<String>) speak,
-    int questionId,
-    ) async {
-  dialogue.sort((a, b) => (a.sequence ?? -1).compareTo(b.sequence ?? -1));
-  List<String> voiceScriptQueue = [];
-
-  for (int i = 0; i < 2; i++) {
-    for (var voice in dialogue) {
-      String voiceScript = "dialogue-${voice.sequence}-$questionId-${voice.voiceGender}";
-      voiceScriptQueue.add(voiceScript);
-    }
-  }
-  await speak(voiceScriptQueue);
 }
 
 

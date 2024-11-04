@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/authentication/base_repository.dart';
@@ -7,11 +6,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class AuthenticationService extends BaseRepository {
-  
-  /// Public method to fetch the app version from `pubspec.yaml`.
   Future<String> getAppVersion() async {
     final packageInfo = await PackageInfo.fromPlatform();
-    return packageInfo.version; 
+    return packageInfo.version;
   }
 
   Future<Map<String, dynamic>> verifyOtp(
@@ -21,9 +18,9 @@ class AuthenticationService extends BaseRepository {
     String? deviceName,
     required String oneSignalPlayerId,
     required BuildContext context,
-    required double appVersion,
+    required String appVersion,
   }) async {
-    const url = AuthorizationEndpoints.verifyOTP;
+    final url = AuthorizationEndpoints.verifyOTP;
 
     final body = {
       'mobile': mobile,

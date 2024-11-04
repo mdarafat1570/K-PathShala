@@ -66,6 +66,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
     ]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     readCredentials();
     _fetchQuestions();
   }
@@ -78,6 +79,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
     }
     _audioCacheService.clearCache(isCachingDisposed: isDisposed);
     _audioPlaybackService.dispose();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge, overlays: SystemUiOverlay.values);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -97,7 +99,12 @@ class RetakeTestPageState extends State<RetakeTestPage>
   }
 
   Future<void> speak(List<String> voiceScriptQueue) async {
-    log("playing$voiceScriptQueue");
+    log("Playing: $voiceScriptQueue");
+
+    // Stop current playback and reset the queue
+    await _audioPlaybackService.stop();
+
+    // Start playing the new queue
     await _audioPlaybackService.playAudioQueue(voiceScriptQueue);
   }
 
@@ -116,8 +123,10 @@ class RetakeTestPageState extends State<RetakeTestPage>
         readingQuestions = questionsModel.data?.readingQuestions ?? [];
         listeningQuestions = questionsModel.data?.listeningQuestions ?? [];
 
-        await _preloadFiles();
-        await preloadAudio();
+        await Future.wait([
+          _preloadFiles(),
+          preloadAudio(),
+        ]);
 
         totalQuestion = questionsModel.data?.totalQuestion ?? 0;
         _remainingTime = (questionsModel.data?.duration ?? 60) * 60;
@@ -152,33 +161,35 @@ class RetakeTestPageState extends State<RetakeTestPage>
   }
 
   Future<void> _preloadFiles() async {
-    log("Loading Image");
+    log("Loading Images");
+
+    // Helper to add cache tasks only for valid URLs
+    void addCacheTask(String? imageUrl, List<Future<void>> tasks) {
+      if (imageUrl?.isNotEmpty ?? false) {
+        tasks.add(_cacheImage(imageUrl!));
+      }
+    }
+
+    // Prepare futures for all caching tasks
     List<Future<void>> preloadFutures = [];
 
-    for (ReadingQuestions question in readingQuestions) {
-      if (question.imageUrl != null && question.imageUrl!.isNotEmpty) {
-        preloadFutures.add(_cacheImage(question.imageUrl!));
-      }
-
+    // Cache reading question images and options
+    for (var question in readingQuestions) {
+      addCacheTask(question.imageUrl, preloadFutures);
       for (var option in question.options) {
-        if (option.imageUrl != null && option.imageUrl!.isNotEmpty) {
-          preloadFutures.add(_cacheImage(option.imageUrl!));
-        }
+        addCacheTask(option.imageUrl, preloadFutures);
       }
     }
 
-    for (ListeningQuestions question in listeningQuestions) {
-      if (question.imageUrl != null && question.imageUrl!.isNotEmpty) {
-        preloadFutures.add(_cacheImage(question.imageUrl!));
-      }
-
+    // Cache listening question images and options concurrently
+    for (var question in listeningQuestions) {
+      addCacheTask(question.imageUrl, preloadFutures);
       for (var option in question.options) {
-        if (option.imageUrl != null && option.imageUrl!.isNotEmpty) {
-          preloadFutures.add(_cacheImage(option.imageUrl!));
-        }
+        addCacheTask(option.imageUrl, preloadFutures);
       }
     }
 
+    // Await all tasks to complete
     await Future.wait(preloadFutures);
   }
 
@@ -285,8 +296,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
             isListViewVisible = true;
           });
         } else {
-          final bool shouldPop =
-              await _showExitExamConfirmation(context) ?? false;
+          final bool shouldPop = await _showExitExamConfirmation(context) ?? false;
           if (context.mounted && shouldPop) {
             Navigator.pop(context);
           }
@@ -360,10 +370,26 @@ class RetakeTestPageState extends State<RetakeTestPage>
         ? selectedListeningQuestionData?.imageUrl ?? ""
         : selectedReadingQuestionData?.imageUrl ?? "";
     final voiceModel = selectedListeningQuestionData?.voiceGender ?? 'female';
-    final voiceScript = "question-${selectedListeningQuestionData?.id}-$voiceModel";
+    final listeningQuestionType = selectedListeningQuestionData?.questionType ?? 'questions';
+    int questionId = isListening
+        ? selectedListeningQuestionData?.id ?? -1
+        : selectedReadingQuestionData?.id ?? -1;
     dialogue = selectedListeningQuestionData?.dialogues ?? [];
-    final listeningQuestionType =
-        selectedListeningQuestionData?.questionType ?? "";
+
+    List<String> playDialogue(List<Dialogue> dialogue, int questionId,){
+      dialogue.sort((a, b) => (a.sequence ?? -1).compareTo(b.sequence ?? -1));
+      List<String> voiceScriptQueue = [];
+
+        for (var voice in dialogue) {
+          String voiceScript = "dialogue-${voice.sequence}-$questionId-${voice.voiceGender}";
+          voiceScriptQueue.add(voiceScript);
+        }
+      return voiceScriptQueue;
+    }
+
+    String voiceScript = '';
+    List <String> audioQueue= [];
+
     final options = isListening
         ? selectedListeningQuestionData?.options ?? []
         : selectedReadingQuestionData?.options ?? [];
@@ -372,13 +398,50 @@ class RetakeTestPageState extends State<RetakeTestPage>
       previousOptions = List.from(options); // Update the previous options list
     }
     bool isTextType = options.isNotEmpty && options.first.optionType == 'text';
-    bool isVoiceType =
-        options.isNotEmpty && options.first.optionType == 'voice';
-    bool isTextWithVoice =
-        options.isNotEmpty && options.first.optionType == 'text_with_voice';
-    int questionId = isListening
-        ? selectedListeningQuestionData?.id ?? -1
-        : selectedReadingQuestionData?.id ?? -1;
+    bool isVoiceType = options.isNotEmpty && options.first.optionType == 'voice';
+    bool isTextWithVoice = options.isNotEmpty && options.first.optionType == 'text_with_voice';
+
+    bool isAnnounce = options.first.isAnnounce == true || options.first.isAnnounce == 1;
+
+    List<String> generateOptionScript(var option, int index) {
+      String announceScript = option.voiceGender == "male"
+          ? "option--1${index + 1}-male"
+          : "option--2${index + 1}-female";
+      String optionScript = "text_with_voice-${option.id}-$questionId-${option.voiceGender}";
+      return isAnnounce ? [announceScript, optionScript] : [optionScript];
+    }
+
+    void addVoiceScript(String type, String script, List<String> optionsScripts) {
+      audioQueue.addAll([script, ...optionsScripts]);
+    }
+
+    List<String> generateOptionsScripts(List options) {
+      List<String> scripts = [];
+      for (var i = 0; i < options.length; i++) {
+        scripts.addAll(generateOptionScript(options[i], i));
+      }
+      return scripts;
+    }
+
+    if (listeningQuestionType == "voice" || listeningQuestionType == "listening_image") {
+      String prefix = listeningQuestionType == "voice" ? "question-${selectedListeningQuestionData?.id}" : 'image_caption-$questionId';
+      voiceScript = "$prefix-$voiceModel";
+
+      if (isTextWithVoice) {
+        List<String> optionsScripts = generateOptionsScripts(options);
+        addVoiceScript(listeningQuestionType, voiceScript, optionsScripts);
+      } else {
+        audioQueue.addAll([voiceScript, voiceScript]);
+      }
+    } else if (listeningQuestionType == 'dialogues') {
+      audioQueue.addAll(playDialogue(dialogue, questionId));
+      if (isTextWithVoice) {
+        List<String> optionsScripts = generateOptionsScripts(options);
+        audioQueue.addAll(optionsScripts);
+      }
+    }
+
+
     int selectedSolvedIndex = -1;
     if (!isListening &&
         (solvedReadingQuestions.any((answer) =>
@@ -458,13 +521,15 @@ class RetakeTestPageState extends State<RetakeTestPage>
                       imageCaption: imageCaption,
                       question: question,
                       imageUrl: imageUrl,
-                      voiceScript: voiceScript,
                       voiceModel: voiceModel,
+                      currentPlayingAnswerId: _audioPlaybackService.currentPlayingAudioId,
                       listeningQuestionType: listeningQuestionType,
+                      audioQueue: audioQueue,
                       dialogue: dialogue,
                       questionId: questionId,
                       isSpeaking: _audioPlaybackService.isPlaying(),
                       isLoading: _audioCacheService.isLoading,
+                      isAutoPlay: isTextWithVoice,
                       exists: exists,
                       showZoomedImage: showZoomedImage,
                       cachedImages: cachedImages,
@@ -475,6 +540,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                     context: context,
                     options: options,
                     selectedSolvedIndex: selectedSolvedIndex,
+                    currentPlayingAudioId: _audioPlaybackService.currentPlayingAudioId,
                     isTextType: isTextType,
                     isVoiceType: isVoiceType,
                     isTextWithVoice: isTextWithVoice,
@@ -484,8 +550,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                     selectionHandling: selectionHandling,
                     speak: speak,
                     stopSpeaking: _stopSpeaking,
-                    selectedListeningQuestionData:
-                        selectedListeningQuestionData,
+                    selectedListeningQuestionData: selectedListeningQuestionData,
                     showZoomedImage: showZoomedImage,
                     cachedImages: cachedImages,
                   ),

@@ -33,7 +33,7 @@ void main() async {
 
   // Initialize OneSignal
   developer.log("Setting OneSignal log level...", name: 'INFO');
-  OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
+  await OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
   developer.log("Initializing OneSignal...", name: 'INFO');
   OneSignal.initialize("e701d691-d45f-4a70-b430-f9e7037085af");
   developer.log("OneSignal initialized.", name: 'INFO');
@@ -43,8 +43,35 @@ void main() async {
   await OneSignal.Notifications.requestPermission(true);
   developer.log("Notification permissions requested.", name: 'INFO');
 
-  // Fetch OneSignal ID with retry logic
-  await _fetchAndStoreOneSignalId(prefs);
+  // Fetch OneSignal ID with retry mechanism
+  try {
+    String? oneSignalId;
+    int retries = 0;
+    const maxRetries = 5;
+    const delayDuration = Duration(seconds: 2);
+
+    while (oneSignalId == null && retries < maxRetries) {
+      developer.log("Attempt $retries: Fetching OneSignal ID...", name: 'INFO');
+      oneSignalId = await OneSignal.User.getOnesignalId();
+      if (oneSignalId != null) {
+        await prefs.setString(Preferences.oneSignalUserId, oneSignalId);
+        developer.log("OneSignal ID stored in SharedPreferences: $oneSignalId",
+            name: 'INFO');
+      } else {
+        developer.log("OneSignal ID is null, retrying in 2 seconds...",
+            name: 'WARNING');
+        await Future.delayed(delayDuration);
+        retries++;
+      }
+    }
+
+    if (oneSignalId == null) {
+      developer.log("Failed to fetch OneSignal ID after $maxRetries attempts.",
+          name: 'ERROR');
+    }
+  } catch (e) {
+    developer.log("Error fetching OneSignal ID: $e", name: 'ERROR');
+  }
 
   runApp(
     DevicePreview(

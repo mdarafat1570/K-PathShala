@@ -180,11 +180,13 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
+                  Navigator.pop(context);
                   _navigateToRetakeTest(title, description, questionId);
                 },
                 child: Text(buttonLabel),
               ),
             ),
+          const SizedBox(height: 50),
         ],
       ),
     );
