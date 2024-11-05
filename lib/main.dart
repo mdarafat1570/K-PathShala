@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kpathshala/network_manager.dart';
@@ -84,6 +85,9 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   static final navigatorKey = GlobalKey<NavigatorState>();
+  static final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+  static final FirebaseAnalyticsObserver observer =
+      FirebaseAnalyticsObserver(analytics: analytics);
 
   @override
   Widget build(BuildContext context) {
