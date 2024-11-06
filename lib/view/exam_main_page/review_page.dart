@@ -358,7 +358,7 @@ class _ReviewPageState extends State<ReviewPage> {
             }
 
             void addVoiceScript(String type, String script, List<String> optionsScripts) {
-              audioQueue.addAll([script, ...optionsScripts]);
+              audioQueue.addAll([script, ...optionsScripts, script, ...optionsScripts]);
             }
 
             List<String> generateOptionsScripts(List options) {
@@ -380,6 +380,11 @@ class _ReviewPageState extends State<ReviewPage> {
                 audioQueue.addAll([voiceScript, voiceScript]);
               }
             } else if (listeningQuestionType == 'dialogues') {
+              audioQueue.addAll(playDialogue(listeningQuestions[index].dialogues, listeningQuestions[index].id));
+              if (isTextWithVoice) {
+                List<String> optionsScripts = generateOptionsScripts(options);
+                audioQueue.addAll(optionsScripts);
+              }
               audioQueue.addAll(playDialogue(listeningQuestions[index].dialogues, listeningQuestions[index].id));
               if (isTextWithVoice) {
                 List<String> optionsScripts = generateOptionsScripts(options);
