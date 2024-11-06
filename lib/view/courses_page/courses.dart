@@ -1,5 +1,6 @@
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/common_error_all_layout/under_maintenance.dart';
+import 'package:kpathshala/main.dart';
 
 class Courses extends StatefulWidget {
   const Courses({super.key});
@@ -10,9 +11,19 @@ class Courses extends StatefulWidget {
 
 class _CoursesState extends State<Courses> {
   @override
+  void initState() {
+    super.initState();
+    _logScreenView();
+  }
+
+  void _logScreenView() {
+    MyApp.analytics.logEvent(name: 'screen_view', parameters: {
+      'screen_name': 'Courses Page',
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // final double screenHeight = MediaQuery.of(context).size.height;
-    // final heightPercentage = 315 / screenHeight;
     return Scaffold(
       body: GradientBackground(
         child: Padding(
@@ -28,7 +39,8 @@ class _CoursesState extends State<Courses> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const UnderMaintenance()),
+                    MaterialPageRoute(
+                        builder: (context) => const UnderMaintenance()),
                   );
                 },
                 child: const Text(
@@ -40,20 +52,6 @@ class _CoursesState extends State<Courses> {
                   ),
                 ),
               ),
-              // Visibility(
-              //   visible: false,
-              //   child: ElevatedButton(
-              //       onPressed: () {
-              //         showCommonBottomSheet(
-              //           context: context,
-              //           content: const DeviceIdBottomSheet(),
-              //           actions: [],
-              //           color: Colors.white,
-              //           height: screenHeight * heightPercentage,
-              //         );
-              //       },
-              //       child: const Text("Bottom Sheet")),
-              // )
             ],
           ),
         ),
