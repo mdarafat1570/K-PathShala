@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:kpathshala/app_base/common_imports.dart';
+import 'package:kpathshala/main.dart';
 import 'package:kpathshala/model/package_model/package_model.dart';
 import 'package:kpathshala/repository/package_service_repository.dart';
 import 'package:kpathshala/view/common_widget/format_date_with_ordinal.dart';
@@ -26,6 +27,13 @@ class _ExamPurchasePageState extends State<ExamPurchasePage> {
   void initState() {
     super.initState();
     _fetchPackages();
+    _logScreenView();
+  }
+
+  void _logScreenView() {
+    MyApp.analytics.logEvent(name: 'Exam Purches', parameters: {
+      'screen_name': 'Exam Purches',
+    });
   }
 
   void _fetchPackages() {

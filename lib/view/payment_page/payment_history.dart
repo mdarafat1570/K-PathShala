@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart'; // Import flutter_svg package
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:kpathshala/main.dart';
 import 'package:kpathshala/view/payment_page/payment_history_row.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../app_theme/app_color.dart';
@@ -21,8 +22,23 @@ class _PaymentHistoryState extends State<PaymentHistory> {
   @override
   void initState() {
     super.initState();
+    _logScreenView(); // Log screen view event
+
     _paymentHistoryFuture =
         PaymentHistoryRepository().fetchPaymentHistory(context);
+  }
+
+  void _logScreenView() {
+    MyApp.analytics.logEvent(name: 'payment_history_page', parameters: {
+      'screen_name': 'Payment History',
+    });
+  }
+
+  void _logPaymentRowClick(String packageName, String amount) {
+    MyApp.analytics.logEvent(name: 'payment_row_click', parameters: {
+      'package_name': packageName,
+      'amount': amount,
+    });
   }
 
   @override
@@ -39,7 +55,7 @@ class _PaymentHistoryState extends State<PaymentHistory> {
           future: _paymentHistoryFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return isResultBuildShimmerLoadingEffect();
+              return _buildShimmerLoadingEffect();
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (!snapshot.hasData ||
@@ -50,11 +66,11 @@ class _PaymentHistoryState extends State<PaymentHistory> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SvgPicture.asset(
-                      'assets/MobilePayment_Empty.svg', // Adjust the path as needed
-                      width: 200, // Adjust size as needed
+                      'assets/MobilePayment_Empty.svg',
+                      width: 200,
                       height: 200,
                     ),
-                    const SizedBox(height: 20), // Space between image and text
+                    const SizedBox(height: 20),
                     const Text(
                       "No Payment History",
                       style: TextStyle(
@@ -87,7 +103,9 @@ class _PaymentHistoryState extends State<PaymentHistory> {
 
                   return GestureDetector(
                     behavior: HitTestBehavior.opaque,
-                    onTap: () {},
+                    onTap: () {
+                      _logPaymentRowClick(title, amount); // Log row click event
+                    },
                     child: Container(
                       margin: const EdgeInsets.only(bottom: 10),
                       decoration: BoxDecoration(
@@ -119,7 +137,7 @@ class _PaymentHistoryState extends State<PaymentHistory> {
     );
   }
 
-  Widget isResultBuildShimmerLoadingEffect() {
+  Widget _buildShimmerLoadingEffect() {
     return Shimmer.fromColors(
       baseColor: Colors.grey[300]!,
       highlightColor: Colors.grey[100]!,
@@ -129,13 +147,12 @@ class _PaymentHistoryState extends State<PaymentHistory> {
         itemBuilder: (context, index) {
           return Card(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0), // Rounded corners
+              borderRadius: BorderRadius.circular(10.0),
             ),
-            elevation: 2, // Adds a slight shadow for the card
+            elevation: 2,
             margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                  vertical: 5.0), // Adds spacing between items
+              padding: const EdgeInsets.symmetric(vertical: 5.0),
               child: Column(
                 children: [
                   Row(

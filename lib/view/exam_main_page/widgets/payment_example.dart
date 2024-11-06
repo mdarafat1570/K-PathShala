@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:kpathshala/main.dart';
 import 'package:kpathshala/repository/payment/payment_repository.dart';
 import 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
 
@@ -32,6 +33,13 @@ class MyFormState extends State<MyForm> {
     _field1Controller.text = widget.packageId;
     _field3Controller.text = widget.total;
     _field4Controller.text = widget.total;
+    _logScreenView();
+  }
+
+  void _logScreenView() {
+    MyApp.analytics.logEvent(name: 'Payment', parameters: {
+      'screen_name': 'Payment',
+    });
   }
 
   @override

@@ -44,7 +44,14 @@ class _OtpPageState extends State<OtpPage> {
   @override
   void initState() {
     super.initState();
+    _logScreenView();
     _startResendCountdown();
+  }
+
+  void _logScreenView() {
+    MyApp.analytics.logEvent(name: 'screen_view', parameters: {
+      'screen_name': 'Verify Page',
+    });
   }
 
   @override
@@ -262,6 +269,33 @@ class _OtpPageState extends State<OtpPage> {
       }
     }
   }
+
+// // Function to show DeviceIdButtonSheet
+// void _showDeviceIdBottomSheet(BuildContext context) {
+//   showModalBottomSheet(
+//     context: context,
+//     shape: const RoundedRectangleBorder(
+//       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+//     ),
+//     isScrollControlled: true,
+//     backgroundColor: Colors.white,
+//       isDismissible: false,
+//       enableDrag:
+//           false,
+//     builder: (BuildContext context)
+//      {
+//       return CommonBottomSheet(
+//         message: "You can’t use one K-Pathshala App account in more than 2 devices.",
+//         imagePath: "assets/reject.png",
+//         buttonText: "Log out",
+//         onButtonPressed: () {
+//           Navigator.of(context).pop();
+//           BaseRepository().userSignOut(context);
+//         },
+//       );
+//     },
+//   );
+// }
 
 // Function to show DeviceIdButtonSheet
   void _showDeviceIdBottomSheet(BuildContext context) {

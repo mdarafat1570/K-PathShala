@@ -1,11 +1,11 @@
 import 'dart:developer';
 import 'dart:ui';
-
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kpathshala/api/api_container.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
 import 'package:kpathshala/authentication/base_repository.dart';
+import 'package:kpathshala/main.dart';
 import 'package:kpathshala/model/dashboard_page_model/dashboard_page_model.dart';
 import 'package:kpathshala/repository/dashboard_repository/dashboard_page_repository.dart';
 import 'dart:async';
@@ -54,8 +54,15 @@ class _DashboardPageState extends State<DashboardPage> {
   void initState() {
     super.initState();
     // _startCountdown();
+    _logScreenView();
     fetchData();
     _checkCount();
+  }
+
+  void _logScreenView() {
+    MyApp.analytics.logEvent(name: 'Dashboard_view', parameters: {
+      'screen_name': 'Dashboard Page',
+    });
   }
 
   @override
@@ -96,15 +103,14 @@ class _DashboardPageState extends State<DashboardPage> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
-      isDismissible: false, // Prevents dismissal by tapping outside
-      enableDrag:
-          false, // Prevents the sheet from being dragged down to dismiss
+      isDismissible: false,
+      enableDrag: false,
       builder: (BuildContext context) {
         return WillPopScope(
-          // Prevents back button from dismissing the sheet
-          onWillPop: () async => false  ,
+          onWillPop: () async => false,
           child: CommonBottomSheet(
-            message: "Your app is now in an old version. Please update to continue.",
+            message:
+                "Your app is now in an old version. Please update to continue.",
             imagePath: "assets/reject.png",
             buttonText: "Update Now",
             onButtonPressed: () async {
@@ -125,37 +131,6 @@ class _DashboardPageState extends State<DashboardPage> {
       },
     );
   }
-
-  // void _showUpdateDialog(BuildContext context) {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     isScrollControlled: true,
-  //     backgroundColor: Colors.white,
-  //     shape: const RoundedRectangleBorder(
-  //       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-  //     ),
-  //     builder: (BuildContext context) {
-  //       return CommonBottomSheet(
-  //         message:
-  //             "Your app is now in an old version. Please update to continue.",
-  //         imagePath: "assets/reject.png",
-  //         buttonText: "Update Now",
-  //         onButtonPressed: () async {
-  //           BaseRepository().userSignOut(context);
-  //           final url = Uri.parse(KpathShalaYoutubeWebSite.kpathshalaWeb);
-  //           if (await canLaunchUrl(url)) {
-  //             await launchUrl(url, mode: LaunchMode.externalApplication);
-  //           } else {
-  //             ScaffoldMessenger.of(context).showSnackBar(
-  //               const SnackBar(
-  //                   content: Text("Could not launch the update link.")),
-  //             );
-  //           }
-  //         },
-  //       );
-  //     },
-  //   );
-  // }
 
   Future<void> _checkCount() async {
     log("Starting _checkCount");

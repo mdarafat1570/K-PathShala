@@ -6,6 +6,7 @@ import 'package:flutter_sslcommerz/model/SSLCommerzInitialization.dart';
 import 'package:flutter_sslcommerz/model/SSLCurrencyType.dart';
 import 'package:flutter_sslcommerz/sslcommerz.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:kpathshala/main.dart';
 import 'package:kpathshala/repository/payment/payment_repository.dart';
 import 'package:kpathshala/view/exam_main_page/quiz_attempt_page/quiz_attempt_page_imports.dart';
 
@@ -13,7 +14,11 @@ class SSLCommerzPage extends StatefulWidget {
   final int packageId;
   final double price;
   final VoidCallback refreshPage;
-  const SSLCommerzPage({super.key,required this.packageId, required this.price, required this.refreshPage});
+  const SSLCommerzPage(
+      {super.key,
+      required this.packageId,
+      required this.price,
+      required this.refreshPage});
 
   @override
   SSLCommerzPageState createState() => SSLCommerzPageState();
@@ -36,6 +41,13 @@ class SSLCommerzPageState extends State<SSLCommerzPage> {
     formData['amount'] = widget.price;
     formData['multicard'] = '';
   }
+
+  void _logScreenView() {
+    MyApp.analytics.logEvent(name: 'Payment sandbox', parameters: {
+      'screen_name': 'Payment sandbox',
+    });
+  }
+
   Future<void> readCredentials() async {
     credentials = await _authService.getLogInCredentials();
 
@@ -51,24 +63,23 @@ class SSLCommerzPageState extends State<SSLCommerzPage> {
 
   String generateCode(LogInCredentials? credentials) {
     final now = DateTime.now();
-    String formattedDate = '${now.day.toString().padLeft(2, '0')}${now.month.toString().padLeft(2, '0')}${now.year.toString().substring(now.year.toString().length - 2)}''${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}${now.second.toString().padLeft(2, '0')}';
+    String formattedDate =
+        '${now.day.toString().padLeft(2, '0')}${now.month.toString().padLeft(2, '0')}${now.year.toString().substring(now.year.toString().length - 2)}'
+        '${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}${now.second.toString().padLeft(2, '0')}';
 
     return 'KP${(credentials?.name ?? '').substring(0, 2).toUpperCase()}${(credentials?.mobile ?? '').substring((credentials?.mobile?.length ?? 4) - 4)}$formattedDate';
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     return commonCustomButton(
       width: double.infinity,
       backgroundColor: AppColor.navyBlue,
       height: 55,
       borderRadius: 30,
       onPressed: () {
-         sslCommerzGeneralCall();
+        sslCommerzGeneralCall();
         // sslCommerzCustomizedCall();
-
       },
       reversePosition: false,
       child: const Text(
@@ -98,33 +109,31 @@ class SSLCommerzPageState extends State<SSLCommerzPage> {
     paymentStatusCheck(result);
   }
 
-void paymentStatusCheck(SSLCTransactionInfoModel result) async {
-  try {
-    log("Transaction status: ${result.status ?? ""}");
+  void paymentStatusCheck(SSLCTransactionInfoModel result) async {
+    try {
+      log("Transaction status: ${result.status ?? ""}");
 
-    if (result.status!.toLowerCase() == "failed") {
-      Fluttertoast.showToast(
-        msg: "Transaction failed. Please try again.",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 2,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
-    }
-    else if (result.status!.toLowerCase() == "closed") {
-      Fluttertoast.showToast(
-        msg: "Transaction canceled.",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 2,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
-    }
-    else {
+      if (result.status!.toLowerCase() == "failed") {
+        Fluttertoast.showToast(
+          msg: "Transaction failed. Please try again.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 2,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      } else if (result.status!.toLowerCase() == "closed") {
+        Fluttertoast.showToast(
+          msg: "Transaction canceled.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 2,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      } else {
         try {
           // Show loading indicator
           showLoadingIndicator(context: context, showLoader: true);
@@ -150,7 +159,8 @@ void paymentStatusCheck(SSLCTransactionInfoModel result) async {
             showLoadingIndicator(context: context, showLoader: false);
 
             Fluttertoast.showToast(
-              msg: "Transaction ${result.status}. Amount: ${result.amount ?? 0} BDT",
+              msg:
+                  "Transaction ${result.status}. Amount: ${result.amount ?? 0} BDT",
               toastLength: Toast.LENGTH_SHORT,
               gravity: ToastGravity.CENTER,
               timeInSecForIosWeb: 2,
@@ -181,18 +191,18 @@ void paymentStatusCheck(SSLCTransactionInfoModel result) async {
             showLoadingIndicator(context: context, showLoader: false);
           }
         }
+      }
+    } catch (e) {
+      debugPrint("Error: ${e.toString()}");
+      Fluttertoast.showToast(
+        msg: "An error occurred. Please try again later.",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 2,
+        backgroundColor: Colors.orange,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
     }
-  } catch (e) {
-    debugPrint("Error: ${e.toString()}");
-    Fluttertoast.showToast(
-      msg: "An error occurred. Please try again later.",
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.CENTER,
-      timeInSecForIosWeb: 2,
-      backgroundColor: Colors.orange,
-      textColor: Colors.white,
-      fontSize: 16.0,
-    );
   }
-}
 }
