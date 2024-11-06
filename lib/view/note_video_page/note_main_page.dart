@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:kpathshala/main.dart';
 import 'package:kpathshala/model/notes_model/retrieve_note_by_id_update_model.dart';
 import 'package:kpathshala/model/notes_model/note_video_model.dart';
 import 'package:kpathshala/model/notes_model/retrieve_notes_model_all_list.dart';
@@ -37,7 +38,14 @@ class _NoteMainPageState extends State<NoteMainPage> {
     super.initState();
     _fetchVideoNotes();
     _fetchNotes();
+    _logScreenView();
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  }
+
+  void _logScreenView() {
+    MyApp.analytics.logEvent(name: 'Note Page', parameters: {
+      'screen_name': 'Note Page',
+    });
   }
 
   void _fetchNotes() async {

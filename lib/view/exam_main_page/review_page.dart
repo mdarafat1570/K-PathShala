@@ -42,6 +42,13 @@ class _ReviewPageState extends State<ReviewPage> {
     ttsService.initializeTtsHandlers();
     fetchData();
     fetchResultData();
+    _logScreenView();
+  }
+
+  void _logScreenView() {
+    MyApp.analytics.logEvent(name: 'Review page', parameters: {
+      'screen_name': 'Review page',
+    });
   }
 
   @override
@@ -68,9 +75,6 @@ class _ReviewPageState extends State<ReviewPage> {
         _preloadFiles(),
         preloadAudio(),
       ]);
-      setState(() {
-        log("---------------Loading Completed--------------");
-      });
     } catch (e) {
       log(e.toString()); // Handle the exception
     }

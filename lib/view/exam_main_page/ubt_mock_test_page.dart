@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:kpathshala/app_base/common_imports.dart';
+import 'package:kpathshala/main.dart';
 import 'package:kpathshala/model/package_model/package_model.dart';
 import 'package:kpathshala/model/question_model/question_set_model.dart';
 import 'package:kpathshala/repository/question/question_set_repo.dart';
@@ -22,13 +23,13 @@ class UBTMockTestPage extends StatefulWidget {
   final PackageList? package;
   bool? isInPreviewMode;
 
-  UBTMockTestPage(
-      {super.key,
-      this.package,
-      this.isInPreviewMode = false,
-      required this.packageId,
-        required this.appBarTitle,
-      });
+  UBTMockTestPage({
+    super.key,
+    this.package,
+    this.isInPreviewMode = false,
+    required this.packageId,
+    required this.appBarTitle,
+  });
 
   @override
   State<UBTMockTestPage> createState() => _UBTMockTestPageState();
@@ -46,6 +47,13 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
   void initState() {
     super.initState();
     fetchData();
+    _logScreenView();
+  }
+
+  void _logScreenView() {
+    MyApp.analytics.logEvent(name: 'UBT Mock Test', parameters: {
+      'screen_name': 'UBT Mock Test',
+    });
   }
 
   void fetchData() async {
@@ -319,16 +327,16 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
                         const listingTestScore = 0;
                         const timeTaken = 'Unknown';
 
-                        void rowDetailsClick () {
+                        void rowDetailsClick() {
                           (widget.isInPreviewMode! && index > 2)
                               ? null
                               : _showBottomSheet(
-                              context: context,
-                              courseTitle: title,
-                              courseDescription: description,
-                              score: score ?? 0,
-                              questionId: question.id,
-                              status: status);
+                                  context: context,
+                                  courseTitle: title,
+                                  courseDescription: description,
+                                  score: score ?? 0,
+                                  questionId: question.id,
+                                  status: status);
                         }
 
                         return GestureDetector(
@@ -396,7 +404,8 @@ class _UBTMockTestPageState extends State<UBTMockTestPage> {
                             onPressed: () {
                               showCommonBottomSheet(
                                 context: context,
-                                height: MediaQuery.sizeOf(context).height * 0.55,
+                                height:
+                                    MediaQuery.sizeOf(context).height * 0.55,
                                 content: BottomSheetPage(
                                   context: context,
                                   packageId: widget.packageId,
