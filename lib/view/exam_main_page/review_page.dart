@@ -139,7 +139,7 @@ class _ReviewPageState extends State<ReviewPage> {
     await Future.wait(preloadFutures);
   }
 
-  Future<void> preloadAudio() async {
+  Future<void> preloadAudio ()async{
     await _audioCacheService.cacheAudioFiles(
       cachedVoiceModelList: extractCachedVoiceModels(
         listeningQuestionList: listeningQuestions,
@@ -261,8 +261,7 @@ class _ReviewPageState extends State<ReviewPage> {
                   imageCaption: readingQuestions[index].imageCaption ?? '',
                   question: readingQuestions[index].question ?? '',
                   imageUrl: readingQuestions[index].imageUrl ?? '',
-                  currentPlayingAnswerId:
-                      _audioPlaybackService.currentPlayingAudioId,
+                  currentPlayingAnswerId: _audioPlaybackService.currentPlayingAudioId,
                   audioQueue: [],
                   voiceModel: '',
                   listeningQuestionType: '',
@@ -280,14 +279,9 @@ class _ReviewPageState extends State<ReviewPage> {
                   context: context,
                   options: readingQuestions[index].options,
                   selectedSolvedIndex: selectedSolvedIndex,
-                  correctAnswerId:
-                      readingQuestions[index].answerOption?.questionOptionId ??
-                          -1,
-                  submissionId:
-                      readingQuestions[index].submission?.questionOptionId ??
-                          -1,
-                  currentPlayingAudioId:
-                      _audioPlaybackService.currentPlayingAudioId,
+                  correctAnswerId: readingQuestions[index].answerOption?.questionOptionId ?? -1,
+                  submissionId: readingQuestions[index].submission?.questionOptionId ?? -1,
+                  currentPlayingAudioId: _audioPlaybackService.currentPlayingAudioId,
                   isTextType: optionType == 'text',
                   isVoiceType: optionType == 'voice',
                   isTextWithVoice: optionType == 'text_with_voice',
@@ -336,55 +330,40 @@ class _ReviewPageState extends State<ReviewPage> {
           shrinkWrap: true,
           itemCount: listeningQuestions.length,
           itemBuilder: (context, index) {
-            final optionType =
-                listeningQuestions[index].options.first.optionType ??
-                    'question';
-            final selectedSolvedIndex = listeningQuestions[index]
-                .options
+            final optionType = listeningQuestions[index].options.first.optionType ?? 'text';
+            final selectedSolvedIndex = listeningQuestions[index].options
                 .indexWhere((option) =>
-                    option.id ==
-                    (listeningQuestions[index].submission?.questionOptionId ??
-                        -1));
-            List<String> playDialogue(
-              List<Dialogue> dialogue,
-              int questionId,
-            ) {
-              dialogue.sort(
-                  (a, b) => (a.sequence ?? -1).compareTo(b.sequence ?? -1));
+                    option.id == (listeningQuestions[index].submission?.questionOptionId ?? -1));
+            final listeningQuestionType = listeningQuestions[index].questionType ?? 'question';
+            List<String> playDialogue(List<Dialogue> dialogue, int questionId,){
+              dialogue.sort((a, b) => (a.sequence ?? -1).compareTo(b.sequence ?? -1));
               List<String> voiceScriptQueue = [];
 
               for (var voice in dialogue) {
-                String voiceScript =
-                    "dialogue-${voice.sequence}-$questionId-${voice.voiceGender}";
+                String voiceScript = "dialogue-${voice.sequence}-$questionId-${voice.voiceGender}";
                 voiceScriptQueue.add(voiceScript);
               }
               return voiceScriptQueue;
             }
 
             String voiceScript = '';
-            List<String> audioQueue = [];
+            List <String> audioQueue= [];
 
             final options = listeningQuestions[index].options;
-            bool isTextWithVoice = options.isNotEmpty &&
-                options.first.optionType == 'text_with_voice';
+            bool isTextWithVoice = options.isNotEmpty && options.first.optionType == 'text_with_voice';
 
-            bool isAnnounce = options.first.isAnnounce == true ||
-                options.first.isAnnounce == 1;
+            bool isAnnounce = options.first.isAnnounce == true || options.first.isAnnounce == 1;
 
-            List<String> generateOptionScript(var option, int index) {
+            List<String> generateOptionScript(var option, int i) {
               String announceScript = option.voiceGender == "male"
-                  ? "option--1${index + 1}-male"
-                  : "option--2${index + 1}-female";
-              String optionScript =
-                  "text_with_voice-${option.id}-${listeningQuestions[index].id ?? -1}-${option.voiceGender}";
-              return isAnnounce
-                  ? [announceScript, optionScript]
-                  : [optionScript];
+                  ? "option--1${i + 1}-male"
+                  : "option--2${i + 1}-female";
+              String optionScript = "text_with_voice-${option.id}-${listeningQuestions[index].id}-${option.voiceGender}";
+              return isAnnounce ? [announceScript, optionScript] : [optionScript];
             }
 
-            void addVoiceScript(
-                String type, String script, List<String> optionsScripts) {
-              audioQueue.addAll([script, ...optionsScripts]);
+            void addVoiceScript(String type, String script, List<String> optionsScripts) {
+              audioQueue.addAll([script, ...optionsScripts, script, ...optionsScripts]);
             }
 
             List<String> generateOptionsScripts(List options) {
@@ -395,28 +374,29 @@ class _ReviewPageState extends State<ReviewPage> {
               return scripts;
             }
 
-            if (optionType == "voice" || optionType == "listening_image") {
-              String prefix = optionType == "voice"
-                  ? "question-${listeningQuestions[index].id}-${listeningQuestions[index].voiceGender ?? ''}"
-                  : 'image_caption-${listeningQuestions[index].id}';
-              voiceScript =
-                  "$prefix-${listeningQuestions[index].voiceGender ?? ''}";
+            if (listeningQuestionType == "voice" || listeningQuestionType == "listening_image") {
+              String prefix = listeningQuestionType == "voice" ? "question-${listeningQuestions[index].id}" : 'image_caption-${listeningQuestions[index].id}';
+              voiceScript = "$prefix-${listeningQuestions[index].voiceGender ?? 'female'}";
 
               if (isTextWithVoice) {
                 List<String> optionsScripts = generateOptionsScripts(options);
-                addVoiceScript(optionType, voiceScript, optionsScripts);
+                addVoiceScript(listeningQuestionType, voiceScript, optionsScripts);
               } else {
                 audioQueue.addAll([voiceScript, voiceScript]);
               }
-            } else if (optionType == 'dialogues') {
-              audioQueue.addAll(playDialogue(
-                  listeningQuestions[index].dialogues,
-                  listeningQuestions[index].id));
+            } else if (listeningQuestionType == 'dialogues') {
+              audioQueue.addAll(playDialogue(listeningQuestions[index].dialogues, listeningQuestions[index].id));
+              if (isTextWithVoice) {
+                List<String> optionsScripts = generateOptionsScripts(options);
+                audioQueue.addAll(optionsScripts);
+              }
+              audioQueue.addAll(playDialogue(listeningQuestions[index].dialogues, listeningQuestions[index].id));
               if (isTextWithVoice) {
                 List<String> optionsScripts = generateOptionsScripts(options);
                 audioQueue.addAll(optionsScripts);
               }
             }
+
             return Column(
               children: [
                 buildQuestionSection(
@@ -425,13 +405,12 @@ class _ReviewPageState extends State<ReviewPage> {
                   subTitle: listeningQuestions[index].subtitle ?? '',
                   imageCaption: listeningQuestions[index].imageCaption ?? '',
                   question: '',
-                  currentPlayingAnswerId:
-                      _audioPlaybackService.currentPlayingAudioId,
+                  currentPlayingAnswerId: _audioPlaybackService.currentPlayingAudioId,
+                  nextAudioKey: _audioPlaybackService.nextAudioKey,
                   imageUrl: listeningQuestions[index].imageUrl ?? '',
                   audioQueue: audioQueue,
                   voiceModel: listeningQuestions[index].voiceGender ?? 'female',
-                  listeningQuestionType:
-                      listeningQuestions[index].questionType ?? '',
+                  listeningQuestionType: listeningQuestions[index].questionType ?? '',
                   dialogue: listeningQuestions[index].dialogues,
                   questionId: listeningQuestions[index].id ?? -1,
                   showZoomedImage: showZoomedImage,
@@ -447,15 +426,9 @@ class _ReviewPageState extends State<ReviewPage> {
                   context: context,
                   options: listeningQuestions[index].options,
                   selectedSolvedIndex: selectedSolvedIndex,
-                  correctAnswerId: listeningQuestions[index]
-                          .answerOption
-                          ?.questionOptionId ??
-                      -1,
-                  submissionId:
-                      listeningQuestions[index].submission?.questionOptionId ??
-                          -1,
-                  currentPlayingAudioId:
-                      _audioPlaybackService.currentPlayingAudioId,
+                  correctAnswerId: listeningQuestions[index].answerOption?.questionOptionId ?? -1,
+                  submissionId: listeningQuestions[index].submission?.questionOptionId ?? -1,
+                  currentPlayingAudioId: _audioPlaybackService.currentPlayingAudioId,
                   isTextType: optionType == 'text',
                   isVoiceType: optionType == 'voice',
                   isTextWithVoice: optionType == 'text_with_voice',

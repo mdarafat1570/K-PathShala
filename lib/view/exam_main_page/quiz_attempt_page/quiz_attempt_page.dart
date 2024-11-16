@@ -127,6 +127,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
           _preloadFiles(),
           preloadAudio(),
         ]);
+        log("---------------Loading Completed--------------");
 
         totalQuestion = questionsModel.data?.totalQuestion ?? 0;
         _remainingTime = (questionsModel.data?.duration ?? 60) * 60;
@@ -412,7 +413,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
     }
 
     void addVoiceScript(String type, String script, List<String> optionsScripts) {
-      audioQueue.addAll([script, ...optionsScripts]);
+      audioQueue.addAll([script, ...optionsScripts, script, ...optionsScripts]);
     }
 
     List<String> generateOptionsScripts(List options) {
@@ -434,6 +435,11 @@ class RetakeTestPageState extends State<RetakeTestPage>
         audioQueue.addAll([voiceScript, voiceScript]);
       }
     } else if (listeningQuestionType == 'dialogues') {
+      audioQueue.addAll(playDialogue(dialogue, questionId));
+      if (isTextWithVoice) {
+        List<String> optionsScripts = generateOptionsScripts(options);
+        audioQueue.addAll(optionsScripts);
+      }
       audioQueue.addAll(playDialogue(dialogue, questionId));
       if (isTextWithVoice) {
         List<String> optionsScripts = generateOptionsScripts(options);
@@ -523,6 +529,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
                       imageUrl: imageUrl,
                       voiceModel: voiceModel,
                       currentPlayingAnswerId: _audioPlaybackService.currentPlayingAudioId,
+                      nextAudioKey: _audioPlaybackService.nextAudioKey,
                       listeningQuestionType: listeningQuestionType,
                       audioQueue: audioQueue,
                       dialogue: dialogue,
