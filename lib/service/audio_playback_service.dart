@@ -54,7 +54,7 @@ class AudioPlaybackService {
 
       await _audioPlayer.onPlayerComplete.first;
     } else {
-      throw Exception('Audio file not found in cache');
+      throw Exception('Audio file not found in cache $cacheKey');
     }
   }
 

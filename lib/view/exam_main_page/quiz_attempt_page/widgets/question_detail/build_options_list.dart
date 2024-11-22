@@ -2,6 +2,19 @@ import 'package:lottie/lottie.dart';
 
 import '../../quiz_attempt_page_imports.dart';
 
+List<String> maleAnnounceNumbers = [
+  "one_male",
+  "two_male",
+  "three_male",
+  "four_male",
+];
+List<String> femaleAnnounceNumbers = [
+  "one_female",
+  "two_female",
+  "three_female",
+  "four_female",
+];
+
 Widget buildOptionsList({
   required BuildContext context,
   required List<Options> options,
@@ -33,7 +46,10 @@ Widget buildOptionsList({
         (audio) => audio.audioId == answerId && audio.audioType == 'option',
       );
       bool isAnnounce = options[index].isAnnounce == true || options[index].isAnnounce == 1;
-      String announceScript = options[index].voiceGender == "male" ? "option--1${index+1}-male" : "option--2${index+1}-female";
+
+      String announceScript = options[index].voiceGender == "male"
+          ? "option-${maleAnnounceNumbers[index]}-male"
+          : "option-${femaleAnnounceNumbers[index]}-female";
 
       Color containerColor = isInReviewMode
           ? (correctAnswerId == answerId && submissionId == answerId

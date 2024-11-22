@@ -354,10 +354,23 @@ class _ReviewPageState extends State<ReviewPage> {
 
             bool isAnnounce = options.first.isAnnounce == true || options.first.isAnnounce == 1;
 
-            List<String> generateOptionScript(var option, int i) {
+            List<String> maleAnnounceNumbers = [
+              "one_male",
+              "two_male",
+              "three_male",
+              "four_male",
+            ];
+            List<String> femaleAnnounceNumbers = [
+              "one_female",
+              "two_female",
+              "three_female",
+              "four_female",
+            ];
+
+            List<String> generateOptionScript(var option, int index) {
               String announceScript = option.voiceGender == "male"
-                  ? "option--1${i + 1}-male"
-                  : "option--2${i + 1}-female";
+                  ? "option-${maleAnnounceNumbers[index]}-male"
+                  : "option-${femaleAnnounceNumbers[index]}-female";
               String optionScript = "text_with_voice-${option.id}-${listeningQuestions[index].id}-${option.voiceGender}";
               return isAnnounce ? [announceScript, optionScript] : [optionScript];
             }

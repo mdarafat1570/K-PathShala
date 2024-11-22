@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:kpathshala/model/question_model/reading_question_page_model.dart';
+import 'package:kpathshala/model/question_model/text_to_speech_request_model.dart';
+import 'package:kpathshala/repository/question/reading_questions_repository.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:developer';
 import 'package:kpathshala/service/azure_tts_service.dart';
@@ -17,14 +19,17 @@ class AudioCacheService {
     final Directory tempDir = await getTemporaryDirectory();
 
     // Prepare a list of futures for concurrent caching
-    List<Future<void>> cachingTasks = cachedVoiceModelList.map((model) => _cacheSingleAudio(tempDir, model)).toList();
+    List<Future<void>> cachingTasks = cachedVoiceModelList
+        .map((model) => _cacheSingleAudio(tempDir, model))
+        .toList();
 
     // Wait for all caching tasks to complete
     await Future.wait(cachingTasks);
     isLoading = false; // End loading after all tasks complete
   }
 
-  Future<void> _cacheSingleAudio(Directory tempDir, CachedVoiceModel model) async {
+  Future<void> _cacheSingleAudio(
+      Directory tempDir, CachedVoiceModel model) async {
     if (isDisposed) {
       log('Page is disposed. Stopping the caching process.');
       return;
@@ -43,17 +48,20 @@ class AudioCacheService {
 
     while (retryCount < 2 && !success) {
       try {
-        Uint8List audioData = await _azureTTS.synthesizeSpeech(model.text, model.gender);
+        // Uint8List audioData = await _azureTTS.synthesizeSpeech(model.text, model.gender);
+        Uint8List? audioData = await QuestionsRepository().fetchTextToSpeech(model.textToSpeechRequestModel);
 
         if (isDisposed) {
           log('Page is disposed. Stopping the caching process before saving the file.');
           return;
         }
 
-        await audioFile.writeAsBytes(audioData);
-        log('Cached audio for: ${model.text}');
-        log("filename: $fileName");
-        success = true; // Mark as successful if no errors occur
+        if (audioData != null){
+          await audioFile.writeAsBytes(audioData);
+          log('Cached audio for: ${model.text}');
+          log("filename: $fileName");
+        }
+        success = true;
       } catch (e) {
         retryCount++;
         if (retryCount < 2) {
@@ -96,52 +104,90 @@ class AudioCacheService {
   }
 }
 
-
 List<CachedVoiceModel> extractCachedVoiceModels({
   required List<ListeningQuestions> listeningQuestionList,
 }) {
   List<CachedVoiceModel> cachedVoiceList = [];
 
   // Add predefined Korean options
-  final koreanTexts = ['일', '이', '삼', '사'];
-  for (int i = 1; i <= koreanTexts.length; i++) {
-    String koreanText = koreanTexts[i - 1];
-    cachedVoiceList.addAll([
-      CachedVoiceModel(text: koreanText, gender: "male", id: "-1$i", voiceType: 'option'),
-      CachedVoiceModel(text: koreanText, gender: "female", id: "-2$i", voiceType: 'option'),
-    ]);
+  List<String> announceNumbers = [
+    "one_male",
+    "one_female",
+    "two_male",
+    "two_female",
+    "three_male",
+    "three_female",
+    "four_male",
+    "four_female",
+  ];
+
+  for (var announceNumber in announceNumbers) {
+    cachedVoiceList.add(
+      CachedVoiceModel(
+        textToSpeechRequestModel: TextToSpeechRequestModel(
+          announceNumber: announceNumber,
+        ),
+        text: announceNumber,
+        gender: announceNumber.split('_').last,
+        id: announceNumber,
+        voiceType: 'option',
+      ),
+    );
   }
 
   // Helper to add CachedVoiceModel with a check
-  void addVoiceModel(String? text, String gender, String voiceType, String id) {
+  void addVoiceModel(TextToSpeechRequestModel textToSpeechRequestModel,
+      String? text, String gender, String voiceType, String id) {
     if (text != null && text.isNotEmpty) {
-      cachedVoiceList.add(CachedVoiceModel(text: text, gender: gender, voiceType: voiceType, id: id));
+      cachedVoiceList.add(
+        CachedVoiceModel(
+          textToSpeechRequestModel: textToSpeechRequestModel,
+          text: text,
+          gender: gender,
+          voiceType: voiceType,
+          id: id,
+        ),
+      );
       log(text);
     }
   }
 
   // Iterate through questions and add relevant CachedVoiceModels
   for (var question in listeningQuestionList) {
-    String questionGender = question.voiceGender?.isNotEmpty == true ? question.voiceGender! : 'female';
+    String questionGender = question.voiceGender?.isNotEmpty == true
+        ? question.voiceGender!
+        : 'female';
     String questionId = question.id.toString();
 
-    addVoiceModel(question.voiceScript, questionGender, 'question', questionId);
-    addVoiceModel(question.imageCaption, questionGender, 'image_caption', questionId);
+    addVoiceModel(TextToSpeechRequestModel(
+      questionId: question.id,
+      questionType: question.questionType,
+    ),question.voiceScript, questionGender, 'question', questionId);
 
     // Add dialogues with sequence-questionId as ID
     for (var dialogue in question.dialogues) {
       if (dialogue.voiceGender != null) {
-        addVoiceModel(dialogue.voiceScript, dialogue.voiceGender!, 'dialogue', "${dialogue.sequence}-$questionId");
+        addVoiceModel(TextToSpeechRequestModel(
+          questionId: question.id,
+          dialogueSequence: dialogue.sequence.toString(),
+          questionType: question.questionType,
+        ),dialogue.voiceScript, dialogue.voiceGender!, 'dialogue',
+            "${dialogue.sequence}-$questionId");
       }
     }
 
     // Add options based on type and gender
     for (var option in question.options) {
       String optionId = option.id.toString();
-      if (option.optionType == 'text_with_voice' && option.voiceGender != null) {
-        addVoiceModel(option.title, option.voiceGender!, "text_with_voice", "$optionId-$questionId");
+      if (option.optionType == 'text_with_voice' &&
+          option.voiceGender != null) {
+        addVoiceModel(TextToSpeechRequestModel(
+          optionId: option.id,
+        ),option.title, option.voiceGender!, "text_with_voice", "$optionId-$questionId");
       } else if (option.voiceScript != null && option.voiceGender != null) {
-        addVoiceModel(option.voiceScript, option.voiceGender!, "option", optionId);
+        addVoiceModel(TextToSpeechRequestModel(
+          optionId: option.id,
+        ),option.voiceScript, option.voiceGender!, "option", optionId);
       }
     }
   }
@@ -150,12 +196,16 @@ List<CachedVoiceModel> extractCachedVoiceModels({
 }
 
 class CachedVoiceModel {
+  TextToSpeechRequestModel textToSpeechRequestModel;
   String text;
   String gender;
   String voiceType;
   String id;
 
-  CachedVoiceModel({required this.text, required this.gender, required this.voiceType, required this.id});
+  CachedVoiceModel(
+      {required this.textToSpeechRequestModel,
+      required this.text,
+      required this.gender,
+      required this.voiceType,
+      required this.id});
 }
-
-

@@ -7,7 +7,7 @@ import 'package:kpathshala/view/common_widget/common_loading_indicator.dart';
 import 'package:kpathshala/view/login_signup_page/registration_and_login_page.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:connectivity_plus/connectivity_plus.dart'; // For connectivity checking
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class BaseRepository {
   static const String _tokenKey = 'authToken';
