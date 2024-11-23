@@ -405,9 +405,21 @@ class RetakeTestPageState extends State<RetakeTestPage>
     bool isAnnounce = options.first.isAnnounce == true || options.first.isAnnounce == 1;
 
     List<String> generateOptionScript(var option, int index) {
+      List<String> maleAnnounceNumbers = [
+        "one_male",
+        "two_male",
+        "three_male",
+        "four_male",
+      ];
+      List<String> femaleAnnounceNumbers = [
+        "one_female",
+        "two_female",
+        "three_female",
+        "four_female",
+      ];
       String announceScript = option.voiceGender == "male"
-          ? "option--1${index + 1}-male"
-          : "option--2${index + 1}-female";
+          ? "option-${maleAnnounceNumbers[index]}-male"
+          : "option-${femaleAnnounceNumbers[index]}-female";
       String optionScript = "text_with_voice-${option.id}-$questionId-${option.voiceGender}";
       return isAnnounce ? [announceScript, optionScript] : [optionScript];
     }

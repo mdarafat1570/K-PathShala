@@ -2,7 +2,7 @@ class AuthorizationEndpoints {
   static const String demoBaseUrl = 'https://dev.kpathshala.com/api/v1';
   static const String liveBaseUrl = 'https://api.kpathshala.com/api/v1';
 
-  static bool useLiveServer = true; // Set to true for live
+  static bool useLiveServer = false; // Set to true for live
 
   static String get baseUrl => useLiveServer ? liveBaseUrl : demoBaseUrl;
 
@@ -53,6 +53,7 @@ class KpatshalaDashboardPage {
 
 class KpatshalaQuestionPage {
   static String readingQuestion = '${AuthorizationEndpoints.baseUrl}/question';
+  static String textToSpeech = '${AuthorizationEndpoints.baseUrl}/text-to-speech';
 }
 
 class KpatshalaAnswerSubmission {
