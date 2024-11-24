@@ -33,7 +33,7 @@ class QuestionsRepository {
 
   Future<Uint8List?> fetchTextToSpeech(TextToSpeechRequestModel textToSpeechRequestModel) async {
     try {
-      String url = "https://dev.kpathshala.com/api/v1/text-to-speech";
+      String url = KpatshalaQuestionPage.textToSpeech;
 
       // Convert the request model to JSON
       final body = jsonEncode(textToSpeechRequestModel.toJson());
