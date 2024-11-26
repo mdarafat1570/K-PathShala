@@ -388,7 +388,7 @@ class _ReviewPageState extends State<ReviewPage> {
             }
 
             if (listeningQuestionType == "voice" || listeningQuestionType == "listening_image") {
-              String prefix = listeningQuestionType == "voice" ? "question-${listeningQuestions[index].id}" : 'image_caption-${listeningQuestions[index].id}';
+              String prefix = "question-${listeningQuestions[index].id}";
               voiceScript = "$prefix-${listeningQuestions[index].voiceGender ?? 'female'}";
 
               if (isTextWithVoice) {

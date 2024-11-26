@@ -437,7 +437,7 @@ class RetakeTestPageState extends State<RetakeTestPage>
     }
 
     if (listeningQuestionType == "voice" || listeningQuestionType == "listening_image") {
-      String prefix = listeningQuestionType == "voice" ? "question-${selectedListeningQuestionData?.id}" : 'image_caption-$questionId';
+      String prefix ="question-${selectedListeningQuestionData?.id}";
       voiceScript = "$prefix-$voiceModel";
 
       if (isTextWithVoice) {

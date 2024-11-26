@@ -32,7 +32,7 @@ class AudioPlaybackService {
 
       // Delay between audios
       if (!_shouldStop) {
-        await Future.delayed(const Duration(milliseconds: 300));
+        await Future.delayed(const Duration(milliseconds: 200));
       }
     }
 

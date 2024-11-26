@@ -60,6 +60,9 @@ class AudioCacheService {
           await audioFile.writeAsBytes(audioData);
           log('Cached audio for: ${model.text}');
           log("filename: $fileName");
+        } else {
+          log('Caching Failed audio for: ${model.text}');
+          log("filename: $fileName");
         }
         success = true;
       } catch (e) {
@@ -159,10 +162,17 @@ List<CachedVoiceModel> extractCachedVoiceModels({
         : 'female';
     String questionId = question.id.toString();
 
-    addVoiceModel(TextToSpeechRequestModel(
-      questionId: question.id,
-      questionType: question.questionType,
-    ),question.voiceScript, questionGender, 'question', questionId);
+    if (question.questionType == 'voice'){
+      addVoiceModel(TextToSpeechRequestModel(
+        questionId: question.id,
+        questionType: question.questionType,
+      ),question.voiceScript, questionGender, 'question', questionId);
+    } else {
+      addVoiceModel(TextToSpeechRequestModel(
+        questionId: question.id,
+        questionType: question.questionType,
+      ),question.imageCaption, questionGender, 'question', questionId);
+    }
 
     // Add dialogues with sequence-questionId as ID
     for (var dialogue in question.dialogues) {
