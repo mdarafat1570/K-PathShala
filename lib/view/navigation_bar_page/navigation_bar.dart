@@ -44,8 +44,7 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
             isConnectedToInternet = true;
           });
           if (Navigator.canPop(context)) {
-            Navigator.pop(
-                context); // Close ConnectionLost page when internet is back
+            Navigator.pop(context);
           }
           break;
         case InternetStatus.disconnected:
@@ -151,73 +150,71 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
       child: GradientBackground(
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: AppColor.gradientStart,
-            elevation: 0,
-            automaticallyImplyLeading: false,
-            title: GestureDetector(
-              onTap: () {
-                slideNavigationPush(const ProfileScreenInMainPage(), context);
-              },
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    backgroundImage: imageProvider,
-                    radius: 18, 
-                  ),
-                  const Gap(5),
-                  Column(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center, 
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
-                    children: [
-                      if (credentials?.name != null &&
-                          credentials!.name!.isNotEmpty)
-                        Text(
-                          credentials?.name ?? 'User',
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: AppColor.navyBlue,
+              backgroundColor: AppColor.gradientStart,
+              elevation: 0,
+              automaticallyImplyLeading: false,
+              title: GestureDetector(
+                onTap: () {
+                  slideNavigationPush(const ProfileScreenInMainPage(), context);
+                },
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundImage: imageProvider,
+                      radius: 18,
+                    ),
+                    const Gap(5),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (credentials?.name != null &&
+                            credentials!.name!.isNotEmpty)
+                          Text(
+                            credentials?.name ?? 'User',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: AppColor.navyBlue,
+                            ),
                           ),
-                        ),
-                      if (credentials?.mobile != null &&
-                          credentials!.mobile!.isNotEmpty)
-                        Text(
-                          credentials?.mobile ?? '+88018xxxxxxxx',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
+                        if (credentials?.mobile != null &&
+                            credentials!.mobile!.isNotEmpty)
+                          Text(
+                            credentials?.mobile ?? '+88018xxxxxxxx',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
                           ),
-                        ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          actions: [
-  Material(
-    color: Colors.transparent, // Transparent background for ripple effect
-    shape: const CircleBorder(), // Circular boundary for ripple
-    child: InkWell(
-      borderRadius: BorderRadius.circular(50), // Ensure circular splash
-      onTap: () {
-        slideNavigationPush(const NotificationsPage(), context);
-      },
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: SvgPicture.asset(
-          'assets/ic_notifications.svg',
-          width: 34.0,
-          height: 34.0,
-        ),
-      ),
-    ),
-  ),
-  const Gap(20),
-]
-
-          ),
+              actions: [
+                Material(
+                  color: Colors
+                      .transparent, // Transparent background for ripple effect
+                  shape: const CircleBorder(), // Circular boundary for ripple
+                  child: InkWell(
+                    borderRadius:
+                        BorderRadius.circular(50), // Ensure circular splash
+                    onTap: () {
+                      slideNavigationPush(const NotificationsPage(), context);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SvgPicture.asset(
+                        'assets/ic_notifications.svg',
+                        width: 34.0,
+                        height: 34.0,
+                      ),
+                    ),
+                  ),
+                ),
+                const Gap(20),
+              ]),
           body: Center(
             child: widgetList[countIndex],
           ),

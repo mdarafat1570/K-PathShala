@@ -14,24 +14,24 @@ class DashboardPageModel {
     if (json['banners'] != null) {
       banners = <Banners>[];
       json['banners'].forEach((v) {
-        banners!.add(new Banners.fromJson(v));
+        banners!.add(Banners.fromJson(v));
       });
     }
-    exam = json['exam'] != null ? new Exam.fromJson(json['exam']) : null;
+    exam = json['exam'] != null ? Exam.fromJson(json['exam']) : null;
     videoClasses = json['videoClasses'];
     isVersionUpdateRequired = json['isVersionUpdateRequired'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.banners != null) {
-      data['banners'] = this.banners!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (banners != null) {
+      data['banners'] = banners!.map((v) => v.toJson()).toList();
     }
-    if (this.exam != null) {
-      data['exam'] = this.exam!.toJson();
+    if (exam != null) {
+      data['exam'] = exam!.toJson();
     }
-    data['videoClasses'] = this.videoClasses;
-    data['isVersionUpdateRequired'] = this.isVersionUpdateRequired;
+    data['videoClasses'] = videoClasses;
+    data['isVersionUpdateRequired'] = isVersionUpdateRequired;
     return data;
   }
 }
@@ -55,12 +55,12 @@ class Banners {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['title'] = this.title;
-    data['banner_url'] = this.bannerUrl;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['title'] = title;
+    data['banner_url'] = bannerUrl;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
     return data;
   }
 }
@@ -88,12 +88,12 @@ class Exam {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['exam_name'] = this.examName;
-    data['subscription_id'] = this.subscriptionId;
-    data['package_id'] = this.packageId;
-    data['completedQuestionSet'] = this.completedQuestionSet;
-    data['totalQuestionSet'] = this.totalQuestionSet;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['exam_name'] = examName;
+    data['subscription_id'] = subscriptionId;
+    data['package_id'] = packageId;
+    data['completedQuestionSet'] = completedQuestionSet;
+    data['totalQuestionSet'] = totalQuestionSet;
     return data;
   }
 }
