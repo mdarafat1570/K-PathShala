@@ -3,9 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:kpathshala/app_base/common_imports.dart';
-import 'package:kpathshala/common_error_all_layout/connection_lost.dart';
 import 'package:kpathshala/model/log_in_credentials.dart';
 import 'package:kpathshala/repository/authentication_repository.dart';
 import 'package:kpathshala/view/courses_page/courses.dart';
@@ -24,49 +22,22 @@ class Navigation extends StatefulWidget {
 class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
   int countIndex = 0;
   bool isDialogVisible = false;
-  bool isConnectedToInternet = false;
+
   List<Widget> widgetList = [
     const DashboardPage(),
     const Courses(),
     const ExamPurchasePage(),
   ];
-  StreamSubscription? _internetConnectionStreamSubscription;
 
   @override
   void initState() {
     super.initState();
-    _internetConnectionStreamSubscription =
-        InternetConnection().onStatusChange.listen((event) {
-      log("$event");
-      switch (event) {
-        case InternetStatus.connected:
-          setState(() {
-            isConnectedToInternet = true;
-          });
-          if (Navigator.canPop(context)) {
-            Navigator.pop(context);
-          }
-          break;
-        case InternetStatus.disconnected:
-          setState(() {
-            isConnectedToInternet = false;
-            slideNavigationPush(const ConnectionLost(), context);
-          });
-          break;
-        default:
-          setState(() {
-            isConnectedToInternet = false;
-          });
-          break;
-      }
-    });
     readCredentials();
     WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
-    _internetConnectionStreamSubscription?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -107,7 +78,6 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
   }
 
   LogInCredentials? credentials;
-
   final AuthService _authService = AuthService();
 
   Future<void> readCredentials() async {
@@ -194,12 +164,10 @@ class _NavigationState extends State<Navigation> with WidgetsBindingObserver {
               ),
               actions: [
                 Material(
-                  color: Colors
-                      .transparent, // Transparent background for ripple effect
-                  shape: const CircleBorder(), // Circular boundary for ripple
+                  color: Colors.transparent,
+                  shape: const CircleBorder(),
                   child: InkWell(
-                    borderRadius:
-                        BorderRadius.circular(50), // Ensure circular splash
+                    borderRadius: BorderRadius.circular(50),
                     onTap: () {
                       slideNavigationPush(const NotificationsPage(), context);
                     },
