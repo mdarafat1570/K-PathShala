@@ -27,12 +27,11 @@ class _ConnectionLostState extends State<ConnectionLost> {
   void _startListeningForConnection() {
     _connectivitySubscription =
         Connectivity().onConnectivityChanged.listen((result) async {
-      if (result != ConnectivityResult.none) {
-        // Check if the internet is actually available
+      if (result.contains(ConnectivityResult.none)) {
         bool isConnected = await InternetConnection().hasInternetAccess;
         if (isConnected) {
-          widget.onConnectionRestored(); // Trigger API call
-          Navigator.of(context).pop(); // Close the ConnectionLost page
+          widget.onConnectionRestored();
+          Navigator.of(context).pop();
         }
       }
     });
@@ -77,15 +76,14 @@ class _ConnectionLostState extends State<ConnectionLost> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                // Add your steps here
                 const SizedBox(height: 40),
                 ElevatedButton(
                   onPressed: () async {
                     bool isConnected =
                         await InternetConnection().hasInternetAccess;
                     if (isConnected) {
-                      widget.onConnectionRestored(); // Trigger API call
-                      Navigator.of(context).pop(); // Close this page
+                      widget.onConnectionRestored();
+                      Navigator.of(context).pop();
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
