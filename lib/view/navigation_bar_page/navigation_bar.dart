@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
-
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:kpathshala/app_base/common_imports.dart';

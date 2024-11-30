@@ -18,16 +18,25 @@ class BaseRepository {
 
   Future<bool> _hasInternetConnection(BuildContext context) async {
     var connectivityResult = await Connectivity().checkConnectivity();
-    if (connectivityResult == ConnectivityResult.none) {
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const ConnectionLost()),
-      );
+
+    if (connectivityResult.contains(ConnectivityResult.none)) {
+      if (ModalRoute.of(context)?.settings.name != 'ConnectionLost') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ConnectionLost(
+              onConnectionRestored: BaseRepository.new,
+            ),
+            settings: const RouteSettings(name: 'ConnectionLost'),
+          ),
+        );
+        _showNoInternetSnackbar(context);
+      }
       return false;
     }
     return true;
   }
 
-  // Show a Snackbar for No Internet Connection
   void _showNoInternetSnackbar(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(

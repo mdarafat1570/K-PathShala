@@ -11,6 +11,7 @@ import 'package:kpathshala/repository/dashboard_repository/dashboard_page_reposi
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:kpathshala/view/books_page/books_sell_page.dart';
 import 'package:kpathshala/view/exam_main_page/ubt_mock_test_page.dart';
 import 'package:kpathshala/view/home_main_page/dashboard_image_carousel.dart';
 import 'package:kpathshala/view/home_main_page/shimmer_effect_dashboard.dart';
@@ -75,7 +76,7 @@ class _DashboardPageState extends State<DashboardPage> {
     super.dispose();
   }
 
-  void fetchData() async {
+  Future<void> fetchData() async {
     try {
       DashboardRepository repository = DashboardRepository();
       DashboardPageModel? dashModel =
@@ -84,7 +85,8 @@ class _DashboardPageState extends State<DashboardPage> {
       setState(() {
         dashboardPageModel = dashModel;
         dataFound = true;
-        bool? isVersionUpdateRequired = dashModel?.isVersionUpdateRequired ?? false;
+        bool? isVersionUpdateRequired =
+            dashModel?.isVersionUpdateRequired ?? false;
         // bool? isVersionUpdateRequired = false;
         if (isVersionUpdateRequired) {
           _showUpdateDialog(context);
@@ -191,101 +193,108 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: dataFound == false
-          ? const DashboardPageShimmerEffect()
-          : SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    BannerCarousel(banners: dashboardPageModel?.banners ?? []),
-                    GridView(
-                      physics: const NeverScrollableScrollPhysics(),
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 8,
-                        crossAxisSpacing: 8,
-                        childAspectRatio: 2.5,
-                      ),
-                      children: [
-                        if (dashboardPageModel?.videoClasses != null)
+      body: RefreshIndicator(
+        onRefresh: fetchData,
+        child: dataFound == false
+            ? const DashboardPageShimmerEffect()
+            : SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      BannerCarousel(
+                          banners: dashboardPageModel?.banners ?? []),
+                      GridView(
+                        physics: const NeverScrollableScrollPhysics(),
+                        padding: EdgeInsets.zero,
+                        shrinkWrap: true,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 8,
+                          crossAxisSpacing: 8,
+                          childAspectRatio: 2.5,
+                        ),
+                        children: [
+                          if (dashboardPageModel?.videoClasses != null)
+                            InkWell(
+                              onTap: () {},
+                              child: _buildGridItem(
+                                icon: Icons.assessment,
+                                title: "Skill test",
+                                subtitle: "Coming Soon",
+                              ),
+                            ),
                           InkWell(
                             onTap: () {},
                             child: _buildGridItem(
-                              icon: Icons.assessment,
-                              title: "Skill test",
+                              icon: Icons.book,
+                              title: "Topik Test",
                               subtitle: "Coming Soon",
                             ),
                           ),
-                        InkWell(
-                          onTap: () {},
-                          child: _buildGridItem(
-                            icon: Icons.book,
-                            title: "Topik Test",
-                            subtitle: "Coming Soon",
-                          ),
-                        ),
-                        InkWell(
-                          onTap: () {},
-                          child: _buildGridItem(
-                            icon: Icons.library_books,
-                            title: "Books",
-                            subtitle: "Coming Soon",
-                          ),
-                        ),
-                        InkWell(
-                          onTap: () {},
-                          child: _buildGridItem(
-                            icon: Icons.library_books,
-                            title: "Speaking ",
-                            subtitle: "Coming Soon",
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Gap(8),
-                    InkWell(
-                      onTap: () {},
-                      child: _buildGridItem2(
-                        icon: Icons.library_books,
-                        title: "Chapter Wise Class",
-                        subtitle: "Coming Soon",
-                      ),
-                    ),
-                    const Gap(8),
-                    if (dashboardPageModel?.exam != null)
-                      Column(
-                        children: [
                           InkWell(
                             onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => UBTMockTestPage(
-                                    packageId:
-                                        dashboardPageModel!.exam!.packageId ??
-                                            -1,
-                                    appBarTitle:
-                                        dashboardPageModel?.exam?.examName ??
-                                            "UBT Mock Test",
-                                  ),
-                                ),
-                              );
+                              slideNavigationPush(
+                                  const BookSellPage(), context);
                             },
-                            child: _buildMockTestProgress(),
+                            child: _buildGridItem(
+                              icon: Icons.library_books,
+                              title: "Orders Book",
+                              subtitle: "Active Readers:1000+",
+                            ),
                           ),
-                          const SizedBox(height: 10),
+                          InkWell(
+                            onTap: () {},
+                            child: _buildGridItem(
+                              icon: Icons.library_books,
+                              title: "Speaking ",
+                              subtitle: "Coming Soon",
+                            ),
+                          ),
                         ],
                       ),
-                    buildYoutubeChannelStatisticsStack(),
-                  ],
+                      const Gap(8),
+                      InkWell(
+                        onTap: () {},
+                        child: _buildGridItem2(
+                          icon: Icons.library_books,
+                          title: "Chapter Wise Class",
+                          subtitle: "Coming Soon",
+                        ),
+                      ),
+                      const Gap(8),
+                      if (dashboardPageModel?.exam != null)
+                        Column(
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => UBTMockTestPage(
+                                      packageId:
+                                          dashboardPageModel!.exam!.packageId ??
+                                              -1,
+                                      appBarTitle:
+                                          dashboardPageModel?.exam?.examName ??
+                                              "UBT Mock Test",
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: _buildMockTestProgress(),
+                            ),
+                            const SizedBox(height: 10),
+                          ],
+                        ),
+                      buildYoutubeChannelStatisticsStack(),
+                    ],
+                  ),
                 ),
               ),
-            ),
+      ),
     );
   }
 

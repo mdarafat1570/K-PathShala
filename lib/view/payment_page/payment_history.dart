@@ -99,7 +99,7 @@ class _PaymentHistoryState extends State<PaymentHistory> {
                       payment.paymentAmount?.toStringAsFixed(2) ?? 'No Amount';
                   final date = payment.paymentDate ?? 'Unknown Date';
                   const imageUrl =
-                      'https://static-00.iconduck.com/assets.00/success-icon-1957x2048-6skyzvbc.png';
+                      'https://st3.depositphotos.com/1688079/16329/i/450/depositphotos_163295388-stock-photo-validate-icon-elegant-blue-round.jpg';
 
                   return GestureDetector(
                     behavior: HitTestBehavior.opaque,

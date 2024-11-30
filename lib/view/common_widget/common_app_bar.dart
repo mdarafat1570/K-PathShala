@@ -9,6 +9,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Color titleColor;
   final double titleFontSize;
   final FontWeight titleFontWeight;
+  final double? progress;
 
   const CommonAppBar({
     super.key,
@@ -16,9 +17,10 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.showBackButton = true,
     this.onBackPressed,
     this.backgroundColor = AppColor.gradientStart,
-    this.titleColor =AppColor.navyBlue,
+    this.titleColor = AppColor.navyBlue,
     this.titleFontSize = 18.0,
     this.titleFontWeight = FontWeight.w600,
+    this.progress,
   });
 
   @override
@@ -42,8 +44,18 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
                 child: const Icon(
                   Icons.arrow_back_ios_new,
                   size: 20,
-                  color: AppColor.navyBlue, // Adjust as needed
+                  color: AppColor.navyBlue,
                 ),
+              ),
+            )
+          : null,
+      bottom: progress != null && progress! < 1
+          ? PreferredSize(
+              preferredSize: const Size.fromHeight(2.0),
+              child: LinearProgressIndicator(
+                value: progress,
+                backgroundColor: Colors.grey[200],
+                color: Colors.blue,
               ),
             )
           : null,
@@ -51,5 +63,5 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 2.0);
 }
