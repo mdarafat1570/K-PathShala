@@ -61,6 +61,7 @@ dependencies:
   package_info_plus: ^8.1.0
   firebase_analytics: ^11.3.3
   webview_flutter: ^4.7.0
+  flutter_inappwebview: ^5.8.0
 
 dev_dependencies:
   flutter_test:

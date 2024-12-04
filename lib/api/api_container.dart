@@ -53,7 +53,8 @@ class KpatshalaDashboardPage {
 
 class KpatshalaQuestionPage {
   static String readingQuestion = '${AuthorizationEndpoints.baseUrl}/question';
-  static String textToSpeech = '${AuthorizationEndpoints.baseUrl}/text-to-speech';
+  static String textToSpeech =
+      '${AuthorizationEndpoints.baseUrl}/text-to-speech';
 }
 
 class KpatshalaAnswerSubmission {
