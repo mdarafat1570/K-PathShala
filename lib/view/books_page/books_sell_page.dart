@@ -14,6 +14,22 @@ class BookSellPage extends StatefulWidget {
 class _BookSellPageState extends State<BookSellPage> {
   late InAppWebViewController _controller;
   double progress = 0;
+  bool _canGoBack = false;
+  bool _canGoForward = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<void> _updateNavigationStatus() async {
+    bool canGoBack = await _controller.canGoBack();
+    bool canGoForward = await _controller.canGoForward();
+    setState(() {
+      _canGoBack = canGoBack;
+      _canGoForward = canGoForward;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +47,7 @@ class _BookSellPageState extends State<BookSellPage> {
             URLRequest(url: Uri.parse('https://kpathshala.com/books')),
         onWebViewCreated: (controller) {
           _controller = controller;
+          _updateNavigationStatus();
         },
         onProgressChanged: (controller, int progressValue) {
           setState(() {
@@ -38,15 +55,18 @@ class _BookSellPageState extends State<BookSellPage> {
           });
         },
         onLoadStart: (controller, url) {
+          _updateNavigationStatus();
           debugPrint('Page started loading: $url');
         },
         onLoadStop: (controller, url) {
+          _updateNavigationStatus();
           debugPrint('Page finished loading: $url');
           setState(() {
             progress = 0;
           });
         },
         onLoadError: (controller, url, code, message) {
+          _updateNavigationStatus();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Error loading page: $message'),
@@ -56,39 +76,42 @@ class _BookSellPageState extends State<BookSellPage> {
         },
       ),
       bottomNavigationBar: BottomAppBar(
-        color: Colors.white,
+        color: const Color.fromARGB(255, 26, 26, 46),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () async {
-                if (await _controller.canGoBack()) {
-                  await _controller.goBack();
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('No back history available')),
-                  );
-                }
-              },
+              icon: Icon(
+                Icons.arrow_back,
+                color: _canGoBack ? AppColor.white : Colors.grey,
+              ),
+              onPressed: _canGoBack
+                  ? () async {
+                      await _controller.goBack();
+                      _updateNavigationStatus();
+                    }
+                  : null,
             ),
             IconButton(
-              icon: const Icon(Icons.arrow_forward),
-              onPressed: () async {
-                if (await _controller.canGoForward()) {
-                  await _controller.goForward();
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('No forward history available')),
-                  );
-                }
-              },
+              icon: Icon(
+                Icons.arrow_forward,
+                color: _canGoForward ? AppColor.white : Colors.grey,
+              ),
+              onPressed: _canGoForward
+                  ? () async {
+                      await _controller.goForward();
+                      _updateNavigationStatus();
+                    }
+                  : null,
             ),
             IconButton(
-              icon: const Icon(Icons.refresh),
+              icon: const Icon(
+                Icons.refresh,
+                color: AppColor.white,
+              ),
               onPressed: () {
                 _controller.reload();
+                _updateNavigationStatus();
               },
             ),
           ],
