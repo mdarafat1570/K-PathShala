@@ -100,6 +100,7 @@ class _PaymentHistoryState extends State<PaymentHistory> {
                   final date = payment.paymentDate ?? 'Unknown Date';
                   const imageUrl =
                       'https://st3.depositphotos.com/1688079/16329/i/450/depositphotos_163295388-stock-photo-validate-icon-elegant-blue-round.jpg';
+                  final paymentStatus = payment.paymentStatus;
 
                   return GestureDetector(
                     behavior: HitTestBehavior.opaque,
@@ -124,6 +125,7 @@ class _PaymentHistoryState extends State<PaymentHistory> {
                         amount: amount,
                         date: date,
                         imageUrl: imageUrl,
+                        paymentStatus: paymentStatus!,
                         onTap: () {},
                       ),
                     ),

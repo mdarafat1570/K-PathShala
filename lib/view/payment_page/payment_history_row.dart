@@ -6,12 +6,14 @@ class PaymentRow extends StatelessWidget {
   final String date;
   final VoidCallback onTap;
   final String imageUrl;
+  final String paymentStatus;
   const PaymentRow({
     required this.title,
     required this.amount,
     required this.date,
     required this.onTap,
     required this.imageUrl,
+    required this.paymentStatus,
     super.key,
   });
 
@@ -67,19 +69,28 @@ class PaymentRow extends StatelessWidget {
             Center(
               child: Container(
                 constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.2,
-                    maxHeight: MediaQuery.of(context).size.height * 0.030),
+                  maxWidth: MediaQuery.of(context).size.width * 0.2,
+                  maxHeight: MediaQuery.of(context).size.height * 0.030,
+                ),
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  color: AppColor.navyBlue,
+                  color: paymentStatus == 'successful'
+                      ? AppColor.navyBlue
+                      : paymentStatus == 'pending'
+                          ? Color.fromARGB(221, 255, 164, 28)
+                          : Colors.grey,
                 ),
-                child: const Center(
+                child: Center(
                   child: FittedBox(
                     child: Text(
-                      "Successful",
+                      paymentStatus,
                       style: TextStyle(
-                        color: Colors.white,
+                        color: paymentStatus == 'successful'
+                            ? AppColor.white
+                            : paymentStatus == 'pending'
+                                ? Colors.black
+                                : Colors.black,
                         fontSize: 10,
                       ),
                     ),
@@ -92,7 +103,4 @@ class PaymentRow extends StatelessWidget {
       ),
     );
   }
-
-
-
 }

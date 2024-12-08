@@ -1,70 +1,69 @@
 class PaymentHistoryModel {
-  List<PaymentRecord>? data;
   String? status;
+  List<Data>? data;
   String? message;
 
-  PaymentHistoryModel({this.data, this.status, this.message});
+  PaymentHistoryModel({this.status, this.data, this.message});
 
-  // From JSON constructor
   PaymentHistoryModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
-    message = json['message'];
     if (json['data'] != null) {
-      data = [];
+      data = <Data>[];
       json['data'].forEach((v) {
-        data!.add(PaymentRecord.fromJson(v));
+        data!.add(new Data.fromJson(v));
       });
     }
+    message = json['message'];
   }
 
-  // To JSON method
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {};
-    data['status'] = status;
-    data['message'] = message;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['status'] = this.status;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
+    data['message'] = this.message;
     return data;
   }
 }
 
-class PaymentRecord {
+class Data {
   int? paymentId;
   int? subscriptionId;
   int? packageId;
   String? packageName;
-  double? paymentAmount;
+  int? paymentAmount;
+  String? paymentStatus;
   String? paymentDate;
 
-  PaymentRecord({
-    this.paymentId,
-    this.subscriptionId,
-    this.packageId,
-    this.packageName,
-    this.paymentAmount,
-    this.paymentDate,
-  });
+  Data(
+      {this.paymentId,
+      this.subscriptionId,
+      this.packageId,
+      this.packageName,
+      this.paymentAmount,
+      this.paymentStatus,
+      this.paymentDate});
 
-  // From JSON constructor for individual records
-  PaymentRecord.fromJson(Map<String, dynamic> json) {
+  Data.fromJson(Map<String, dynamic> json) {
     paymentId = json['payment_id'];
     subscriptionId = json['subscription_id'];
     packageId = json['package_id'];
     packageName = json['package_name'];
-    paymentAmount = json['payment_amount'].toDouble();
+    paymentAmount = json['payment_amount'];
+    paymentStatus = json['payment_status'];
     paymentDate = json['payment_date'];
   }
 
-  // To JSON method for individual records
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {};
-    data['payment_id'] = paymentId;
-    data['subscription_id'] = subscriptionId;
-    data['package_id'] = packageId;
-    data['package_name'] = packageName;
-    data['payment_amount'] = paymentAmount;
-    data['payment_date'] = paymentDate;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['payment_id'] = this.paymentId;
+    data['subscription_id'] = this.subscriptionId;
+    data['package_id'] = this.packageId;
+    data['package_name'] = this.packageName;
+    data['payment_amount'] = this.paymentAmount;
+    data['payment_status'] = this.paymentStatus;
+    data['payment_date'] = this.paymentDate;
     return data;
   }
 }
