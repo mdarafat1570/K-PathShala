@@ -23,8 +23,8 @@ Study Through Video Lectures (EPS) Description: Users can study Korean through v
 Marketing SMS Description: The app sends marketing SMS messages to users, keeping them informed about updates, new features, and promotional offers.
 ![Image](https://github.com/user-attachments/assets/b091c4a5-8570-499d-b959-80dfee0ef7e0)
 
-<img src="https://github.com/user-attachments/assets/376c677b-f03a-42a4-969f-530bb85da0ee" width="200"/>
-<img src="https://github.com/user-attachments/assets/141b067b-9399-44a3-a3c6-7cfa3d7197c5" width="200"/>
-<img src="https://github.com/user-attachments/assets/166bb69e-5df7-409f-acae-77e47f52d706" width="200"/>
-<img src="https://github.com/user-attachments/assets/996fc9a7-aadb-4bc6-8697-2e7435bffb21" width="200"/>
+<img src="https://github.com/user-attachments/assets/376c677b-f03a-42a4-969f-530bb85da0ee" width="220"/>
+<img src="https://github.com/user-attachments/assets/141b067b-9399-44a3-a3c6-7cfa3d7197c5" width="220"/>
+<img src="https://github.com/user-attachments/assets/166bb69e-5df7-409f-acae-77e47f52d706" width="220"/>
+<img src="https://github.com/user-attachments/assets/996fc9a7-aadb-4bc6-8697-2e7435bffb21" width="220"/>
 
