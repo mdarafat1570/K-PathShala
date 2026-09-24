@@ -1,0 +1,325 @@
+{
+  "info": {
+    "name": "K-PathShala API",
+    "description": "API collection for the K-PathShala (E-learning) Flutter app. Base URL and auth token are collection variables — set {{auth_token}} after calling Verify OTP.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url_live", "value": "https://api.kpathshala.com/api/v1" },
+    { "key": "base_url_dev", "value": "https://dev.kpathshala.com/api/v1" },
+    { "key": "base_url", "value": "{{base_url_live}}" },
+    { "key": "auth_token", "value": "" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{auth_token}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "Auth / OTP / Registration",
+      "item": [
+        {
+          "name": "Send OTP",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"mobile\": \"\",\n  \"email\": \"\"\n}" },
+            "url": { "raw": "{{base_url}}/send-otp", "host": ["{{base_url}}"], "path": ["send-otp"] }
+          }
+        },
+        {
+          "name": "Verify OTP",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"mobile\": \"\",\n  \"otp\": 0,\n  \"device_id\": \"\",\n  \"one_signal_player_id\": \"\",\n  \"app_version\": \"\",\n  \"device_name\": \"\"\n}" },
+            "url": { "raw": "{{base_url}}/verify-otp", "host": ["{{base_url}}"], "path": ["verify-otp"] }
+          }
+        },
+        {
+          "name": "Get User Phone Number (unused/reserved)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/otp/userPhoneNumber", "host": ["{{base_url}}"], "path": ["otp", "userPhoneNumber"] }
+          }
+        },
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"\",\n  \"email\": \"\",\n  \"mobile\": \"\",\n  \"image\": \"\",\n  \"device_id\": \"\"\n}" },
+            "url": { "raw": "{{base_url}}/auth/register", "host": ["{{base_url}}"], "path": ["auth", "register"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "url": { "raw": "{{base_url}}/logout", "host": ["{{base_url}}"], "path": ["logout"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Profile",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "url": { "raw": "{{base_url}}/profile", "host": ["{{base_url}}"], "path": ["profile"] }
+          }
+        },
+        {
+          "name": "Update Profile (JSON)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"\",\n  \"email\": \"\",\n  \"image\": \"\"\n}" },
+            "url": { "raw": "{{base_url}}/user-update", "host": ["{{base_url}}"], "path": ["user-update"] }
+          }
+        },
+        {
+          "name": "Update Profile (multipart, with image)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "value": "", "type": "text" },
+                { "key": "email", "value": "", "type": "text" },
+                { "key": "image", "type": "file", "src": [] },
+                { "key": "image_url", "value": "", "type": "text", "disabled": true }
+              ]
+            },
+            "url": { "raw": "{{base_url}}/user-update", "host": ["{{base_url}}"], "path": ["user-update"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "url": { "raw": "{{base_url}}/dashboard", "host": ["{{base_url}}"], "path": ["dashboard"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Packages / Courses",
+      "item": [
+        {
+          "name": "Get Packages",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "url": { "raw": "{{base_url}}/package", "host": ["{{base_url}}"], "path": ["package"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Exam / Question Sets",
+      "item": [
+        {
+          "name": "Get Question Sets by Package",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/question-sets?package_id=",
+              "host": ["{{base_url}}"],
+              "path": ["question-sets"],
+              "query": [{ "key": "package_id", "value": "" }]
+            }
+          }
+        },
+        {
+          "name": "Get Questions by Question Set",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/question?questionSetId=",
+              "host": ["{{base_url}}"],
+              "path": ["question"],
+              "query": [{ "key": "questionSetId", "value": "" }]
+            }
+          }
+        },
+        {
+          "name": "Text To Speech",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"question_id\": \"\",\n  \"question_type\": \"\",\n  \"option_id\": \"\",\n  \"dialogue_sequence\": \"\",\n  \"announce_number\": \"\"\n}" },
+            "url": { "raw": "{{base_url}}/text-to-speech", "host": ["{{base_url}}"], "path": ["text-to-speech"] }
+          }
+        },
+        {
+          "name": "Submit Answers",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"question_set_id\": \"\",\n  \"duration\": \"\",\n  \"answers\": [\n    { \"question_id\": \"\", \"question_option_id\": \"\" }\n  ]\n}" },
+            "url": { "raw": "{{base_url}}/answer_submission", "host": ["{{base_url}}"], "path": ["answer_submission"] }
+          }
+        },
+        {
+          "name": "Get Result",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/result_question_set?questionSetId=",
+              "host": ["{{base_url}}"],
+              "path": ["result_question_set"],
+              "query": [{ "key": "questionSetId", "value": "" }]
+            }
+          }
+        },
+        {
+          "name": "Get Answer Review",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/answer_review?questionSetId=",
+              "host": ["{{base_url}}"],
+              "path": ["answer_review"],
+              "query": [{ "key": "questionSetId", "value": "" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notes",
+      "item": [
+        {
+          "name": "Get Notes by Question Set",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/notes?questionSetId=",
+              "host": ["{{base_url}}"],
+              "path": ["notes"],
+              "query": [{ "key": "questionSetId", "value": "" }]
+            }
+          }
+        },
+        {
+          "name": "Get Explanation Video by Question Set",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/setExplanationVideo?questionSetId=",
+              "host": ["{{base_url}}"],
+              "path": ["setExplanationVideo"],
+              "query": [{ "key": "questionSetId", "value": "" }]
+            }
+          }
+        },
+        {
+          "name": "Add Note",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"question_set_id\": \"\",\n  \"user_id\": \"\",\n  \"title\": \"\",\n  \"description\": \"\"\n}" },
+            "url": { "raw": "{{base_url}}/notes", "host": ["{{base_url}}"], "path": ["notes"] }
+          }
+        },
+        {
+          "name": "Update Note",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"\",\n  \"description\": \"\",\n  \"question_set_id\": \"\"\n}" },
+            "url": { "raw": "{{base_url}}/notes/:noteId", "host": ["{{base_url}}"], "path": ["notes", ":noteId"], "variable": [{ "key": "noteId", "value": "" }] }
+          }
+        },
+        {
+          "name": "Delete Note",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "url": { "raw": "{{base_url}}/notes/:noteId", "host": ["{{base_url}}"], "path": ["notes", ":noteId"], "variable": [{ "key": "noteId", "value": "" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payment",
+      "item": [
+        {
+          "name": "Get Payment History",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "url": { "raw": "{{base_url}}/payment_history", "host": ["{{base_url}}"], "path": ["payment_history"] }
+          }
+        },
+        {
+          "name": "Record Payment (post-checkout)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"package_id\": \"\",\n  \"book_id\": \"\",\n  \"coupon_id\": \"\",\n  \"pay_reference_number\": \"\",\n  \"total_amount\": \"\",\n  \"discount_amount\": \"\",\n  \"vat_amount\": \"\",\n  \"gross_total\": \"\",\n  \"payment_method\": \"\",\n  \"payment_status\": \"successful\"\n}" },
+            "url": { "raw": "{{base_url}}/payments", "host": ["{{base_url}}"], "path": ["payments"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Third-party",
+      "item": [
+        {
+          "name": "YouTube Channel Stats",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "https://www.googleapis.com/youtube/v3/channels?part=statistics&id=&key=",
+              "protocol": "https",
+              "host": ["www", "googleapis", "com"],
+              "path": ["youtube", "v3", "channels"],
+              "query": [
+                { "key": "part", "value": "statistics" },
+                { "key": "id", "value": "" },
+                { "key": "key", "value": "" }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
